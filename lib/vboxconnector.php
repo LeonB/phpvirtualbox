@@ -24,7 +24,8 @@ class vboxconnector {
 		'0x80BB0009' => 'VBOX_E_NOT_SUPPORTED',
 		'0x80BB000A' => 'VBOX_E_XML_ERROR',
 		'0x80BB000B' => 'VBOX_E_INVALID_SESSION_STATE',
-		'0x80BB000C' => 'VBOX_E_OBJECT_IN_USE'
+		'0x80BB000C' => 'VBOX_E_OBJECT_IN_USE',
+	    '0x80004004' => 'NS_ERROR_ABORT'
 	);
 
 
@@ -44,7 +45,7 @@ class vboxconnector {
 		$settings = new phpVBoxConfigClass();
 
 		// Are default settings being used?
-		if($settings->warnDefault) {
+		if(@$settings->warnDefault) {
 			throw new Exception("No configuration found. Rename the file <b>config.php-example</b> in phpVirtualBox's folder to <b>config.php</b> and edit as needed.<p>For more detailed instructions, please see the installation wiki on phpVirtualBox's web site. <p><a href='http://code.google.com/p/phpvirtualbox/w/list' target=_blank>http://code.google.com/p/phpvirtualbox/w/list</a>.</p>",vboxconnector::PHPVB_ERRNO_FATAL);
 		}
 		
@@ -54,17 +55,17 @@ class vboxconnector {
 		}
 
 		// use authentication master server?
-		if($useAuthMaster) {
+		if(@$useAuthMaster) {
 			$settings->setServer($settings->getServerAuthMaster());
 		}
 		
 		$this->settings = get_object_vars($settings);
-		if(!$this->settings['nicMax']) $this->settings['nicMax'] = 4;
+		if(!@$this->settings['nicMax']) $this->settings['nicMax'] = 4;
 
 		// Cache handler object.
 		$this->cache = new cache();
 
-		if($this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
+		if(@$this->settings['cachePath']) $this->cache->path = $this->settings['cachePath'];
 		
 		$this->cache->prefix = 'pvbx-'.md5($this->settings['key'].'$Revision$').'-';
 
@@ -78,11 +79,12 @@ class vboxconnector {
 	private function __vboxwebsrvConnect() {
 
 		// Already connected?
-		if($this->connected) return true;
+		if(@$this->connected) return true;
 		
 		// Valid session?
-		if(!$this->skipSessionCheck && !$_SESSION['valid']) {
-			throw new Exception(trans('Not logged in.'),vboxconnector::PHPVB_ERRNO_FATAL);
+		global $_SESSION;
+		if(!@$this->skipSessionCheck && !$_SESSION['valid']) {
+			throw new Exception(trans('Not logged in.','UIUsers'),vboxconnector::PHPVB_ERRNO_FATAL);
 		}
 
 		//Connect to webservice
@@ -90,9 +92,9 @@ class vboxconnector {
 		    array(
 		    	'features' => (SOAP_USE_XSI_ARRAY_TYPE + SOAP_SINGLE_ELEMENT_ARRAYS),
 		        'cache_wsdl'=>WSDL_CACHE_MEMORY,
-		        'trace'=>($this->settings['debugSoap']),
-				'connection_timeout' => ($this->settings['connectionTimeout'] ? $this->settings['connectionTimeout'] : 20),
-		        'location'=>$this->settings['location']
+		        'trace'=>(@$this->settings['debugSoap']),
+				'connection_timeout' => (@$this->settings['connectionTimeout'] ? $this->settings['connectionTimeout'] : 20),
+		        'location'=>@$this->settings['location']
 		    ));
 		    
 
@@ -121,7 +123,7 @@ class vboxconnector {
 	 */
 	public function getVersion() {
 
-		if(!$this->version) {
+		if(!@$this->version) {
 
 			$this->__vboxwebsrvConnect();
 
@@ -148,9 +150,9 @@ class vboxconnector {
 
 		// Do not logout if there is a progress operation associated
 		// with this vboxweb session
-		if($this->connected && !$this->progressCreated && $this->vbox->handle) {
+		if(@$this->connected && !$this->progressCreated && @$this->vbox->handle) {
 
-			if($this->session && $this->session->handle) {
+			if(@$this->session && @$this->session->handle) {
 				try {$this->session->unlockMachine();}
 				catch (Exception $e) { }
 			}
@@ -168,8 +170,9 @@ class vboxconnector {
 	function __call($fn,$args) {
 
 		// Valid session?
-		if(!$this->skipSessionCheck && !$_SESSION['valid']) {
-			throw new Exception(trans('Not logged in.'),vboxconnector::PHPVB_ERRNO_FATAL);
+		global $_SESSION;
+		if(!@$this->skipSessionCheck && !$_SESSION['valid']) {
+			throw new Exception(trans('Not logged in.','UIUsers'),vboxconnector::PHPVB_ERRNO_FATAL);
 		}
 				
 		$req = &$args[0];
@@ -250,6 +253,35 @@ class vboxconnector {
 
 		return true;
 
+	}
+	
+	/*
+	 * See if file exists
+	 */
+	public function fileExists($args,&$response) {
+
+		$this->__vboxwebsrvConnect();
+		
+		$dsep = $this->settings['DSEP'];
+		
+		$path = str_replace($dsep.$dsep,$dsep,$args['file']);
+		$dir = dirname($path);
+		$file = basename($path);
+		
+		if(substr($dir,-1) != $dsep) $dir .= $dsep;
+		
+		$appl = $this->vbox->createAppliance();
+		$vfs = $appl->createVFSExplorer('file://'.$dir);
+		$progress = $vfs->update();
+		$progress->waitForCompletion(-1);
+		$progress->releaseRemote();
+		
+		$exists = $vfs->exists(array($file));
+		
+		$vfs->releaseRemote();
+		$appl->releaseRemote();
+		
+		$response['data']['exists'] = count($exists);
 	}
 
 	/*
@@ -378,7 +410,7 @@ class vboxconnector {
 			foreach($checks as $iso) {
 				try {
 					$gem = $this->vbox->openMedium($iso,'DVD','ReadWrite');
-					$this->cache->expire('getMediums');
+					$this->cache->expire('getMedia');
 					break;
 				} catch (Exception $e) {
 					// Ignore
@@ -412,7 +444,7 @@ class vboxconnector {
 				$this->__storeProgress($progress);
 				$response['data']['progress'] = $progress->handle;
 				$this->cache->expire('__getStorageControllers'.$args['vm']);
-				$this->cache->expire('getMediums');
+				$this->cache->expire('getMedia');
 				return true;
 			}
 			
@@ -429,7 +461,7 @@ class vboxconnector {
 					$this->session->machine->mountMedium($sc->name, $ma->port, $ma->device, $gem->handle, true);
 					$response['data']['result'] = 'mounted';
 					$this->cache->expire('__getStorageControllers'.$args['vm']);
-					$this->cache->expire('getMediums');
+					$this->cache->expire('getMedia');
 					$mounted = true;
 					break;
 				}
@@ -545,11 +577,12 @@ class vboxconnector {
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 		$machine->lockMachine($this->session->handle, 'Shared');
 		
-		$this->settings['enableAdvancedConfig'] = ($this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
+		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['enableAdvancedConfig']);
 		
 		// Network Adapters
-		$netprops = array('internalNetwork','NATNetwork','cableConnected','attachmentType');
-		
+		$netprops = array('enabled','attachmentType','adapterType','MACAddress','bridgedInterface','hostOnlyInterface','internalNetwork','NATNetwork','cableConnected','promiscModePolicy','genericDriver');
+		if(@$this->settings['enableVDE']) $netprops[] = 'VDENetwork';
+				
 		for($i = 0; $i < count($args['networkAdapters']); $i++) {
 
 			$n = $this->session->machine->getNetworkAdapter($i);
@@ -560,12 +593,8 @@ class vboxconnector {
 				continue;
 			}
 			
-			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
 			for($p = 0; $p < count($netprops); $p++) {
 				switch($netprops[$p]) {
-					case 'attachmentType':
-					case 'internalNetwork':
-					case 'VDENetwork':
 					case 'enabled':
 					case 'cableConnected':
 						break;
@@ -573,45 +602,32 @@ class vboxconnector {
 						$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
 				}
 			}
+			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
 				
-			switch($args['networkAdapters'][$i]['attachmentType']) {
-				case 'Bridged':
-					$n->attachToBridgedInterface();
-					break;
-				case 'Internal':
-					$n->attachToInternalNetwork();
-					$n->internalNetwork = (string)$args['networkAdapters'][$i]['internalNetwork'];
-					break;
-				case 'HostOnly':
-					$n->attachToHostOnlyInterface();
-					break;
-				case 'NAT':
-					$n->attachToNAT();
+			if($args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
 
-					// Remove existing redirects
-					foreach($n->NatDriver->getRedirects() as $r) {
-						$n->NatDriver->removeRedirect(array_shift(split(',',$r)));
-					}
-					// Add redirects
-					foreach($args['networkAdapters'][$i]['redirects'] as $r) {
-						$r = split(',',$r);
-						$n->NatDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
-					}
+				// Remove existing redirects
+				foreach($n->natDriver->getRedirects() as $r) {
+					$n->natDriver->removeRedirect(array_shift(split(',',$r)));
+				}
+				// Add redirects
+				foreach($args['networkAdapters'][$i]['redirects'] as $r) {
+					$r = split(',',$r);
+					$n->natDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
+				}
+				
+				// Advanced NAT settings
+				if(@$this->settings['enableAdvancedConfig']) {
+					$aliasMode = $n->natDriver->aliasMode & 1; 
+					if(intval($args['networkAdapters'][$i]['natDriver']['aliasMode'] & 2)) $aliasMode |= 2;
+					if(intval($args['networkAdapters'][$i]['natDriver']['aliasMode'] & 4)) $aliasMode |= 4;
+					$n->natDriver->aliasMode = $aliasMode;
+					$n->natDriver->dnsProxy = intval($args['networkAdapters'][$i]['natDriver']['dnsProxy']);
+					$n->natDriver->dnsPassDomain = intval($args['networkAdapters'][$i]['natDriver']['dnsPassDomain']);
+					$n->natDriver->dnsUseHostResolver = intval($args['networkAdapters'][$i]['natDriver']['dnsUseHostResolver']);
+					$n->natDriver->hostIP = $args['networkAdapters'][$i]['natDriver']['hostIP'];
+				}
 					
-					// Advanced NAT settings
-					if($this->settings['enableAdvancedConfig']) {
-						$aliasMode = $n->NatDriver->aliasMode & 1; 
-						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 2)) $aliasMode |= 2;
-						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 4)) $aliasMode |= 4;
-						$n->NatDriver->aliasMode = $aliasMode;
-						$n->NatDriver->dnsProxy = intval($args['networkAdapters'][$i]['NatDriver']['dnsProxy']);
-						$n->NatDriver->dnsPassDomain = intval($args['networkAdapters'][$i]['NatDriver']['dnsPassDomain']);
-						$n->NatDriver->dnsUseHostResolver = intval($args['networkAdapters'][$i]['NatDriver']['dnsUseHostResolver']);
-					}
-					
-					break;
-				default:
-					$n->detach();
 			}
 			$n->releaseRemote();
 		}
@@ -628,6 +644,69 @@ class vboxconnector {
 	}
 	
 	/*
+	 * Clone a VM
+	 */
+	public function cloneVM($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		$src = $this->vbox->findMachine($args['src']);
+
+		if($args['snapshot'] && $args['snapshot']['id']) {
+			$nsrc = $src->findSnapshot($args['snapshot']['id']);
+			$src->releaseRemote();
+			$src = null;
+			$src = $nsrc->machine;
+		}
+		$m = $this->vbox->createMachine($this->vbox->composeMachineFilename($args['name'],$this->vbox->systemProperties->defaultMachineFolder),$args['name'],null,null,false);
+
+		$cm = new CloneMode(null,$args['vmState']);
+		$state = $cm->ValueMap[$args['vmState']];
+		
+		$progress = $src->cloneTo($m->handle,$state,($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
+		
+		// Does an exception exist?
+		try {
+			if($progress->errorInfo->handle) {
+				$this->errors[] = new Exception($progress->errorInfo->text);
+				$progress->releaseRemote();
+				return false;
+			}
+		} catch (Exception $null) {}
+
+		$this->__storeProgress($progress);
+
+		$response['data'] = array('progress' => $progress->handle, 'settingsFilePath' => $m->settingsFilePath);
+
+		return true;
+	}
+	
+
+	/*
+	 * Update VRDE server enabled status
+	 */
+	public function updateVRDE($args, &$response) {
+		
+		$this->__vboxwebsrvConnect();
+
+		// create session and lock machine
+		$m = $this->vbox->findMachine($args['vm']);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+		$m->lockMachine($this->session->handle, 'Shared');		
+		$this->session->machine->VRDEServer->enabled = intval($args['enabled']);
+		
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		unset($this->session);
+		
+		$m->releaseRemote();
+		
+		$this->cache->expire('__consoleInfo'.$args['vm']);
+		
+	}
+	
+	/*
 	 * Save all VM settings
 	 */
 	public function saveVM($args,&$response) {
@@ -640,7 +719,7 @@ class vboxconnector {
 		$machine->lockMachine($this->session->handle, 'Write');
 		
 		// Client and server must agree on advanced config setting
-		$this->settings['enableAdvancedConfig'] = ($this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
+		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
 
 		// Cache items to expire
 		$expire = array();
@@ -649,15 +728,30 @@ class vboxconnector {
 		$m = &$this->session->machine;
 
 		// General machine settings
+		if (@$this->settings['enforceVMOwnership'] )
+		{
+			$args['name'] = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $args['name']);
+		}
+		
+		if ( ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+		{
+			// skip this VM as it is not owned by the user we're logged in as
+			throw new Exception("Not authorized to modify this VM");
+		}
+		
 		$m->name = $args['name'];
 		$m->description = $args['description'];
 		$m->OSTypeId = $args['OSTypeId'];
 		$m->CPUCount = $args['CPUCount'];
+		$m->CPUExecutionCap = $args['CPUExecutionCap'];
 		$m->memorySize = $args['memorySize'];
 		$m->firmwareType = $args['firmwareType'];
 		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
 		if($m->snapshotFolder != $args['snapshotFolder']) $m->snapshotFolder = $args['snapshotFolder'];
-		if(@$this->settings['enableAdvancedConfig']) $m->hpetEnabled = intval($args['hpetEnabled']);
+		if(@$this->settings['enableAdvancedConfig']) {
+			$m->hpetEnabled = intval($args['hpetEnabled']);
+			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
+		}
 
 		$m->VRAMSize = $args['VRAMSize'];
 
@@ -668,7 +762,7 @@ class vboxconnector {
 		*/
 
 		/* Only if advanced configuration is enabled */
-		if($this->settings['enableAdvancedConfig']) {
+		if(@$this->settings['enableAdvancedConfig']) {
 			$m->keyboardHidType = $args['keyboardHidType'];
 			$m->pointingHidType = $args['pointingHidType'];
 			$m->setHWVirtExProperty('Enabled',($args['HWVirtExProperties']['Enabled'] ? 1 : 0));
@@ -678,6 +772,10 @@ class vboxconnector {
 			$m->setHWVirtExProperty('VPID', ($args['HWVirtExProperties']['VPID'] ? 1 : 0));
 			
 		}
+		
+		/* Custom Icon */
+		if(@$this->settings['enableCustomIcons'])
+			$m->setExtraData('phpvb/icon', $args['customIcon']);
 
 		$m->RTCUseUTC = ($args['RTCUseUTC'] ? 1 : 0);
 
@@ -694,7 +792,7 @@ class vboxconnector {
 			if($m->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
 				$m->VRDEServer->enabled = intval($args['VRDEServer']['enabled']);
 				$m->VRDEServer->setVRDEProperty('TCP/Ports',$args['VRDEServer']['ports']);
-				if($this->settings['enableAdvancedConfig'])
+				if(@$this->settings['enableAdvancedConfig'])
 					$m->VRDEServer->setVRDEProperty('TCP/Address',$args['VRDEServer']['netAddress']);
 				$m->VRDEServer->authType = ($args['VRDEServer']['authType'] ? $args['VRDEServer']['authType'] : null);
 				$m->VRDEServer->authTimeout = intval($args['VRDEServer']['authTimeout']);
@@ -749,7 +847,7 @@ class vboxconnector {
 			$c->useHostIOCache = ($sc['useHostIOCache'] ? 1 : 0);
 
 			// Set sata port count
-			if($sc['bus'] == 'SATA' && ($this->settings['enableAdvancedConfig'] || !@$this->settings['disableSataPortCount'])) {
+			if($sc['bus'] == 'SATA') {
 				$max = max(1,intval(@$sc['portCount']));
 				foreach($sc['mediumAttachments'] as $ma) {
 					$max = max($max,(intval($ma['port'])+1));
@@ -757,12 +855,11 @@ class vboxconnector {
 				$c->portCount = min(intval($c->maxPortCount),max(count($sc['mediumAttachments']),$max));
 				
 				// Check for "automatic" setting
-				if(@$this->settings['enableAdvancedConfig']) {
-					if(intval(@$sc['portCount']) == 0)
-						$m->setExtraData('phpvb/AutoSATAPortCount','yes');
-					else
-						$m->setExtraData('phpvb/AutoSATAPortCount','no');
-				}				
+				/*
+				 Disabled for now
+				if(intval(@$sc['portCount']) == 0) $m->setExtraData('phpvb/AutoSATAPortCount','yes');
+				else $m->setExtraData('phpvb/AutoSATAPortCount','no');
+				*/
 			}
 			$c->releaseRemote();
 			
@@ -796,18 +893,25 @@ class vboxconnector {
 					$med = null;
 				}
 				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],(is_object($med) ? $med->handle : null));
-				if($ma['type'] == 'DVD') $m->passthroughDevice($name,$ma['port'],$ma['device'],($ma['passthrough'] ? true : false));
+				if($ma['type'] == 'DVD') {
+					if(strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true)
+						$m->passthroughDevice($name,$ma['port'],$ma['device'],($ma['passthrough'] ? true : false));
+					else 
+						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],($ma['temporaryEject'] ? true : false));
+				} else if($ma['type'] == 'HardDisk') {
+					$m->nonRotationalDevice($name,$ma['port'],$ma['device'],($ma['nonRotational'] ? true : false));
+				}
 				if(is_object($med)) $med->releaseRemote();
 			}
 
 		}
 		// Expire storage
 		$expire[] = '__getStorageControllers'.$args['id'];
-		// Expire mediums?
+		// Expire media?
 		ksort($attachedEx);
 		ksort($attachedNew);
 		if(serialize($attachedEx) != serialize($attachedNew))
-			$expire[] = 'getMediums';
+			$expire[] = 'getMedia';
 
 
 		/*
@@ -820,9 +924,10 @@ class vboxconnector {
 
 		// Network Adapters
 		$netchanged = false;
-		$netprops = array('adapterType','enabled','MACAddress','hostInterface','internalNetwork','NATNetwork','cableConnected','attachmentType');
+		$netprops = array('enabled','attachmentType','adapterType','MACAddress','bridgedInterface','hostOnlyInterface','internalNetwork','NATNetwork','cableConnected','promiscModePolicy','genericDriver');
 		if(@$this->settings['enableVDE']) $netprops[] = 'VDENetwork';
 		$adapters = $this->__getCachedMachineData('__getNetworkAdapters',$args['id'],$this->session->machine);
+		
 		for($i = 0; $i < count($args['networkAdapters']); $i++) {
 
 			// Is there a property diff?
@@ -839,15 +944,16 @@ class vboxconnector {
 
 			// Check for redirection rules diff
 			$ndiff = ($ndiff || (@serialize($args['networkAdapters'][$i]['redirects']) != @serialize($adapters[$i]['redirects'])));
-			
+
 			// Check for nat engine options change
-			if(!$ndiff && $this->settings['enableAdvancedConfig'] && $args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
+			if(!$ndiff && @$this->settings['enableAdvancedConfig'] && @$args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
 				$neProps = array('aliasMode','dnsPassDomain','dnsProxy','dnsUseHostResolver');
 				foreach($neProps as $p) {
-					if(intval($args['networkAdapters'][$i]['NatDriver'][$p]) == intval($adapters[$i]['NatDriver'][$p])) continue;
+					if(intval($args['networkAdapters'][$i]['natDriver'][$p]) == intval($adapters[$i]['natDriver'][$p])) continue;
 					$ndiff = true;
 					break;
 				}
+				if(!$ndiff) $ndiff = ($args['networkAdapters'][$i]['natDriver']['hostIP'] != $adapters[$i]['natDriver']['hostIP']);
 				
 			}
 
@@ -856,64 +962,36 @@ class vboxconnector {
 
 
 			$n = $m->getNetworkAdapter($i);
-			$n->enabled = intval($args['networkAdapters'][$i]['enabled']);
-			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
+			
 			for($p = 0; $p < count($netprops); $p++) {
-				switch($netprops[$p]) {
-					case 'attachmentType':
-					case 'internalNetwork':
-					case 'VDENetwork':
-					case 'enabled':
-					case 'cableConnected':
-						break;
-					default:
-						$n->{$netprops[$p]} = $args['networkAdapters'][$i][$netprops[$p]];
-				}
+				$n->{$netprops[$p]} = @$args['networkAdapters'][$i][$netprops[$p]];
+				#echo("setting {$netprops[$p]} to {$args['networkAdapters'][$i][$netprops[$p]]}\n");
 			}
 
+			if($args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
+				
+				// Remove existing redirects
+				foreach($n->natDriver->getRedirects() as $r) {
+					$n->natDriver->removeRedirect(array_shift(split(',',$r)));
+				}
+				// Add redirects
+				foreach($args['networkAdapters'][$i]['redirects'] as $r) {
+					$r = split(',',$r);
+					$n->natDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
+				}
+				
+				// Advanced NAT settings
+				if(@$this->settings['enableAdvancedConfig']) {
+					$aliasMode = $n->natDriver->aliasMode & 1; 
+					if(intval($args['networkAdapters'][$i]['natDriver']['aliasMode'] & 2)) $aliasMode |= 2;
+					if(intval($args['networkAdapters'][$i]['natDriver']['aliasMode'] & 4)) $aliasMode |= 4;
+					$n->natDriver->aliasMode = $aliasMode;
+					$n->natDriver->dnsProxy = intval($args['networkAdapters'][$i]['natDriver']['dnsProxy']);
+					$n->natDriver->dnsPassDomain = intval($args['networkAdapters'][$i]['natDriver']['dnsPassDomain']);
+					$n->natDriver->dnsUseHostResolver = intval($args['networkAdapters'][$i]['natDriver']['dnsUseHostResolver']);
+					$n->natDriver->hostIP = $args['networkAdapters'][$i]['natDriver']['hostIP'];
+				}
 
-			switch($args['networkAdapters'][$i]['attachmentType']) {
-				case 'Bridged':
-					$n->attachToBridgedInterface();
-					break;
-				case 'VDE':
-					$n->attachToVDE();
-					$n->VDENetwork = (string)$args['networkAdapters'][$i]['VDENetwork'];
-					break;
-				case 'Internal':
-					$n->attachToInternalNetwork();
-					$n->internalNetwork = (string)$args['networkAdapters'][$i]['internalNetwork'];
-					break;
-				case 'HostOnly':
-					$n->attachToHostOnlyInterface();
-					break;
-				case 'NAT':
-					$n->attachToNAT();
-
-					// Remove existing redirects
-					foreach($n->NatDriver->getRedirects() as $r) {
-						$n->NatDriver->removeRedirect(array_shift(split(',',$r)));
-					}
-					// Add redirects
-					foreach($args['networkAdapters'][$i]['redirects'] as $r) {
-						$r = split(',',$r);
-						$n->NatDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
-					}
-					
-					// Advanced NAT settings
-					if($this->settings['enableAdvancedConfig']) {
-						$aliasMode = $n->NatDriver->aliasMode & 1; 
-						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 2)) $aliasMode |= 2;
-						if(intval($args['networkAdapters'][$i]['NatDriver']['aliasMode'] & 4)) $aliasMode |= 4;
-						$n->NatDriver->aliasMode = $aliasMode;
-						$n->NatDriver->dnsProxy = intval($args['networkAdapters'][$i]['NatDriver']['dnsProxy']);
-						$n->NatDriver->dnsPassDomain = intval($args['networkAdapters'][$i]['NatDriver']['dnsPassDomain']);
-						$n->NatDriver->dnsUseHostResolver = intval($args['networkAdapters'][$i]['NatDriver']['dnsUseHostResolver']);
-					}
-
-					break;
-				default:
-					$n->detach();
 			}
 			$n->releaseRemote();
 		}
@@ -949,7 +1027,7 @@ class vboxconnector {
 		if($spChanged) $expire[] = '__getSerialPorts'.$args['id'];
 
 		// LPT Ports
-		if($this->settings['enableLPTConfig']) {
+		if(@$this->settings['enableLPTConfig']) {
 			$lptChanged = false;
 			for($i = 0; $i < count($args['parallelPorts']); $i++) {
 				$p = $m->getParallelPort($i);
@@ -1088,6 +1166,9 @@ class vboxconnector {
 		$this->vbox->registerMachine($m->handle);
 		
 		$m->releaseRemote();
+		
+		$this->cache->expire(array('getVMs','getMedia'));
+		
 		return ($response['data']['result'] = 1);
 
 	}
@@ -1189,7 +1270,8 @@ class vboxconnector {
 			$response['data']['info'] = array(
 				'completed' => $progress->completed,
 				'canceled' => $progress->canceled,
-				'description' => $progress->operationDescription,
+				'description' => $progress->description,
+				'operationDescription' => $progress->operationDescription,
 				'timeRemaining' => $this->__splitTime($progress->timeRemaining),
 				'timeElapsed' => $this->__splitTime((time() - $pop['started'])),
 				'percent' => $progress->percent
@@ -1377,7 +1459,7 @@ class vboxconnector {
 			$a++;
 		}
 
-		$progress = $app->importMachines();
+		$progress = $app->importMachines(array($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
 
 		$app->releaseRemote();
 		
@@ -1391,7 +1473,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->__storeProgress($progress,'getMediums');
+		$this->__storeProgress($progress,array('getMedia','getVMs'));
 
 		$response['data']['progress'] = $progress->handle;
 
@@ -1411,10 +1493,16 @@ class vboxconnector {
 		$machines = $this->vbox->machines;
 
 		foreach ($machines as $machine) {
-
+			
+			if ( @$this->settings['enforceVMOwnership'] && ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+			{
+				// skip this VM as it is not owned by the user we're logged in as
+				continue;
+			}
+			
 			try {
 				$response['data'][] = array(
-					'name' => $machine->name,
+					'name' => @$this->settings['enforceVMOwnership'] ? preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $machine->name) : $machine->name,
 					'state' => $machine->state->__toString(),
 					'OSTypeId' => $machine->getOSTypeId(),
 					'id' => $machine->id,
@@ -1496,10 +1584,16 @@ class vboxconnector {
 
 		foreach($args['vms'] as $vm) {
 			$m = $this->vbox->findMachine($vm['id']);
-			$desc = $m->export($app->handle);
+			if (@$this->settings['enforceVMOwnership'] && ($owner = $m->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+			{
+				// skip this VM as it is not owned by the user we're logged in as
+				continue;
+			}
+			$desc = $m->export($app->handle, $args['file']);
 			$props = $desc->getDescription();
 			$ptypes = array();
 			foreach($props[0] as $p) {$ptypes[] = $p->__toString();}
+			$typecount = 0;
 			foreach($appProps as $k=>$v) {
 				// Check for existing property
 				if(($i=array_search($v,$ptypes)) !== false) {
@@ -1509,6 +1603,7 @@ class vboxconnector {
 					$props[3][] = $vm[$k];
 					$props[4][] = null;
 				}
+				$typecount++;
 			}
 			$enabled = array_pad(array(),count($props[3]),true);
 			foreach(array_keys($enabled) as $k) $enabled[$k] = (bool)$enabled[$k];
@@ -1517,7 +1612,7 @@ class vboxconnector {
 			$m->releaseRemote();
 		}
 
-		$progress = $app->write(($args['format'] ? $args['format'] : 'ovf-1.0'),true,$args['file']);
+		$progress = $app->write(($args['format'] ? $args['format'] : 'ovf-1.0'),($args['manifest'] ? true : false),$args['file']);
 		$app->releaseRemote();
 
 		// Does an exception exist?
@@ -1549,21 +1644,36 @@ class vboxconnector {
 		 */
 		$networks = array();
 		$vdenetworks = array();
+		$nics = array();
+		$genericDrivers = array();
 		foreach($this->vbox->machines as $machine) {
 
+			$mname = $machine->name;
+			
 			for($i = 0; $i < $this->settings['nicMax']; $i++) {
 
 				try {
-					$h = &$machine->getNetworkAdapter($i);
+					$h = $machine->getNetworkAdapter($i);
 				} catch (Exception $e) {
 					break;
 				}
 
 				try {
-					if($h->internalNetwork) {
-						$networks[$h->internalNetwork] = 1;
-					} else if($this->settings['enableVDE'] && $h->VDENetwork) {
-						$vdenetworks[$h->VDENetwork] = 1;
+					$at = $h->attachmentType->__toString();
+					if($at == 'Bridged' || $at == 'HostOnly') {
+						if($at == 'Bridged') $nic = $h->bridgedInterface;
+						else $nic = $h->hostOnlyInterface;
+						if(!is_array($nics[$nic])) $nics[$nic] = array();
+						if(!is_array($nics[$nic][$mname])) $nics[$nic][$mname] = array();
+						$nics[$nic][$mname][] = ($i+1);
+					} else if ($at == 'Generic') {
+						$genericDrivers[$h->genericDriver] = 1;
+					} else {
+						if($h->internalNetwork) {
+							$networks[$h->internalNetwork] = 1;
+						} else if(@$this->settings['enableVDE'] && @$h->VDENetwork) {
+							$vdenetworks[$h->VDENetwork] = 1;
+						}
 					}
 					$h->releaseRemote();
 				} catch (Exception $e) {
@@ -1573,8 +1683,10 @@ class vboxconnector {
 			}
 			$machine->releaseRemote();
 		}
+		$response['data']['nics'] = $nics;
 		$response['data']['networks'] = array_keys($networks);
 		$response['data']['vdenetworks'] = array_keys($vdenetworks);
+		$response['data']['genericDrivers'] = array_keys($genericDrivers);
 
 		return true;
 	}
@@ -1603,21 +1715,23 @@ class vboxconnector {
 			// Get DHCP Info
 			try {
 				$dhcp = $this->vbox->findDHCPServerByNetworkName($d->networkName);
-			} catch (Exception $e) {};
-
-			if($dhcp->handle) {
-				$dhcpserver = array(
-					'enabled' => $dhcp->enabled,
-					'IPAddress' => $dhcp->IPAddress,
-					'networkMask' => $dhcp->networkMask,
-					'networkName' => $dhcp->networkName,
-					'lowerIP' => $dhcp->lowerIP,
-					'upperIP' => $dhcp->upperIP
-				);
-				$dhcp->releaseRemote();
-			} else {
+				if($dhcp->handle) {
+					$dhcpserver = array(
+						'enabled' => $dhcp->enabled,
+						'IPAddress' => $dhcp->IPAddress,
+						'networkMask' => $dhcp->networkMask,
+						'networkName' => $dhcp->networkName,
+						'lowerIP' => $dhcp->lowerIP,
+						'upperIP' => $dhcp->upperIP
+					);
+					$dhcp->releaseRemote();
+				} else {
+					$dhcpserver = array();
+				}
+			} catch (Exception $e) {
 				$dhcpserver = array();
 			}
+
 			$response['data']['networkInterfaces'][] = array(
 				'id' => $d->id,
 				'IPV6Supported' => $d->IPV6Supported,
@@ -1802,8 +1916,14 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		// Machine state
-		$machine = &$this->vbox->findMachine($vm);
+		$machine = $this->vbox->findMachine($vm);
 		$mstate = $machine->state->__toString();
+		
+		if ( ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+		{
+			// skip this VM as it is not owned by the user we're logged in as
+			throw new Exception("Not authorized to change state of this VM");
+		}
 
 		// If state has an expected result, check
 		// that we are not already in it
@@ -1823,7 +1943,7 @@ class vboxconnector {
 		}
 
 		// Open session to machine
-		$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
 		// Lock machine
 		$machine->lockMachine($this->session->handle,($states[$state]['lock'] == 'write' ? 'Write' : 'Shared'));
@@ -1869,6 +1989,7 @@ class vboxconnector {
 
 		}
 
+		$vmname = $machine->name;
 		$machine->releaseRemote();
 		
 		// Check for ACPI button
@@ -1876,7 +1997,7 @@ class vboxconnector {
 			$this->session->console->releaseRemote();
 			$this->session->unlockMachine();
 			$this->session = null;
-			throw new Exception(trans('ACPI event not handled'));
+			throw new Exception(str_replace('%1',$vmname,trans('Failed to send the ACPI Power Button press event to the virtual machine <b>%1</b>.','VBoxProblemReporter')));
 		}
 
 
@@ -1904,7 +2025,7 @@ class vboxconnector {
 		# Try opening session for VM
 		try {
 			// create session
-			$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
 			$progress = $machine->launchVMProcess($this->session->handle, 'headless', '');
 
@@ -1976,6 +2097,7 @@ class vboxconnector {
 				'name' => $d->name,
 				'IPAddress' => $d->IPAddress,
 				'networkMask' => $d->networkMask,
+				'IPV6Supported' => $d->IPV6Supported,
 				'IPV6Address' => $d->IPV6Address,
 				'IPV6NetworkMaskPrefixLength' => $d->IPV6NetworkMaskPrefixLength,
 				'status' => $d->status->__toString(),
@@ -2061,7 +2183,15 @@ class vboxconnector {
 	public function getVMDetails($args, &$response, $snapshot=null) {
 
 		// Host instead of vm info
-		if($args['vm'] == 'host') return @$this->getHostDetails($args, array(&$response));
+		if($args['vm'] == 'host') {
+			$response['data'] = array();
+			$tmpstore = array('data'=>array());
+			$this->getHostDetails($args, array(&$tmpstore));
+			$response['data'] = array_merge($response['data'],$tmpstore['data']);
+			$this->getHostNetworking($args, array(&$tmpstore));
+			$response['data'] = array_merge($response['data'],$tmpstore['data']);
+			return true;
+		}
 
 
 		// Connect to vboxwebsrv
@@ -2074,7 +2204,7 @@ class vboxconnector {
 
 		} else {
 
-			$machine = &$this->vbox->findMachine($args['vm']);
+			$machine = $this->vbox->findMachine($args['vm']);
 
 
 			// For correct caching, always use id
@@ -2103,6 +2233,11 @@ class vboxconnector {
 
 		// Basic data
 		$data = $this->__getCachedMachineData('__getMachine',@$args['vm'],$machine,@$args['force_refresh']);
+		
+		if (@$this->settings['enforceVMOwnership'] )
+		{
+			$data['name'] = preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $data['name']);
+		}
 
 		// Network Adapters
 		$data['networkAdapters'] = $this->__getCachedMachineData('__getNetworkAdapters',@$args['vm'],$machine,@$args['force_refresh']);
@@ -2137,21 +2272,23 @@ class vboxconnector {
 
 			// Get current console port
 			if($data['state'] == 'Running') {
-				$console = $this->cache->get('__consolePort'.$args['vm'],120000);
-				if($console === false || intval($console['lastStateChange']) < $mdlm) {
-					$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+				
+				$console = $this->cache->get('__consoleInfo'.$args['vm'],120000);
+				
+				if($console === false || intval($console['lastStateChange']) < $mdlm || @$args['force_refresh']) {
+					$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 					$machine->lockMachine($this->session->handle, 'Shared');
-					$data['consolePort'] = $this->session->console->VRDEServerInfo->port;
+					$data['consoleInfo'] = array();
+					$data['consoleInfo']['enabled'] = intval($this->session->console->machine->VRDEServer->enabled);
+					$data['consoleInfo']['consolePort'] = $this->session->console->VRDEServerInfo->port;
 					$this->session->unlockMachine();
 					$this->session->releaseRemote();
 					unset($this->session);
-					$console = array(
-						'consolePort'=>$data['consolePort'],
-						'lastStateChange'=>$mdlm
-					);
-					$this->cache->store('__consolePort'.$data['id'],$console);
+					$console = $data['consoleInfo'];
+					$console['lastStateChange'] = $mdlm;
+					$this->cache->store('__consoleInfo'.$data['id'],$console);
 				} else {
-					$data['consolePort'] = $console['port'];
+					$data['consoleInfo'] = $console;
 				}
 			}
 
@@ -2197,48 +2334,52 @@ class vboxconnector {
 
 		$machine = $this->vbox->findMachine($args['vm']);
 
-		$cache = array('__consolePort'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'],
-			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMediums','__getSerialPorts'.$args['vm'],'__getParallelPorts'.$args['vm']);
+		$cache = array('__consoleInfo'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'], 'getVMs',
+			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMedia','__getSerialPorts'.$args['vm'],'__getParallelPorts'.$args['vm']);
 
 		// Only unregister or delete?
-		if($args['unregister']) {
+		if(!$args['delete']) {
 
 			$machine->unregister('Full');
 
 			// Clear caches
 			foreach($cache as $ex) {
-				$this->cache->expire('__'.$ex.$args['vm']);
+				$this->cache->expire($ex);
 			}
 			
 			$machine->releaseRemote();
+			
 			return ($response['data']['result'] = 1);
 
 		} else {
 
+			$hds = array();
 			$delete = $machine->unregister('DetachAllReturnHardDisksOnly');
-			if($args['delete']) {
-				foreach($delete as $hd) $hds[] = $hd->handle;
-			} else {
-				$hds = array();
+			foreach($delete as $hd) {
+				$hds[] = $this->vbox->findMedium($hd->id,'HardDisk')->handle;
 			}
-
-			$progress = $machine->delete($hds);
+			
+			if(count($hds)) $progress = $machine->delete($hds);
+			else $progress = null;
 			
 			$machine->releaseRemote();
 
 			// Does an exception exist?
-			try {
-				if($progress->errorInfo->handle) {
-					$this->errors[] = new Exception($progress->errorInfo->text);
-					$progress->releaseRemote();
-					return false;
-				}
-			} catch (Exception $null) {}
-
-			$this->__storeProgress($progress,$cache);
-
-			$response['data']['progress'] = $progress->handle;
-
+			if($progress) {
+				try {
+					if($progress->errorInfo->handle) {
+						$this->errors[] = new Exception($progress->errorInfo->text);
+						$progress->releaseRemote();
+						return false;
+					}
+				} catch (Exception $null) {}
+	
+				$this->__storeProgress($progress,$cache);
+	
+				$response['data']['progress'] = $progress->handle;
+			
+			}
+			
 			return ($response['data']['result'] = 1);
 
 		}
@@ -2254,10 +2395,39 @@ class vboxconnector {
 	 */
 	public function createVM($args, &$response) {
 
+		global $_SESSION;
+		
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
+		
+		// quota enforcement
+		if ( isset($_SESSION['user']) )
+		{
+			if ( @isset($this->settings['vmQuotaPerUser']) && @$this->settings['vmQuotaPerUser'] > 0 && !$_SESSION['admin'] )
+			{
+				$newresp = array('data' => array());
+				$vmlist = $this->getVMsCached(array(), $newresp);
+				if ( count($newresp['data']['vmlist']) >= $this->settings['vmQuotaPerUser'] )
+				{
+					// we're over quota!
+					// delete the disk we just created
+					if ( isset($args['disk']) )
+					{
+						$this->mediumRemove(array(
+								'id' => $args['disk'],
+								'type' => 'HardDisk',
+								'delete' => true
+							), $newresp);
+					}
+					throw new Exception("Sorry, you're over quota. You can only create up to {$this->settings['vmQuotaPerUser']} VMs.");
+				}
+			}
+		}
 
 		// create machine
+		if (@$this->settings['enforceVMOwnership'] )
+			$args['name'] = $_SESSION['user'] . '_' . $args['name'];
+			
 		$m = $this->vbox->createMachine(null,$args['name'],$args['ostype'],null,null);
 
 		// Set memory
@@ -2280,7 +2450,12 @@ class vboxconnector {
 
 			// OS defaults
 			$defaults = $this->vbox->getGuestOSType($args['ostype']);
-
+			
+			// Ownership enforcement
+			if ( isset($_SESSION['user']) )
+			{	
+				$this->session->machine->setExtraData('phpvb/sso/owner', $_SESSION['user']);
+			}
 
 			// Always set
 			$this->session->machine->setExtraData('GUI/SaveMountedAtRuntime', 'yes');
@@ -2316,7 +2491,7 @@ class vboxconnector {
 			}
 			
 			/* Only if acceleration configuration is enabled */
-			if($this->settings['enableAdvancedConfig']) {	
+			if(@$this->settings['enableAdvancedConfig']) {	
 				$this->session->machine->setHWVirtExProperty('Enabled',$defaults->recommendedVirtEx);
 			}
 			
@@ -2333,14 +2508,14 @@ class vboxconnector {
 				$HDconType = $defaults->recommendedHdStorageController->__toString();
 
 				$bus = new StorageBus(null,$HDbusType);
-				$sc = $this->session->machine->addStorageController(trans($HDbusType.' Controller'),$bus->__toString());
+				$sc = $this->session->machine->addStorageController(trans($HDbusType.' Controller','UIMachineSettingsStorage'),$bus->__toString());
 				$sc->controllerType = $HDconType;
 				$sc->useHostIOCache = (bool)$this->vbox->systemProperties->getDefaultIoCacheSettingForStorageController($HDconType);
 				$sc->releaseRemote();
 
 				$m = $this->vbox->findMedium($args['disk'],'HardDisk');
 
-				$this->session->machine->attachDevice(trans($HDbusType.' Controller'),0,0,'HardDisk',$m->handle);
+				$this->session->machine->attachDevice(trans($HDbusType.' Controller','UIMachineSettingsStorage'),0,0,'HardDisk',$m->handle);
 
 				$m->releaseRemote();
 
@@ -2353,24 +2528,26 @@ class vboxconnector {
 				if(!$args['disk'] || ($HDbusType != $DVDbusType)) {
 
 					$bus = new StorageBus(null,$DVDbusType);
-					$sc = $this->session->machine->addStorageController(trans($DVDbusType.' Controller'),$bus->__toString());
+					$sc = $this->session->machine->addStorageController(trans($DVDbusType.' Controller','UIMachineSettingsStorage'),$bus->__toString());
 					$sc->controllerType = $DVDconType;
 					$sc->useHostIOCache = (bool)$this->vbox->systemProperties->getDefaultIoCacheSettingForStorageController($DVDconType);
 					$sc->releaseRemote();
 				}
 
-				$this->session->machine->attachDevice(trans($DVDbusType.' Controller'),1,0,'DVD',null);
+				$this->session->machine->attachDevice(trans($DVDbusType.' Controller','UIMachineSettingsStorage'),1,0,'DVD',null);
 
 			}
 			
 			// Auto-sata port count
+			/* Disabled for now
 			$this->session->machine->setExtraData('phpvb/AutoSATAPortCount','yes');
+			*/
 
 			$this->session->machine->saveSettings();
 			$this->session->unlockMachine();
 			$this->session = null;
 
-			if($args['disk']) $this->cache->expire('getMediums');
+			if($args['disk']) $this->cache->expire('getMedia');
 			
 			$machine->releaseRemote();
 
@@ -2464,13 +2641,15 @@ class vboxconnector {
 
 			try {
 				$response['data']['vmlist'][] = array(
-					'name' => $machine->name,
+					'name' => @$this->settings['enforceVMOwnership'] ? preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $machine->name) : $machine->name,
 					'state' => $machine->state->__toString(),
 					'OSTypeId' => $machine->getOSTypeId(),
+					'owner' => (@$this->settings['enforceVMOwnership'] ? $machine->getExtraData("phpvb/sso/owner") : ''),
 					'id' => $machine->id,
 					'lastStateChange' => floor($machine->lastStateChange/1000),
 					'sessionState' => $machine->sessionState->__toString(),
-					'currentSnapshot' => ($machine->currentSnapshot->handle ? $machine->currentSnapshot->name : '')
+					'currentSnapshot' => ($machine->currentSnapshot->handle ? $machine->currentSnapshot->name : ''),
+					'customIcon' => (@$this->settings['enableCustomIcons'] ? $machine->getExtraData('phpvb/icon') : ''),
 				);
 				if($machine->currentSnapshot->handle) $machine->currentSnapshot->releaseRemote();
 
@@ -2515,11 +2694,11 @@ class vboxconnector {
 	/*
 	 *
 	 *
-	 * Get all mediums registered with this vbox installation
+	 * Get all media registered with this vbox installation
 	 *
 	 *
 	 */
-	private function getMediumsCached($args,&$response) {
+	private function getMediaCached($args,&$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -2544,7 +2723,7 @@ class vboxconnector {
 
 		// Avoid duplicate calls
 		$at = $n->attachmentType->__toString();
-		if($at == 'NAT') $nd = $n->NatDriver;
+		if($at == 'NAT') $nd = $n->natDriver;
 		else $nd = null;
 		return array(
 			'adapterType' => $n->adapterType->__toString(),
@@ -2552,21 +2731,65 @@ class vboxconnector {
 			'enabled' => $n->enabled,
 			'MACAddress' => $n->MACAddress,
 			'attachmentType' => $at,
-			'hostInterface' => $n->hostInterface,
+			'genericDriver' => $n->genericDriver,
+			'hostOnlyInterface' => $n->hostOnlyInterface,
+			'bridgedInterface' => $n->bridgedInterface,
 			'internalNetwork' => $n->internalNetwork,
 			'NATNetwork' => $n->NATNetwork,
+			'promiscModePolicy' => $n->promiscModePolicy->__toString(),
 			'VDENetwork' => ($this->settings['enableVDE'] ? $n->VDENetwork : ''),
 			'cableConnected' => $n->cableConnected,
-			'NatDriver' => ($at == 'NAT' ? 
-				array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver))
-				: array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0)),
+			'natDriver' => ($at == 'NAT' ?
+				array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver), 'hostIP' => $nd->hostIP)
+				: array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0, 'hostIP' => '')),
 			'lineSpeed' => $n->lineSpeed,
 			'redirects' => (
 				$at == 'NAT' ?
 				$nd->getRedirects()
 				: array()
-				)
-			);
+			)
+		);
+		
+		$vals = $n->getProperties(array(
+			'adapterType',
+			'slot',
+			'cableConnected',
+			'enabled',
+			'MACAddress',
+			'attachmentType',
+			'genericDriver',
+			'hostOnlyInterface',
+			'bridgedInterface',
+			'internalNetwork',
+			'NATNetwork',
+			'promiscModePolicy',
+			'VDENetwork',
+			'natDriver'
+		));
+		$return = array();
+		for($i = 0; $i < count($vals[1]); $i++) {
+			$return[$vals[1][$i]] = $vals[0][$i];
+		}
+		
+		/* cableConnected property is incorrect from getProperties */
+		$return['cableConnected'] = $n->cableConnected;
+		
+		/* NAT "stuff" */
+		if($return['attachmentType'] == 'NAT') {
+			$nd = $n->natDriver;
+			$return['natDriver'] = array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver), 'hostIP' => $nd->hostIP);
+			$return['redirects'] = $nd->getRedirects();
+		} else {
+			$return['natDriver'] = array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0, 'hostIP' => '');
+			$return['redirects'] = array();
+		}
+		
+		$return['enabled'] = intval($return['enabled']);
+		$return['cableConnected'] = intval($return['cableConnected']);
+		
+		
+		return $return;
+		
 	}
 	/*
 	 *
@@ -2610,7 +2833,7 @@ class vboxconnector {
 	private function __getMachine(&$m) {
 
 		return array(
-			'name' => $m->name,
+			'name' => @$this->settings['enforceVMOwnership'] ? preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $m->name) : $m->name,
 			'description' => $m->description,
 			'id' => $m->id,
 			'settingsFilePath' => $m->settingsFilePath,
@@ -2660,7 +2883,10 @@ class vboxconnector {
 			'bootOrder' => $this->__getBootOrder($m),
 			'chipsetType' => $m->chipsetType->__toString(),
 			'GUI' => array('SaveMountedAtRuntime' => $m->getExtraData('GUI/SaveMountedAtRuntime')),
-			'AutoSATAPortCount' => $m->getExtraData('phpvb/AutoSATAPortCount')
+			// Disabled for now 'AutoSATAPortCount' => $m->getExtraData('phpvb/AutoSATAPortCount'),
+			'customIcon' => (@$this->settings['enableCustomIcons'] ? $m->getExtraData('phpvb/icon') : ''),
+			'disableHostTimeSync' => intval($m->getExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled")),
+			'CPUExecutionCap' => intval($m->CPUExecutionCap)
 		);
 
 	}
@@ -2714,7 +2940,7 @@ class vboxconnector {
 	 *
 	 */
 	private function __getParallelPorts(&$m) {
-		if(!$this->settings['enableLPTConfig']) return array();
+		if(!@$this->settings['enableLPTConfig']) return array();
 		$ports = array();
 		$max = intval($this->vbox->systemProperties->parallelPortCount);
 		for($i = 0; $i < $max; $i++) {
@@ -2769,7 +2995,7 @@ class vboxconnector {
 		
 		$response['data'] = array();
 
-		$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 		$machine = $this->vbox->findMachine($args['vm']);
 		$machine->lockMachine($this->session->handle,'Shared');
 
@@ -2811,7 +3037,9 @@ class vboxconnector {
 				'port' => $ma->port,
 				'device' => $ma->device,
 				'type' => $ma->type->__toString(),
-				'passthrough' => $ma->passthrough
+				'passthrough' => $ma->passthrough,
+				'temporaryEject' => $ma->temporaryEject,
+				'nonRotational' => $ma->nonRotational
 			);
 		}
 
@@ -2876,7 +3104,7 @@ class vboxconnector {
 		try {
 
 			// Open session to machine
-			$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
 			$machine = $this->vbox->findMachine($args['vm']);
 			$machine->lockMachine($this->session->handle,'Write');
@@ -2897,7 +3125,7 @@ class vboxconnector {
 				}
 			} catch (Exception $null) {}
 
-			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMediums','__getStorageControllers'.$args['vm']));
+			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
 
 		} catch (Exception $e) {
 
@@ -2946,7 +3174,7 @@ class vboxconnector {
 				}
 			} catch (Exception $null) {}
 
-			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMediums','__getStorageControllers'.$args['vm']));
+			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
 
 
 		} catch (Exception $e) {
@@ -2980,7 +3208,7 @@ class vboxconnector {
 		try {
 
 			// Open session to machine
-			$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 			$machine->lockMachine($this->session->handle, ($machine->sessionState->__toString() == 'Unlocked' ? 'Write' : 'Shared'));
 			$machine->releaseRemote();
 
@@ -2996,7 +3224,7 @@ class vboxconnector {
 				}
 			} catch (Exception $null) {}
 
-			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMediums','__getStorageControllers'.$args['vm']));
+			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
 
 		} catch (Exception $e) {
 
@@ -3025,7 +3253,7 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$machine = &$this->vbox->findMachine($args['vm']);
+		$machine = $this->vbox->findMachine($args['vm']);
 
 		/* No snapshots? Empty array */
 		if($machine->snapshotCount < 1) {
@@ -3110,14 +3338,16 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$format = strtoupper(preg_replace('/.*\./','',$args['file']));
-		if($format != 'VDI' && $format != 'VMDK') $format = 'VDI';
-		$target = $this->vbox->createHardDisk($format,$args['file']);
+		$format = strtoupper($args['format']);
+		$target = $this->vbox->createHardDisk($format,$args['location']);
+		$mid = $target->id;
 
-		$src = $this->vbox->findMedium($args['id'],'HardDisk');
+		$src = $this->vbox->findMedium($args['src'],'HardDisk');
 
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
-
+		$mv = new MediumVariant();
+		$type = $mv->ValueMap[$type];
+		
 		$progress = $src->cloneTo($target->handle,$type,null);
 		
 		$src->releaseRemote();
@@ -3132,9 +3362,9 @@ class vboxconnector {
 			}
 		} catch (Exception $null) {}
 
-		$this->__storeProgress($progress,'getMediums');
+		$this->__storeProgress($progress,'getMedia');
 
-		$response['data'] = array('progress' => $progress->handle);
+		$response['data'] = array('progress' => $progress->handle, 'id' => $mid);
 
 		return true;
 	}
@@ -3151,7 +3381,7 @@ class vboxconnector {
 		$m->type = $args['type'];
 		$m->releaseRemote();
 
-		$this->cache->expire('getMediums');
+		$this->cache->expire('getMedia');
 
 		$response['data'] = array('result' => 1,'id' => $args['id']);
 
@@ -3193,7 +3423,7 @@ class vboxconnector {
 		
 		$hd->setProperties(array_keys($arrProps),array_values($arrProps));
 		
-		$this->cache->expire('getMediums');
+		$this->cache->expire('getMedia');
 		$response['data'] = array('result' => 1, 'id' => $hd->id);
 		$hd->releaseRemote();
 	}
@@ -3206,9 +3436,9 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
-		$m = $this->vbox->openMedium($args['path'],$args['type'],'ReadWrite');
+		$m = $this->vbox->openMedium($args['path'],$args['type'],'ReadWrite',false);
 
-		$this->cache->expire('getMediums');
+		$this->cache->expire('getMedia');
 		$response['data'] = array('result' => 1, 'id' => $m->id);
 		$m->releaseRemote();
 	}
@@ -3234,7 +3464,21 @@ class vboxconnector {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
-
+		
+		if (@$this->settings['enforceVMOwnership'] )
+		{
+			$dirparts = explode('/', $args['file']);
+			foreach ( $dirparts as $i => &$bit )
+			{
+				if ( $i == count($dirparts) - 2 || $i == count($dirparts) - 1 )
+				{
+					// file or directory name
+					$bit = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $bit);
+				}
+			}
+			$args['file'] = implode('/', $dirparts);
+		}
+		
 		$format = strtoupper(preg_replace('/.*\./','',$args['file']));
 		if($format != 'VDI' && $format != 'VMDK') $format = 'VDI';
 		$hd = $this->vbox->createHardDisk($format,$args['file']);
@@ -3251,7 +3495,7 @@ class vboxconnector {
 			}
 		} catch (Exception $null) {}
 
-		$this->__storeProgress($progress,'getMediums');
+		$this->__storeProgress($progress,'getMedia');
 
 		$response['data'] = array('progress' => $progress->handle,'id' => $hd->id);
 		$hd->releaseRemote();
@@ -3300,7 +3544,7 @@ class vboxconnector {
 			$response['data']['released'][] = $uuid;
 
 			// create session
-			$this->session = &$this->websessionManager->getSessionObject($this->vbox->handle);
+			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 
 			// Hard disk requires machine to be stopped
 			if($args['type'] == 'HardDisk' || $state == 'Unlocked') {
@@ -3332,7 +3576,7 @@ class vboxconnector {
 		}
 		$m->releaseRemote();
 
-		$this->cache->expire('getMediums');
+		$this->cache->expire('getMedia');
 
 		return ($response['data']['result'] = 1);
 	}
@@ -3348,7 +3592,7 @@ class vboxconnector {
 		if(!$args['type']) $args['type'] = 'HardDisk';
 		$m = $this->vbox->findMedium($args['id'],$args['type']);
 
-		if($args['delete'] && $this->settings['deleteOnRemove'] && $m->deviceType->__toString() == 'HardDisk') {
+		if($args['delete'] && @$this->settings['deleteOnRemove'] && $m->deviceType->__toString() == 'HardDisk') {
 
 			$progress = $m->deleteStorage();
 			
@@ -3363,22 +3607,22 @@ class vboxconnector {
 				}
 			} catch (Exception $null) { }
 
-			$this->__storeProgress($progress,'getMediums');
+			$this->__storeProgress($progress,'getMedia');
 			$response['data']['progress'] = $progress->handle;
 
 		} else {
 			$m->close();
 			$m->releaseRemote();
-			$this->cache->expire('getMediums');
+			$this->cache->expire('getMedia');
 		}
 
 		return($reponse['data']['result'] = 1);
 	}
 
 	/*
-	 * get Recent Mediums
+	 * get Recent Media
 	 */
-	public function getRecentMediums($args,&$response) {
+	public function getRecentMedia($args,&$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -3392,8 +3636,45 @@ class vboxconnector {
 		}
 		return $response;
 	}
+
+	/*
+	 * get Medium Paths
+	 */
+	public function getRecentMediumPaths($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+
+		foreach(array(
+			array('type'=>'HardDisk','key'=>'GUI/RecentFolderHD'),
+			array('type'=>'DVD','key'=>'GUI/RecentFolderCD'),
+			array('type'=>'Floppy','key'=>'GUI/RecentFolderFD')) as $r) {
+			$response['data'][$r['type']] = $this->vbox->getExtraData($r['key']);
+		}
+		return $response;
+	}
 	
-	/* Update recent mediums */
+
+	/*
+	 * update Medium Paths
+	 */
+	public function updateRecentMediumPath($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+
+		$types = array(
+			'HardDisk'=>'GUI/RecentFolderHD',
+			'DVD'=>'GUI/RecentFolderCD',
+			'Floppy'=>'GUI/RecentFolderFD'
+		);
+		
+		$this->vbox->setExtraData($types[$args['type']], $args['folder']);
+		
+		return ($response['data']['result'] = 1);
+	}
+		
+	/* Update recent media */
 	public function mediumRecentUpdate($args,&$response) {
 		
 		// Connect to vboxwebsrv
@@ -3472,7 +3753,7 @@ class vboxconnector {
 		unset($this->session);
 		$machine->releaseRemote();
 
-		$this->cache->expire('getMediums');
+		$this->cache->expire('getMedia');
 		$this->cache->expire('__getStorageControllers'.$args['vm']);
 
 		return ($response['data']['result'] = 1);
@@ -3521,6 +3802,9 @@ class vboxconnector {
 			$mid->releaseRemote();
 		}
 
+		// For $fixed value
+		$mv = new MediumVariant();
+		
 		return array(
 				'id' => $m->id,
 				'description' => $m->description,
@@ -3540,6 +3824,7 @@ class vboxconnector {
 				'autoReset' => $m->autoReset,
 				'hasSnapshots' => $hasSnapshots,
 				'lastAccessError' => $m->lastAccessError,
+				'fixed' => intval((intval($m->variant) & $mv->ValueMap['Fixed']) > 0),
 				'machineIds' => array(),
 				'attachedTo' => $attachedTo
 			);
@@ -3595,7 +3880,7 @@ class vboxconnector {
 			'minGuestCPUCount' => (string)$this->vbox->systemProperties->minGuestCPUCount,
 			'maxGuestCPUCount' => (string)$this->vbox->systemProperties->maxGuestCPUCount,
 			'infoVDSize' => (string)$this->vbox->systemProperties->infoVDSize,
-			'networkAdapterCount' => (string)$this->vbox->systemProperties->networkAdapterCount,
+			'networkAdapterCount' => 8, // static value for now
 			'maxBootPosition' => (string)$this->vbox->systemProperties->maxBootPosition,
 			'defaultMachineFolder' => (string)$this->vbox->systemProperties->defaultMachineFolder,
 			'defaultHardDiskFormat' => (string)$this->vbox->systemProperties->defaultHardDiskFormat,
@@ -3615,7 +3900,7 @@ class vboxconnector {
 	 * Return vm log names
 	 *
 	 */
-	public function getVMLogFileNames($args,&$response) {
+	public function getVMLogFilesInfo($args,&$response) {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
@@ -3624,8 +3909,9 @@ class vboxconnector {
 		$logs = array();
 		try { $i = 0; while($l = $m->queryLogFilename($i++)) $logs[] = $l;
 		} catch (Exception $null) {}
+		$response['data']['path'] = $m->logFolder;
+		$response['data']['logs'] = $logs;
 		$m->releaseRemote();
-		$response['data'] = $logs;
 	}
 
 	/*
@@ -3637,13 +3923,15 @@ class vboxconnector {
 
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
-
+		
+		$response['data']['log'] = '';
+		
 		$m = $this->vbox->findMachine($args['vm']);
 		try {
-			$o = 0; $s = 8192; // 8k chunks
-			while($l = $m->readLog(intval($args['log']),$o,$s)) {
-				@$response['data']['log'] .= implode('',array_map('chr',$l));
-				$o+=count($l);
+			// Read in 8k chunks
+			while($l = $m->readLog(intval($args['log']),strlen($response['data']['log']),8192)) {
+				if(!count($l) || !strlen($l[0])) break;
+				@$response['data']['log'] .= base64_decode($l[0]);
 			}
 		} catch (Exception $null) {}
 		$m->releaseRemote();
@@ -3677,6 +3965,20 @@ class vboxconnector {
 		
 	}
 
+	/*
+	 * 
+	 * Generate MAC address
+	 * 
+	 */
+	public function genMACAddress($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+		
+		$response['data']['mac'] = $this->vbox->host->generateMACAddress();
+				
+	}
+	
 	/*
 	 *
 	 * Format a time

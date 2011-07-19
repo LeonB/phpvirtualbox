@@ -7,79 +7,105 @@
 
  -->
 <!-- Step 1 -->
-<div id='wizardNewHDStep1' title='newDisk Welcome' style='display: none'>
-	<span class='translate'>newDisk Step1 Message1</span>
-	<p class='translate'>newDisk Step1 Message2</p>
+<div id='wizardNewHDStep1' title='Welcome to the virtual disk creation wizard' style='display: none'>
+
+	<span class='translate'>&lt;p&gt;This wizard will help you to create a new virtual disk for your virtual machine.&lt;/p&gt;</span>
+
+	<p class='vboxWizButtonsMessage'></p>
+
+	<p class='translate'>Please choose the type of file that you would like to use for the new virtual disk. If you do not need to use it with other virtualization software you can leave this setting unchanged.</p>
+
+	<span class='vboxTableLabel translate'>File type</span>
+	<div class='vboxBordered'>
+		<table class='vboxOptions'>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskFileType' value='vdi' /> <span class='translate'>VDI (VirtualBox Disk Image)</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' name='newHardDiskFileType' value='vmdk' /> <span class='translate'>VMDK (Virtual Machine Disk)</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' name='newHardDiskFileType' value='vhd' /> <span class='translate'>VHD (Virtual Hard Disk)</span></td>
+			</tr>
+			
+		</table>
+	</div>
+	
 </div>
 
 
 <!-- Step 2 -->
-<div id='wizardNewHDStep2' title='Hard Disk Storage Type' style='display: none'>
-	<span class='translate'>newDisk Step2 Message1</span>
+<div id='wizardNewHDStep2' title='Virtual disk storage details' style='display: none'>
+
+	<p class='translate'>Please choose whether the new virtual disk file should be allocated as it is used or if it should be created fully allocated.</p>
 	
-	<p class='translate'>newDisk Step2 dynamic</p>
+	<span class='translate'>&lt;p&gt;A &lt;b&gt;dynamically allocated&lt;/b&gt; virtual disk file will only use space on your physical hard disk as it fills up, although it will not shrink again automatically when space on it is freed.&lt;/p&gt;</span>
 	
-	<p class='translate'>newDisk Step2 fixed</p>
+	<span class='translate'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
 	
+	<span class='vboxTableLabel translatevar'>Storage details</span>
 	<div class='vboxBordered'>
-		<table>
-			<tr>
-				<th style='text-align: left' class='translate'>Storage Type</th>
+		<table class='vboxOptions'>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /><span class='translate'>Dynamically allocated</span></td>
 			</tr>
-			<tr>
-				<td><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /><span class='translate'>Dynamically expanding storage</span></td>
-			</tr>
-			<tr>
-				<td><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /><span class='translate'>Fixed-size storage</span></td>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /><span class='translate'>Fixed size</span></td>
 			</tr>	
 		</table>
 	</div>
+
 </div>
 
 
 <!-- Step 3 -->
-<div id='wizardNewHDStep3' title='Virtual Disk Location and Size' style='display: none'>
-	<div class='translate'>newDisk Step3 Message1</div>
+<div id='wizardNewHDStep3' title='Virtual disk file location and size' style='display: none'>
+
+	<p class='translate'>Press the &lt;b&gt;Select&lt;/b&gt; button to select the location of a file to store the virtual disk data or type a file name in the entry field.</p>
 	
-		<table width='100%'>
+		<span class='vboxTableLabel translate'>Location</span>
+		<div class='vboxBordered'>
+			<table class='vboxOptions'>
+				<tr>
+					<td style='width: 100%; white-space: nowrap'>
+						<input type='text' class='vboxText' name='wizardNewHDLocation' style='width: 100%'/>
+					</td>
+					<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
+						<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardHDBrowseLocation()" />
+					</td>
+				</tr>
+			</table>
+		</div>	
+	<p class='translate'>Select the size of the virtual disk in megabytes. This size will be reported to the Guest OS as the maximum size of this virtual disk.</p>
+
+	<span class='vboxTableLabel translate'>Size</span>
+	<div class='vboxBordered'>
+		<table>
 			<tr>
-				<td style='width: 100%; white-space: nowrap'>
-					<input type='text' class='vboxText' name='wizardNewHDLocation' style='width: 100%'/>
+				<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
+				   <div style='margin-top: 4px' id='wizardNewHDSize' class='slider'><div class='sliderScale'></div></div>
 				</td>
-				<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
-					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardHDBrowseLocation()" />
+				<td><input type='text' class='vboxText' name='wizardNewHDSizeValue' size='8' class='sliderValue' /></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td style='border: 0px; margin: 0px; padding: 0px;'>
+					<table width='100%; border: 0px; margin: 0px; padding: 0px;'>
+						<tr style='vertical-align: top'>
+							<td style='text-align: left;'><span id='wizardNewHDMin'>1</span></td>
+							<td style='text-align: right;'><span id='wizardNewHDMax'>128</span></td>
+						</tr>
+					</table>
 				</td>
+				<td></td>
 			</tr>
 		</table>
-	
-	<p class='translate'>newDisk Step3 Message2</p>
-
-	<table style='width: 100%'>
-		<tr>
-			<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
-			   <div style='margin-top: 4px' id='wizardNewHDSize' class='slider'><div class='sliderScale'></div></div>
-			</td>
-			<td><input type='text' class='vboxText' name='wizardNewHDSizeValue' size='8' class='sliderValue' /></td>
-		</tr>
-		<tr style='vertical-align: top;'>
-			<td style='border: 0px; margin: 0px; padding: 0px;'>
-				<table width='100%; border: 0px; margin: 0px; padding: 0px;'>
-					<tr style='vertical-align: top'>
-						<td style='text-align: left;'><span id='wizardNewHDMin'>1</span></td>
-						<td style='text-align: right;'><span id='wizardNewHDMax'>128</span></td>
-					</tr>
-				</table>
-			</td>
-			<td></td>
-		</tr>
-	</table>
-	
+	</div>	
 </div>
 
 <!-- Step 4 -->
 <div id='wizardNewHDStep4' title='Summary' style='display: none'>
 
-	<div class='translate'>newDisk Step4 Message1</div>
+	<p class='translate'>You are going to create a new virtual disk with the following parameters:</p>
 	
 	<div style='padding: 4px; margin: 2px;' class='vboxBordered'>
 		<table class='vboxVertical' style='padding: 4px;'>
@@ -97,12 +123,18 @@
 			</tr>		
 		</table>
 	</div>
-	<p class='translate'>newDisk Step4 Message2</p>
+	<p id='wizNewHDStep4Sum'>newDisk Step4 Message2</p>
 
 </div>
 
 <script type='text/javascript'>
 
+/*
+ * Translations
+ */
+$('#wizardNewHDStep2').find('span.translatevar').html(function(i,h){return trans(h,'UINewHDWizardPageVariant');});
+$('#wizNewHDStep4Sum').html(trans('If the above settings are correct, press the <b>%1</b> button. Once you press it the new virtual disk file will be created.','UINewHDWizard').replace('%1',trans('Create','UINewHDWizard')));
+ 
 /* Browse for new VDI location */
 function wizardHDBrowseLocation() {
 
@@ -127,14 +159,13 @@ function wizardHDBrowseLocation() {
 		// get file name
 		file = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = f+$('#vboxIndex').data('vboxConfig').DSEP+file;
-	},true);
+	},true,trans('Location','UINewHDWizard'));
 
 }
 /* When showing summary */
-$('#wizardNewHDStep4').bind('show',function(){
-
-	
-	$('#wizardNewHDTypeLabel').html((document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? trans('Fixed-size storage') : trans('Dynamically expanding storage')));
+$('#wizardNewHDStep4').bind('show',function(e,wiz){
+		
+	$('#wizardNewHDTypeLabel').html((document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? trans('Fixed size storage','VBoxGlobal') : trans('Dynamically allocated storage','VBoxGlobal')));
 
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 	if(loc.search(/[\/|\\]/) < 0) {
@@ -145,25 +176,40 @@ $('#wizardNewHDStep4').bind('show',function(){
 	}
 	document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = loc;
 	$('#wizardNewHDLocationLabel').html($('<div />').text(loc).html());
+	
+	/* Check to see if file exists */
+	var fileExists = false;
+	var l = new vboxLoader();
+	l.mode='save';
+	l.add('fileExists',function(d){
+		fileExists = d.exists;
+	},{'file':loc});
+	l.onLoad = function() { 
+		if(fileExists) {
+			vboxAlert(trans('<p>The hard disk storage unit at location <b>%1</b> already exists. You cannot create a new virtual hard disk that uses this location because it can be already used by another virtual hard disk.</p><p>Please specify a different location.</p>','VBoxProblemReporter').replace('%1',loc));
+			wiz.displayStep(3);
+		}
+	}
+	l.run();
 
 	// Fix size if we need to
 	var mbytes = vboxConvertMbytes(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value);
 	document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value = vboxMbytesConvert(mbytes);
-	$('#wizardNewHDSizeLabel').html(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value + ' ('+mbytes+' '+trans('MB')+')');
+	$('#wizardNewHDSizeLabel').html(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value + ' ('+mbytes+' '+trans('MB','VBoxGlobal')+')');
 });
 
 /* Go through list of media and pick new hd name */
-var HDname = 'HardDisk99';
+var HDname = 'NewHardDisk99';
 for(var a = 1; a < 99; a++) {
 	var found = 0;
-	for(var i = 0; i < $('#vboxIndex').data('vboxMediums').length; i++) {
-		if($('#vboxIndex').data('vboxMediums')[i].name == 'HardDisk'+a+'.vdi') {
-			i = $('#vboxIndex').data('vboxMediums').length;
+	for(var i = 0; i < $('#vboxIndex').data('vboxMedia').length; i++) {
+		if($('#vboxIndex').data('vboxMedia')[i].name == 'NewHardDisk'+a+'.vdi') {
+			i = $('#vboxIndex').data('vboxMedia').length;
 			var found = 1;
 		}
 	}
 	if(!found) {
-		HDname = 'HardDisk'+a+'.vdi';
+		HDname = 'NewHardDisk'+a+'.vdi';
 		a = 100;
 	}
 }
@@ -188,7 +234,7 @@ $('#wizardNewHDMax').html(vboxMbytesConvert(max));
 $('#wizardNewHDStep1').bind('show',function(e,wiz){
 
 	// Already initialized?
-	if($('#wizardNewHDStep1').data('init') || !wiz.suggested) return;
+	if($('#wizardNewHDStep1').data('init') || !wiz || !wiz.suggested) return;
 
 	if(wiz.suggested.name) {
 		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = wiz.suggested.name + '.vdi';

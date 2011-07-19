@@ -220,6 +220,13 @@ abstract class VBox_EnumCollection extends VBox_Collection {
 
 
 /**
+* VirtualBox COM result codes
+*/
+class VirtualBox_COM_result_codes {
+
+}
+
+/**
 * Generated VBoxWebService Interface Wrapper
 */
 class IVirtualBoxErrorInfo extends VBox_ManagedObject {
@@ -319,7 +326,7 @@ class IDHCPServer extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -459,7 +466,7 @@ class IVirtualBox extends VBox_ManagedObject {
        return new IMedium ($this->connection, $response->returnval);
   }
 
-   public function openMedium($arg_location, $arg_deviceType, $arg_accessMode) { 
+   public function openMedium($arg_location, $arg_deviceType, $arg_accessMode, $arg_forceNewUuid) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
@@ -467,6 +474,7 @@ class IVirtualBox extends VBox_ManagedObject {
        $request->location = $arg_location;
        $request->deviceType = $arg_deviceType;
        $request->accessMode = $arg_accessMode;
+       $request->forceNewUuid = $arg_forceNewUuid;
        $response = $this->connection->__soapCall('IVirtualBox_openMedium', array((array)$request));
        
        return new IMedium ($this->connection, $response->returnval);
@@ -619,6 +627,13 @@ class IVirtualBox extends VBox_ManagedObject {
        return (string)$response->returnval;
    }
 
+   public function getAPIVersion() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IVirtualBox_getAPIVersion', array((array)$request));
+       return (string)$response->returnval;
+   }
+
    public function getHomeFolder() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -715,6 +730,20 @@ class IVirtualBox extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IVirtualBox_getEventSource', array((array)$request));
        return new IEventSource ($this->connection, $response->returnval);
+   }
+
+   public function getInternalNetworks() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IVirtualBox_getInternalNetworks', array((array)$request));
+       return (array)$response->returnval;
+   }
+
+   public function getGenericNetworkDrivers() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IVirtualBox_getGenericNetworkDrivers', array((array)$request));
+       return (array)$response->returnval;
    }
 }
   
@@ -841,11 +870,12 @@ class IAppliance extends VBox_ManagedObject {
        return ;
   }
 
-   public function importMachines() { 
+   public function importMachines($arg_options) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
+       $request->options = $arg_options;
        $response = $this->connection->__soapCall('IAppliance_importMachines', array((array)$request));
        
        return new IProgress ($this->connection, $response->returnval);
@@ -1015,7 +1045,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setLogoFadeIn($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->logoFadeIn = $value;
        }
        else
@@ -1035,7 +1065,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setLogoFadeOut($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->logoFadeOut = $value;
        }
        else
@@ -1055,7 +1085,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setLogoDisplayTime($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->logoDisplayTime = $value;
        }
        else
@@ -1075,7 +1105,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setLogoImagePath($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->logoImagePath = $value;
        }
        else
@@ -1095,7 +1125,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setBootMenuMode($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->bootMenuMode = $value;
        }
        else
@@ -1115,7 +1145,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setACPIEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->ACPIEnabled = $value;
        }
        else
@@ -1135,7 +1165,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setIOAPICEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->IOAPICEnabled = $value;
        }
        else
@@ -1155,7 +1185,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setTimeOffset($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->timeOffset = $value;
        }
        else
@@ -1175,7 +1205,7 @@ class IBIOSSettings extends VBox_ManagedObject {
    public function setPXEDebugEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->PXEDebugEnabled = $value;
        }
        else
@@ -1191,19 +1221,6 @@ class IBIOSSettings extends VBox_ManagedObject {
 */
 class IBIOSSettingsCollection extends VBox_ManagedObjectCollection {
    protected $_interfaceName = "IBIOSSettings";
-}
-
-/**
-* Generated VBoxWebService Interface Wrapper
-*/
-class IEventContext extends VBox_ManagedObject {
-}
-  
-/**
-* Generated VBoxWebService Managed Object Collection
-*/
-class IEventContextCollection extends VBox_ManagedObjectCollection {
-   protected $_interfaceName = "IEventContext";
 }
 
 /**
@@ -1301,6 +1318,34 @@ class IMachine extends VBox_ManagedObject {
        return ;
   }
 
+   public function temporaryEjectDevice($arg_name, $arg_controllerPort, $arg_device, $arg_temporaryEject) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->name = $arg_name;
+       $request->controllerPort = $arg_controllerPort;
+       $request->device = $arg_device;
+       $request->temporaryEject = $arg_temporaryEject;
+       $response = $this->connection->__soapCall('IMachine_temporaryEjectDevice', array((array)$request));
+       
+       return ;
+  }
+
+   public function nonRotationalDevice($arg_name, $arg_controllerPort, $arg_device, $arg_nonRotational) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->name = $arg_name;
+       $request->controllerPort = $arg_controllerPort;
+       $request->device = $arg_device;
+       $request->nonRotational = $arg_nonRotational;
+       $response = $this->connection->__soapCall('IMachine_nonRotationalDevice', array((array)$request));
+       
+       return ;
+  }
+
    public function setBandwidthGroupForDevice($arg_name, $arg_controllerPort, $arg_device, $arg_bandwidthGroup) { 
        $request = new stdClass();
        
@@ -1367,14 +1412,13 @@ class IMachine extends VBox_ManagedObject {
        return new IMediumAttachment ($this->connection, $response->returnval);
   }
 
-   public function attachHostPciDevice($arg_hostAddress, $arg_desiredGuestAddress, $arg_eventContext, $arg_tryToUnbind) { 
+   public function attachHostPciDevice($arg_hostAddress, $arg_desiredGuestAddress, $arg_tryToUnbind) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->hostAddress = $arg_hostAddress;
        $request->desiredGuestAddress = $arg_desiredGuestAddress;
-       $request->eventContext = $arg_eventContext;
        $request->tryToUnbind = $arg_tryToUnbind;
        $response = $this->connection->__soapCall('IMachine_attachHostPciDevice', array((array)$request));
        
@@ -1911,6 +1955,19 @@ class IMachine extends VBox_ManagedObject {
        return (array)$response->returnval;
   }
 
+   public function cloneTo($arg_target, $arg_mode, $arg_options) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->target = $arg_target;
+       $request->mode = $arg_mode;
+       $request->options = $arg_options;
+       $response = $this->connection->__soapCall('IMachine_cloneTo', array((array)$request));
+       
+       return new IProgress ($this->connection, $response->returnval);
+  }
+
    public function getParent() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -1942,7 +1999,7 @@ class IMachine extends VBox_ManagedObject {
    public function setName($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->name = $value;
        }
        else
@@ -1962,7 +2019,7 @@ class IMachine extends VBox_ManagedObject {
    public function setDescription($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->description = $value;
        }
        else
@@ -1989,7 +2046,7 @@ class IMachine extends VBox_ManagedObject {
    public function setOSTypeId($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->OSTypeId = $value;
        }
        else
@@ -2009,12 +2066,12 @@ class IMachine extends VBox_ManagedObject {
    public function setHardwareVersion($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->HardwareVersion = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->hardwareVersion = $value;
        }
        else
        {
-            $request->HardwareVersion = $value->handle;
+            $request->hardwareVersion = $value->handle;
        }
        $this->connection->__soapCall('IMachine_setHardwareVersion', array((array)$request));
    }
@@ -2029,7 +2086,7 @@ class IMachine extends VBox_ManagedObject {
    public function setHardwareUUID($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->hardwareUUID = $value;
        }
        else
@@ -2049,7 +2106,7 @@ class IMachine extends VBox_ManagedObject {
    public function setCPUCount($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->CPUCount = $value;
        }
        else
@@ -2069,7 +2126,7 @@ class IMachine extends VBox_ManagedObject {
    public function setCPUHotPlugEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->CPUHotPlugEnabled = $value;
        }
        else
@@ -2089,7 +2146,7 @@ class IMachine extends VBox_ManagedObject {
    public function setCPUExecutionCap($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->CPUExecutionCap = $value;
        }
        else
@@ -2109,7 +2166,7 @@ class IMachine extends VBox_ManagedObject {
    public function setMemorySize($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->memorySize = $value;
        }
        else
@@ -2129,7 +2186,7 @@ class IMachine extends VBox_ManagedObject {
    public function setMemoryBalloonSize($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->memoryBalloonSize = $value;
        }
        else
@@ -2149,12 +2206,12 @@ class IMachine extends VBox_ManagedObject {
    public function setPageFusionEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->PageFusionEnabled = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->pageFusionEnabled = $value;
        }
        else
        {
-            $request->PageFusionEnabled = $value->handle;
+            $request->pageFusionEnabled = $value->handle;
        }
        $this->connection->__soapCall('IMachine_setPageFusionEnabled', array((array)$request));
    }
@@ -2169,7 +2226,7 @@ class IMachine extends VBox_ManagedObject {
    public function setVRAMSize($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->VRAMSize = $value;
        }
        else
@@ -2189,7 +2246,7 @@ class IMachine extends VBox_ManagedObject {
    public function setAccelerate3DEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->accelerate3DEnabled = $value;
        }
        else
@@ -2209,7 +2266,7 @@ class IMachine extends VBox_ManagedObject {
    public function setAccelerate2DVideoEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->accelerate2DVideoEnabled = $value;
        }
        else
@@ -2229,7 +2286,7 @@ class IMachine extends VBox_ManagedObject {
    public function setMonitorCount($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->monitorCount = $value;
        }
        else
@@ -2256,7 +2313,7 @@ class IMachine extends VBox_ManagedObject {
    public function setFirmwareType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->firmwareType = $value;
        }
        else
@@ -2276,7 +2333,7 @@ class IMachine extends VBox_ManagedObject {
    public function setPointingHidType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->pointingHidType = $value;
        }
        else
@@ -2296,7 +2353,7 @@ class IMachine extends VBox_ManagedObject {
    public function setKeyboardHidType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->keyboardHidType = $value;
        }
        else
@@ -2316,7 +2373,7 @@ class IMachine extends VBox_ManagedObject {
    public function setHpetEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->hpetEnabled = $value;
        }
        else
@@ -2336,7 +2393,7 @@ class IMachine extends VBox_ManagedObject {
    public function setChipsetType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->chipsetType = $value;
        }
        else
@@ -2356,7 +2413,7 @@ class IMachine extends VBox_ManagedObject {
    public function setSnapshotFolder($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->snapshotFolder = $value;
        }
        else
@@ -2371,6 +2428,46 @@ class IMachine extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IMachine_getVRDEServer', array((array)$request));
        return new IVRDEServer ($this->connection, $response->returnval);
+   }
+
+   public function getEmulatedUSBWebcameraEnabled() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getEmulatedUSBWebcameraEnabled', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function setEmulatedUSBWebcameraEnabled($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_null($value) || is_scalar($value)) {
+            $request->emulatedUSBWebcameraEnabled = $value;
+       }
+       else
+       {
+            $request->emulatedUSBWebcameraEnabled = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setEmulatedUSBWebcameraEnabled', array((array)$request));
+   }
+
+   public function getEmulatedUSBCardReaderEnabled() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachine_getEmulatedUSBCardReaderEnabled', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function setEmulatedUSBCardReaderEnabled($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_null($value) || is_scalar($value)) {
+            $request->emulatedUSBCardReaderEnabled = $value;
+       }
+       else
+       {
+            $request->emulatedUSBCardReaderEnabled = $value->handle;
+       }
+       $this->connection->__soapCall('IMachine_setEmulatedUSBCardReaderEnabled', array((array)$request));
    }
 
    public function getMediumAttachments() {
@@ -2502,7 +2599,7 @@ class IMachine extends VBox_ManagedObject {
    public function setClipboardMode($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->clipboardMode = $value;
        }
        else
@@ -2522,7 +2619,7 @@ class IMachine extends VBox_ManagedObject {
    public function setGuestPropertyNotificationPatterns($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->guestPropertyNotificationPatterns = $value;
        }
        else
@@ -2542,7 +2639,7 @@ class IMachine extends VBox_ManagedObject {
    public function setTeleporterEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->teleporterEnabled = $value;
        }
        else
@@ -2562,7 +2659,7 @@ class IMachine extends VBox_ManagedObject {
    public function setTeleporterPort($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->teleporterPort = $value;
        }
        else
@@ -2582,7 +2679,7 @@ class IMachine extends VBox_ManagedObject {
    public function setTeleporterAddress($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->teleporterAddress = $value;
        }
        else
@@ -2602,7 +2699,7 @@ class IMachine extends VBox_ManagedObject {
    public function setTeleporterPassword($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->teleporterPassword = $value;
        }
        else
@@ -2622,7 +2719,7 @@ class IMachine extends VBox_ManagedObject {
    public function setFaultToleranceState($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->faultToleranceState = $value;
        }
        else
@@ -2642,7 +2739,7 @@ class IMachine extends VBox_ManagedObject {
    public function setFaultTolerancePort($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->faultTolerancePort = $value;
        }
        else
@@ -2662,7 +2759,7 @@ class IMachine extends VBox_ManagedObject {
    public function setFaultToleranceAddress($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->faultToleranceAddress = $value;
        }
        else
@@ -2682,7 +2779,7 @@ class IMachine extends VBox_ManagedObject {
    public function setFaultTolerancePassword($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->faultTolerancePassword = $value;
        }
        else
@@ -2702,7 +2799,7 @@ class IMachine extends VBox_ManagedObject {
    public function setFaultToleranceSyncInterval($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->faultToleranceSyncInterval = $value;
        }
        else
@@ -2722,7 +2819,7 @@ class IMachine extends VBox_ManagedObject {
    public function setRTCUseUTC($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->RTCUseUTC = $value;
        }
        else
@@ -2742,7 +2839,7 @@ class IMachine extends VBox_ManagedObject {
    public function setIoCacheEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->ioCacheEnabled = $value;
        }
        else
@@ -2762,7 +2859,7 @@ class IMachine extends VBox_ManagedObject {
    public function setIoCacheSize($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->ioCacheSize = $value;
        }
        else
@@ -3034,6 +3131,29 @@ class IConsole extends VBox_ManagedObject {
        return new IProgress ($this->connection, $response->returnval);
   }
 
+   public function deleteSnapshotAndAllChildren($arg_id) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->id = $arg_id;
+       $response = $this->connection->__soapCall('IConsole_deleteSnapshotAndAllChildren', array((array)$request));
+       
+       return new IProgress ($this->connection, $response->returnval);
+  }
+
+   public function deleteSnapshotRange($arg_startId, $arg_endId) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->startId = $arg_startId;
+       $request->endId = $arg_endId;
+       $response = $this->connection->__soapCall('IConsole_deleteSnapshotRange', array((array)$request));
+       
+       return new IProgress ($this->connection, $response->returnval);
+  }
+
    public function restoreSnapshot($arg_snapshot) { 
        $request = new stdClass();
        
@@ -3141,6 +3261,26 @@ class IConsole extends VBox_ManagedObject {
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('IConsole_getAttachedPciDevices', array((array)$request));
        return new IPciDeviceAttachmentCollection ($this->connection, (array)$response->returnval);
+   }
+
+   public function getUseHostClipboard() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IConsole_getUseHostClipboard', array((array)$request));
+       return (bool)$response->returnval;
+   }
+
+   public function setUseHostClipboard($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_null($value) || is_scalar($value)) {
+            $request->useHostClipboard = $value;
+       }
+       else
+       {
+            $request->useHostClipboard = $value->handle;
+       }
+       $this->connection->__soapCall('IConsole_setUseHostClipboard', array((array)$request));
    }
 }
   
@@ -3482,6 +3622,16 @@ class IHost extends VBox_ManagedObject {
        return new IHostUSBDevice ($this->connection, $response->returnval);
   }
 
+   public function generateMACAddress() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('IHost_generateMACAddress', array((array)$request));
+       
+       return (string)$response->returnval;
+  }
+
    public function getDVDDrives() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -3592,6 +3742,29 @@ class IHostCollection extends VBox_ManagedObjectCollection {
 * Generated VBoxWebService Interface Wrapper
 */
 class ISystemProperties extends VBox_ManagedObject {
+
+   public function getMaxNetworkAdapters($arg_chipset) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->chipset = $arg_chipset;
+       $response = $this->connection->__soapCall('ISystemProperties_getMaxNetworkAdapters', array((array)$request));
+       
+       return (float)$response->returnval;
+  }
+
+   public function getMaxNetworkAdaptersOfType($arg_chipset, $arg_type) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->chipset = $arg_chipset;
+       $request->type = $arg_type;
+       $response = $this->connection->__soapCall('ISystemProperties_getMaxNetworkAdaptersOfType', array((array)$request));
+       
+       return (float)$response->returnval;
+  }
 
    public function getMaxDevicesPerPortForStorageBus($arg_bus) { 
        $request = new stdClass();
@@ -3713,13 +3886,6 @@ class ISystemProperties extends VBox_ManagedObject {
        $request = new stdClass();
        $request->_this = $this->handle;
        $response = $this->connection->__soapCall('ISystemProperties_getInfoVDSize', array((array)$request));
-       return (string)$response->returnval;
-   }
-
-   public function getNetworkAdapterCount() {
-       $request = new stdClass();
-       $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('ISystemProperties_getNetworkAdapterCount', array((array)$request));
        return (float)$response->returnval;
    }
 
@@ -3754,7 +3920,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setDefaultMachineFolder($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->defaultMachineFolder = $value;
        }
        else
@@ -3781,7 +3947,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setDefaultHardDiskFormat($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->defaultHardDiskFormat = $value;
        }
        else
@@ -3801,7 +3967,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setFreeDiskSpaceWarning($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->freeDiskSpaceWarning = $value;
        }
        else
@@ -3821,7 +3987,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setFreeDiskSpacePercentWarning($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->freeDiskSpacePercentWarning = $value;
        }
        else
@@ -3841,7 +4007,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setFreeDiskSpaceError($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->freeDiskSpaceError = $value;
        }
        else
@@ -3861,7 +4027,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setFreeDiskSpacePercentError($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->freeDiskSpacePercentError = $value;
        }
        else
@@ -3881,7 +4047,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setVRDEAuthLibrary($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->VRDEAuthLibrary = $value;
        }
        else
@@ -3901,7 +4067,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setWebServiceAuthLibrary($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->webServiceAuthLibrary = $value;
        }
        else
@@ -3921,7 +4087,7 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setDefaultVRDEExtPack($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->defaultVRDEExtPack = $value;
        }
        else
@@ -3941,12 +4107,12 @@ class ISystemProperties extends VBox_ManagedObject {
    public function setLogHistoryCount($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->LogHistoryCount = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->logHistoryCount = $value;
        }
        else
        {
-            $request->LogHistoryCount = $value->handle;
+            $request->logHistoryCount = $value->handle;
        }
        $this->connection->__soapCall('ISystemProperties_setLogHistoryCount', array((array)$request));
    }
@@ -3979,6 +4145,17 @@ class IGuest extends VBox_ManagedObject {
        $response = $this->connection->__soapCall('IGuest_internalGetStatistics', array((array)$request));
        
        return array((float)$response->cpuUser, (float)$response->cpuKernel, (float)$response->cpuIdle, (float)$response->memTotal, (float)$response->memFree, (float)$response->memBalloon, (float)$response->memShared, (float)$response->memCache, (float)$response->pagedTotal, (float)$response->memAllocTotal, (float)$response->memFreeTotal, (float)$response->memBalloonTotal, (float)$response->memSharedTotal);
+  }
+
+   public function getFacilityStatus($arg_facility) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->facility = $arg_facility;
+       $response = $this->connection->__soapCall('IGuest_getFacilityStatus', array((array)$request));
+       
+       return array(new AdditionsFacilityStatus ($this->connection, $response->returnval), (float)$response->timestamp);
   }
 
    public function getAdditionsStatus($arg_level) { 
@@ -4045,7 +4222,22 @@ class IGuest extends VBox_ManagedObject {
        $request->pid = $arg_pid;
        $response = $this->connection->__soapCall('IGuest_getProcessStatus', array((array)$request));
        
-       return array((float)$response->returnval, (float)$response->exitcode, (float)$response->flags);
+       return array(new ExecuteProcessStatus ($this->connection, $response->returnval), (float)$response->exitcode, (float)$response->flags);
+  }
+
+   public function copyFromGuest($arg_source, $arg_dest, $arg_userName, $arg_password, $arg_flags) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->source = $arg_source;
+       $request->dest = $arg_dest;
+       $request->userName = $arg_userName;
+       $request->password = $arg_password;
+       $request->flags = $arg_flags;
+       $response = $this->connection->__soapCall('IGuest_copyFromGuest', array((array)$request));
+       
+       return new IProgress ($this->connection, $response->returnval);
   }
 
    public function copyToGuest($arg_source, $arg_dest, $arg_userName, $arg_password, $arg_flags) { 
@@ -4063,7 +4255,18 @@ class IGuest extends VBox_ManagedObject {
        return new IProgress ($this->connection, $response->returnval);
   }
 
-   public function createDirectory($arg_directory, $arg_userName, $arg_password, $arg_mode, $arg_flags) { 
+   public function directoryClose($arg_handle) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->handle = $arg_handle;
+       $response = $this->connection->__soapCall('IGuest_directoryClose', array((array)$request));
+       
+       return ;
+  }
+
+   public function directoryCreate($arg_directory, $arg_userName, $arg_password, $arg_mode, $arg_flags) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
@@ -4073,9 +4276,61 @@ class IGuest extends VBox_ManagedObject {
        $request->password = $arg_password;
        $request->mode = $arg_mode;
        $request->flags = $arg_flags;
-       $response = $this->connection->__soapCall('IGuest_createDirectory', array((array)$request));
+       $response = $this->connection->__soapCall('IGuest_directoryCreate', array((array)$request));
        
-       return new IProgress ($this->connection, $response->returnval);
+       return ;
+  }
+
+   public function directoryOpen($arg_directory, $arg_filter, $arg_flags, $arg_userName, $arg_password) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->directory = $arg_directory;
+       $request->filter = $arg_filter;
+       $request->flags = $arg_flags;
+       $request->userName = $arg_userName;
+       $request->password = $arg_password;
+       $response = $this->connection->__soapCall('IGuest_directoryOpen', array((array)$request));
+       
+       return (float)$response->returnval;
+  }
+
+   public function directoryRead($arg_handle) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->handle = $arg_handle;
+       $response = $this->connection->__soapCall('IGuest_directoryRead', array((array)$request));
+       
+       return new IGuestDirEntry ($this->connection, $response->returnval);
+  }
+
+   public function fileExists($arg_file, $arg_userName, $arg_password) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->file = $arg_file;
+       $request->userName = $arg_userName;
+       $request->password = $arg_password;
+       $response = $this->connection->__soapCall('IGuest_fileExists', array((array)$request));
+       
+       return (bool)$response->returnval;
+  }
+
+   public function fileQuerySize($arg_file, $arg_userName, $arg_password) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->file = $arg_file;
+       $request->userName = $arg_userName;
+       $request->password = $arg_password;
+       $response = $this->connection->__soapCall('IGuest_fileQuerySize', array((array)$request));
+       
+       return (float)$response->returnval;
   }
 
    public function setProcessInput($arg_pid, $arg_flags, $arg_timeoutMS, $arg_data) { 
@@ -4125,18 +4380,11 @@ class IGuest extends VBox_ManagedObject {
        return (string)$response->returnval;
    }
 
-   public function getSupportsSeamless() {
+   public function getFacilities() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('IGuest_getSupportsSeamless', array((array)$request));
-       return (bool)$response->returnval;
-   }
-
-   public function getSupportsGraphics() {
-       $request = new stdClass();
-       $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('IGuest_getSupportsGraphics', array((array)$request));
-       return (bool)$response->returnval;
+       $response = $this->connection->__soapCall('IGuest_getFacilities', array((array)$request));
+       return new IAdditionsFacilityCollection ($this->connection, (array)$response->returnval);
    }
 
    public function getMemoryBalloonSize() {
@@ -4149,7 +4397,7 @@ class IGuest extends VBox_ManagedObject {
    public function setMemoryBalloonSize($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->memoryBalloonSize = $value;
        }
        else
@@ -4169,7 +4417,7 @@ class IGuest extends VBox_ManagedObject {
    public function setStatisticsUpdateInterval($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->statisticsUpdateInterval = $value;
        }
        else
@@ -4234,6 +4482,17 @@ class IProgress extends VBox_ManagedObject {
        $request->operation = $arg_operation;
        $request->timeout = $arg_timeout;
        $response = $this->connection->__soapCall('IProgress_waitForOperationCompletion', array((array)$request));
+       
+       return ;
+  }
+
+   public function waitForAsyncProgressCompletion($arg_pProgressAsync) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->pProgressAsync = $arg_pProgressAsync;
+       $response = $this->connection->__soapCall('IProgress_waitForAsyncProgressCompletion', array((array)$request));
        
        return ;
   }
@@ -4363,7 +4622,7 @@ class IProgress extends VBox_ManagedObject {
    public function setTimeout($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->timeout = $value;
        }
        else
@@ -4386,6 +4645,16 @@ class IProgressCollection extends VBox_ManagedObjectCollection {
 */
 class ISnapshot extends VBox_ManagedObject {
 
+   public function getChildrenCount() { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $response = $this->connection->__soapCall('ISnapshot_getChildrenCount', array((array)$request));
+       
+       return (float)$response->returnval;
+  }
+
    public function getId() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -4403,7 +4672,7 @@ class ISnapshot extends VBox_ManagedObject {
    public function setName($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->name = $value;
        }
        else
@@ -4423,7 +4692,7 @@ class ISnapshot extends VBox_ManagedObject {
    public function setDescription($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->description = $value;
        }
        else
@@ -4718,7 +4987,7 @@ class IMedium extends VBox_ManagedObject {
    public function setDescription($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->description = $value;
        }
        else
@@ -4752,7 +5021,7 @@ class IMedium extends VBox_ManagedObject {
    public function setLocation($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->location = $value;
        }
        else
@@ -4814,7 +5083,7 @@ class IMedium extends VBox_ManagedObject {
    public function setType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->type = $value;
        }
        else
@@ -4822,6 +5091,13 @@ class IMedium extends VBox_ManagedObject {
             $request->type = $value->handle;
        }
        $this->connection->__soapCall('IMedium_setType', array((array)$request));
+   }
+
+   public function getAllowedTypes() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMedium_getAllowedTypes', array((array)$request));
+       return new MediumTypeCollection ($this->connection, (array)$response->returnval);
    }
 
    public function getParent() {
@@ -4869,7 +5145,7 @@ class IMedium extends VBox_ManagedObject {
    public function setAutoReset($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->autoReset = $value;
        }
        else
@@ -5179,64 +5455,38 @@ class IDisplayCollection extends VBox_ManagedObjectCollection {
 */
 class INetworkAdapter extends VBox_ManagedObject {
 
-   public function attachToNAT() { 
+   public function getProperty($arg_key) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
-       $response = $this->connection->__soapCall('INetworkAdapter_attachToNAT', array((array)$request));
+       $request->key = $arg_key;
+       $response = $this->connection->__soapCall('INetworkAdapter_getProperty', array((array)$request));
+       
+       return (string)$response->returnval;
+  }
+
+   public function setProperty($arg_key, $arg_value) { 
+       $request = new stdClass();
+       
+       $request->_this = $this->handle;
+       
+       $request->key = $arg_key;
+       $request->value = $arg_value;
+       $response = $this->connection->__soapCall('INetworkAdapter_setProperty', array((array)$request));
        
        return ;
   }
 
-   public function attachToBridgedInterface() { 
+   public function getProperties($arg_names) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
-       $response = $this->connection->__soapCall('INetworkAdapter_attachToBridgedInterface', array((array)$request));
+       $request->names = $arg_names;
+       $response = $this->connection->__soapCall('INetworkAdapter_getProperties', array((array)$request));
        
-       return ;
-  }
-
-   public function attachToInternalNetwork() { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $response = $this->connection->__soapCall('INetworkAdapter_attachToInternalNetwork', array((array)$request));
-       
-       return ;
-  }
-
-   public function attachToHostOnlyInterface() { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $response = $this->connection->__soapCall('INetworkAdapter_attachToHostOnlyInterface', array((array)$request));
-       
-       return ;
-  }
-
-   public function attachToVDE() { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $response = $this->connection->__soapCall('INetworkAdapter_attachToVDE', array((array)$request));
-       
-       return ;
-  }
-
-   public function detach() { 
-       $request = new stdClass();
-       
-       $request->_this = $this->handle;
-       
-       $response = $this->connection->__soapCall('INetworkAdapter_detach', array((array)$request));
-       
-       return ;
+       return array((array)$response->returnval, (array)$response->returnNames);
   }
 
    public function getAdapterType() {
@@ -5249,7 +5499,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setAdapterType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->adapterType = $value;
        }
        else
@@ -5276,7 +5526,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -5296,7 +5546,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setMACAddress($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->MACAddress = $value;
        }
        else
@@ -5313,24 +5563,57 @@ class INetworkAdapter extends VBox_ManagedObject {
        return new NetworkAttachmentType ($this->connection, $response->returnval);
    }
 
-   public function getHostInterface() {
+   public function setAttachmentType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('INetworkAdapter_getHostInterface', array((array)$request));
-       return (string)$response->returnval;
-   }
-
-   public function setHostInterface($value) {
-       $request = new stdClass();
-       $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->hostInterface = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->attachmentType = $value;
        }
        else
        {
-            $request->hostInterface = $value->handle;
+            $request->attachmentType = $value->handle;
        }
-       $this->connection->__soapCall('INetworkAdapter_setHostInterface', array((array)$request));
+       $this->connection->__soapCall('INetworkAdapter_setAttachmentType', array((array)$request));
+   }
+
+   public function getBridgedInterface() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('INetworkAdapter_getBridgedInterface', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function setBridgedInterface($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_null($value) || is_scalar($value)) {
+            $request->bridgedInterface = $value;
+       }
+       else
+       {
+            $request->bridgedInterface = $value->handle;
+       }
+       $this->connection->__soapCall('INetworkAdapter_setBridgedInterface', array((array)$request));
+   }
+
+   public function getHostOnlyInterface() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('INetworkAdapter_getHostOnlyInterface', array((array)$request));
+       return (string)$response->returnval;
+   }
+
+   public function setHostOnlyInterface($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_null($value) || is_scalar($value)) {
+            $request->hostOnlyInterface = $value;
+       }
+       else
+       {
+            $request->hostOnlyInterface = $value->handle;
+       }
+       $this->connection->__soapCall('INetworkAdapter_setHostOnlyInterface', array((array)$request));
    }
 
    public function getInternalNetwork() {
@@ -5343,7 +5626,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setInternalNetwork($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->internalNetwork = $value;
        }
        else
@@ -5363,7 +5646,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setNATNetwork($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->NATNetwork = $value;
        }
        else
@@ -5373,24 +5656,24 @@ class INetworkAdapter extends VBox_ManagedObject {
        $this->connection->__soapCall('INetworkAdapter_setNATNetwork', array((array)$request));
    }
 
-   public function getVDENetwork() {
+   public function getGenericDriver() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('INetworkAdapter_getVDENetwork', array((array)$request));
+       $response = $this->connection->__soapCall('INetworkAdapter_getGenericDriver', array((array)$request));
        return (string)$response->returnval;
    }
 
-   public function setVDENetwork($value) {
+   public function setGenericDriver($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->VDENetwork = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->genericDriver = $value;
        }
        else
        {
-            $request->VDENetwork = $value->handle;
+            $request->genericDriver = $value->handle;
        }
-       $this->connection->__soapCall('INetworkAdapter_setVDENetwork', array((array)$request));
+       $this->connection->__soapCall('INetworkAdapter_setGenericDriver', array((array)$request));
    }
 
    public function getCableConnected() {
@@ -5403,7 +5686,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setCableConnected($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->cableConnected = $value;
        }
        else
@@ -5423,7 +5706,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setLineSpeed($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->lineSpeed = $value;
        }
        else
@@ -5431,6 +5714,26 @@ class INetworkAdapter extends VBox_ManagedObject {
             $request->lineSpeed = $value->handle;
        }
        $this->connection->__soapCall('INetworkAdapter_setLineSpeed', array((array)$request));
+   }
+
+   public function getPromiscModePolicy() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('INetworkAdapter_getPromiscModePolicy', array((array)$request));
+       return new NetworkAdapterPromiscModePolicy ($this->connection, $response->returnval);
+   }
+
+   public function setPromiscModePolicy($value) {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       if (is_null($value) || is_scalar($value)) {
+            $request->promiscModePolicy = $value;
+       }
+       else
+       {
+            $request->promiscModePolicy = $value->handle;
+       }
+       $this->connection->__soapCall('INetworkAdapter_setPromiscModePolicy', array((array)$request));
    }
 
    public function getTraceEnabled() {
@@ -5443,7 +5746,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setTraceEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->traceEnabled = $value;
        }
        else
@@ -5463,7 +5766,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setTraceFile($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->traceFile = $value;
        }
        else
@@ -5490,7 +5793,7 @@ class INetworkAdapter extends VBox_ManagedObject {
    public function setBootPriority($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->bootPriority = $value;
        }
        else
@@ -5500,24 +5803,24 @@ class INetworkAdapter extends VBox_ManagedObject {
        $this->connection->__soapCall('INetworkAdapter_setBootPriority', array((array)$request));
    }
 
-   public function getBandwidthLimit() {
+   public function getBandwidthGroup() {
        $request = new stdClass();
        $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('INetworkAdapter_getBandwidthLimit', array((array)$request));
-       return (float)$response->returnval;
+       $response = $this->connection->__soapCall('INetworkAdapter_getBandwidthGroup', array((array)$request));
+       return new IBandwidthGroup ($this->connection, $response->returnval);
    }
 
-   public function setBandwidthLimit($value) {
+   public function setBandwidthGroup($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->bandwidthLimit = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->bandwidthGroup = $value;
        }
        else
        {
-            $request->bandwidthLimit = $value->handle;
+            $request->bandwidthGroup = $value->handle;
        }
-       $this->connection->__soapCall('INetworkAdapter_setBandwidthLimit', array((array)$request));
+       $this->connection->__soapCall('INetworkAdapter_setBandwidthGroup', array((array)$request));
    }
 }
   
@@ -5550,7 +5853,7 @@ class ISerialPort extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -5570,7 +5873,7 @@ class ISerialPort extends VBox_ManagedObject {
    public function setIOBase($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->IOBase = $value;
        }
        else
@@ -5590,7 +5893,7 @@ class ISerialPort extends VBox_ManagedObject {
    public function setIRQ($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->IRQ = $value;
        }
        else
@@ -5610,7 +5913,7 @@ class ISerialPort extends VBox_ManagedObject {
    public function setHostMode($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->hostMode = $value;
        }
        else
@@ -5630,7 +5933,7 @@ class ISerialPort extends VBox_ManagedObject {
    public function setServer($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->server = $value;
        }
        else
@@ -5650,7 +5953,7 @@ class ISerialPort extends VBox_ManagedObject {
    public function setPath($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->path = $value;
        }
        else
@@ -5690,7 +5993,7 @@ class IParallelPort extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -5710,7 +6013,7 @@ class IParallelPort extends VBox_ManagedObject {
    public function setIOBase($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->IOBase = $value;
        }
        else
@@ -5730,7 +6033,7 @@ class IParallelPort extends VBox_ManagedObject {
    public function setIRQ($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->IRQ = $value;
        }
        else
@@ -5750,7 +6053,7 @@ class IParallelPort extends VBox_ManagedObject {
    public function setPath($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->path = $value;
        }
        else
@@ -5817,7 +6120,7 @@ class IUSBController extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -5837,7 +6140,7 @@ class IUSBController extends VBox_ManagedObject {
    public function setEnabledEhci($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabledEhci = $value;
        }
        else
@@ -5988,7 +6291,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setName($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->name = $value;
        }
        else
@@ -6008,7 +6311,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setActive($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->active = $value;
        }
        else
@@ -6028,7 +6331,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setVendorId($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->vendorId = $value;
        }
        else
@@ -6048,7 +6351,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setProductId($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->productId = $value;
        }
        else
@@ -6068,7 +6371,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setRevision($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->revision = $value;
        }
        else
@@ -6088,7 +6391,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setManufacturer($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->manufacturer = $value;
        }
        else
@@ -6108,7 +6411,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setProduct($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->product = $value;
        }
        else
@@ -6128,7 +6431,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setSerialNumber($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->serialNumber = $value;
        }
        else
@@ -6148,7 +6451,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setPort($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->port = $value;
        }
        else
@@ -6168,7 +6471,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setRemote($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->remote = $value;
        }
        else
@@ -6188,7 +6491,7 @@ class IUSBDeviceFilter extends VBox_ManagedObject {
    public function setMaskedInterfaces($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->maskedInterfaces = $value;
        }
        else
@@ -6241,7 +6544,7 @@ class IHostUSBDeviceFilter extends IUSBDeviceFilter {
    public function setAction($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->action = $value;
        }
        else
@@ -6274,7 +6577,7 @@ class IAudioAdapter extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -6294,7 +6597,7 @@ class IAudioAdapter extends VBox_ManagedObject {
    public function setAudioController($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->audioController = $value;
        }
        else
@@ -6314,7 +6617,7 @@ class IAudioAdapter extends VBox_ManagedObject {
    public function setAudioDriver($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->audioDriver = $value;
        }
        else
@@ -6370,7 +6673,7 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setEnabled($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->enabled = $value;
        }
        else
@@ -6390,7 +6693,7 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setAuthType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->authType = $value;
        }
        else
@@ -6410,7 +6713,7 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setAuthTimeout($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->authTimeout = $value;
        }
        else
@@ -6430,7 +6733,7 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setAllowMultiConnection($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->allowMultiConnection = $value;
        }
        else
@@ -6450,7 +6753,7 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setReuseSingleConnection($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->reuseSingleConnection = $value;
        }
        else
@@ -6470,7 +6773,7 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setVRDEExtPack($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->VRDEExtPack = $value;
        }
        else
@@ -6490,12 +6793,12 @@ class IVRDEServer extends VBox_ManagedObject {
    public function setAuthLibrary($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
-            $request->AuthLibrary = $value;
+       if (is_null($value) || is_scalar($value)) {
+            $request->authLibrary = $value;
        }
        else
        {
-            $request->AuthLibrary = $value->handle;
+            $request->authLibrary = $value->handle;
        }
        $this->connection->__soapCall('IVRDEServer_setAuthLibrary', array((array)$request));
    }
@@ -6632,7 +6935,7 @@ class IStorageController extends VBox_ManagedObject {
    public function setInstance($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->instance = $value;
        }
        else
@@ -6652,7 +6955,7 @@ class IStorageController extends VBox_ManagedObject {
    public function setPortCount($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->portCount = $value;
        }
        else
@@ -6679,7 +6982,7 @@ class IStorageController extends VBox_ManagedObject {
    public function setControllerType($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->controllerType = $value;
        }
        else
@@ -6699,7 +7002,7 @@ class IStorageController extends VBox_ManagedObject {
    public function setUseHostIOCache($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->useHostIOCache = $value;
        }
        else
@@ -7016,7 +7319,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setNetwork($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->network = $value;
        }
        else
@@ -7036,7 +7339,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setHostIP($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->hostIP = $value;
        }
        else
@@ -7056,7 +7359,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setTftpPrefix($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->tftpPrefix = $value;
        }
        else
@@ -7076,7 +7379,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setTftpBootFile($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->tftpBootFile = $value;
        }
        else
@@ -7096,7 +7399,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setTftpNextServer($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->tftpNextServer = $value;
        }
        else
@@ -7116,7 +7419,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setAliasMode($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->aliasMode = $value;
        }
        else
@@ -7136,7 +7439,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setDnsPassDomain($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->dnsPassDomain = $value;
        }
        else
@@ -7156,7 +7459,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setDnsProxy($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->dnsProxy = $value;
        }
        else
@@ -7176,7 +7479,7 @@ class INATEngine extends VBox_ManagedObject {
    public function setDnsUseHostResolver($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->dnsUseHostResolver = $value;
        }
        else
@@ -7237,7 +7540,7 @@ class IBandwidthGroup extends VBox_ManagedObject {
    public function setMaxMbPerSec($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->maxMbPerSec = $value;
        }
        else
@@ -7260,47 +7563,47 @@ class IBandwidthGroupCollection extends VBox_ManagedObjectCollection {
 */
 class IBandwidthControl extends VBox_ManagedObject {
 
-   public function CreateBandwidthGroup($arg_name, $arg_type, $arg_maxBytesPerSec) { 
+   public function createBandwidthGroup($arg_name, $arg_type, $arg_maxMbPerSec) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->name = $arg_name;
        $request->type = $arg_type;
-       $request->maxBytesPerSec = $arg_maxBytesPerSec;
-       $response = $this->connection->__soapCall('IBandwidthControl_CreateBandwidthGroup', array((array)$request));
+       $request->maxMbPerSec = $arg_maxMbPerSec;
+       $response = $this->connection->__soapCall('IBandwidthControl_createBandwidthGroup', array((array)$request));
        
        return ;
   }
 
-   public function DeleteBandwidthGroup($arg_name) { 
+   public function deleteBandwidthGroup($arg_name) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->name = $arg_name;
-       $response = $this->connection->__soapCall('IBandwidthControl_DeleteBandwidthGroup', array((array)$request));
+       $response = $this->connection->__soapCall('IBandwidthControl_deleteBandwidthGroup', array((array)$request));
        
        return ;
   }
 
-   public function GetBandwidthGroup($arg_name) { 
+   public function getBandwidthGroup($arg_name) { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
        $request->name = $arg_name;
-       $response = $this->connection->__soapCall('IBandwidthControl_GetBandwidthGroup', array((array)$request));
+       $response = $this->connection->__soapCall('IBandwidthControl_getBandwidthGroup', array((array)$request));
        
        return new IBandwidthGroup ($this->connection, $response->returnval);
   }
 
-   public function GetAllBandwidthGroups() { 
+   public function getAllBandwidthGroups() { 
        $request = new stdClass();
        
        $request->_this = $this->handle;
        
-       $response = $this->connection->__soapCall('IBandwidthControl_GetAllBandwidthGroups', array((array)$request));
+       $response = $this->connection->__soapCall('IBandwidthControl_getAllBandwidthGroups', array((array)$request));
        
        return new IBandwidthGroupCollection ($this->connection, (array)$response->returnval);
   }
@@ -7567,6 +7870,13 @@ class IMachineStateChangedEventCollection extends VBox_ManagedObjectCollection {
 * Generated VBoxWebService Interface Wrapper
 */
 class IMachineDataChangedEvent extends IMachineEvent {
+
+   public function getTemporary() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IMachineDataChangedEvent_getTemporary', array((array)$request));
+       return (bool)$response->returnval;
+   }
 }
   
 /**
@@ -8415,7 +8725,7 @@ class IShowWindowEvent extends IEvent {
    public function setWinId($value) {
        $request = new stdClass();
        $request->_this = $this->handle;
-       if (is_int($value) || is_string($value) || is_bool($value)) {
+       if (is_null($value) || is_scalar($value)) {
             $request->winId = $value;
        }
        else
@@ -8528,13 +8838,6 @@ class IHostPciDevicePlugEvent extends IMachineEvent {
        return new IPciDeviceAttachment ($this->connection, $response->returnval);
    }
 
-   public function getEventContext() {
-       $request = new stdClass();
-       $request->_this = $this->handle;
-       $response = $this->connection->__soapCall('IHostPciDevicePlugEvent_getEventContext', array((array)$request));
-       return new IEventContext ($this->connection, $response->returnval);
-   }
-
    public function getMessage() {
        $request = new stdClass();
        $request->_this = $this->handle;
@@ -8643,6 +8946,33 @@ class IGuestMonitorChangedEvent extends IEvent {
 */
 class IGuestMonitorChangedEventCollection extends VBox_ManagedObjectCollection {
    protected $_interfaceName = "IGuestMonitorChangedEvent";
+}
+
+/**
+* Generated VBoxWebService Interface Wrapper
+*/
+class IStorageDeviceChangedEvent extends IEvent {
+
+   public function getStorageDevice() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IStorageDeviceChangedEvent_getStorageDevice', array((array)$request));
+       return new IMediumAttachment ($this->connection, $response->returnval);
+   }
+
+   public function getRemoved() {
+       $request = new stdClass();
+       $request->_this = $this->handle;
+       $response = $this->connection->__soapCall('IStorageDeviceChangedEvent_getRemoved', array((array)$request));
+       return (bool)$response->returnval;
+   }
+}
+  
+/**
+* Generated VBoxWebService Managed Object Collection
+*/
+class IStorageDeviceChangedEventCollection extends VBox_ManagedObjectCollection {
+   protected $_interfaceName = "IStorageDeviceChangedEvent";
 }
 
 /**
@@ -9047,6 +9377,104 @@ class IGuestOSTypeCollection extends VBox_StructCollection {
 /**
 * Generated VBoxWebService Struct
 */
+class IAdditionsFacility extends VBox_Struct {
+    
+       protected $classType;
+    
+       protected $lastUpdated;
+    
+       protected $name;
+    
+       protected $status;
+    
+       protected $type;
+    
+    public function __construct($connection, $values) {
+       $this->connection = $connection;
+    
+       $this->classType = $values->classType;
+       $this->lastUpdated = $values->lastUpdated;
+       $this->name = $values->name;
+       $this->status = $values->status;
+       $this->type = $values->type;
+    }
+
+    
+    public function getClassType() {
+        return new AdditionsFacilityClass ($this->connection, $this->classType);
+    }
+    
+    public function getLastUpdated() {
+        return (float)$this->lastUpdated;
+    }
+    
+    public function getName() {
+        return (string)$this->name;
+    }
+    
+    public function getStatus() {
+        return new AdditionsFacilityStatus ($this->connection, $this->status);
+    }
+    
+    public function getType() {
+        return new AdditionsFacilityType ($this->connection, $this->type);
+    }
+    
+
+}
+
+/**
+* Generated VBoxWebService Struct Collection
+*/
+class IAdditionsFacilityCollection extends VBox_StructCollection {
+   protected $_interfaceName = "IAdditionsFacility";
+}
+
+/**
+* Generated VBoxWebService Struct
+*/
+class IGuestDirEntry extends VBox_Struct {
+    
+       protected $nodeId;
+    
+       protected $name;
+    
+       protected $type;
+    
+    public function __construct($connection, $values) {
+       $this->connection = $connection;
+    
+       $this->nodeId = $values->nodeId;
+       $this->name = $values->name;
+       $this->type = $values->type;
+    }
+
+    
+    public function getNodeId() {
+        return (float)$this->nodeId;
+    }
+    
+    public function getName() {
+        return (string)$this->name;
+    }
+    
+    public function getType() {
+        return new GuestDirEntryType ($this->connection, $this->type);
+    }
+    
+
+}
+
+/**
+* Generated VBoxWebService Struct Collection
+*/
+class IGuestDirEntryCollection extends VBox_StructCollection {
+   protected $_interfaceName = "IGuestDirEntry";
+}
+
+/**
+* Generated VBoxWebService Struct
+*/
 class IMediumAttachment extends VBox_Struct {
     
        protected $medium;
@@ -9061,6 +9489,12 @@ class IMediumAttachment extends VBox_Struct {
     
        protected $passthrough;
     
+       protected $temporaryEject;
+    
+       protected $isEjected;
+    
+       protected $nonRotational;
+    
        protected $bandwidthGroup;
     
     public function __construct($connection, $values) {
@@ -9072,6 +9506,9 @@ class IMediumAttachment extends VBox_Struct {
        $this->device = $values->device;
        $this->type = $values->type;
        $this->passthrough = $values->passthrough;
+       $this->temporaryEject = $values->temporaryEject;
+       $this->isEjected = $values->isEjected;
+       $this->nonRotational = $values->nonRotational;
        $this->bandwidthGroup = $values->bandwidthGroup;
     }
 
@@ -9098,6 +9535,18 @@ class IMediumAttachment extends VBox_Struct {
     
     public function getPassthrough() {
         return (bool)$this->passthrough;
+    }
+    
+    public function getTemporaryEject() {
+        return (bool)$this->temporaryEject;
+    }
+    
+    public function getIsEjected() {
+        return (bool)$this->isEjected;
+    }
+    
+    public function getNonRotational() {
+        return (bool)$this->nonRotational;
     }
     
     public function getBandwidthGroup() {
@@ -9181,8 +9630,8 @@ class ISharedFolderCollection extends VBox_StructCollection {
 * Generated VBoxWebService ENUM
 */
 class SettingsVersion extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'v1_0', 2 => 'v1_1', 3 => 'v1_2', 4 => 'v1_3pre', 5 => 'v1_3', 6 => 'v1_4', 7 => 'v1_5', 8 => 'v1_6', 9 => 'v1_7', 10 => 'v1_8', 11 => 'v1_9', 12 => 'v1_10', 13 => 'v1_11', 99999 => 'Future');
-   public $ValueMap = array('Null' => 0, 'v1_0' => 1, 'v1_1' => 2, 'v1_2' => 3, 'v1_3pre' => 4, 'v1_3' => 5, 'v1_4' => 6, 'v1_5' => 7, 'v1_6' => 8, 'v1_7' => 9, 'v1_8' => 10, 'v1_9' => 11, 'v1_10' => 12, 'v1_11' => 13, 'Future' => 99999);
+   public $NameMap = array(0 => 'Null', 1 => 'v1_0', 2 => 'v1_1', 3 => 'v1_2', 4 => 'v1_3pre', 5 => 'v1_3', 6 => 'v1_4', 7 => 'v1_5', 8 => 'v1_6', 9 => 'v1_7', 10 => 'v1_8', 11 => 'v1_9', 12 => 'v1_10', 13 => 'v1_11', 14 => 'v1_12', 99999 => 'Future');
+   public $ValueMap = array('Null' => 0, 'v1_0' => 1, 'v1_1' => 2, 'v1_2' => 3, 'v1_3pre' => 4, 'v1_3' => 5, 'v1_4' => 6, 'v1_5' => 7, 'v1_6' => 8, 'v1_7' => 9, 'v1_8' => 10, 'v1_9' => 11, 'v1_10' => 12, 'v1_11' => 13, 'v1_12' => 14, 'Future' => 99999);
 }
 
 /**
@@ -9480,9 +9929,24 @@ class VFSFileTypeCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
+class ImportOptions extends VBox_Enum {
+   public $NameMap = array(1 => 'KeepAllMACs', 2 => 'KeepNATMACs');
+   public $ValueMap = array('KeepAllMACs' => 1, 'KeepNATMACs' => 2);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class ImportOptionsCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "ImportOptions";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
 class VirtualSystemDescriptionType extends VBox_Enum {
-   public $NameMap = array(1 => 'Ignore', 2 => 'OS', 3 => 'Name', 4 => 'Product', 5 => 'Vendor', 6 => 'Version', 7 => 'ProductUrl', 8 => 'VendorUrl', 9 => 'Description', 10 => 'License', 11 => 'Miscellaneous', 12 => 'CPU', 13 => 'Memory', 14 => 'HardDiskControllerIDE', 15 => 'HardDiskControllerSATA', 16 => 'HardDiskControllerSCSI', 17 => 'HardDiskControllerSAS', 18 => 'HardDiskImage', 19 => 'Floppy', 20 => 'CDROM', 21 => 'NetworkAdapter', 22 => 'USBController', 23 => 'SoundCard');
-   public $ValueMap = array('Ignore' => 1, 'OS' => 2, 'Name' => 3, 'Product' => 4, 'Vendor' => 5, 'Version' => 6, 'ProductUrl' => 7, 'VendorUrl' => 8, 'Description' => 9, 'License' => 10, 'Miscellaneous' => 11, 'CPU' => 12, 'Memory' => 13, 'HardDiskControllerIDE' => 14, 'HardDiskControllerSATA' => 15, 'HardDiskControllerSCSI' => 16, 'HardDiskControllerSAS' => 17, 'HardDiskImage' => 18, 'Floppy' => 19, 'CDROM' => 20, 'NetworkAdapter' => 21, 'USBController' => 22, 'SoundCard' => 23);
+   public $NameMap = array(1 => 'Ignore', 2 => 'OS', 3 => 'Name', 4 => 'Product', 5 => 'Vendor', 6 => 'Version', 7 => 'ProductUrl', 8 => 'VendorUrl', 9 => 'Description', 10 => 'License', 11 => 'Miscellaneous', 12 => 'CPU', 13 => 'Memory', 14 => 'HardDiskControllerIDE', 15 => 'HardDiskControllerSATA', 16 => 'HardDiskControllerSCSI', 17 => 'HardDiskControllerSAS', 18 => 'HardDiskImage', 19 => 'Floppy', 20 => 'CDROM', 21 => 'NetworkAdapter', 22 => 'USBController', 23 => 'SoundCard', 24 => 'SettingsFile');
+   public $ValueMap = array('Ignore' => 1, 'OS' => 2, 'Name' => 3, 'Product' => 4, 'Vendor' => 5, 'Version' => 6, 'ProductUrl' => 7, 'VendorUrl' => 8, 'Description' => 9, 'License' => 10, 'Miscellaneous' => 11, 'CPU' => 12, 'Memory' => 13, 'HardDiskControllerIDE' => 14, 'HardDiskControllerSATA' => 15, 'HardDiskControllerSCSI' => 16, 'HardDiskControllerSAS' => 17, 'HardDiskImage' => 18, 'Floppy' => 19, 'CDROM' => 20, 'NetworkAdapter' => 21, 'USBController' => 22, 'SoundCard' => 23, 'SettingsFile' => 24);
 }
 
 /**
@@ -9520,6 +9984,36 @@ class CleanupMode extends VBox_Enum {
 */
 class CleanupModeCollection extends VBox_EnumCollection {
    protected $_interfaceName = "CleanupMode";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class CloneMode extends VBox_Enum {
+   public $NameMap = array(1 => 'MachineState', 2 => 'MachineAndChildStates', 3 => 'AllStates');
+   public $ValueMap = array('MachineState' => 1, 'MachineAndChildStates' => 2, 'AllStates' => 3);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class CloneModeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "CloneMode";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class CloneOptions extends VBox_Enum {
+   public $NameMap = array(1 => 'Link', 2 => 'KeepAllMACs', 3 => 'KeepNATMACs', 4 => 'KeepDiskNames');
+   public $ValueMap = array('Link' => 1, 'KeepAllMACs' => 2, 'KeepNATMACs' => 3, 'KeepDiskNames' => 4);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class CloneOptionsCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "CloneOptions";
 }
 
 /**
@@ -9570,6 +10064,51 @@ class HostNetworkInterfaceTypeCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
+class AdditionsFacilityType extends VBox_Enum {
+   public $NameMap = array(0 => 'None', 20 => 'VBoxGuestDriver', 100 => 'VBoxService', 101 => 'VBoxTrayClient', 1000 => 'Seamless', 1100 => 'Graphics', 2147483646 => 'All');
+   public $ValueMap = array('None' => 0, 'VBoxGuestDriver' => 20, 'VBoxService' => 100, 'VBoxTrayClient' => 101, 'Seamless' => 1000, 'Graphics' => 1100, 'All' => 2147483646);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class AdditionsFacilityTypeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "AdditionsFacilityType";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class AdditionsFacilityClass extends VBox_Enum {
+   public $NameMap = array(0 => 'None', 10 => 'Driver', 30 => 'Service', 50 => 'Program', 100 => 'Feature', 999 => 'ThirdParty', 2147483646 => 'All');
+   public $ValueMap = array('None' => 0, 'Driver' => 10, 'Service' => 30, 'Program' => 50, 'Feature' => 100, 'ThirdParty' => 999, 'All' => 2147483646);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class AdditionsFacilityClassCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "AdditionsFacilityClass";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class AdditionsFacilityStatus extends VBox_Enum {
+   public $NameMap = array(0 => 'Inactive', 1 => 'Paused', 20 => 'PreInit', 30 => 'Init', 50 => 'Active', 100 => 'Terminating', 101 => 'Terminated', 800 => 'Failed', 999 => 'Unknown');
+   public $ValueMap = array('Inactive' => 0, 'Paused' => 1, 'PreInit' => 20, 'Init' => 30, 'Active' => 50, 'Terminating' => 100, 'Terminated' => 101, 'Failed' => 800, 'Unknown' => 999);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class AdditionsFacilityStatusCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "AdditionsFacilityStatus";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
 class AdditionsRunLevelType extends VBox_Enum {
    public $NameMap = array(0 => 'None', 1 => 'System', 2 => 'Userland', 3 => 'Desktop');
    public $ValueMap = array('None' => 0, 'System' => 1, 'Userland' => 2, 'Desktop' => 3);
@@ -9601,8 +10140,8 @@ class AdditionsUpdateFlagCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class ExecuteProcessFlag extends VBox_Enum {
-   public $NameMap = array(0 => 'None', 1 => 'WaitForProcessStartOnly', 2 => 'IgnoreOrphanedProcesses', 4 => 'Hidden');
-   public $ValueMap = array('None' => 0, 'WaitForProcessStartOnly' => 1, 'IgnoreOrphanedProcesses' => 2, 'Hidden' => 4);
+   public $NameMap = array(0 => 'None', 1 => 'WaitForProcessStartOnly', 2 => 'IgnoreOrphanedProcesses', 4 => 'Hidden', 8 => 'NoProfile');
+   public $ValueMap = array('None' => 0, 'WaitForProcessStartOnly' => 1, 'IgnoreOrphanedProcesses' => 2, 'Hidden' => 4, 'NoProfile' => 8);
 }
 
 /**
@@ -9610,6 +10149,21 @@ class ExecuteProcessFlag extends VBox_Enum {
 */
 class ExecuteProcessFlagCollection extends VBox_EnumCollection {
    protected $_interfaceName = "ExecuteProcessFlag";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class ExecuteProcessStatus extends VBox_Enum {
+   public $NameMap = array(0 => 'Undefined', 1 => 'Started', 2 => 'TerminatedNormally', 3 => 'TerminatedSignal', 4 => 'TerminatedAbnormally', 5 => 'TimedOutKilled', 6 => 'TimedOutAbnormally', 7 => 'Down', 8 => 'Error');
+   public $ValueMap = array('Undefined' => 0, 'Started' => 1, 'TerminatedNormally' => 2, 'TerminatedSignal' => 3, 'TerminatedAbnormally' => 4, 'TimedOutKilled' => 5, 'TimedOutAbnormally' => 6, 'Down' => 7, 'Error' => 8);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class ExecuteProcessStatusCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "ExecuteProcessStatus";
 }
 
 /**
@@ -9630,6 +10184,21 @@ class ProcessInputFlagCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
+class ProcessOutputFlag extends VBox_Enum {
+   public $NameMap = array(0 => 'None', 1 => 'StdErr');
+   public $ValueMap = array('None' => 0, 'StdErr' => 1);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class ProcessOutputFlagCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "ProcessOutputFlag";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
 class CopyFileFlag extends VBox_Enum {
    public $NameMap = array(0 => 'None', 1 => 'Recursive', 2 => 'Update', 4 => 'FollowLinks');
    public $ValueMap = array('None' => 0, 'Recursive' => 1, 'Update' => 2, 'FollowLinks' => 4);
@@ -9645,7 +10214,7 @@ class CopyFileFlagCollection extends VBox_EnumCollection {
 /**
 * Generated VBoxWebService ENUM
 */
-class CreateDirectoryFlag extends VBox_Enum {
+class DirectoryCreateFlag extends VBox_Enum {
    public $NameMap = array(0 => 'None', 1 => 'Parents');
    public $ValueMap = array('None' => 0, 'Parents' => 1);
 }
@@ -9653,8 +10222,38 @@ class CreateDirectoryFlag extends VBox_Enum {
 /**
 * Generated VBoxWebService Enum Collection
 */
-class CreateDirectoryFlagCollection extends VBox_EnumCollection {
-   protected $_interfaceName = "CreateDirectoryFlag";
+class DirectoryCreateFlagCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "DirectoryCreateFlag";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class DirectoryOpenFlag extends VBox_Enum {
+   public $NameMap = array(0 => 'None');
+   public $ValueMap = array('None' => 0);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class DirectoryOpenFlagCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "DirectoryOpenFlag";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class GuestDirEntryType extends VBox_Enum {
+   public $NameMap = array(0 => 'Unknown', 4 => 'Directory', 10 => 'File', 12 => 'Symlink');
+   public $ValueMap = array('Unknown' => 0, 'Directory' => 4, 'File' => 10, 'Symlink' => 12);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class GuestDirEntryTypeCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "GuestDirEntryType";
 }
 
 /**
@@ -9781,8 +10380,8 @@ class FramebufferPixelFormatCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class NetworkAttachmentType extends VBox_Enum {
-   public $NameMap = array(0 => 'Null', 1 => 'NAT', 2 => 'Bridged', 3 => 'Internal', 4 => 'HostOnly', 5 => 'VDE');
-   public $ValueMap = array('Null' => 0, 'NAT' => 1, 'Bridged' => 2, 'Internal' => 3, 'HostOnly' => 4, 'VDE' => 5);
+   public $NameMap = array(0 => 'Null', 1 => 'NAT', 2 => 'Bridged', 3 => 'Internal', 4 => 'HostOnly', 5 => 'Generic');
+   public $ValueMap = array('Null' => 0, 'NAT' => 1, 'Bridged' => 2, 'Internal' => 3, 'HostOnly' => 4, 'Generic' => 5);
 }
 
 /**
@@ -9805,6 +10404,21 @@ class NetworkAdapterType extends VBox_Enum {
 */
 class NetworkAdapterTypeCollection extends VBox_EnumCollection {
    protected $_interfaceName = "NetworkAdapterType";
+}
+
+/**
+* Generated VBoxWebService ENUM
+*/
+class NetworkAdapterPromiscModePolicy extends VBox_Enum {
+   public $NameMap = array(1 => 'Deny', 2 => 'AllowNetwork', 3 => 'AllowAll');
+   public $ValueMap = array('Deny' => 1, 'AllowNetwork' => 2, 'AllowAll' => 3);
+}
+
+/**
+* Generated VBoxWebService Enum Collection
+*/
+class NetworkAdapterPromiscModePolicyCollection extends VBox_EnumCollection {
+   protected $_interfaceName = "NetworkAdapterPromiscModePolicy";
 }
 
 /**
@@ -9991,8 +10605,8 @@ class BandwidthGroupTypeCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class VBoxEventType extends VBox_Enum {
-   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'Vetoable', 3 => 'MachineEvent', 4 => 'SnapshotEvent', 5 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDEServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnVRDEServerInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'OnCPUExecutionCapChanged', 64 => 'OnGuestKeyboard', 65 => 'OnGuestMouse', 66 => 'OnNATRedirect', 67 => 'OnHostPciDevicePlug', 68 => 'OnVBoxSVCAvailabilityChanged', 69 => 'OnBandwidthGroupChanged', 70 => 'OnGuestMonitorChanged', 71 => 'Last');
-   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'Vetoable' => 2, 'MachineEvent' => 3, 'SnapshotEvent' => 4, 'InputEvent' => 5, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDEServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnVRDEServerInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'OnCPUExecutionCapChanged' => 63, 'OnGuestKeyboard' => 64, 'OnGuestMouse' => 65, 'OnNATRedirect' => 66, 'OnHostPciDevicePlug' => 67, 'OnVBoxSVCAvailabilityChanged' => 68, 'OnBandwidthGroupChanged' => 69, 'OnGuestMonitorChanged' => 70, 'Last' => 71);
+   public $NameMap = array(0 => 'Invalid', 1 => 'Any', 2 => 'Vetoable', 3 => 'MachineEvent', 4 => 'SnapshotEvent', 5 => 'InputEvent', 31 => 'LastWildcard', 32 => 'OnMachineStateChanged', 33 => 'OnMachineDataChanged', 34 => 'OnExtraDataChanged', 35 => 'OnExtraDataCanChange', 36 => 'OnMediumRegistered', 37 => 'OnMachineRegistered', 38 => 'OnSessionStateChanged', 39 => 'OnSnapshotTaken', 40 => 'OnSnapshotDeleted', 41 => 'OnSnapshotChanged', 42 => 'OnGuestPropertyChanged', 43 => 'OnMousePointerShapeChanged', 44 => 'OnMouseCapabilityChanged', 45 => 'OnKeyboardLedsChanged', 46 => 'OnStateChanged', 47 => 'OnAdditionsStateChanged', 48 => 'OnNetworkAdapterChanged', 49 => 'OnSerialPortChanged', 50 => 'OnParallelPortChanged', 51 => 'OnStorageControllerChanged', 52 => 'OnMediumChanged', 53 => 'OnVRDEServerChanged', 54 => 'OnUSBControllerChanged', 55 => 'OnUSBDeviceStateChanged', 56 => 'OnSharedFolderChanged', 57 => 'OnRuntimeError', 58 => 'OnCanShowWindow', 59 => 'OnShowWindow', 60 => 'OnCPUChanged', 61 => 'OnVRDEServerInfoChanged', 62 => 'OnEventSourceChanged', 63 => 'OnCPUExecutionCapChanged', 64 => 'OnGuestKeyboard', 65 => 'OnGuestMouse', 66 => 'OnNATRedirect', 67 => 'OnHostPciDevicePlug', 68 => 'OnVBoxSVCAvailabilityChanged', 69 => 'OnBandwidthGroupChanged', 70 => 'OnGuestMonitorChanged', 71 => 'OnStorageDeviceChanged', 72 => 'Last');
+   public $ValueMap = array('Invalid' => 0, 'Any' => 1, 'Vetoable' => 2, 'MachineEvent' => 3, 'SnapshotEvent' => 4, 'InputEvent' => 5, 'LastWildcard' => 31, 'OnMachineStateChanged' => 32, 'OnMachineDataChanged' => 33, 'OnExtraDataChanged' => 34, 'OnExtraDataCanChange' => 35, 'OnMediumRegistered' => 36, 'OnMachineRegistered' => 37, 'OnSessionStateChanged' => 38, 'OnSnapshotTaken' => 39, 'OnSnapshotDeleted' => 40, 'OnSnapshotChanged' => 41, 'OnGuestPropertyChanged' => 42, 'OnMousePointerShapeChanged' => 43, 'OnMouseCapabilityChanged' => 44, 'OnKeyboardLedsChanged' => 45, 'OnStateChanged' => 46, 'OnAdditionsStateChanged' => 47, 'OnNetworkAdapterChanged' => 48, 'OnSerialPortChanged' => 49, 'OnParallelPortChanged' => 50, 'OnStorageControllerChanged' => 51, 'OnMediumChanged' => 52, 'OnVRDEServerChanged' => 53, 'OnUSBControllerChanged' => 54, 'OnUSBDeviceStateChanged' => 55, 'OnSharedFolderChanged' => 56, 'OnRuntimeError' => 57, 'OnCanShowWindow' => 58, 'OnShowWindow' => 59, 'OnCPUChanged' => 60, 'OnVRDEServerInfoChanged' => 61, 'OnEventSourceChanged' => 62, 'OnCPUExecutionCapChanged' => 63, 'OnGuestKeyboard' => 64, 'OnGuestMouse' => 65, 'OnNATRedirect' => 66, 'OnHostPciDevicePlug' => 67, 'OnVBoxSVCAvailabilityChanged' => 68, 'OnBandwidthGroupChanged' => 69, 'OnGuestMonitorChanged' => 70, 'OnStorageDeviceChanged' => 71, 'Last' => 72);
 }
 
 /**

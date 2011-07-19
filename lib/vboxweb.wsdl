@@ -34,6 +34,7 @@
             v1_9: 11 -
             v1_10: 12 -
             v1_11: 13 -
+            v1_12: 14 -
             Future: 99999 -
             -->
       <xsd:simpleType name="SettingsVersion">
@@ -52,6 +53,7 @@
           <xsd:enumeration value="v1_9"/>
           <xsd:enumeration value="v1_10"/>
           <xsd:enumeration value="v1_11"/>
+          <xsd:enumeration value="v1_12"/>
           <xsd:enumeration value="Future"/>
         </xsd:restriction>
       </xsd:simpleType>
@@ -377,6 +379,16 @@
           <xsd:enumeration value="WhiteOut"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: ImportOptions -
+            KeepAllMACs: 1 -
+            KeepNATMACs: 2 -
+            -->
+      <xsd:simpleType name="ImportOptions">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="KeepAllMACs"/>
+          <xsd:enumeration value="KeepNATMACs"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: VirtualSystemDescriptionType -
             Ignore: 1 -
             OS: 2 -
@@ -401,6 +413,7 @@
             NetworkAdapter: 21 -
             USBController: 22 -
             SoundCard: 23 -
+            SettingsFile: 24 -
             -->
       <xsd:simpleType name="VirtualSystemDescriptionType">
         <xsd:restriction base="xsd:string">
@@ -427,6 +440,7 @@
           <xsd:enumeration value="NetworkAdapter"/>
           <xsd:enumeration value="USBController"/>
           <xsd:enumeration value="SoundCard"/>
+          <xsd:enumeration value="SettingsFile"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: VirtualSystemDescriptionValueType -
@@ -455,6 +469,32 @@
           <xsd:enumeration value="DetachAllReturnNone"/>
           <xsd:enumeration value="DetachAllReturnHardDisksOnly"/>
           <xsd:enumeration value="Full"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: CloneMode -
+            MachineState: 1 -
+            MachineAndChildStates: 2 -
+            AllStates: 3 -
+            -->
+      <xsd:simpleType name="CloneMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="MachineState"/>
+          <xsd:enumeration value="MachineAndChildStates"/>
+          <xsd:enumeration value="AllStates"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: CloneOptions -
+            Link: 1 -
+            KeepAllMACs: 2 -
+            KeepNATMACs: 3 -
+            KeepDiskNames: 4 -
+            -->
+      <xsd:simpleType name="CloneOptions">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Link"/>
+          <xsd:enumeration value="KeepAllMACs"/>
+          <xsd:enumeration value="KeepNATMACs"/>
+          <xsd:enumeration value="KeepDiskNames"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: HostNetworkInterfaceMediumType -
@@ -493,6 +533,70 @@
           <xsd:enumeration value="HostOnly"/>
         </xsd:restriction>
       </xsd:simpleType>
+      <!-- enum: AdditionsFacilityType -
+            None: 0 -
+            VBoxGuestDriver: 20 -
+            VBoxService: 100 -
+            VBoxTrayClient: 101 -
+            Seamless: 1000 -
+            Graphics: 1100 -
+            All: 2147483646 -
+            -->
+      <xsd:simpleType name="AdditionsFacilityType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="VBoxGuestDriver"/>
+          <xsd:enumeration value="VBoxService"/>
+          <xsd:enumeration value="VBoxTrayClient"/>
+          <xsd:enumeration value="Seamless"/>
+          <xsd:enumeration value="Graphics"/>
+          <xsd:enumeration value="All"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: AdditionsFacilityClass -
+            None: 0 -
+            Driver: 10 -
+            Service: 30 -
+            Program: 50 -
+            Feature: 100 -
+            ThirdParty: 999 -
+            All: 2147483646 -
+            -->
+      <xsd:simpleType name="AdditionsFacilityClass">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="Driver"/>
+          <xsd:enumeration value="Service"/>
+          <xsd:enumeration value="Program"/>
+          <xsd:enumeration value="Feature"/>
+          <xsd:enumeration value="ThirdParty"/>
+          <xsd:enumeration value="All"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: AdditionsFacilityStatus -
+            Inactive: 0 -
+            Paused: 1 -
+            PreInit: 20 -
+            Init: 30 -
+            Active: 50 -
+            Terminating: 100 -
+            Terminated: 101 -
+            Failed: 800 -
+            Unknown: 999 -
+            -->
+      <xsd:simpleType name="AdditionsFacilityStatus">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Inactive"/>
+          <xsd:enumeration value="Paused"/>
+          <xsd:enumeration value="PreInit"/>
+          <xsd:enumeration value="Init"/>
+          <xsd:enumeration value="Active"/>
+          <xsd:enumeration value="Terminating"/>
+          <xsd:enumeration value="Terminated"/>
+          <xsd:enumeration value="Failed"/>
+          <xsd:enumeration value="Unknown"/>
+        </xsd:restriction>
+      </xsd:simpleType>
       <!-- enum: AdditionsRunLevelType -
             None: 0 -
             System: 1 -
@@ -522,6 +626,7 @@
             WaitForProcessStartOnly: 1 -
             IgnoreOrphanedProcesses: 2 -
             Hidden: 4 -
+            NoProfile: 8 -
             -->
       <xsd:simpleType name="ExecuteProcessFlag">
         <xsd:restriction base="xsd:string">
@@ -529,6 +634,31 @@
           <xsd:enumeration value="WaitForProcessStartOnly"/>
           <xsd:enumeration value="IgnoreOrphanedProcesses"/>
           <xsd:enumeration value="Hidden"/>
+          <xsd:enumeration value="NoProfile"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: ExecuteProcessStatus -
+            Undefined: 0 -
+            Started: 1 -
+            TerminatedNormally: 2 -
+            TerminatedSignal: 3 -
+            TerminatedAbnormally: 4 -
+            TimedOutKilled: 5 -
+            TimedOutAbnormally: 6 -
+            Down: 7 -
+            Error: 8 -
+            -->
+      <xsd:simpleType name="ExecuteProcessStatus">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Undefined"/>
+          <xsd:enumeration value="Started"/>
+          <xsd:enumeration value="TerminatedNormally"/>
+          <xsd:enumeration value="TerminatedSignal"/>
+          <xsd:enumeration value="TerminatedAbnormally"/>
+          <xsd:enumeration value="TimedOutKilled"/>
+          <xsd:enumeration value="TimedOutAbnormally"/>
+          <xsd:enumeration value="Down"/>
+          <xsd:enumeration value="Error"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: ProcessInputFlag -
@@ -539,6 +669,16 @@
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="None"/>
           <xsd:enumeration value="EndOfFile"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: ProcessOutputFlag -
+            None: 0 -
+            StdErr: 1 -
+            -->
+      <xsd:simpleType name="ProcessOutputFlag">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+          <xsd:enumeration value="StdErr"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: CopyFileFlag -
@@ -555,14 +695,36 @@
           <xsd:enumeration value="FollowLinks"/>
         </xsd:restriction>
       </xsd:simpleType>
-      <!-- enum: CreateDirectoryFlag -
+      <!-- enum: DirectoryCreateFlag -
             None: 0 -
             Parents: 1 -
             -->
-      <xsd:simpleType name="CreateDirectoryFlag">
+      <xsd:simpleType name="DirectoryCreateFlag">
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="None"/>
           <xsd:enumeration value="Parents"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: DirectoryOpenFlag -
+            None: 0 -
+            -->
+      <xsd:simpleType name="DirectoryOpenFlag">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="None"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: GuestDirEntryType -
+            Unknown: 0 -
+            Directory: 4 -
+            File: 10 -
+            Symlink: 12 -
+            -->
+      <xsd:simpleType name="GuestDirEntryType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Unknown"/>
+          <xsd:enumeration value="Directory"/>
+          <xsd:enumeration value="File"/>
+          <xsd:enumeration value="Symlink"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: MediumState -
@@ -715,7 +877,7 @@
             Bridged: 2 -
             Internal: 3 -
             HostOnly: 4 -
-            VDE: 5 -
+            Generic: 5 -
             -->
       <xsd:simpleType name="NetworkAttachmentType">
         <xsd:restriction base="xsd:string">
@@ -724,7 +886,7 @@
           <xsd:enumeration value="Bridged"/>
           <xsd:enumeration value="Internal"/>
           <xsd:enumeration value="HostOnly"/>
-          <xsd:enumeration value="VDE"/>
+          <xsd:enumeration value="Generic"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: NetworkAdapterType -
@@ -745,6 +907,18 @@
           <xsd:enumeration value="I82543GC"/>
           <xsd:enumeration value="I82545EM"/>
           <xsd:enumeration value="Virtio"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <!-- enum: NetworkAdapterPromiscModePolicy -
+            Deny: 1 -
+            AllowNetwork: 2 -
+            AllowAll: 3 -
+            -->
+      <xsd:simpleType name="NetworkAdapterPromiscModePolicy">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Deny"/>
+          <xsd:enumeration value="AllowNetwork"/>
+          <xsd:enumeration value="AllowAll"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: PortMode -
@@ -974,7 +1148,8 @@
             OnVBoxSVCAvailabilityChanged: 68 -
             OnBandwidthGroupChanged: 69 -
             OnGuestMonitorChanged: 70 -
-            Last: 71 -
+            OnStorageDeviceChanged: 71 -
+            Last: 72 -
             -->
       <xsd:simpleType name="VBoxEventType">
         <xsd:restriction base="xsd:string">
@@ -1024,6 +1199,7 @@
           <xsd:enumeration value="OnVBoxSVCAvailabilityChanged"/>
           <xsd:enumeration value="OnBandwidthGroupChanged"/>
           <xsd:enumeration value="OnGuestMonitorChanged"/>
+          <xsd:enumeration value="OnStorageDeviceChanged"/>
           <xsd:enumeration value="Last"/>
         </xsd:restriction>
       </xsd:simpleType>
@@ -1109,6 +1285,24 @@
           <xsd:element name="recommendedAudioController" type="vbox:AudioControllerType"/>
         </xsd:sequence>
       </xsd:complexType>
+      <!-- interface IAdditionsFacility as struct: -->
+      <xsd:complexType name="IAdditionsFacility">
+        <xsd:sequence>
+          <xsd:element name="classType" type="vbox:AdditionsFacilityClass"/>
+          <xsd:element name="lastUpdated" type="xsd:long"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="status" type="vbox:AdditionsFacilityStatus"/>
+          <xsd:element name="type" type="vbox:AdditionsFacilityType"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <!-- interface IGuestDirEntry as struct: -->
+      <xsd:complexType name="IGuestDirEntry">
+        <xsd:sequence>
+          <xsd:element name="nodeId" type="xsd:long"/>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="type" type="vbox:GuestDirEntryType"/>
+        </xsd:sequence>
+      </xsd:complexType>
       <!-- interface IMediumAttachment as struct: -->
       <xsd:complexType name="IMediumAttachment">
         <xsd:sequence>
@@ -1118,6 +1312,9 @@
           <xsd:element name="device" type="xsd:int"/>
           <xsd:element name="type" type="vbox:DeviceType"/>
           <xsd:element name="passthrough" type="xsd:boolean"/>
+          <xsd:element name="temporaryEject" type="xsd:boolean"/>
+          <xsd:element name="isEjected" type="xsd:boolean"/>
+          <xsd:element name="nonRotational" type="xsd:boolean"/>
           <xsd:element name="bandwidthGroup" type="xsd:string"/>
         </xsd:sequence>
       </xsd:complexType>
@@ -1414,6 +1611,21 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- readonly attribute IVirtualBox::APIVersion-->
+      <xsd:element name="IVirtualBox_getAPIVersion">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_getAPIVersionResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- readonly attribute IVirtualBox::homeFolder-->
       <xsd:element name="IVirtualBox_getHomeFolder">
         <xsd:complexType>
@@ -1625,6 +1837,36 @@
         </xsd:complexType>
       </xsd:element>
       <!--skipping attribute IExtPackManager for it is of a suppressed type-->
+      <!-- readonly attribute IVirtualBox::internalNetworks-->
+      <xsd:element name="IVirtualBox_getInternalNetworks">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_getInternalNetworksResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IVirtualBox::genericNetworkDrivers-->
+      <xsd:element name="IVirtualBox_getGenericNetworkDrivers">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IVirtualBox_getGenericNetworkDriversResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IVirtualBox::composeMachineFilename-->
       <xsd:element name="IVirtualBox_composeMachineFilename">
         <xsd:complexType>
@@ -1748,6 +1990,7 @@
             <xsd:element name="location" type="xsd:string"/>
             <xsd:element name="deviceType" type="vbox:DeviceType"/>
             <xsd:element name="accessMode" type="vbox:AccessMode"/>
+            <xsd:element name="forceNewUuid" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -2155,6 +2398,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="options" minOccurs="0" maxOccurs="unbounded" type="vbox:ImportOptions"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -2571,7 +2815,6 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!--Interface IEventContext-->
       <!--Interface IMachine-->
       <!-- readonly attribute IMachine::parent-->
       <xsd:element name="IMachine_getParent">
@@ -2717,7 +2960,7 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IMachine::HardwareVersion-->
+      <!-- read/write attribute IMachine::hardwareVersion-->
       <xsd:element name="IMachine_getHardwareVersion">
         <xsd:complexType>
           <xsd:sequence>
@@ -2736,7 +2979,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="HardwareVersion" type="xsd:string"/>
+            <xsd:element name="hardwareVersion" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -2913,7 +3156,7 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IMachine::PageFusionEnabled-->
+      <!-- read/write attribute IMachine::pageFusionEnabled-->
       <xsd:element name="IMachine_getPageFusionEnabled">
         <xsd:complexType>
           <xsd:sequence>
@@ -2932,7 +3175,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="PageFusionEnabled" type="xsd:boolean"/>
+            <xsd:element name="pageFusionEnabled" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -3249,6 +3492,62 @@
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::emulatedUSBWebcameraEnabled-->
+      <xsd:element name="IMachine_getEmulatedUSBWebcameraEnabled">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getEmulatedUSBWebcameraEnabledResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setEmulatedUSBWebcameraEnabled">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="emulatedUSBWebcameraEnabled" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setEmulatedUSBWebcameraEnabledResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IMachine::emulatedUSBCardReaderEnabled-->
+      <xsd:element name="IMachine_getEmulatedUSBCardReaderEnabled">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_getEmulatedUSBCardReaderEnabledResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setEmulatedUSBCardReaderEnabled">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="emulatedUSBCardReaderEnabled" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_setEmulatedUSBCardReaderEnabledResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
       <!-- readonly attribute IMachine::mediumAttachments-->
@@ -4043,6 +4342,40 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IMachine::temporaryEjectDevice-->
+      <xsd:element name="IMachine_temporaryEjectDevice">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="controllerPort" type="xsd:int"/>
+            <xsd:element name="device" type="xsd:int"/>
+            <xsd:element name="temporaryEject" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_temporaryEjectDeviceResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMachine::nonRotationalDevice-->
+      <xsd:element name="IMachine_nonRotationalDevice">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="controllerPort" type="xsd:int"/>
+            <xsd:element name="device" type="xsd:int"/>
+            <xsd:element name="nonRotational" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_nonRotationalDeviceResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IMachine::setBandwidthGroupForDevice-->
       <xsd:element name="IMachine_setBandwidthGroupForDevice">
         <xsd:complexType>
@@ -4137,7 +4470,6 @@
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="hostAddress" type="xsd:int"/>
             <xsd:element name="desiredGuestAddress" type="xsd:int"/>
-            <xsd:element name="eventContext" type="xsd:string"/>
             <xsd:element name="tryToUnbind" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
@@ -4761,7 +5093,7 @@
           <xsd:sequence>
             <xsd:element name="width" type="xsd:unsignedInt"/>
             <xsd:element name="height" type="xsd:unsignedInt"/>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4779,7 +5111,7 @@
           <xsd:sequence>
             <xsd:element name="width" type="xsd:unsignedInt"/>
             <xsd:element name="height" type="xsd:unsignedInt"/>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4815,7 +5147,7 @@
           <xsd:sequence>
             <xsd:element name="width" type="xsd:unsignedInt"/>
             <xsd:element name="height" type="xsd:unsignedInt"/>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4893,7 +5225,25 @@
       <xsd:element name="IMachine_readLogResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IMachine::cloneTo-->
+      <xsd:element name="IMachine_cloneTo">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="target" type="xsd:string"/>
+            <xsd:element name="mode" type="vbox:CloneMode"/>
+            <xsd:element name="options" minOccurs="0" maxOccurs="unbounded" type="vbox:CloneOptions"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachine_cloneToResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -5077,6 +5427,34 @@
           <xsd:sequence>
             <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="vbox:IPciDeviceAttachment"/>
           </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute IConsole::useHostClipboard-->
+      <xsd:element name="IConsole_getUseHostClipboard">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IConsole_getUseHostClipboardResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IConsole_setUseHostClipboard">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="useHostClipboard" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IConsole_setUseHostClipboardResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
       <!-- method IConsole::powerUp-->
@@ -5398,6 +5776,39 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="IConsole_deleteSnapshotResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IConsole::deleteSnapshotAndAllChildren-->
+      <xsd:element name="IConsole_deleteSnapshotAndAllChildren">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="id" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IConsole_deleteSnapshotAndAllChildrenResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IConsole::deleteSnapshotRange-->
+      <xsd:element name="IConsole_deleteSnapshotRange">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="startId" type="xsd:string"/>
+            <xsd:element name="endId" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IConsole_deleteSnapshotRangeResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
@@ -6160,6 +6571,21 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IHost::generateMACAddress-->
+      <xsd:element name="IHost_generateMACAddress">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IHost_generateMACAddressResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface ISystemProperties-->
       <!-- readonly attribute ISystemProperties::minGuestRAM-->
       <xsd:element name="ISystemProperties_getMinGuestRAM">
@@ -6278,21 +6704,6 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:long"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- readonly attribute ISystemProperties::networkAdapterCount-->
-      <xsd:element name="ISystemProperties_getNetworkAdapterCount">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="ISystemProperties_getNetworkAdapterCountResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6608,7 +7019,7 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute ISystemProperties::LogHistoryCount-->
+      <!-- read/write attribute ISystemProperties::logHistoryCount-->
       <xsd:element name="ISystemProperties_getLogHistoryCount">
         <xsd:complexType>
           <xsd:sequence>
@@ -6627,7 +7038,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="LogHistoryCount" type="xsd:unsignedInt"/>
+            <xsd:element name="logHistoryCount" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6648,6 +7059,39 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="vbox:AudioDriverType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method ISystemProperties::getMaxNetworkAdapters-->
+      <xsd:element name="ISystemProperties_getMaxNetworkAdapters">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="chipset" type="vbox:ChipsetType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISystemProperties_getMaxNetworkAdaptersResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method ISystemProperties::getMaxNetworkAdaptersOfType-->
+      <xsd:element name="ISystemProperties_getMaxNetworkAdaptersOfType">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="chipset" type="vbox:ChipsetType"/>
+            <xsd:element name="type" type="vbox:NetworkAttachmentType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISystemProperties_getMaxNetworkAdaptersOfTypeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6794,33 +7238,18 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute IGuest::supportsSeamless-->
-      <xsd:element name="IGuest_getSupportsSeamless">
+      <!-- readonly attribute IGuest::facilities-->
+      <xsd:element name="IGuest_getFacilities">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IGuest_getSupportsSeamlessResponse">
+      <xsd:element name="IGuest_getFacilitiesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:boolean"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- readonly attribute IGuest::supportsGraphics-->
-      <xsd:element name="IGuest_getSupportsGraphics">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IGuest_getSupportsGraphicsResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:boolean"/>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="vbox:IAdditionsFacility"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6907,6 +7336,23 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IGuest::getFacilityStatus-->
+      <xsd:element name="IGuest_getFacilityStatus">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="facility" type="vbox:AdditionsFacilityType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_getFacilityStatusResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="timestamp" type="xsd:long"/>
+            <xsd:element name="returnval" type="vbox:AdditionsFacilityStatus"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IGuest::getAdditionsStatus-->
       <xsd:element name="IGuest_getAdditionsStatus">
         <xsd:complexType>
@@ -6978,7 +7424,7 @@
       <xsd:element name="IGuest_getProcessOutputResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -6996,7 +7442,27 @@
           <xsd:sequence>
             <xsd:element name="exitcode" type="xsd:unsignedInt"/>
             <xsd:element name="flags" type="xsd:unsignedInt"/>
-            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+            <xsd:element name="returnval" type="vbox:ExecuteProcessStatus"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::copyFromGuest-->
+      <xsd:element name="IGuest_copyFromGuest">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="source" type="xsd:string"/>
+            <xsd:element name="dest" type="xsd:string"/>
+            <xsd:element name="userName" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
+            <xsd:element name="flags" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_copyFromGuestResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7020,8 +7486,22 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IGuest::createDirectory-->
-      <xsd:element name="IGuest_createDirectory">
+      <!-- method IGuest::directoryClose-->
+      <xsd:element name="IGuest_directoryClose">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="handle" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_directoryCloseResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::directoryCreate-->
+      <xsd:element name="IGuest_directoryCreate">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -7033,10 +7513,80 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IGuest_createDirectoryResponse">
+      <xsd:element name="IGuest_directoryCreateResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::directoryOpen-->
+      <xsd:element name="IGuest_directoryOpen">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="directory" type="xsd:string"/>
+            <xsd:element name="filter" type="xsd:string"/>
+            <xsd:element name="flags" type="xsd:unsignedInt"/>
+            <xsd:element name="userName" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_directoryOpenResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::directoryRead-->
+      <xsd:element name="IGuest_directoryRead">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="handle" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_directoryReadResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:IGuestDirEntry"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::fileExists-->
+      <xsd:element name="IGuest_fileExists">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="file" type="xsd:string"/>
+            <xsd:element name="userName" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_fileExistsResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method IGuest::fileQuerySize-->
+      <xsd:element name="IGuest_fileQuerySize">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="file" type="xsd:string"/>
+            <xsd:element name="userName" type="xsd:string"/>
+            <xsd:element name="password" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IGuest_fileQuerySizeResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:long"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7048,7 +7598,7 @@
             <xsd:element name="pid" type="xsd:unsignedInt"/>
             <xsd:element name="flags" type="xsd:unsignedInt"/>
             <xsd:element name="timeoutMS" type="xsd:unsignedInt"/>
-            <xsd:element name="data" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="data" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7388,6 +7938,20 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
+      <!-- method IProgress::waitForAsyncProgressCompletion-->
+      <xsd:element name="IProgress_waitForAsyncProgressCompletion">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="pProgressAsync" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IProgress_waitForAsyncProgressCompletionResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
       <!-- method IProgress::cancel-->
       <xsd:element name="IProgress_cancel">
         <xsd:complexType>
@@ -7545,6 +8109,21 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method ISnapshot::getChildrenCount-->
+      <xsd:element name="ISnapshot_getChildrenCount">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ISnapshot_getChildrenCountResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -7766,6 +8345,21 @@
       <xsd:element name="IMedium_setTypeResponse">
         <xsd:complexType>
           <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IMedium::allowedTypes-->
+      <xsd:element name="IMedium_getAllowedTypes">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMedium_getAllowedTypesResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="vbox:MediumType"/>
+          </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
       <!-- readonly attribute IMedium::parent-->
@@ -8521,7 +9115,7 @@
       <xsd:element name="IDisplay_takeScreenShotToArrayResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -8539,7 +9133,7 @@
       <xsd:element name="IDisplay_takeScreenShotPNGToArrayResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -8674,7 +9268,7 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute INetworkAdapter::attachmentType-->
+      <!-- read/write attribute INetworkAdapter::attachmentType-->
       <xsd:element name="INetworkAdapter_getAttachmentType">
         <xsd:complexType>
           <xsd:sequence>
@@ -8689,30 +9283,71 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute INetworkAdapter::hostInterface-->
-      <xsd:element name="INetworkAdapter_getHostInterface">
+      <xsd:element name="INetworkAdapter_setAttachmentType">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="attachmentType" type="vbox:NetworkAttachmentType"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setAttachmentTypeResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute INetworkAdapter::bridgedInterface-->
+      <xsd:element name="INetworkAdapter_getBridgedInterface">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_getHostInterfaceResponse">
+      <xsd:element name="INetworkAdapter_getBridgedInterfaceResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_setHostInterface">
+      <xsd:element name="INetworkAdapter_setBridgedInterface">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="hostInterface" type="xsd:string"/>
+            <xsd:element name="bridgedInterface" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_setHostInterfaceResponse">
+      <xsd:element name="INetworkAdapter_setBridgedInterfaceResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute INetworkAdapter::hostOnlyInterface-->
+      <xsd:element name="INetworkAdapter_getHostOnlyInterface">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_getHostOnlyInterfaceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setHostOnlyInterface">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="hostOnlyInterface" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setHostOnlyInterfaceResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -8773,30 +9408,30 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute INetworkAdapter::VDENetwork-->
-      <xsd:element name="INetworkAdapter_getVDENetwork">
+      <!-- read/write attribute INetworkAdapter::genericDriver-->
+      <xsd:element name="INetworkAdapter_getGenericDriver">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_getVDENetworkResponse">
+      <xsd:element name="INetworkAdapter_getGenericDriverResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_setVDENetwork">
+      <xsd:element name="INetworkAdapter_setGenericDriver">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="VDENetwork" type="xsd:string"/>
+            <xsd:element name="genericDriver" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_setVDENetworkResponse">
+      <xsd:element name="INetworkAdapter_setGenericDriverResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -8853,6 +9488,34 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="INetworkAdapter_setLineSpeedResponse">
+        <xsd:complexType>
+          <xsd:sequence/>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- read/write attribute INetworkAdapter::promiscModePolicy-->
+      <xsd:element name="INetworkAdapter_getPromiscModePolicy">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_getPromiscModePolicyResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:NetworkAdapterPromiscModePolicy"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setPromiscModePolicy">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="promiscModePolicy" type="vbox:NetworkAdapterPromiscModePolicy"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setPromiscModePolicyResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
@@ -8956,110 +9619,80 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute INetworkAdapter::bandwidthLimit-->
-      <xsd:element name="INetworkAdapter_getBandwidthLimit">
+      <!-- read/write attribute INetworkAdapter::bandwidthGroup-->
+      <xsd:element name="INetworkAdapter_getBandwidthGroup">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_getBandwidthLimitResponse">
+      <xsd:element name="INetworkAdapter_getBandwidthGroupResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:unsignedInt"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_setBandwidthLimit">
+      <xsd:element name="INetworkAdapter_setBandwidthGroup">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="bandwidthLimit" type="xsd:unsignedInt"/>
+            <xsd:element name="bandwidthGroup" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_setBandwidthLimitResponse">
+      <xsd:element name="INetworkAdapter_setBandwidthGroupResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method INetworkAdapter::attachToNAT-->
-      <xsd:element name="INetworkAdapter_attachToNAT">
+      <!-- method INetworkAdapter::getProperty-->
+      <xsd:element name="INetworkAdapter_getProperty">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="key" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_attachToNATResponse">
+      <xsd:element name="INetworkAdapter_getPropertyResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- method INetworkAdapter::setProperty-->
+      <xsd:element name="INetworkAdapter_setProperty">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="key" type="xsd:string"/>
+            <xsd:element name="value" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="INetworkAdapter_setPropertyResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method INetworkAdapter::attachToBridgedInterface-->
-      <xsd:element name="INetworkAdapter_attachToBridgedInterface">
+      <!-- method INetworkAdapter::getProperties-->
+      <xsd:element name="INetworkAdapter_getProperties">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="names" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="INetworkAdapter_attachToBridgedInterfaceResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method INetworkAdapter::attachToInternalNetwork-->
-      <xsd:element name="INetworkAdapter_attachToInternalNetwork">
+      <xsd:element name="INetworkAdapter_getPropertiesResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
+            <xsd:element name="returnNames" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
+            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
           </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="INetworkAdapter_attachToInternalNetworkResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method INetworkAdapter::attachToHostOnlyInterface-->
-      <xsd:element name="INetworkAdapter_attachToHostOnlyInterface">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="INetworkAdapter_attachToHostOnlyInterfaceResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method INetworkAdapter::attachToVDE-->
-      <xsd:element name="INetworkAdapter_attachToVDE">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="INetworkAdapter_attachToVDEResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
-        </xsd:complexType>
-      </xsd:element>
-      <!-- method INetworkAdapter::detach-->
-      <xsd:element name="INetworkAdapter_detach">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="INetworkAdapter_detachResponse">
-        <xsd:complexType>
-          <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
       <!--Interface ISerialPort-->
@@ -10312,7 +10945,7 @@
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- read/write attribute IVRDEServer::AuthLibrary-->
+      <!-- read/write attribute IVRDEServer::authLibrary-->
       <xsd:element name="IVRDEServer_getAuthLibrary">
         <xsd:complexType>
           <xsd:sequence>
@@ -10331,7 +10964,7 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
-            <xsd:element name="AuthLibrary" type="xsd:string"/>
+            <xsd:element name="authLibrary" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -11427,24 +12060,24 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IBandwidthControl::CreateBandwidthGroup-->
-      <xsd:element name="IBandwidthControl_CreateBandwidthGroup">
+      <!-- method IBandwidthControl::createBandwidthGroup-->
+      <xsd:element name="IBandwidthControl_createBandwidthGroup">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="type" type="vbox:BandwidthGroupType"/>
-            <xsd:element name="maxBytesPerSec" type="xsd:unsignedInt"/>
+            <xsd:element name="maxMbPerSec" type="xsd:unsignedInt"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IBandwidthControl_CreateBandwidthGroupResponse">
+      <xsd:element name="IBandwidthControl_createBandwidthGroupResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IBandwidthControl::DeleteBandwidthGroup-->
-      <xsd:element name="IBandwidthControl_DeleteBandwidthGroup">
+      <!-- method IBandwidthControl::deleteBandwidthGroup-->
+      <xsd:element name="IBandwidthControl_deleteBandwidthGroup">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -11452,13 +12085,13 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IBandwidthControl_DeleteBandwidthGroupResponse">
+      <xsd:element name="IBandwidthControl_deleteBandwidthGroupResponse">
         <xsd:complexType>
           <xsd:sequence/>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IBandwidthControl::GetBandwidthGroup-->
-      <xsd:element name="IBandwidthControl_GetBandwidthGroup">
+      <!-- method IBandwidthControl::getBandwidthGroup-->
+      <xsd:element name="IBandwidthControl_getBandwidthGroup">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
@@ -11466,22 +12099,22 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IBandwidthControl_GetBandwidthGroupResponse">
+      <xsd:element name="IBandwidthControl_getBandwidthGroupResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- method IBandwidthControl::GetAllBandwidthGroups-->
-      <xsd:element name="IBandwidthControl_GetAllBandwidthGroups">
+      <!-- method IBandwidthControl::getAllBandwidthGroups-->
+      <xsd:element name="IBandwidthControl_getAllBandwidthGroups">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="_this" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="IBandwidthControl_GetAllBandwidthGroupsResponse">
+      <xsd:element name="IBandwidthControl_getAllBandwidthGroupsResponse">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:string"/>
@@ -11751,6 +12384,21 @@
         </xsd:complexType>
       </xsd:element>
       <!--Interface IMachineDataChangedEvent-->
+      <!-- readonly attribute IMachineDataChangedEvent::temporary-->
+      <xsd:element name="IMachineDataChangedEvent_getTemporary">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IMachineDataChangedEvent_getTemporaryResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <!--Interface IMediumRegisteredEvent-->
       <!-- readonly attribute IMediumRegisteredEvent::mediumId-->
       <xsd:element name="IMediumRegisteredEvent_getMediumId">
@@ -11996,7 +12644,7 @@
       <xsd:element name="IMousePointerShapeChangedEvent_getShapeResponse">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="returnval" minOccurs="0" maxOccurs="unbounded" type="xsd:unsignedByte"/>
+            <xsd:element name="returnval" type="xsd:string"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -12804,21 +13452,6 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <!-- readonly attribute IHostPciDevicePlugEvent::eventContext-->
-      <xsd:element name="IHostPciDevicePlugEvent_getEventContext">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="_this" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="IHostPciDevicePlugEvent_getEventContextResponse">
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="returnval" type="xsd:string"/>
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
       <!-- readonly attribute IHostPciDevicePlugEvent::message-->
       <xsd:element name="IHostPciDevicePlugEvent_getMessage">
         <xsd:complexType>
@@ -12954,6 +13587,37 @@
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="returnval" type="xsd:unsignedInt"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!--Interface IStorageDeviceChangedEvent-->
+      <!-- readonly attribute IStorageDeviceChangedEvent::storageDevice-->
+      <xsd:element name="IStorageDeviceChangedEvent_getStorageDevice">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IStorageDeviceChangedEvent_getStorageDeviceResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="vbox:IMediumAttachment"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <!-- readonly attribute IStorageDeviceChangedEvent::removed-->
+      <xsd:element name="IStorageDeviceChangedEvent_getRemoved">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="_this" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="IStorageDeviceChangedEvent_getRemovedResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="returnval" type="xsd:boolean"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -13134,6 +13798,13 @@
   <message name="IVirtualBox_getPackageTypeResultMsg">
     <part name="parameters" element="vbox:IVirtualBox_getPackageTypeResponse"/>
   </message>
+  <!-- readonly attribute IVirtualBox::APIVersion-->
+  <message name="IVirtualBox_getAPIVersionRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getAPIVersion"/>
+  </message>
+  <message name="IVirtualBox_getAPIVersionResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getAPIVersionResponse"/>
+  </message>
   <!-- readonly attribute IVirtualBox::homeFolder-->
   <message name="IVirtualBox_getHomeFolderRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_getHomeFolder"/>
@@ -13233,6 +13904,20 @@
     <part name="parameters" element="vbox:IVirtualBox_getEventSourceResponse"/>
   </message>
   <!--skipping attribute IExtPackManager for it is of a suppressed type-->
+  <!-- readonly attribute IVirtualBox::internalNetworks-->
+  <message name="IVirtualBox_getInternalNetworksRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getInternalNetworks"/>
+  </message>
+  <message name="IVirtualBox_getInternalNetworksResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getInternalNetworksResponse"/>
+  </message>
+  <!-- readonly attribute IVirtualBox::genericNetworkDrivers-->
+  <message name="IVirtualBox_getGenericNetworkDriversRequestMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getGenericNetworkDrivers"/>
+  </message>
+  <message name="IVirtualBox_getGenericNetworkDriversResultMsg">
+    <part name="parameters" element="vbox:IVirtualBox_getGenericNetworkDriversResponse"/>
+  </message>
   <!-- method IVirtualBox::composeMachineFilename-->
   <message name="IVirtualBox_composeMachineFilenameRequestMsg">
     <part name="parameters" element="vbox:IVirtualBox_composeMachineFilename"/>
@@ -13678,11 +14363,6 @@
   </message>
   <!--
         *************************************
-        messages for interface IEventContext
-        *************************************
-      -->
-  <!--
-        *************************************
         messages for interface IPciAddress
         *************************************
       -->
@@ -13763,7 +14443,7 @@
   <message name="IMachine_setOSTypeIdResultMsg">
     <part name="parameters" element="vbox:IMachine_setOSTypeIdResponse"/>
   </message>
-  <!-- read/write attribute IMachine::HardwareVersion-->
+  <!-- read/write attribute IMachine::hardwareVersion-->
   <message name="IMachine_getHardwareVersionRequestMsg">
     <part name="parameters" element="vbox:IMachine_getHardwareVersion"/>
   </message>
@@ -13854,7 +14534,7 @@
   <message name="IMachine_setMemoryBalloonSizeResultMsg">
     <part name="parameters" element="vbox:IMachine_setMemoryBalloonSizeResponse"/>
   </message>
-  <!-- read/write attribute IMachine::PageFusionEnabled-->
+  <!-- read/write attribute IMachine::pageFusionEnabled-->
   <message name="IMachine_getPageFusionEnabledRequestMsg">
     <part name="parameters" element="vbox:IMachine_getPageFusionEnabled"/>
   </message>
@@ -14010,6 +14690,32 @@
   </message>
   <message name="IMachine_getVRDEServerResultMsg">
     <part name="parameters" element="vbox:IMachine_getVRDEServerResponse"/>
+  </message>
+  <!-- read/write attribute IMachine::emulatedUSBWebcameraEnabled-->
+  <message name="IMachine_getEmulatedUSBWebcameraEnabledRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getEmulatedUSBWebcameraEnabled"/>
+  </message>
+  <message name="IMachine_getEmulatedUSBWebcameraEnabledResultMsg">
+    <part name="parameters" element="vbox:IMachine_getEmulatedUSBWebcameraEnabledResponse"/>
+  </message>
+  <message name="IMachine_setEmulatedUSBWebcameraEnabledRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setEmulatedUSBWebcameraEnabled"/>
+  </message>
+  <message name="IMachine_setEmulatedUSBWebcameraEnabledResultMsg">
+    <part name="parameters" element="vbox:IMachine_setEmulatedUSBWebcameraEnabledResponse"/>
+  </message>
+  <!-- read/write attribute IMachine::emulatedUSBCardReaderEnabled-->
+  <message name="IMachine_getEmulatedUSBCardReaderEnabledRequestMsg">
+    <part name="parameters" element="vbox:IMachine_getEmulatedUSBCardReaderEnabled"/>
+  </message>
+  <message name="IMachine_getEmulatedUSBCardReaderEnabledResultMsg">
+    <part name="parameters" element="vbox:IMachine_getEmulatedUSBCardReaderEnabledResponse"/>
+  </message>
+  <message name="IMachine_setEmulatedUSBCardReaderEnabledRequestMsg">
+    <part name="parameters" element="vbox:IMachine_setEmulatedUSBCardReaderEnabled"/>
+  </message>
+  <message name="IMachine_setEmulatedUSBCardReaderEnabledResultMsg">
+    <part name="parameters" element="vbox:IMachine_setEmulatedUSBCardReaderEnabledResponse"/>
   </message>
   <!-- readonly attribute IMachine::mediumAttachments-->
   <message name="IMachine_getMediumAttachmentsRequestMsg">
@@ -14374,6 +15080,20 @@
   </message>
   <message name="IMachine_passthroughDeviceResultMsg">
     <part name="parameters" element="vbox:IMachine_passthroughDeviceResponse"/>
+  </message>
+  <!-- method IMachine::temporaryEjectDevice-->
+  <message name="IMachine_temporaryEjectDeviceRequestMsg">
+    <part name="parameters" element="vbox:IMachine_temporaryEjectDevice"/>
+  </message>
+  <message name="IMachine_temporaryEjectDeviceResultMsg">
+    <part name="parameters" element="vbox:IMachine_temporaryEjectDeviceResponse"/>
+  </message>
+  <!-- method IMachine::nonRotationalDevice-->
+  <message name="IMachine_nonRotationalDeviceRequestMsg">
+    <part name="parameters" element="vbox:IMachine_nonRotationalDevice"/>
+  </message>
+  <message name="IMachine_nonRotationalDeviceResultMsg">
+    <part name="parameters" element="vbox:IMachine_nonRotationalDeviceResponse"/>
   </message>
   <!-- method IMachine::setBandwidthGroupForDevice-->
   <message name="IMachine_setBandwidthGroupForDeviceRequestMsg">
@@ -14746,6 +15466,13 @@
   <message name="IMachine_readLogResultMsg">
     <part name="parameters" element="vbox:IMachine_readLogResponse"/>
   </message>
+  <!-- method IMachine::cloneTo-->
+  <message name="IMachine_cloneToRequestMsg">
+    <part name="parameters" element="vbox:IMachine_cloneTo"/>
+  </message>
+  <message name="IMachine_cloneToResultMsg">
+    <part name="parameters" element="vbox:IMachine_cloneToResponse"/>
+  </message>
   <!--
         *************************************
         messages for interface IVRDEServerInfo
@@ -14840,6 +15567,19 @@
   </message>
   <message name="IConsole_getAttachedPciDevicesResultMsg">
     <part name="parameters" element="vbox:IConsole_getAttachedPciDevicesResponse"/>
+  </message>
+  <!-- read/write attribute IConsole::useHostClipboard-->
+  <message name="IConsole_getUseHostClipboardRequestMsg">
+    <part name="parameters" element="vbox:IConsole_getUseHostClipboard"/>
+  </message>
+  <message name="IConsole_getUseHostClipboardResultMsg">
+    <part name="parameters" element="vbox:IConsole_getUseHostClipboardResponse"/>
+  </message>
+  <message name="IConsole_setUseHostClipboardRequestMsg">
+    <part name="parameters" element="vbox:IConsole_setUseHostClipboard"/>
+  </message>
+  <message name="IConsole_setUseHostClipboardResultMsg">
+    <part name="parameters" element="vbox:IConsole_setUseHostClipboardResponse"/>
   </message>
   <!-- method IConsole::powerUp-->
   <message name="IConsole_powerUpRequestMsg">
@@ -14994,6 +15734,20 @@
   </message>
   <message name="IConsole_deleteSnapshotResultMsg">
     <part name="parameters" element="vbox:IConsole_deleteSnapshotResponse"/>
+  </message>
+  <!-- method IConsole::deleteSnapshotAndAllChildren-->
+  <message name="IConsole_deleteSnapshotAndAllChildrenRequestMsg">
+    <part name="parameters" element="vbox:IConsole_deleteSnapshotAndAllChildren"/>
+  </message>
+  <message name="IConsole_deleteSnapshotAndAllChildrenResultMsg">
+    <part name="parameters" element="vbox:IConsole_deleteSnapshotAndAllChildrenResponse"/>
+  </message>
+  <!-- method IConsole::deleteSnapshotRange-->
+  <message name="IConsole_deleteSnapshotRangeRequestMsg">
+    <part name="parameters" element="vbox:IConsole_deleteSnapshotRange"/>
+  </message>
+  <message name="IConsole_deleteSnapshotRangeResultMsg">
+    <part name="parameters" element="vbox:IConsole_deleteSnapshotRangeResponse"/>
   </message>
   <!-- method IConsole::restoreSnapshot-->
   <message name="IConsole_restoreSnapshotRequestMsg">
@@ -15348,6 +16102,13 @@
   <message name="IHost_findUSBDeviceByAddressResultMsg">
     <part name="parameters" element="vbox:IHost_findUSBDeviceByAddressResponse"/>
   </message>
+  <!-- method IHost::generateMACAddress-->
+  <message name="IHost_generateMACAddressRequestMsg">
+    <part name="parameters" element="vbox:IHost_generateMACAddress"/>
+  </message>
+  <message name="IHost_generateMACAddressResultMsg">
+    <part name="parameters" element="vbox:IHost_generateMACAddressResponse"/>
+  </message>
   <!--
         *************************************
         messages for interface ISystemProperties
@@ -15408,13 +16169,6 @@
   </message>
   <message name="ISystemProperties_getInfoVDSizeResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_getInfoVDSizeResponse"/>
-  </message>
-  <!-- readonly attribute ISystemProperties::networkAdapterCount-->
-  <message name="ISystemProperties_getNetworkAdapterCountRequestMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getNetworkAdapterCount"/>
-  </message>
-  <message name="ISystemProperties_getNetworkAdapterCountResultMsg">
-    <part name="parameters" element="vbox:ISystemProperties_getNetworkAdapterCountResponse"/>
   </message>
   <!-- readonly attribute ISystemProperties::serialPortCount-->
   <message name="ISystemProperties_getSerialPortCountRequestMsg">
@@ -15561,7 +16315,7 @@
   <message name="ISystemProperties_setDefaultVRDEExtPackResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_setDefaultVRDEExtPackResponse"/>
   </message>
-  <!-- read/write attribute ISystemProperties::LogHistoryCount-->
+  <!-- read/write attribute ISystemProperties::logHistoryCount-->
   <message name="ISystemProperties_getLogHistoryCountRequestMsg">
     <part name="parameters" element="vbox:ISystemProperties_getLogHistoryCount"/>
   </message>
@@ -15580,6 +16334,20 @@
   </message>
   <message name="ISystemProperties_getDefaultAudioDriverResultMsg">
     <part name="parameters" element="vbox:ISystemProperties_getDefaultAudioDriverResponse"/>
+  </message>
+  <!-- method ISystemProperties::getMaxNetworkAdapters-->
+  <message name="ISystemProperties_getMaxNetworkAdaptersRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getMaxNetworkAdapters"/>
+  </message>
+  <message name="ISystemProperties_getMaxNetworkAdaptersResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getMaxNetworkAdaptersResponse"/>
+  </message>
+  <!-- method ISystemProperties::getMaxNetworkAdaptersOfType-->
+  <message name="ISystemProperties_getMaxNetworkAdaptersOfTypeRequestMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getMaxNetworkAdaptersOfType"/>
+  </message>
+  <message name="ISystemProperties_getMaxNetworkAdaptersOfTypeResultMsg">
+    <part name="parameters" element="vbox:ISystemProperties_getMaxNetworkAdaptersOfTypeResponse"/>
   </message>
   <!-- method ISystemProperties::getMaxDevicesPerPortForStorageBus-->
   <message name="ISystemProperties_getMaxDevicesPerPortForStorageBusRequestMsg">
@@ -15630,6 +16398,16 @@
       -->
   <!--
         *************************************
+        messages for interface IAdditionsFacility
+        *************************************
+      -->
+  <!--
+        *************************************
+        messages for interface IGuestDirEntry
+        *************************************
+      -->
+  <!--
+        *************************************
         messages for interface IGuest
         *************************************
       -->
@@ -15654,19 +16432,12 @@
   <message name="IGuest_getAdditionsVersionResultMsg">
     <part name="parameters" element="vbox:IGuest_getAdditionsVersionResponse"/>
   </message>
-  <!-- readonly attribute IGuest::supportsSeamless-->
-  <message name="IGuest_getSupportsSeamlessRequestMsg">
-    <part name="parameters" element="vbox:IGuest_getSupportsSeamless"/>
+  <!-- readonly attribute IGuest::facilities-->
+  <message name="IGuest_getFacilitiesRequestMsg">
+    <part name="parameters" element="vbox:IGuest_getFacilities"/>
   </message>
-  <message name="IGuest_getSupportsSeamlessResultMsg">
-    <part name="parameters" element="vbox:IGuest_getSupportsSeamlessResponse"/>
-  </message>
-  <!-- readonly attribute IGuest::supportsGraphics-->
-  <message name="IGuest_getSupportsGraphicsRequestMsg">
-    <part name="parameters" element="vbox:IGuest_getSupportsGraphics"/>
-  </message>
-  <message name="IGuest_getSupportsGraphicsResultMsg">
-    <part name="parameters" element="vbox:IGuest_getSupportsGraphicsResponse"/>
+  <message name="IGuest_getFacilitiesResultMsg">
+    <part name="parameters" element="vbox:IGuest_getFacilitiesResponse"/>
   </message>
   <!-- read/write attribute IGuest::memoryBalloonSize-->
   <message name="IGuest_getMemoryBalloonSizeRequestMsg">
@@ -15700,6 +16471,13 @@
   </message>
   <message name="IGuest_internalGetStatisticsResultMsg">
     <part name="parameters" element="vbox:IGuest_internalGetStatisticsResponse"/>
+  </message>
+  <!-- method IGuest::getFacilityStatus-->
+  <message name="IGuest_getFacilityStatusRequestMsg">
+    <part name="parameters" element="vbox:IGuest_getFacilityStatus"/>
+  </message>
+  <message name="IGuest_getFacilityStatusResultMsg">
+    <part name="parameters" element="vbox:IGuest_getFacilityStatusResponse"/>
   </message>
   <!-- method IGuest::getAdditionsStatus-->
   <message name="IGuest_getAdditionsStatusRequestMsg">
@@ -15736,6 +16514,13 @@
   <message name="IGuest_getProcessStatusResultMsg">
     <part name="parameters" element="vbox:IGuest_getProcessStatusResponse"/>
   </message>
+  <!-- method IGuest::copyFromGuest-->
+  <message name="IGuest_copyFromGuestRequestMsg">
+    <part name="parameters" element="vbox:IGuest_copyFromGuest"/>
+  </message>
+  <message name="IGuest_copyFromGuestResultMsg">
+    <part name="parameters" element="vbox:IGuest_copyFromGuestResponse"/>
+  </message>
   <!-- method IGuest::copyToGuest-->
   <message name="IGuest_copyToGuestRequestMsg">
     <part name="parameters" element="vbox:IGuest_copyToGuest"/>
@@ -15743,12 +16528,47 @@
   <message name="IGuest_copyToGuestResultMsg">
     <part name="parameters" element="vbox:IGuest_copyToGuestResponse"/>
   </message>
-  <!-- method IGuest::createDirectory-->
-  <message name="IGuest_createDirectoryRequestMsg">
-    <part name="parameters" element="vbox:IGuest_createDirectory"/>
+  <!-- method IGuest::directoryClose-->
+  <message name="IGuest_directoryCloseRequestMsg">
+    <part name="parameters" element="vbox:IGuest_directoryClose"/>
   </message>
-  <message name="IGuest_createDirectoryResultMsg">
-    <part name="parameters" element="vbox:IGuest_createDirectoryResponse"/>
+  <message name="IGuest_directoryCloseResultMsg">
+    <part name="parameters" element="vbox:IGuest_directoryCloseResponse"/>
+  </message>
+  <!-- method IGuest::directoryCreate-->
+  <message name="IGuest_directoryCreateRequestMsg">
+    <part name="parameters" element="vbox:IGuest_directoryCreate"/>
+  </message>
+  <message name="IGuest_directoryCreateResultMsg">
+    <part name="parameters" element="vbox:IGuest_directoryCreateResponse"/>
+  </message>
+  <!-- method IGuest::directoryOpen-->
+  <message name="IGuest_directoryOpenRequestMsg">
+    <part name="parameters" element="vbox:IGuest_directoryOpen"/>
+  </message>
+  <message name="IGuest_directoryOpenResultMsg">
+    <part name="parameters" element="vbox:IGuest_directoryOpenResponse"/>
+  </message>
+  <!-- method IGuest::directoryRead-->
+  <message name="IGuest_directoryReadRequestMsg">
+    <part name="parameters" element="vbox:IGuest_directoryRead"/>
+  </message>
+  <message name="IGuest_directoryReadResultMsg">
+    <part name="parameters" element="vbox:IGuest_directoryReadResponse"/>
+  </message>
+  <!-- method IGuest::fileExists-->
+  <message name="IGuest_fileExistsRequestMsg">
+    <part name="parameters" element="vbox:IGuest_fileExists"/>
+  </message>
+  <message name="IGuest_fileExistsResultMsg">
+    <part name="parameters" element="vbox:IGuest_fileExistsResponse"/>
+  </message>
+  <!-- method IGuest::fileQuerySize-->
+  <message name="IGuest_fileQuerySizeRequestMsg">
+    <part name="parameters" element="vbox:IGuest_fileQuerySize"/>
+  </message>
+  <message name="IGuest_fileQuerySizeResultMsg">
+    <part name="parameters" element="vbox:IGuest_fileQuerySizeResponse"/>
   </message>
   <!-- method IGuest::setProcessInput-->
   <message name="IGuest_setProcessInputRequestMsg">
@@ -15915,6 +16735,13 @@
   <message name="IProgress_waitForOperationCompletionResultMsg">
     <part name="parameters" element="vbox:IProgress_waitForOperationCompletionResponse"/>
   </message>
+  <!-- method IProgress::waitForAsyncProgressCompletion-->
+  <message name="IProgress_waitForAsyncProgressCompletionRequestMsg">
+    <part name="parameters" element="vbox:IProgress_waitForAsyncProgressCompletion"/>
+  </message>
+  <message name="IProgress_waitForAsyncProgressCompletionResultMsg">
+    <part name="parameters" element="vbox:IProgress_waitForAsyncProgressCompletionResponse"/>
+  </message>
   <!-- method IProgress::cancel-->
   <message name="IProgress_cancelRequestMsg">
     <part name="parameters" element="vbox:IProgress_cancel"/>
@@ -15994,6 +16821,13 @@
   </message>
   <message name="ISnapshot_getChildrenResultMsg">
     <part name="parameters" element="vbox:ISnapshot_getChildrenResponse"/>
+  </message>
+  <!-- method ISnapshot::getChildrenCount-->
+  <message name="ISnapshot_getChildrenCountRequestMsg">
+    <part name="parameters" element="vbox:ISnapshot_getChildrenCount"/>
+  </message>
+  <message name="ISnapshot_getChildrenCountResultMsg">
+    <part name="parameters" element="vbox:ISnapshot_getChildrenCountResponse"/>
   </message>
   <!--
         *************************************
@@ -16106,6 +16940,13 @@
   </message>
   <message name="IMedium_setTypeResultMsg">
     <part name="parameters" element="vbox:IMedium_setTypeResponse"/>
+  </message>
+  <!-- readonly attribute IMedium::allowedTypes-->
+  <message name="IMedium_getAllowedTypesRequestMsg">
+    <part name="parameters" element="vbox:IMedium_getAllowedTypes"/>
+  </message>
+  <message name="IMedium_getAllowedTypesResultMsg">
+    <part name="parameters" element="vbox:IMedium_getAllowedTypesResponse"/>
   </message>
   <!-- readonly attribute IMedium::parent-->
   <message name="IMedium_getParentRequestMsg">
@@ -16554,25 +17395,44 @@
   <message name="INetworkAdapter_setMACAddressResultMsg">
     <part name="parameters" element="vbox:INetworkAdapter_setMACAddressResponse"/>
   </message>
-  <!-- readonly attribute INetworkAdapter::attachmentType-->
+  <!-- read/write attribute INetworkAdapter::attachmentType-->
   <message name="INetworkAdapter_getAttachmentTypeRequestMsg">
     <part name="parameters" element="vbox:INetworkAdapter_getAttachmentType"/>
   </message>
   <message name="INetworkAdapter_getAttachmentTypeResultMsg">
     <part name="parameters" element="vbox:INetworkAdapter_getAttachmentTypeResponse"/>
   </message>
-  <!-- read/write attribute INetworkAdapter::hostInterface-->
-  <message name="INetworkAdapter_getHostInterfaceRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_getHostInterface"/>
+  <message name="INetworkAdapter_setAttachmentTypeRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setAttachmentType"/>
   </message>
-  <message name="INetworkAdapter_getHostInterfaceResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_getHostInterfaceResponse"/>
+  <message name="INetworkAdapter_setAttachmentTypeResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setAttachmentTypeResponse"/>
   </message>
-  <message name="INetworkAdapter_setHostInterfaceRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_setHostInterface"/>
+  <!-- read/write attribute INetworkAdapter::bridgedInterface-->
+  <message name="INetworkAdapter_getBridgedInterfaceRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getBridgedInterface"/>
   </message>
-  <message name="INetworkAdapter_setHostInterfaceResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_setHostInterfaceResponse"/>
+  <message name="INetworkAdapter_getBridgedInterfaceResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getBridgedInterfaceResponse"/>
+  </message>
+  <message name="INetworkAdapter_setBridgedInterfaceRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setBridgedInterface"/>
+  </message>
+  <message name="INetworkAdapter_setBridgedInterfaceResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setBridgedInterfaceResponse"/>
+  </message>
+  <!-- read/write attribute INetworkAdapter::hostOnlyInterface-->
+  <message name="INetworkAdapter_getHostOnlyInterfaceRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getHostOnlyInterface"/>
+  </message>
+  <message name="INetworkAdapter_getHostOnlyInterfaceResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getHostOnlyInterfaceResponse"/>
+  </message>
+  <message name="INetworkAdapter_setHostOnlyInterfaceRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setHostOnlyInterface"/>
+  </message>
+  <message name="INetworkAdapter_setHostOnlyInterfaceResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setHostOnlyInterfaceResponse"/>
   </message>
   <!-- read/write attribute INetworkAdapter::internalNetwork-->
   <message name="INetworkAdapter_getInternalNetworkRequestMsg">
@@ -16600,18 +17460,18 @@
   <message name="INetworkAdapter_setNATNetworkResultMsg">
     <part name="parameters" element="vbox:INetworkAdapter_setNATNetworkResponse"/>
   </message>
-  <!-- read/write attribute INetworkAdapter::VDENetwork-->
-  <message name="INetworkAdapter_getVDENetworkRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_getVDENetwork"/>
+  <!-- read/write attribute INetworkAdapter::genericDriver-->
+  <message name="INetworkAdapter_getGenericDriverRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getGenericDriver"/>
   </message>
-  <message name="INetworkAdapter_getVDENetworkResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_getVDENetworkResponse"/>
+  <message name="INetworkAdapter_getGenericDriverResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getGenericDriverResponse"/>
   </message>
-  <message name="INetworkAdapter_setVDENetworkRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_setVDENetwork"/>
+  <message name="INetworkAdapter_setGenericDriverRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setGenericDriver"/>
   </message>
-  <message name="INetworkAdapter_setVDENetworkResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_setVDENetworkResponse"/>
+  <message name="INetworkAdapter_setGenericDriverResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setGenericDriverResponse"/>
   </message>
   <!-- read/write attribute INetworkAdapter::cableConnected-->
   <message name="INetworkAdapter_getCableConnectedRequestMsg">
@@ -16638,6 +17498,19 @@
   </message>
   <message name="INetworkAdapter_setLineSpeedResultMsg">
     <part name="parameters" element="vbox:INetworkAdapter_setLineSpeedResponse"/>
+  </message>
+  <!-- read/write attribute INetworkAdapter::promiscModePolicy-->
+  <message name="INetworkAdapter_getPromiscModePolicyRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getPromiscModePolicy"/>
+  </message>
+  <message name="INetworkAdapter_getPromiscModePolicyResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getPromiscModePolicyResponse"/>
+  </message>
+  <message name="INetworkAdapter_setPromiscModePolicyRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setPromiscModePolicy"/>
+  </message>
+  <message name="INetworkAdapter_setPromiscModePolicyResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setPromiscModePolicyResponse"/>
   </message>
   <!-- read/write attribute INetworkAdapter::traceEnabled-->
   <message name="INetworkAdapter_getTraceEnabledRequestMsg">
@@ -16685,60 +17558,39 @@
   <message name="INetworkAdapter_setBootPriorityResultMsg">
     <part name="parameters" element="vbox:INetworkAdapter_setBootPriorityResponse"/>
   </message>
-  <!-- read/write attribute INetworkAdapter::bandwidthLimit-->
-  <message name="INetworkAdapter_getBandwidthLimitRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_getBandwidthLimit"/>
+  <!-- read/write attribute INetworkAdapter::bandwidthGroup-->
+  <message name="INetworkAdapter_getBandwidthGroupRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getBandwidthGroup"/>
   </message>
-  <message name="INetworkAdapter_getBandwidthLimitResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_getBandwidthLimitResponse"/>
+  <message name="INetworkAdapter_getBandwidthGroupResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getBandwidthGroupResponse"/>
   </message>
-  <message name="INetworkAdapter_setBandwidthLimitRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_setBandwidthLimit"/>
+  <message name="INetworkAdapter_setBandwidthGroupRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setBandwidthGroup"/>
   </message>
-  <message name="INetworkAdapter_setBandwidthLimitResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_setBandwidthLimitResponse"/>
+  <message name="INetworkAdapter_setBandwidthGroupResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setBandwidthGroupResponse"/>
   </message>
-  <!-- method INetworkAdapter::attachToNAT-->
-  <message name="INetworkAdapter_attachToNATRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToNAT"/>
+  <!-- method INetworkAdapter::getProperty-->
+  <message name="INetworkAdapter_getPropertyRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getProperty"/>
   </message>
-  <message name="INetworkAdapter_attachToNATResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToNATResponse"/>
+  <message name="INetworkAdapter_getPropertyResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getPropertyResponse"/>
   </message>
-  <!-- method INetworkAdapter::attachToBridgedInterface-->
-  <message name="INetworkAdapter_attachToBridgedInterfaceRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToBridgedInterface"/>
+  <!-- method INetworkAdapter::setProperty-->
+  <message name="INetworkAdapter_setPropertyRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setProperty"/>
   </message>
-  <message name="INetworkAdapter_attachToBridgedInterfaceResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToBridgedInterfaceResponse"/>
+  <message name="INetworkAdapter_setPropertyResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_setPropertyResponse"/>
   </message>
-  <!-- method INetworkAdapter::attachToInternalNetwork-->
-  <message name="INetworkAdapter_attachToInternalNetworkRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToInternalNetwork"/>
+  <!-- method INetworkAdapter::getProperties-->
+  <message name="INetworkAdapter_getPropertiesRequestMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getProperties"/>
   </message>
-  <message name="INetworkAdapter_attachToInternalNetworkResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToInternalNetworkResponse"/>
-  </message>
-  <!-- method INetworkAdapter::attachToHostOnlyInterface-->
-  <message name="INetworkAdapter_attachToHostOnlyInterfaceRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToHostOnlyInterface"/>
-  </message>
-  <message name="INetworkAdapter_attachToHostOnlyInterfaceResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToHostOnlyInterfaceResponse"/>
-  </message>
-  <!-- method INetworkAdapter::attachToVDE-->
-  <message name="INetworkAdapter_attachToVDERequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToVDE"/>
-  </message>
-  <message name="INetworkAdapter_attachToVDEResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_attachToVDEResponse"/>
-  </message>
-  <!-- method INetworkAdapter::detach-->
-  <message name="INetworkAdapter_detachRequestMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_detach"/>
-  </message>
-  <message name="INetworkAdapter_detachResultMsg">
-    <part name="parameters" element="vbox:INetworkAdapter_detachResponse"/>
+  <message name="INetworkAdapter_getPropertiesResultMsg">
+    <part name="parameters" element="vbox:INetworkAdapter_getPropertiesResponse"/>
   </message>
   <!--
         *************************************
@@ -17366,7 +18218,7 @@
   <message name="IVRDEServer_setVRDEExtPackResultMsg">
     <part name="parameters" element="vbox:IVRDEServer_setVRDEExtPackResponse"/>
   </message>
-  <!-- read/write attribute IVRDEServer::AuthLibrary-->
+  <!-- read/write attribute IVRDEServer::authLibrary-->
   <message name="IVRDEServer_getAuthLibraryRequestMsg">
     <part name="parameters" element="vbox:IVRDEServer_getAuthLibrary"/>
   </message>
@@ -17949,33 +18801,33 @@
   <message name="IBandwidthControl_getNumGroupsResultMsg">
     <part name="parameters" element="vbox:IBandwidthControl_getNumGroupsResponse"/>
   </message>
-  <!-- method IBandwidthControl::CreateBandwidthGroup-->
-  <message name="IBandwidthControl_CreateBandwidthGroupRequestMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_CreateBandwidthGroup"/>
+  <!-- method IBandwidthControl::createBandwidthGroup-->
+  <message name="IBandwidthControl_createBandwidthGroupRequestMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_createBandwidthGroup"/>
   </message>
-  <message name="IBandwidthControl_CreateBandwidthGroupResultMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_CreateBandwidthGroupResponse"/>
+  <message name="IBandwidthControl_createBandwidthGroupResultMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_createBandwidthGroupResponse"/>
   </message>
-  <!-- method IBandwidthControl::DeleteBandwidthGroup-->
-  <message name="IBandwidthControl_DeleteBandwidthGroupRequestMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_DeleteBandwidthGroup"/>
+  <!-- method IBandwidthControl::deleteBandwidthGroup-->
+  <message name="IBandwidthControl_deleteBandwidthGroupRequestMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_deleteBandwidthGroup"/>
   </message>
-  <message name="IBandwidthControl_DeleteBandwidthGroupResultMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_DeleteBandwidthGroupResponse"/>
+  <message name="IBandwidthControl_deleteBandwidthGroupResultMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_deleteBandwidthGroupResponse"/>
   </message>
-  <!-- method IBandwidthControl::GetBandwidthGroup-->
-  <message name="IBandwidthControl_GetBandwidthGroupRequestMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_GetBandwidthGroup"/>
+  <!-- method IBandwidthControl::getBandwidthGroup-->
+  <message name="IBandwidthControl_getBandwidthGroupRequestMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_getBandwidthGroup"/>
   </message>
-  <message name="IBandwidthControl_GetBandwidthGroupResultMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_GetBandwidthGroupResponse"/>
+  <message name="IBandwidthControl_getBandwidthGroupResultMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_getBandwidthGroupResponse"/>
   </message>
-  <!-- method IBandwidthControl::GetAllBandwidthGroups-->
-  <message name="IBandwidthControl_GetAllBandwidthGroupsRequestMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_GetAllBandwidthGroups"/>
+  <!-- method IBandwidthControl::getAllBandwidthGroups-->
+  <message name="IBandwidthControl_getAllBandwidthGroupsRequestMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_getAllBandwidthGroups"/>
   </message>
-  <message name="IBandwidthControl_GetAllBandwidthGroupsResultMsg">
-    <part name="parameters" element="vbox:IBandwidthControl_GetAllBandwidthGroupsResponse"/>
+  <message name="IBandwidthControl_getAllBandwidthGroupsResultMsg">
+    <part name="parameters" element="vbox:IBandwidthControl_getAllBandwidthGroupsResponse"/>
   </message>
   <!--
         *************************************
@@ -18136,6 +18988,13 @@
         messages for interface IMachineDataChangedEvent
         *************************************
       -->
+  <!-- readonly attribute IMachineDataChangedEvent::temporary-->
+  <message name="IMachineDataChangedEvent_getTemporaryRequestMsg">
+    <part name="parameters" element="vbox:IMachineDataChangedEvent_getTemporary"/>
+  </message>
+  <message name="IMachineDataChangedEvent_getTemporaryResultMsg">
+    <part name="parameters" element="vbox:IMachineDataChangedEvent_getTemporaryResponse"/>
+  </message>
   <!--
         *************************************
         messages for interface IMediumRegisteredEvent
@@ -18791,13 +19650,6 @@
   <message name="IHostPciDevicePlugEvent_getAttachmentResultMsg">
     <part name="parameters" element="vbox:IHostPciDevicePlugEvent_getAttachmentResponse"/>
   </message>
-  <!-- readonly attribute IHostPciDevicePlugEvent::eventContext-->
-  <message name="IHostPciDevicePlugEvent_getEventContextRequestMsg">
-    <part name="parameters" element="vbox:IHostPciDevicePlugEvent_getEventContext"/>
-  </message>
-  <message name="IHostPciDevicePlugEvent_getEventContextResultMsg">
-    <part name="parameters" element="vbox:IHostPciDevicePlugEvent_getEventContextResponse"/>
-  </message>
   <!-- readonly attribute IHostPciDevicePlugEvent::message-->
   <message name="IHostPciDevicePlugEvent_getMessageRequestMsg">
     <part name="parameters" element="vbox:IHostPciDevicePlugEvent_getMessage"/>
@@ -18875,6 +19727,25 @@
   </message>
   <message name="IGuestMonitorChangedEvent_getHeightResultMsg">
     <part name="parameters" element="vbox:IGuestMonitorChangedEvent_getHeightResponse"/>
+  </message>
+  <!--
+        *************************************
+        messages for interface IStorageDeviceChangedEvent
+        *************************************
+      -->
+  <!-- readonly attribute IStorageDeviceChangedEvent::storageDevice-->
+  <message name="IStorageDeviceChangedEvent_getStorageDeviceRequestMsg">
+    <part name="parameters" element="vbox:IStorageDeviceChangedEvent_getStorageDevice"/>
+  </message>
+  <message name="IStorageDeviceChangedEvent_getStorageDeviceResultMsg">
+    <part name="parameters" element="vbox:IStorageDeviceChangedEvent_getStorageDeviceResponse"/>
+  </message>
+  <!-- readonly attribute IStorageDeviceChangedEvent::removed-->
+  <message name="IStorageDeviceChangedEvent_getRemovedRequestMsg">
+    <part name="parameters" element="vbox:IStorageDeviceChangedEvent_getRemoved"/>
+  </message>
+  <message name="IStorageDeviceChangedEvent_getRemovedResultMsg">
+    <part name="parameters" element="vbox:IStorageDeviceChangedEvent_getRemovedResponse"/>
   </message>
   <!--
       ******************************************************
@@ -19007,6 +19878,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IVirtualBox_getAPIVersion">
+      <input message="vbox:IVirtualBox_getAPIVersionRequestMsg"/>
+      <output message="vbox:IVirtualBox_getAPIVersionResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IVirtualBox_getHomeFolder">
       <input message="vbox:IVirtualBox_getHomeFolderRequestMsg"/>
       <output message="vbox:IVirtualBox_getHomeFolderResultMsg"/>
@@ -19092,6 +19969,18 @@
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
     <!--skipping attribute IExtPackManager for it is of a suppressed type-->
+    <operation name="IVirtualBox_getInternalNetworks">
+      <input message="vbox:IVirtualBox_getInternalNetworksRequestMsg"/>
+      <output message="vbox:IVirtualBox_getInternalNetworksResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IVirtualBox_getGenericNetworkDrivers">
+      <input message="vbox:IVirtualBox_getGenericNetworkDriversRequestMsg"/>
+      <output message="vbox:IVirtualBox_getGenericNetworkDriversResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IVirtualBox_composeMachineFilename">
       <input message="vbox:IVirtualBox_composeMachineFilenameRequestMsg"/>
       <output message="vbox:IVirtualBox_composeMachineFilenameResultMsg"/>
@@ -19485,11 +20374,6 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IEventContext
-          *************************************
-        -->
-    <!--
-          *************************************
           operations in portType for interface IPciAddress
           *************************************
         -->
@@ -19788,6 +20672,30 @@
     <operation name="IMachine_getVRDEServer">
       <input message="vbox:IMachine_getVRDEServerRequestMsg"/>
       <output message="vbox:IMachine_getVRDEServerResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_getEmulatedUSBWebcameraEnabled">
+      <input message="vbox:IMachine_getEmulatedUSBWebcameraEnabledRequestMsg"/>
+      <output message="vbox:IMachine_getEmulatedUSBWebcameraEnabledResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setEmulatedUSBWebcameraEnabled">
+      <input message="vbox:IMachine_setEmulatedUSBWebcameraEnabledRequestMsg"/>
+      <output message="vbox:IMachine_setEmulatedUSBWebcameraEnabledResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_getEmulatedUSBCardReaderEnabled">
+      <input message="vbox:IMachine_getEmulatedUSBCardReaderEnabledRequestMsg"/>
+      <output message="vbox:IMachine_getEmulatedUSBCardReaderEnabledResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_setEmulatedUSBCardReaderEnabled">
+      <input message="vbox:IMachine_setEmulatedUSBCardReaderEnabledRequestMsg"/>
+      <output message="vbox:IMachine_setEmulatedUSBCardReaderEnabledResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -20115,6 +21023,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_temporaryEjectDevice">
+      <input message="vbox:IMachine_temporaryEjectDeviceRequestMsg"/>
+      <output message="vbox:IMachine_temporaryEjectDeviceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMachine_nonRotationalDevice">
+      <input message="vbox:IMachine_nonRotationalDeviceRequestMsg"/>
+      <output message="vbox:IMachine_nonRotationalDeviceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IMachine_setBandwidthGroupForDevice">
       <input message="vbox:IMachine_setBandwidthGroupForDeviceRequestMsg"/>
       <output message="vbox:IMachine_setBandwidthGroupForDeviceResultMsg"/>
@@ -20433,6 +21353,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IMachine_cloneTo">
+      <input message="vbox:IMachine_cloneToRequestMsg"/>
+      <output message="vbox:IMachine_cloneToResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IVRDEServerInfo
@@ -20513,6 +21439,18 @@
     <operation name="IConsole_getAttachedPciDevices">
       <input message="vbox:IConsole_getAttachedPciDevicesRequestMsg"/>
       <output message="vbox:IConsole_getAttachedPciDevicesResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IConsole_getUseHostClipboard">
+      <input message="vbox:IConsole_getUseHostClipboardRequestMsg"/>
+      <output message="vbox:IConsole_getUseHostClipboardResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IConsole_setUseHostClipboard">
+      <input message="vbox:IConsole_setUseHostClipboardRequestMsg"/>
+      <output message="vbox:IConsole_setUseHostClipboardResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -20645,6 +21583,18 @@
     <operation name="IConsole_deleteSnapshot">
       <input message="vbox:IConsole_deleteSnapshotRequestMsg"/>
       <output message="vbox:IConsole_deleteSnapshotResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IConsole_deleteSnapshotAndAllChildren">
+      <input message="vbox:IConsole_deleteSnapshotAndAllChildrenRequestMsg"/>
+      <output message="vbox:IConsole_deleteSnapshotAndAllChildrenResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IConsole_deleteSnapshotRange">
+      <input message="vbox:IConsole_deleteSnapshotRangeRequestMsg"/>
+      <output message="vbox:IConsole_deleteSnapshotRangeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -20952,6 +21902,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IHost_generateMACAddress">
+      <input message="vbox:IHost_generateMACAddressRequestMsg"/>
+      <output message="vbox:IHost_generateMACAddressResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <!--
           *************************************
           operations in portType for interface ISystemProperties
@@ -21002,12 +21958,6 @@
     <operation name="ISystemProperties_getInfoVDSize">
       <input message="vbox:ISystemProperties_getInfoVDSizeRequestMsg"/>
       <output message="vbox:ISystemProperties_getInfoVDSizeResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="ISystemProperties_getNetworkAdapterCount">
-      <input message="vbox:ISystemProperties_getNetworkAdapterCountRequestMsg"/>
-      <output message="vbox:ISystemProperties_getNetworkAdapterCountResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -21161,6 +22111,18 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="ISystemProperties_getMaxNetworkAdapters">
+      <input message="vbox:ISystemProperties_getMaxNetworkAdaptersRequestMsg"/>
+      <output message="vbox:ISystemProperties_getMaxNetworkAdaptersResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="ISystemProperties_getMaxNetworkAdaptersOfType">
+      <input message="vbox:ISystemProperties_getMaxNetworkAdaptersOfTypeRequestMsg"/>
+      <output message="vbox:ISystemProperties_getMaxNetworkAdaptersOfTypeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="ISystemProperties_getMaxDevicesPerPortForStorageBus">
       <input message="vbox:ISystemProperties_getMaxDevicesPerPortForStorageBusRequestMsg"/>
       <output message="vbox:ISystemProperties_getMaxDevicesPerPortForStorageBusResultMsg"/>
@@ -21204,6 +22166,16 @@
         -->
     <!--
           *************************************
+          operations in portType for interface IAdditionsFacility
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IGuestDirEntry
+          *************************************
+        -->
+    <!--
+          *************************************
           operations in portType for interface IGuest
           *************************************
         -->
@@ -21225,15 +22197,9 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IGuest_getSupportsSeamless">
-      <input message="vbox:IGuest_getSupportsSeamlessRequestMsg"/>
-      <output message="vbox:IGuest_getSupportsSeamlessResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="IGuest_getSupportsGraphics">
-      <input message="vbox:IGuest_getSupportsGraphicsRequestMsg"/>
-      <output message="vbox:IGuest_getSupportsGraphicsResultMsg"/>
+    <operation name="IGuest_getFacilities">
+      <input message="vbox:IGuest_getFacilitiesRequestMsg"/>
+      <output message="vbox:IGuest_getFacilitiesResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -21267,6 +22233,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IGuest_getFacilityStatus">
+      <input message="vbox:IGuest_getFacilityStatusRequestMsg"/>
+      <output message="vbox:IGuest_getFacilityStatusResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IGuest_getAdditionsStatus">
       <input message="vbox:IGuest_getAdditionsStatusRequestMsg"/>
       <output message="vbox:IGuest_getAdditionsStatusResultMsg"/>
@@ -21297,15 +22269,51 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IGuest_copyFromGuest">
+      <input message="vbox:IGuest_copyFromGuestRequestMsg"/>
+      <output message="vbox:IGuest_copyFromGuestResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IGuest_copyToGuest">
       <input message="vbox:IGuest_copyToGuestRequestMsg"/>
       <output message="vbox:IGuest_copyToGuestResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IGuest_createDirectory">
-      <input message="vbox:IGuest_createDirectoryRequestMsg"/>
-      <output message="vbox:IGuest_createDirectoryResultMsg"/>
+    <operation name="IGuest_directoryClose">
+      <input message="vbox:IGuest_directoryCloseRequestMsg"/>
+      <output message="vbox:IGuest_directoryCloseResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_directoryCreate">
+      <input message="vbox:IGuest_directoryCreateRequestMsg"/>
+      <output message="vbox:IGuest_directoryCreateResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_directoryOpen">
+      <input message="vbox:IGuest_directoryOpenRequestMsg"/>
+      <output message="vbox:IGuest_directoryOpenResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_directoryRead">
+      <input message="vbox:IGuest_directoryReadRequestMsg"/>
+      <output message="vbox:IGuest_directoryReadResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_fileExists">
+      <input message="vbox:IGuest_fileExistsRequestMsg"/>
+      <output message="vbox:IGuest_fileExistsResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IGuest_fileQuerySize">
+      <input message="vbox:IGuest_fileQuerySizeRequestMsg"/>
+      <output message="vbox:IGuest_fileQuerySizeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -21452,6 +22460,12 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
+    <operation name="IProgress_waitForAsyncProgressCompletion">
+      <input message="vbox:IProgress_waitForAsyncProgressCompletionRequestMsg"/>
+      <output message="vbox:IProgress_waitForAsyncProgressCompletionResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <operation name="IProgress_cancel">
       <input message="vbox:IProgress_cancelRequestMsg"/>
       <output message="vbox:IProgress_cancelResultMsg"/>
@@ -21520,6 +22534,12 @@
     <operation name="ISnapshot_getChildren">
       <input message="vbox:ISnapshot_getChildrenRequestMsg"/>
       <output message="vbox:ISnapshot_getChildrenResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="ISnapshot_getChildrenCount">
+      <input message="vbox:ISnapshot_getChildrenCountRequestMsg"/>
+      <output message="vbox:ISnapshot_getChildrenCountResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -21620,6 +22640,12 @@
     <operation name="IMedium_setType">
       <input message="vbox:IMedium_setTypeRequestMsg"/>
       <output message="vbox:IMedium_setTypeResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IMedium_getAllowedTypes">
+      <input message="vbox:IMedium_getAllowedTypesRequestMsg"/>
+      <output message="vbox:IMedium_getAllowedTypesResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22017,15 +23043,33 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_getHostInterface">
-      <input message="vbox:INetworkAdapter_getHostInterfaceRequestMsg"/>
-      <output message="vbox:INetworkAdapter_getHostInterfaceResultMsg"/>
+    <operation name="INetworkAdapter_setAttachmentType">
+      <input message="vbox:INetworkAdapter_setAttachmentTypeRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setAttachmentTypeResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_setHostInterface">
-      <input message="vbox:INetworkAdapter_setHostInterfaceRequestMsg"/>
-      <output message="vbox:INetworkAdapter_setHostInterfaceResultMsg"/>
+    <operation name="INetworkAdapter_getBridgedInterface">
+      <input message="vbox:INetworkAdapter_getBridgedInterfaceRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getBridgedInterfaceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="INetworkAdapter_setBridgedInterface">
+      <input message="vbox:INetworkAdapter_setBridgedInterfaceRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setBridgedInterfaceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="INetworkAdapter_getHostOnlyInterface">
+      <input message="vbox:INetworkAdapter_getHostOnlyInterfaceRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getHostOnlyInterfaceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="INetworkAdapter_setHostOnlyInterface">
+      <input message="vbox:INetworkAdapter_setHostOnlyInterfaceRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setHostOnlyInterfaceResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22053,15 +23097,15 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_getVDENetwork">
-      <input message="vbox:INetworkAdapter_getVDENetworkRequestMsg"/>
-      <output message="vbox:INetworkAdapter_getVDENetworkResultMsg"/>
+    <operation name="INetworkAdapter_getGenericDriver">
+      <input message="vbox:INetworkAdapter_getGenericDriverRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getGenericDriverResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_setVDENetwork">
-      <input message="vbox:INetworkAdapter_setVDENetworkRequestMsg"/>
-      <output message="vbox:INetworkAdapter_setVDENetworkResultMsg"/>
+    <operation name="INetworkAdapter_setGenericDriver">
+      <input message="vbox:INetworkAdapter_setGenericDriverRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setGenericDriverResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22086,6 +23130,18 @@
     <operation name="INetworkAdapter_setLineSpeed">
       <input message="vbox:INetworkAdapter_setLineSpeedRequestMsg"/>
       <output message="vbox:INetworkAdapter_setLineSpeedResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="INetworkAdapter_getPromiscModePolicy">
+      <input message="vbox:INetworkAdapter_getPromiscModePolicyRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getPromiscModePolicyResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="INetworkAdapter_setPromiscModePolicy">
+      <input message="vbox:INetworkAdapter_setPromiscModePolicyRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setPromiscModePolicyResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -22131,51 +23187,33 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_getBandwidthLimit">
-      <input message="vbox:INetworkAdapter_getBandwidthLimitRequestMsg"/>
-      <output message="vbox:INetworkAdapter_getBandwidthLimitResultMsg"/>
+    <operation name="INetworkAdapter_getBandwidthGroup">
+      <input message="vbox:INetworkAdapter_getBandwidthGroupRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getBandwidthGroupResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_setBandwidthLimit">
-      <input message="vbox:INetworkAdapter_setBandwidthLimitRequestMsg"/>
-      <output message="vbox:INetworkAdapter_setBandwidthLimitResultMsg"/>
+    <operation name="INetworkAdapter_setBandwidthGroup">
+      <input message="vbox:INetworkAdapter_setBandwidthGroupRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setBandwidthGroupResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_attachToNAT">
-      <input message="vbox:INetworkAdapter_attachToNATRequestMsg"/>
-      <output message="vbox:INetworkAdapter_attachToNATResultMsg"/>
+    <operation name="INetworkAdapter_getProperty">
+      <input message="vbox:INetworkAdapter_getPropertyRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getPropertyResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_attachToBridgedInterface">
-      <input message="vbox:INetworkAdapter_attachToBridgedInterfaceRequestMsg"/>
-      <output message="vbox:INetworkAdapter_attachToBridgedInterfaceResultMsg"/>
+    <operation name="INetworkAdapter_setProperty">
+      <input message="vbox:INetworkAdapter_setPropertyRequestMsg"/>
+      <output message="vbox:INetworkAdapter_setPropertyResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="INetworkAdapter_attachToInternalNetwork">
-      <input message="vbox:INetworkAdapter_attachToInternalNetworkRequestMsg"/>
-      <output message="vbox:INetworkAdapter_attachToInternalNetworkResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="INetworkAdapter_attachToHostOnlyInterface">
-      <input message="vbox:INetworkAdapter_attachToHostOnlyInterfaceRequestMsg"/>
-      <output message="vbox:INetworkAdapter_attachToHostOnlyInterfaceResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="INetworkAdapter_attachToVDE">
-      <input message="vbox:INetworkAdapter_attachToVDERequestMsg"/>
-      <output message="vbox:INetworkAdapter_attachToVDEResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
-    <operation name="INetworkAdapter_detach">
-      <input message="vbox:INetworkAdapter_detachRequestMsg"/>
-      <output message="vbox:INetworkAdapter_detachResultMsg"/>
+    <operation name="INetworkAdapter_getProperties">
+      <input message="vbox:INetworkAdapter_getPropertiesRequestMsg"/>
+      <output message="vbox:INetworkAdapter_getPropertiesResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -23275,27 +24313,27 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IBandwidthControl_CreateBandwidthGroup">
-      <input message="vbox:IBandwidthControl_CreateBandwidthGroupRequestMsg"/>
-      <output message="vbox:IBandwidthControl_CreateBandwidthGroupResultMsg"/>
+    <operation name="IBandwidthControl_createBandwidthGroup">
+      <input message="vbox:IBandwidthControl_createBandwidthGroupRequestMsg"/>
+      <output message="vbox:IBandwidthControl_createBandwidthGroupResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IBandwidthControl_DeleteBandwidthGroup">
-      <input message="vbox:IBandwidthControl_DeleteBandwidthGroupRequestMsg"/>
-      <output message="vbox:IBandwidthControl_DeleteBandwidthGroupResultMsg"/>
+    <operation name="IBandwidthControl_deleteBandwidthGroup">
+      <input message="vbox:IBandwidthControl_deleteBandwidthGroupRequestMsg"/>
+      <output message="vbox:IBandwidthControl_deleteBandwidthGroupResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IBandwidthControl_GetBandwidthGroup">
-      <input message="vbox:IBandwidthControl_GetBandwidthGroupRequestMsg"/>
-      <output message="vbox:IBandwidthControl_GetBandwidthGroupResultMsg"/>
+    <operation name="IBandwidthControl_getBandwidthGroup">
+      <input message="vbox:IBandwidthControl_getBandwidthGroupRequestMsg"/>
+      <output message="vbox:IBandwidthControl_getBandwidthGroupResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IBandwidthControl_GetAllBandwidthGroups">
-      <input message="vbox:IBandwidthControl_GetAllBandwidthGroupsRequestMsg"/>
-      <output message="vbox:IBandwidthControl_GetAllBandwidthGroupsResultMsg"/>
+    <operation name="IBandwidthControl_getAllBandwidthGroups">
+      <input message="vbox:IBandwidthControl_getAllBandwidthGroupsRequestMsg"/>
+      <output message="vbox:IBandwidthControl_getAllBandwidthGroupsResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -23441,6 +24479,12 @@
           operations in portType for interface IMachineDataChangedEvent
           *************************************
         -->
+    <operation name="IMachineDataChangedEvent_getTemporary">
+      <input message="vbox:IMachineDataChangedEvent_getTemporaryRequestMsg"/>
+      <output message="vbox:IMachineDataChangedEvent_getTemporaryResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IMediumRegisteredEvent
@@ -24029,12 +25073,6 @@
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
-    <operation name="IHostPciDevicePlugEvent_getEventContext">
-      <input message="vbox:IHostPciDevicePlugEvent_getEventContextRequestMsg"/>
-      <output message="vbox:IHostPciDevicePlugEvent_getEventContextResultMsg"/>
-      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
-      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
-    </operation>
     <operation name="IHostPciDevicePlugEvent_getMessage">
       <input message="vbox:IHostPciDevicePlugEvent_getMessageRequestMsg"/>
       <output message="vbox:IHostPciDevicePlugEvent_getMessageResultMsg"/>
@@ -24101,6 +25139,23 @@
     <operation name="IGuestMonitorChangedEvent_getHeight">
       <input message="vbox:IGuestMonitorChangedEvent_getHeightRequestMsg"/>
       <output message="vbox:IGuestMonitorChangedEvent_getHeightResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IStorageDeviceChangedEvent
+          *************************************
+        -->
+    <operation name="IStorageDeviceChangedEvent_getStorageDevice">
+      <input message="vbox:IStorageDeviceChangedEvent_getStorageDeviceRequestMsg"/>
+      <output message="vbox:IStorageDeviceChangedEvent_getStorageDeviceResultMsg"/>
+      <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
+      <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
+    </operation>
+    <operation name="IStorageDeviceChangedEvent_getRemoved">
+      <input message="vbox:IStorageDeviceChangedEvent_getRemovedRequestMsg"/>
+      <output message="vbox:IStorageDeviceChangedEvent_getRemovedResultMsg"/>
       <fault name="InvalidObjectFault" message="vbox:InvalidObjectFaultMsg"/>
       <fault name="RuntimeFault" message="vbox:RuntimeFaultMsg"/>
     </operation>
@@ -24399,6 +25454,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IVirtualBox_getAPIVersion">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IVirtualBox_getHomeFolder">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -24610,6 +25680,36 @@
       </fault>
     </operation>
     <!--skipping attribute IExtPackManager for it is of a suppressed type-->
+    <operation name="IVirtualBox_getInternalNetworks">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IVirtualBox_getGenericNetworkDrivers">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IVirtualBox_composeMachineFilename">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -25552,11 +26652,6 @@
     </operation>
     <!--
           *************************************
-          operations in portType for interface IEventContext
-          *************************************
-        -->
-    <!--
-          *************************************
           operations in portType for interface IPciAddress
           *************************************
         -->
@@ -26276,6 +27371,66 @@
       </fault>
     </operation>
     <operation name="IMachine_getVRDEServer">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_getEmulatedUSBWebcameraEnabled">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setEmulatedUSBWebcameraEnabled">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_getEmulatedUSBCardReaderEnabled">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_setEmulatedUSBCardReaderEnabled">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -27100,6 +28255,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_temporaryEjectDevice">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMachine_nonRotationalDevice">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IMachine_setBandwidthGroupForDevice">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -27895,6 +29080,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IMachine_cloneTo">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IVRDEServerInfo
@@ -28072,6 +29272,36 @@
       </fault>
     </operation>
     <operation name="IConsole_getAttachedPciDevices">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IConsole_getUseHostClipboard">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IConsole_setUseHostClipboard">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -28402,6 +29632,36 @@
       </fault>
     </operation>
     <operation name="IConsole_deleteSnapshot">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IConsole_deleteSnapshotAndAllChildren">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IConsole_deleteSnapshotRange">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -29161,6 +30421,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IHost_generateMACAddress">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <!--
           *************************************
           operations in portType for interface ISystemProperties
@@ -29272,21 +30547,6 @@
       </fault>
     </operation>
     <operation name="ISystemProperties_getInfoVDSize">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="ISystemProperties_getNetworkAdapterCount">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -29676,6 +30936,36 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="ISystemProperties_getMaxNetworkAdapters">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="ISystemProperties_getMaxNetworkAdaptersOfType">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="ISystemProperties_getMaxDevicesPerPortForStorageBus">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -29773,6 +31063,16 @@
         -->
     <!--
           *************************************
+          operations in portType for interface IAdditionsFacility
+          *************************************
+        -->
+    <!--
+          *************************************
+          operations in portType for interface IGuestDirEntry
+          *************************************
+        -->
+    <!--
+          *************************************
           operations in portType for interface IGuest
           *************************************
         -->
@@ -29821,22 +31121,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IGuest_getSupportsSeamless">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="IGuest_getSupportsGraphics">
+    <operation name="IGuest_getFacilities">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -29926,6 +31211,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IGuest_getFacilityStatus">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IGuest_getAdditionsStatus">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -30001,6 +31301,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IGuest_copyFromGuest">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IGuest_copyToGuest">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -30016,7 +31331,82 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IGuest_createDirectory">
+    <operation name="IGuest_directoryClose">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_directoryCreate">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_directoryOpen">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_directoryRead">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_fileExists">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IGuest_fileQuerySize">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -30381,6 +31771,21 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
+    <operation name="IProgress_waitForAsyncProgressCompletion">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <operation name="IProgress_cancel">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -30537,6 +31942,21 @@
       </fault>
     </operation>
     <operation name="ISnapshot_getChildren">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="ISnapshot_getChildrenCount">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -30772,6 +32192,21 @@
       </fault>
     </operation>
     <operation name="IMedium_setType">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IMedium_getAllowedTypes">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31711,7 +33146,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_getHostInterface">
+    <operation name="INetworkAdapter_setAttachmentType">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31726,7 +33161,52 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_setHostInterface">
+    <operation name="INetworkAdapter_getBridgedInterface">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="INetworkAdapter_setBridgedInterface">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="INetworkAdapter_getHostOnlyInterface">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="INetworkAdapter_setHostOnlyInterface">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31801,7 +33281,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_getVDENetwork">
+    <operation name="INetworkAdapter_getGenericDriver">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31816,7 +33296,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_setVDENetwork">
+    <operation name="INetworkAdapter_setGenericDriver">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31877,6 +33357,36 @@
       </fault>
     </operation>
     <operation name="INetworkAdapter_setLineSpeed">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="INetworkAdapter_getPromiscModePolicy">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="INetworkAdapter_setPromiscModePolicy">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -31996,7 +33506,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_getBandwidthLimit">
+    <operation name="INetworkAdapter_getBandwidthGroup">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32011,7 +33521,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_setBandwidthLimit">
+    <operation name="INetworkAdapter_setBandwidthGroup">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32026,7 +33536,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_attachToNAT">
+    <operation name="INetworkAdapter_getProperty">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32041,7 +33551,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_attachToBridgedInterface">
+    <operation name="INetworkAdapter_setProperty">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -32056,52 +33566,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="INetworkAdapter_attachToInternalNetwork">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="INetworkAdapter_attachToHostOnlyInterface">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="INetworkAdapter_attachToVDE">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="INetworkAdapter_detach">
+    <operation name="INetworkAdapter_getProperties">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -34661,7 +36126,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IBandwidthControl_CreateBandwidthGroup">
+    <operation name="IBandwidthControl_createBandwidthGroup">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -34676,7 +36141,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IBandwidthControl_DeleteBandwidthGroup">
+    <operation name="IBandwidthControl_deleteBandwidthGroup">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -34691,7 +36156,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IBandwidthControl_GetBandwidthGroup">
+    <operation name="IBandwidthControl_getBandwidthGroup">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -34706,7 +36171,7 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IBandwidthControl_GetAllBandwidthGroups">
+    <operation name="IBandwidthControl_getAllBandwidthGroups">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>
@@ -35016,6 +36481,21 @@
           operations in portType for interface IMachineDataChangedEvent
           *************************************
         -->
+    <operation name="IMachineDataChangedEvent_getTemporary">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
     <!--
           *************************************
           operations in portType for interface IMediumRegisteredEvent
@@ -36216,21 +37696,6 @@
         <soap:fault name="RuntimeFault" use="literal"/>
       </fault>
     </operation>
-    <operation name="IHostPciDevicePlugEvent_getEventContext">
-      <soap:operation soapAction="" style="document"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="InvalidObjectFault">
-        <soap:fault name="InvalidObjectFault" use="literal"/>
-      </fault>
-      <fault name="RuntimeFault">
-        <soap:fault name="RuntimeFault" use="literal"/>
-      </fault>
-    </operation>
     <operation name="IHostPciDevicePlugEvent_getMessage">
       <soap:operation soapAction="" style="document"/>
       <input>
@@ -36367,6 +37832,41 @@
       </fault>
     </operation>
     <operation name="IGuestMonitorChangedEvent_getHeight">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <!--
+          *************************************
+          operations in portType for interface IStorageDeviceChangedEvent
+          *************************************
+        -->
+    <operation name="IStorageDeviceChangedEvent_getStorageDevice">
+      <soap:operation soapAction="" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="InvalidObjectFault">
+        <soap:fault name="InvalidObjectFault" use="literal"/>
+      </fault>
+      <fault name="RuntimeFault">
+        <soap:fault name="RuntimeFault" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="IStorageDeviceChangedEvent_getRemoved">
       <soap:operation soapAction="" style="document"/>
       <input>
         <soap:body use="literal"/>

@@ -12,20 +12,21 @@
 		<td colspan='2'><input name='vboxSettingsNetEnabled' class='vboxCheckbox vboxEnablerCheckbox' type='checkbox' /> <span class='translate'>Enable Network Adapter</span></td>
 	</tr>
 	<tr>
-		<th style='min-width: 120px'><span class='translate'>Attached to</span>:</th>
+		<th style='min-width: 120px'><span class='translate'>Attached to:</span></th>
 		<td style='width: 100%' class='vboxEnablerTrigger'>
 			<select name='vboxSettingsNetAttachedTo' onchange='vboxSettingsUpdateNetworkOptions(this);' style='width: 100%'>
 				<option value='Null' class='translate'>Not attached</option>
 				<option value='NAT' class='translate'>NAT</option>
 				<option value='Bridged' class='translate'>Bridged Adapter</option>
 				<option value='Internal' class='translate'>Internal Network</option>
-				<option value='HostOnly' class='translate'>Host-only Adapter</option>			
+				<option value='HostOnly' class='translate'>Host-only Adapter</option>
+				<option value='Generic' class='translate'>Generic Driver</option>			
 				<option value='VDE' class='translate'>VDE Adapter</option>
 			</select>
         </td>
 	</tr>
 	<tr>
-		<th class='vboxSettingsNetAdapterNamedLabel'><span class='translate'>Name</span>:</th>
+		<th class='vboxSettingsNetAdapterNamedLabel'><span class='translate'>Name:</span></th>
 		<td>
              <select name='vboxSettingsNetName' class='vboxSettingsNetAdapterNamed' style='width: 100%'>
                 <option value=''></option>
@@ -36,7 +37,7 @@
 	
 	<!-- Advanced NAT Settings -->
 	<tr class='vboxSettingsAdvancedNat' style='display: none'>
-		<th><span class='translate'>NAT Alias Mode</span> :</th>
+		<th><span class='translate'>NAT Alias Mode:</span></th>
 		<td>
 			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeProxyOnly' /> <span class='translate vboxEnablerListen'>Proxy Only</span><br />
 			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeSamePorts' /> <span class='translate vboxEnablerListen'>Same Ports</span><br />
@@ -47,7 +48,8 @@
 		<td>
 			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetPassDNSDomain' /> <span class='translate vboxEnablerListen'>Pass DNS Domain</span><br />
 			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetDNSProxy' /> <span class='translate vboxEnablerListen'>DNS Proxy</span><br />
-			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetUseHostResolver' /> <span class='translate vboxEnablerListen'>Use Host Resolver</span>
+			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetUseHostResolver' /> <span class='translate vboxEnablerListen'>Use Host Resolver</span><br />
+			<span class='translate vboxEnablerListen'>Bind to IP</span> <input type='text' class='vboxTextbox' class='vboxEnablerListen' name='vboxSettingsNetBindIp' size='16'/>
 		</td>
 	</tr>
 
@@ -58,14 +60,24 @@
 		<td></td>
 	</tr>
 	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
-		<th><span class='translate'>Adapter Type</span>:</th>
+		<th><span class='translate'>Adapter Type:</span></th>
 		<td>
 			<select name='vboxSettingsNetAdapter' style='width: 100%'>
 			</select>
 		</td>
 	</tr>
 	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
-		<th><span class='translate'>Mac Address</span>: </th>
+		<th class='vboxSettingsNetPromiscuousMode'><span class='translate'>Promiscuous Mode:</span></th>
+		<td>
+			<select class='vboxSettingsNetPromiscuousMode' name='vboxSettingsNetAdapterPromiscuousMode' style='width: 100%'>
+				<option value='Deny' class='translate'>Deny</option>
+				<option value='AllowNetwork' class='translate'>Allow VMs</option>
+				<option value='AllowAll' class='translate'>Allow All</option>
+			</select>
+		</td>
+	</tr>	
+	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
+		<th><span class='translate'>Mac Address:</span></th>
 		<td style='white-space: nowrap'><input type='text' class='vboxText' style='width: 200px' name='vboxSettingsNetMAC' size='40' />
 			<input class="vboxSettingsNetMacGen vboxImgButton" style='background: url(images/vbox/refresh_16px.png) 1px 1px no-repeat; width: 18px; height: 18px; vertical-align:bottom' type="button"  value="" />
 		</td>
@@ -83,6 +95,11 @@
 </div>
 <script type='text/javascript'>
 
+/* Translations */
+$(document.forms['frmVboxSettings'].vboxSettingsNetAttachedTo).find('option').html(function(i,h){return trans(h,'VBoxGlobal');});
+$(document.forms['frmVboxSettings'].vboxSettingsNetAdapterPromiscuousMode).find('option').html(function(i,h){return trans(h,'VBoxGlobal');});
+
+
 /*
  * 
  * Setup data for networking options.
@@ -97,7 +114,7 @@ var vboxSettingsNetNetworks = new Array();
  */
 var nics = $('#vboxSettingsDialog').data('vboxNetworkAdapterTypes');
 for(var i = 1; i < nics.length; i++) { // index 0 is 'Null' and not used
-	var opt = new Option(nics[i],nics[i]); // translated later
+	var opt = new Option(trans(vboxNetworkAdapterTypeChipset(nics[i]),'VBoxGlobal'),nics[i]);
 	document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options.length] = opt;
 }
 
@@ -119,60 +136,55 @@ for(var i = 0; i < vboxHostNetworking.networkInterfaces.length; i++) {
 
 var vboxSettingsNetTemplate = document.getElementById('vboxSettingsTabNetAdapter');
 var vboxSettingsNetContainer = $(vboxSettingsNetTemplate).parent();
-
-// Translate buttons
-$(vboxSettingsNetTemplate).find('input.vboxButton').val(function(i,h){return trans(h);});
  
-/* translated adapter select values */
-for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options.length; i++) {
-	document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text) + ' (' + document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[i].text + ')';
-}
 
 /* Network advanced show / hide */
 $('#vboxSettingsTabNetAdapter').find('input.netImgAdvanced').toggle(
 		function() {
-			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','');
+			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced').css('display','');
 			$(this).css('background-image','url(images/downArrow.png)');
 		},
 		function() {
-			$(this).parentsUntil('table').parent().find('.vboxSettingsNetToggleAdvanced').css('display','none');
+			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced').css('display','none');
 			$(this).css('background-image','url(images/rightArrow.png)');
 		}
 );
 
 /* Mac address generator */
 $('#vboxSettingsTabNetAdapter').find('input.vboxSettingsNetMacGen').click(function(){
-	var prefix = '080027';
-	for(var i=0;i<6;i++) {
-		var m = Math.floor(Math.random()*16);
-		prefix += m.toString(16).toUpperCase();
-	}
-	$(this).siblings('input').val(prefix);
+
+	var t = $(this).siblings('input').first();
+	var oval = $(t).val();
+	$(t).val('...').prop('disabled',true);
+	
+	var l = new vboxLoader();
+	l.mode = 'save'; // don't prefix with 'get'
+	l.add('genMACAddress',function(d){
+		if(d && d.mac) $(t).val(d.mac);
+		else $(t).val(oval);
+		$(t).prop('disabled',false);
+	});
+	l.hideRoot = false;
+	l.noLoadingScreen = true;
+	l.run();
 });
 
 
 /* Network adapter tab links */
-var ul = document.createElement('ul');
+var ul = $('<ul />');
 $(vboxSettingsNetContainer).append(ul);
 
 for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 
 	
 	/* tab */
-	var li = document.createElement('li');
-	li.innerHTML = '<a href="#' + vboxSettingsNetTemplate.id + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>';
-	ul.appendChild(li);
+	$(ul).append($('<li />').html('<a href="#' + vboxSettingsNetTemplate.id + (i + 1) +'"><span>' + trans('Adapter %1','VBoxGlobal').replace('%1',(i + 1)) + '</span></a>'));
 
 	/* tab content */
 	var newTab = $("#vboxSettingsTabNetAdapter").clone(true);
-	newTab.attr('id',vboxSettingsNetTemplate.id + (i + 1));
-	newTab.css('display','block');
-
-	// Enable / disable trigger
-	newTab.find('.vboxEnablerTrigger').bind('enable',function(){
+	newTab.attr({'id':vboxSettingsNetTemplate.id + (i + 1)}).css({'display':'block'}).find('.vboxEnablerTrigger').bind('enable',function(){
 		$(this).children('select').first().trigger('change');
 	});
-	
 	newTab.appendTo(vboxSettingsNetContainer);
 
 	/* Form elements must be unique */
@@ -201,11 +213,15 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 	var netName = '';
 	switch($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType) {
 		case 'Bridged':
+			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].bridgedInterface;
 		case 'HostOnly':
-			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostInterface;
+			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostOnlyInterface;
 			break;
 		case 'Internal':
 			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].internalNetwork;
+			break;
+		case 'Generic':
+			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].genericDriver;
 			break;
 		case 'VDE':
 			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].VDENetwork;
@@ -221,6 +237,7 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
     document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType;
 	document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress;
 	document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected ? true : false);
+	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapterPromiscuousMode'+a]).val($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].promiscModePolicy);
 
 	// Enabled adapter
 	if($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].enabled) {
@@ -235,15 +252,16 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 			}
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[nicIndex].redirects = rules;
 		});
-	});
+	}).val(trans('Port Forwarding','UIMachineSettingsNetwork'));
 	
 	// Set Nat values
 	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-		document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeProxyOnly'+a].checked = (($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode & 2) ? true : false);
-		document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeSamePorts'+a].checked = (($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode & 4) ? true : false);
-		document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsPassDomain ? true : false);
-		document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsProxy ? true : false);
-		document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsUseHostResolver ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeProxyOnly'+a].checked = (($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.aliasMode & 2) ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeSamePorts'+a].checked = (($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.aliasMode & 4) ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsPassDomain ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsProxy ? true : false);
+		document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsUseHostResolver ? true : false);
+		$(document.forms['frmVboxSettings'].elements['vboxSettingsNetBindIp'+a]).val($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.hostIP);
 	}
 
 
@@ -264,19 +282,27 @@ netDnAdvImg.src = 'images/downArrow.png';
  */
 function vboxSettingsUpdateNetworkOptions(sel) {
 
-	var ptable = $(sel).parentsUntil('table').parent();
+	var ptable = $(sel).closest('table');
 	var th = $(ptable).find('th.vboxSettingsNetAdapterNamedLabel').first();
 	var nsel = $(ptable).find('.vboxSettingsNetAdapterNamed').first();
 
+	// Promiscuous mode selection
+	if(sel.value == 'NAT' || sel.value == 'Null' || sel.value == 'Generic') {
+		$(ptable).find('.vboxSettingsNetPromiscuousMode').addClass('disabled').prop('disabled',true);
+	} else {
+		$(ptable).find('.vboxSettingsNetPromiscuousMode').removeClass('disabled').prop('disabled',false);
+	}
+
+	
 	// Port forward button
-	$(ptable).find('input.vboxSettingsNetPFButton').attr('disabled',(sel.value == 'NAT' ? '' : 'disabled'));
+	$(ptable).find('input.vboxSettingsNetPFButton').prop('disabled',(sel.value == 'NAT' ? false : true));
 	
 	if(sel.value == 'Null' || sel.value == 'NAT') {
 
 		$(th).addClass('vboxDisabled');
 		
 		$(nsel).children().remove();
-		$(nsel).attr('disabled','disabled');
+		$(nsel).prop('disabled',true);
 		
 		if(sel.value == 'NAT' && $('#vboxIndex').data('vboxConfig').enableAdvancedConfig) ptable.find('tr.vboxSettingsAdvancedNat').css('display','');
 		else ptable.find('tr.vboxSettingsAdvancedNat').css('display','none');
@@ -289,10 +315,10 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		$(th).removeClass('vboxDisabled');
 		
 		$(nsel).children().remove();
-		$(nsel).attr('disabled','');
+		$(nsel).prop('disabled',false);
 
 		// Special case for Internal and VDE network select
-		if(sel.value == 'Internal' || sel.value == 'VDE') {
+		if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value=='Generic') {
 			var isel = $(nsel).clone(false);
 			$(nsel).replaceWith(isel);
 			nsel = isel;
@@ -310,6 +336,9 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 			case 'Internal':
 				src = $('#vboxSettingsDialog').data('vboxHostNetworking').networks;
 				break;
+			case 'Generic':
+				src = $('#vboxSettingsDialog').data('vboxHostNetworking').genericDrivers;
+				break;				
 			case 'VDE':
 				src = $('#vboxSettingsDialog').data('vboxHostNetworking').vdenetworks;
 				break;				
@@ -324,7 +353,7 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 	}
 
 	// Special case for Internal and VDE network selects
-	if(sel.value == 'Internal' || sel.value == 'VDE') {
+	if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value == 'Generic') {
 		$(nsel).jec();
 	}
 	
@@ -350,15 +379,15 @@ $('#vboxSettingsDialog').one('show',function(){
 			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).siblings('input').css('display','none');
 			
 			/* Disable these labels */
-			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
-			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
-			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).parentsUntil('tr').parent().children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a]).closest('tr').children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a]).closest('tr').children().addClass('vboxDisabled');
+			$(document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a]).closest('tr').children().addClass('vboxDisabled');
 			
 		}
 		// Expand all advanced settings
 		$('#vboxSettingsDialog').find('input.netImgAdvanced').trigger('click');
 		// Disable mac address generation
-		$('#vboxSettingsDialog').find('input.vboxSettingsNetMacGen').attr('disabled','disabled');
+		$('#vboxSettingsDialog').find('input.vboxSettingsNetMacGen').prop('disabled',true);
 	}
 	
 /* Change settings onSave() */
@@ -375,9 +404,13 @@ $('#vboxSettingsDialog').one('show',function(){
 		// Device or network name, depending on what 'attached to' is
 		switch($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType) {
 			case 'Bridged':
+				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].bridgedInterface = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;;
 			case 'HostOnly':
-				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostInterface = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;;
+				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostOnlyInterface = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;;
 				break;
+			case 'Generic':
+				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].genericDriver = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;
+				break;				
 			case 'Internal':
 				$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].internalNetwork = document.forms['frmVboxSettings'].elements['vboxSettingsNetName'+a].value;
 				break;
@@ -388,19 +421,21 @@ $('#vboxSettingsDialog').one('show',function(){
 		
 		// Set Nat values
 		if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-			var aliasMode = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode & 1;
+			var aliasMode = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.aliasMode & 1;
 			if(document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeProxyOnly'+a].checked) {
 				aliasMode |= 2;
 			}
 			if(document.forms['frmVboxSettings'].elements['vboxSettingsNetAliasModeSamePorts'+a].checked) {
 				aliasMode |= 4;
 			}
-			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.aliasMode = aliasMode;
-			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsPassDomain = (document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked ? 1 : 0)
-			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsProxy = (document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked ? 1 : 0);
-			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].NatDriver.dnsUseHostResolver = (document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked ? 1 : 0);
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.aliasMode = aliasMode;
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsPassDomain = (document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked ? 1 : 0)
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsProxy = (document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked ? 1 : 0);
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsUseHostResolver = (document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked ? 1 : 0);
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.hostIP = $(document.forms['frmVboxSettings'].elements['vboxSettingsNetBindIp'+a]).val();
 		}
-
+		
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].promiscModePolicy = $(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapterPromiscuousMode'+a]).val();
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType = document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value;
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress = document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value;
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected = (document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked ? 1 : 0);
@@ -409,7 +444,6 @@ $('#vboxSettingsDialog').one('show',function(){
 	}
 
 });
-
 
 </script>
 

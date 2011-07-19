@@ -31,10 +31,11 @@
 /*
  * Translate
  */
-vboxSetLangContext('vboxPortForwarding');
+vboxSetLangContext('UIPortForwardingModel');
 $('#vboxSettingsPortForwarding').find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');
 vboxUnsetLangContext();
 
+vboxSetLangContext('UIMachineSettingsPortForwardingDlg');
 /*
  * Init port forwarding buttons and toolbar
  */
@@ -49,7 +50,7 @@ var sButtons = new Array(
 			var rules = $('#vboxSettingsPortForwardingList').children('tr');
 			vboxSetLangContext('vboxPortForwarding');
 			for(var n = 1; n < 100; n++) {
-				var rname = trans('Rule') + ' ' + n;
+				var rname = trans('Rule %1').replace('%1',n);
 				for(var i = 0; i < rules.length; i++) {
 					if($(rules[i]).data('vboxRule')[0] == rname) {
 						rname = null;
@@ -75,6 +76,9 @@ var sButtons = new Array(
 );
 pfToolbar = new vboxToolbarSmall(sButtons);
 pfToolbar.addButtons('vboxSettingsPortForwardingToolbar');
+
+vboxUnsetLangContext();
+
 $('#vboxSettingsPortForwardingList').bind('select',pfToolbar.update);
 $('#vboxSettingsPortForwardingList').trigger('select');
 
@@ -82,8 +86,7 @@ $('#vboxSettingsPortForwardingList').trigger('select');
 function vboxSettingsPortForwardingEdit(td,type) {
 	var ex = $(td).parent().data('vboxRule')[$(td).data('vboxIndex')];
 	$(td).html('');
-	var txt = document.createElement('input');
-	$(txt).data('vboxIndex',$(td).data('vboxIndex')).attr('class','vboxText').val(ex).blur(function(){
+	$('<input />').data('vboxIndex',$(td).data('vboxIndex')).attr({'class':'vboxText'}).val(ex).blur(function(){
 		switch($(this).data('vboxIndex')) {
 			/* name */
 			case 0:
@@ -95,6 +98,7 @@ function vboxSettingsPortForwardingEdit(td,type) {
 			case 2:
 			case 4:
 				$(this).val($(this).val().replace(/[^0-9\.]/,''));
+				/*
 				if($(this).val()) {
 					var ips = $(this).val().split('.');
 					if(ips.length != 4 || ips[0] < 1) {
@@ -117,6 +121,7 @@ function vboxSettingsPortForwardingEdit(td,type) {
 					}
 					$(this).val(ips.join('.'));
 				}
+				*/
 				break;
 			/* ports */
 			case 3:
@@ -157,70 +162,57 @@ function vboxSettingsPortForwardingEdit(td,type) {
 /* Edit protocol */
 function vboxSettingsPortForwardingEditProto(td) {
 	var ex = $(td).parent().data('vboxRule')[1];
-	var sel = document.createElement('select');
 	vboxSetLangContext('vboxPortForwarding');
-	sel.options[0] = new Option(trans('UDP'),'0',(ex == 0),(ex == 0));
-	sel.options[1] = new Option(trans('TCP'),'1',(ex == 1),(ex == 1));
+	
+	if(ex == 0) val = 1;
+	else val = 0;
+
+	$(td).parent().data('vboxRule')[1] = val;
+	
+	vboxSetLangContext('vboxPortForwarding');
+	$(td).html(val == '1' ? trans('TCP','VBoxGlobal') : trans('UDP','VBoxGlobal'));
 	vboxUnsetLangContext();
-	$(td).html('');
-	$(sel).change(function(){
-		var td = $(this).parent();
-		var val = $(this).val();
-		$(td).parent().data('vboxRule')[1] = val;
-		$(this).remove();
-		vboxSetLangContext('vboxPortForwarding');
-		$(td).html(val == '1' ? trans('TCP') : trans('UDP'));
-		vboxUnsetLangContext();
-	}).appendTo(td).focus().blur(function(){$(this).trigger('change');});	
+	
 }
 /* Add forwarding rule */
 function vboxSettingsPortForwardingAdd(r) {
 
+	vboxSetLangContext('vboxPortForwarding');
+	
 	var rule = r.split(',');
-	var tr = document.createElement('tr');
-	tr.setAttribute('class','vboxListItem');
-	var td = document.createElement('td');
-	$(td).data('vboxIndex',0).html($('<div />').html(rule[0]).text()).click(function(){
+	var tr = $('<tr />').attr({'class':'vboxListItem'});
+	
+	$('<td />').data('vboxIndex',0).html($('<div />').html(rule[0]).text()).click(function(){
 		if($(this).parent().hasClass('vboxListItemSelected')) {
 			vboxSettingsPortForwardingEdit(this,'name');
 			return;
 		}
 		$(this).parent().addClass('vboxListItemSelected').siblings().removeClass('vboxListItemSelected');
 		$('#vboxSettingsPortForwardingList').trigger('select',$(this).parent());
-	});
-	$(tr).append(td);
+	}).appendTo(tr);
 	
-	var td = document.createElement('td');
-	$(td).click(function(){
+	$('<td />').click(function(){
 		if($(this).parent().hasClass('vboxListItemSelected')) {
 			vboxSettingsPortForwardingEditProto(this);
 			return;
 		}
 		$(this).parent().addClass('vboxListItemSelected').siblings().removeClass('vboxListItemSelected');
 		$('#vboxSettingsPortForwardingList').trigger('select',$(this).parent());
-	}).addClass('vboxProto');
-
-	vboxSetLangContext('vboxPortForwarding');
-	td.innerHTML = trans(rule[1] == 1 ? 'TCP' : 'UDP');
-	vboxUnsetLangContext();
+	}).addClass('vboxProto').html(trans(rule[1] == 1 ? 'TCP' : 'UDP','VBoxGlobal')).appendTo(tr);
 	
-	$(tr).append(td);
-
 	for(var i = 2; i < rule.length; i++) {
-		var td = document.createElement('td');
-		$(td).data('vboxIndex',i).click(function(){
+		$('<td />').data('vboxIndex',i).click(function(){
 			if($(this).parent().hasClass('vboxListItemSelected')) {
 				vboxSettingsPortForwardingEdit(this,'port');
 				return;
 			}
 			$(this).parent().addClass('vboxListItemSelected').siblings().removeClass('vboxListItemSelected');
 			$('#vboxSettingsPortForwardingList').trigger('select',$(this).parent());
-		}).html($('<div />').html(rule[i]).text()).addClass((i%2 ? 'vboxPort' : 'vboxIP'));
-		$(tr).append(td);
+		}).html($('<div />').html(rule[i]).text()).addClass((i%2 ? 'vboxPort' : 'vboxIP')).appendTo(tr);
 	}
-	$(tr).data('vboxRule',rule);
-	$('#vboxSettingsPortForwardingList').append(tr);
+	$(tr).data({'vboxRule':rule}).appendTo($('#vboxSettingsPortForwardingList'));
 	
+	vboxUnsetLangContext();
 }
 function vboxSettingsPortForwardingInit(rules) {
 	for(var r = 0; r < rules.length; r++) {

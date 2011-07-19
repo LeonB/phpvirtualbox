@@ -27,6 +27,7 @@ vboxVMList.interval = ($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $
 // VM List Context menu for each VM
 vboxVMList.contextMenuItems = [
 	$.extend({},vboxVMActions['settings'],{'name':'settings'}),
+	$.extend({},vboxVMActions['clone'],{'name':'clone'}),
 	$.extend({},vboxVMActions['remove'],{'name':'remove'}),
 	$.extend({},vboxVMActions['start'],{'name':'start','separator' : true}),
 	$.extend({},vboxVMActions['discard'],{'name':'discard'}),
@@ -65,16 +66,20 @@ function vboxVMList(anchorid) {
 	this.anchor = $('#'+anchorid);
 	this.interval = 5;
 	this.contextMenuItems = null;
+	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
+	vboxSetLangContext('UIVMListView');
+	this.tip = trans('<nobr>%1<br></nobr><nobr>%2 since %3</nobr><br><nobr>Session %4</nobr>');
+	vboxUnsetLangContext();
 
+;
+	
 	// If there are multiple servers configured, setup menu
 	if($('#vboxIndex').data('vboxConfig').servers.length) {
 
 		var servers = $('#vboxIndex').data('vboxConfig').servers;
-		var ul = document.createElement('ul');
-		$(ul).attr({'id':'vboxServerMenu','style':'display: none','class':'contextMenu'});
+		var ul = $('<ul />').attr({'id':'vboxServerMenu','style':'display: none','class':'contextMenu'});
 		for(var i = 0; i < servers.length; i++) {
-			var li = document.createElement('li');
-			$(li).html("<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>").appendTo(ul);
+			$('<li />').html("<a href='#" + $('<div />').html(servers[i].name).text() + "' style='background-image: url(images/vbox/OSE/VirtualBox_16px.png);'>"+$('<div />').html(servers[i].name).text()+"</a>").appendTo(ul);
 		}
 		$('#vboxIndex').append(ul);
 		
@@ -94,7 +99,7 @@ function vboxVMList(anchorid) {
 		
 		
 		if(!d || !d.vmlist) {
-			vboxAlert(trans('Error vmlist 1')+'<p>'+trans('Error vmlist 2')+'</p>');
+			vboxAlert(trans('There was an error obtaining the list of registered virtual machines from VirtualBox. Make sure vboxwebsrv is running and that the settings in config.php are correct.<p>The list of virtual machines will not begin auto-refreshing again until this page is reloaded.</p>','phpVirtualBox'));
 			self.stop();
 			self.anchor.children().remove();
 			return;
@@ -145,12 +150,20 @@ function vboxVMList(anchorid) {
 		
 		
 		// Host machine added manually
-		host = new Array({'id':'host','state':'Hosting','name':$('#vboxIndex').data('vboxConfig').name,'OSTypeId':'VirtualBox_Host'});
+		host = new Array({'id':'host','state':'Hosting','owner':'','name':$('#vboxIndex').data('vboxConfig').name,'OSTypeId':'VirtualBox_Host'});
 		currVMList = host.concat(currVMList);
-
+		
+		// Enforce VM ownership
+        if(self.enforceVMOwnership && !$('#vboxIndex').data('vboxSession').admin) {
+        	currVMList = jQuery.grep(currVMList,function(vm,i){
+        		return (vm.owner == $('#vboxIndex').data('vboxSession').user);
+        	});
+		}
+	
 		// Each item in list
 		for(var i = 0; i < currVMList.length; i++) {	
 		
+			
 			// Does not exist, add to list
 			if(!self.vms[currVMList[i].id]) {
 				self.addVM(currVMList[i]);
@@ -192,7 +205,7 @@ function vboxVMList(anchorid) {
 	self.updateVM = function(vmUpdate,index) {
 
 		var changed = false;
-		var changedProps = ['currentSnapshot','state','sessionState','OSTypeId','name'];
+		var changedProps = ['currentSnapshot','state','sessionState','OSTypeId','name','customIcon'];
 		
 		for(var i = 0; i < changedProps.length; i++) {
 			if(self.vms[vmUpdate.id][changedProps[i]] != vmUpdate[changedProps[i]]) {
@@ -229,31 +242,31 @@ function vboxVMList(anchorid) {
 
 	self.vmHTML = function (vmn) {
 		
-		var tbl = document.createElement('table');
-		$(tbl).attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
+		var tbl = $('<table />').attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
 			if(vmn.id == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
-			$('#vboxIndex').data('selectedVM',vmn);
-			$('#vboxIndex').trigger('vmselect',[vmn]);
+			$('#vboxIndex').data({'selectedVM':vmn}).trigger('vmselect',[vmn]);
 		}).hover(function(){if(self.dragging)return;$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('vmid',vmn.id);
 
-		var tr = document.createElement('tr');
+		var tr = $('<tr />');
 		
 		// VM OS type icon
-		var td = document.createElement('td');
-		$(td).attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' " + (vmn.id == 'host' ? "class='vboxHostIcon'" : "") + " />");
+		if($('#vboxIndex').data('vboxConfig').enableCustomIcons && vmn.customIcon) {
+			$('<td />').attr({'rowspan':'2'}).html("<img src='" + vmn.customIcon + "' class='vboxVMIcon' />").appendTo(tr);
+		} else {
+			$('<td />').attr({'rowspan':'2'}).html("<img src='images/vbox/" + vboxGuestOSTypeIcon(vmn.OSTypeId) + "' class='vboxVMIcon" + (vmn.id == 'host' ? " vboxHostIcon" : "") + "' />").appendTo(tr);
+		}
 		
-		tr.appendChild(td);
 		
 		// VM Name
-		var td = document.createElement('td');
-		td.setAttribute('class', 'vboxVMTitle');
+		var td = $('<td />').attr({'class':'vboxVMTitle'});
+		
+		vboxSetLangContext('VBoxGlobal');
 		
 		// Host can have HTML in name
 		if(vmn.id == 'host') {
 			// Check for multiple server config
 			if($('#vboxIndex').data('vboxConfig').servers.length) {
-				var span = document.createElement('span');
-				$(span).attr({'class':'vboxServerLink'}).text('('+$('#vboxIndex').data('vboxConfig').name+')').contextMenu({
+				var span = $('<span />').attr({'class':'vboxServerLink'}).text('('+$('#vboxIndex').data('vboxConfig').name+')').contextMenu({
 						menu: 'vboxServerMenu',
 						button: 0,
 						mode: 'menu'
@@ -275,27 +288,24 @@ function vboxVMList(anchorid) {
 			var sdate = new Date(vmn.lastStateChange * 1000);
 
 			// Table gets tool tips
-			vboxSetLangContext('vboxVMList');
-			$(tbl).tipped({'source':trans('<nobr>%1</nobr><br /><nobr>%2 since %3</nobr><br /><nobr>Session %4</nobr>').replace('%1',('<b>'+$('<span />').text(vmn.name).html()+'</b>'+(vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''))).replace('%2',trans(vmn.state)).replace('%3',sdate.toLocaleString()).replace('%4',trans(vmn.sessionState)),'position':'mouse','delay':2000});
-			vboxUnsetLangContext();
+			tip = self.tip.replace('%1',('<b>'+$('<span />').text(vmn.name).html()+'</b>'+(vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''))).replace('%2',trans(vboxVMState(vmn.state))).replace('%3',sdate.toLocaleString()).replace('%4',trans(vmn.sessionState));
+			$(tbl).tipped({'source':tip,'position':'mouse','delay':2000});
 		}
 		
-		tr.appendChild(td);
+		$(tr).append(td).appendTo(tbl);
 		
-		tbl.appendChild(tr);
 		
-		var tr = document.createElement('tr');
+		var tr = $('<tr />');
 		
-		var td = document.createElement('td');
-		if(vmn.id != 'host' && vmn.sessionState != 'Unlocked') td.setAttribute('class','vboxVMSessionOpen');
-		td.innerHTML = "<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vmn.state) + '</span>';
+		var td = $('<td />').attr({'class':(vmn.id != 'host' && vmn.sessionState != 'Unlocked' ? 'vboxVMSessionOpen' : '')}).html("<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vboxVMState(vmn.state)) + '</span>');
 
+		vboxUnsetLangContext();
+		
 		// Add VirtualBox version if hosting
 		if(vmn.id == 'host')
-			td.innerHTML += ' - ' + $('#vboxIndex').data('vboxConfig').version.string;
+			$(td).append(' - ' + $('#vboxIndex').data('vboxConfig').version.string);
 		
-		tr.appendChild(td);
-		tbl.appendChild(tr);
+		$(tr).append(td).appendTo(tbl);
 		
 		// Context menu?
 		if(self.contextMenuId) {
@@ -347,17 +357,14 @@ function vboxVMList(anchorid) {
 
 		// Subscribe to selected VM changes and refreshes
 		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistreload',function() {
-			$('#vboxIndex').trigger('vmselect',null);
-			$('#vboxIndex').data('selectedVM',null);
+			$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 			self.vms = self.selected = null;
 			self.refresh();
 		}).bind('vmlistrefresh',function(){
 			self.refresh();
 		}).bind('hostChange',function(){
-			
-			$('#vboxIndex').trigger('vmselect',null);
-			$('#vboxIndex').data('selectedVM',null);
+			$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 			self.stop();
 			
 		}).bind('hostChanged',function(){self.start();});
@@ -436,15 +443,18 @@ function vboxVMList(anchorid) {
 		 *
 		 */
 		if(self.contextMenuItems && self.contextMenuItems.length) {
+			
 			self.contextMenuId = 'vboxVMList-'+self.anchorid+'-contextMenu';
-			var ul = document.createElement('ul');
-			$(ul).attr({'id':self.contextMenuId,'style':'display: none;'});
+			
+			var ul = $('<ul />').attr({'id':self.contextMenuId,'style':'display: none;'});
+			
+			vboxSetLangContext('VBoxSelectorWnd');
 			for(var i = 0; i < self.contextMenuItems.length; i++) {
-				var li = document.createElement('li');
 				// Check for 16px icon
 				if(self.contextMenuItems[i].icon_16) self.contextMenuItems[i].icon = self.contextMenuItems[i].icon_16;
 				$('<li />').html("<a href='#" + self.contextMenuItems[i].name + "' style='background-image: url(images/vbox/" + self.contextMenuItems[i].icon +"_16px.png);' >"+trans(self.contextMenuItems[i].label)+"</a>").addClass((self.contextMenuItems[i].separator ? 'separator' : 'noseparator')).appendTo(ul);
 			}
+			vboxUnsetLangContext();
 			$('#vboxIndex').append(ul).bind('vmselect',function(e,vm){
 				for(var i = 0; i < self.contextMenuItems.length; i++) {
 					if(self.contextMenuItems[i].enabled(vm)) {
@@ -495,6 +505,9 @@ function vboxVMList(anchorid) {
 	}
 	
 	self.start = function() {
+		
+		self.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
+		
 		self.refresh();
 		// Run every X seconds?
 		self._running = window.setInterval(self.refresh,self.interval*1000);		

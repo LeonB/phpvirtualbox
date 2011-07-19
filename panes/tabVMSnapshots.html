@@ -48,25 +48,25 @@
 	<div id='vboxSnapshotDetails' class='vboxDialogContent' style='display: none;'>
 		<table class='vboxVertical'>
 			<tr>
-				<th><span class='translate'>Name</span>:</th>
+				<th><span class='translate'>Name:</span></th>
 				<td>
 					<input id='vboxSnapshotDetailsName' style='width: 100%'/>
 				</td>
 			</tr>
 			<tr>
-				<th><span class='translate'>Taken</span>:</th>
+				<th><span class='translate'>Taken:</span></th>
 				<td>
 					<span id='vboxSnapshotDetailsTaken'></span>
 				</td>
 			</tr>
 			<tr>
-				<th><span class='translate'>Description</span>:</th>
+				<th><span class='translate'>Description:</span></th>
 				<td>
 					<textarea rows='12' id='vboxSnapshotDetailsDesc' name='vboxSnapshotDetailsDescElm'></textarea>
 				</td>
 			</tr>
 			<tr>
-				<th><span class='translate'>Details</span>:</th>
+				<th><span class='translate'>Details:</span></th>
 				<td class='vboxSnapshotDetailsMachine'>
 					<div id='vboxSnapshotDetailsVM' style='overflow: auto; height: 100%'></div>
 				</td>
@@ -78,10 +78,15 @@
 
 <script type='text/javascript'>
 
-vboxSetLangContext('vboxSnapshots');
+vboxSetLangContext('VBoxTakeSnapshotDlg');
 vboxInitDisplay('vboxSnapshotNew');
-vboxInitDisplay('vboxSnapshotDetails');
+vboxUnsetLangContext();
 
+vboxSetLangContext('VBoxSnapshotDetailsDlg');
+vboxInitDisplay('vboxSnapshotDetails');
+vboxUnsetLangContext();
+
+vboxSetLangContext('VBoxSnapshotsWgt');
 
 var tButtons = [
             	
@@ -96,8 +101,10 @@ var tButtons = [
   		'click' : function () {
 
   			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
+
+  			vboxSetLangContext('VBoxSnapshotsWgt');
   			
-  			var snRegEx = new RegExp('^' + trans('Snapshot X').replace('%s','([0-9]+)') + '$');
+  			var snRegEx = new RegExp('^' + trans('Snapshot %1').replace('%1','([0-9]+)') + '$');
   			
   			// Get max snapshot name
   			var snMax = 0;
@@ -106,19 +113,25 @@ var tButtons = [
   				var snNum = snRegEx.exec($(snList[i]).data('name'));
   				if(snNum) snMax = Math.max(parseInt(snNum[1]), snMax);
   			}
-  			$('#vboxSnapshotNewName').val(trans('Snapshot X').replace('%s',(snMax+1)));
+  			
+  			$('#vboxSnapshotNewName').val(trans('Snapshot %1').replace('%1',(snMax+1)));
   			$('#vboxSnapshotNewDesc').val('');
+  			
+  			vboxUnsetLangContext();
 
   			
   			var buttons = {};
+  			vboxSetLangContext('QIMessageBox');
   			buttons[trans('OK')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
 	  	  		l.add('snapshotTake',function(d){
 					if(d && d.progress) {
+						vboxSetLangContext('VBoxSnapshotsWgt');
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
 						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot'));
+						vboxUnsetLangContext();
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}
@@ -127,8 +140,11 @@ var tButtons = [
 				l.run();
   			};
   			buttons[trans('Cancel')] = function() { $(this).dialog('close'); }
+  			vboxUnsetLangContext();
   			
-  			$('#vboxSnapshotNew').dialog({'closeOnEscape':false,'width':'400px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/take_snapshot_16px.png" class="vboxDialogTitleIcon" />' + trans('Take Snapshot')});
+  			vboxSetLangContext('VBoxTakeSnapshotDlg');
+  			$('#vboxSnapshotNew').dialog({'closeOnEscape':false,'width':'400px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/take_snapshot_16px.png" class="vboxDialogTitleIcon" /> ' + trans('Take Snapshot of Virtual Machine')});
+  			vboxUnsetLangContext();
   			
   	  	},
   		'separator' : true
@@ -144,15 +160,17 @@ var tButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
-			vboxSetLangContext('vboxSnapshots');
+			vboxSetLangContext('VBoxProblemReporter');
 			buttons[trans('Restore')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
 	  	  		l.add('snapshotRestore',function(d){
 					if(d && d.progress) {
+						vboxSetLangContext('VBoxSnapshotsWgt');
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
 						},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot'));
+						vboxUnsetLangContext();
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}
@@ -160,8 +178,8 @@ var tButtons = [
 	  	  		$(this).empty().remove();
 				l.run();				
 			};
+			vboxConfirm(trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>').replace('%1',$('<div />').text(snapshot.name).html()),buttons);
 			vboxUnsetLangContext();
-			vboxConfirm(trans('Restore Snapshot Message').replace('%s','<b>'+$('<div />').text(snapshot.name).html()+'</b>'),buttons);
   	  	},
   	},
   	{
@@ -175,15 +193,17 @@ var tButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
-			vboxSetLangContext('vboxSnapshots');
+			vboxSetLangContext('VBoxProblemReporter');
 			buttons[trans('Delete')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
 	  	  		l.add('snapshotDelete',function(d){
 					if(d && d.progress) {
+						vboxSetLangContext('VBoxSnapshotsWgt');
 						vboxProgress(d.progress,function(){
 							$('#vboxTabVMSnapshots').trigger('refresh');
 						},{},'progress_snapshot_discard_90px.png',trans('Delete Snapshot'));
+						vboxUnsetLangContext();
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}
@@ -191,14 +211,33 @@ var tButtons = [
 	  	  		$(this).empty().remove();
 				l.run();				
 			};
+			vboxConfirm(trans('<p>Deleting the snapshot will cause the state information saved in it to be lost, and disk data spread over several image files that VirtualBox has created together with the snapshot will be merged into one file. This can be a lengthy process, and the information in the snapshot cannot be recovered.</p></p>Are you sure you want to delete the selected snapshot <b>%1</b>?</p>').replace('%1',$('<div />').text(snapshot.name).html()),buttons);  	  		
 			vboxUnsetLangContext();
-			vboxConfirm(trans('Delete Snapshot Message1')+'<p>'+trans('Delete Snapshot Message2').replace('%s','<b>'+$('<div />').text(snapshot.name).html()+'</b>')+'</p>',buttons);  	  		
   	  	},
   		'separator' : true
   	},
   	{
+  		'name' : 'clone',
+  		'label' : 'Clone...',
+  		'icon' : 'vm_clone_16',
+  		'icon_disabled' : 'vm_clone_disabled_16',
+  		'context' : 'VBoxSelectorWnd',
+  		'icon_exact' : true,
+  		'separator' : true,
+  		'enabled' : function(item) { return (item && $(item).data('name')) && $('#vboxTabVMSnapshots').data('machine').state != 'Running'},
+  		'click' : function () {
+
+  			// Current snapshot
+  	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
+  			
+  	  		vboxWizardCloneVMInit(function(){},{'vm':$('#vboxTabVMSnapshots').data('machine'),'snapshot':snapshot});
+  			
+  	  	}
+  	},
+  	
+  	{
   		'name' : 'show_snapshot_details',
-  		'label' : 'Snapshot Details',
+  		'label' : 'Show Details',
   		'icon' : 'show_snapshot_details',
   		'enabled' : function(item) { return (item && $(item).data('name') && $(item).data('state') != 'current'); },
   		'click' : function () {
@@ -217,12 +256,16 @@ var tButtons = [
 				$('#vboxSnapshotDetailsDesc').val(d.description);
 				
 	  	  		// Display details
+	  	  		$('#vboxSnapshotDetailsVM').empty();
+	  	  		vboxSetLangContext('UIDetailsPagePrivate');
 	  	  		__vboxDisplayDetailsData(d.machine,$('#vboxSnapshotDetailsVM'),false);
+	  	  		vboxUnsetLangContext();
 	  	  			  	  		
 			},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
 			l.onLoad = function(){
   			
 	  			var buttons = {};
+	  			vboxSetLangContext('QIMessageBox');
 				buttons[trans('OK')] = function() {
 
 		  			// Current snapshot
@@ -240,8 +283,10 @@ var tButtons = [
 				buttons[trans('Cancel')] = function(){
 					$(this).dialog('close');
 				};
-				
-				$('#vboxSnapshotDetails').dialog({'closeOnEscape':false,'width':'600px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/show_snapshot_details_16px.png" class="vboxDialogTitleIcon" /> '+trans('Snapshot Details')});
+				vboxUnsetLangContext();
+				vboxSetLangContext('VBoxSnapshotDetailsDlg');
+				$('#vboxSnapshotDetails').dialog({'closeOnEscape':false,'width':'600px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/show_snapshot_details_16px.png" class="vboxDialogTitleIcon" /> '+trans('Details of %1 (%2)').replace('%1',$('<div />').text(snapshot.name).html()).replace('%2',$('#vboxTabVMSnapshots').data('machine').name)});
+				vboxUnsetLangContext();
 			};
 			l.run();
   	  	},
@@ -256,6 +301,9 @@ snapshotToolbar = new vboxToolbarSmall(tButtons);
 snapshotToolbar.size = 22;
 snapshotToolbar.disabledString = 'dis';
 snapshotToolbar.addButtons('vboxSnapshotToolbar');
+
+// special case for 'clone' button because it is 16px rather than 22px
+$('#vboxToolbarButton-vboxSnapshotToolbar-clone').css({'background-position':'6px 4px'});
 
 // Hold timer and date vars
 snapshotToolbar._timer = null;
@@ -298,20 +346,21 @@ $('#vboxIndex').bind('vmloading',function(){
 	
 	$('#vboxSnapshotList').children().remove();
 	
+	vboxSetLangContext('UIVMDesktop');
 	$('#vboxTabVMSnapshotsTitle').html(trans('Snapshots'));
+	vboxUnsetLangContext();
 	
 	// Append spinner
-	var li = document.createElement('li');
-	li.setAttribute('class','last');
-	li.innerHTML = "<div><img src='images/spinner.gif'></div>";
-	$('#vboxSnapshotList').append(li);
+	$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
 	
 /* VM Finished loading */
 }).bind('vmloaded',function(e,vm){
 
 	$('#vboxTabVMSnapshots').data('machine',vm);
 	
-	$('#vboxTabVMSnapshotsTitle').html(trans('Snapshots') + (vm && vm.snapshotCount ? ' (' + vm.snapshotCount + ')' : ''));
+	vboxSetLangContext('UIVMDesktop');
+	$('#vboxTabVMSnapshotsTitle').html(trans('Snapshots') + (vm && vm.snapshotCount ? trans(' (%1)').replace('%1',vm.snapshotCount):''));
+	vboxUnsetLangContext();
 	
 	if(snapshotToolbar._timer)
 		window.clearTimeout(snapshotToolbar._timer);
@@ -342,10 +391,7 @@ $('#vboxTabVMSnapshots').bind('show',function(e,vm){
 	}
 
 	// Append spinner
-	var li = document.createElement('li');
-	li.setAttribute('class','last');
-	li.innerHTML = "<div class='vboxTabLoading'><img src='images/spinner.gif'></div>";
-	$('#vboxSnapshotList').append(li);
+	$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
 	
 	// Get snapshots
 	vboxAjaxRequest('getSnapshots',{'vm':vm.id},__vboxTabSnapshotsFill);
@@ -381,9 +427,7 @@ function __vboxTabSnapshotsFill(s) {
 			if($('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).children('ul').first().html()) {
 				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).children('ul').last().append(__vboxTabSnapshotCurrent());
 			} else {
-				var ul = document.createElement('ul');
-				$(ul).append(__vboxTabSnapshotCurrent());
-				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).append(ul);
+				$('#'+$('#vboxTabVMSnapshots').data('machine').currentSnapshot.id).append($('<ul />').append(__vboxTabSnapshotCurrent()));
 			}
 		}			
 		
@@ -406,22 +450,48 @@ function __vboxTabSnapshotsFill(s) {
 /* Snapshot list item */
 function __vboxTabSnapshot(s) {
 
-	var li = document.createElement('li');
-	$(li).attr('id',s.id);
+	var li = $('<li />').attr({'id':s.id});
 	$(li).data(s);
 	
 	// Use timestamp
 	var t = '';
 	if(s.timeStampSplit['seconds'] == 0)
 		s.timeStampSplit['seconds'] = 1;
+
+	var ago = 0;
+	var ts = 'seconds';
 	for(var i in s.timeStampSplit) {
-		t = trans('X ago').replace('%s',(s.timeStampSplit[i] + ' ' + trans(i)));
-		break;
+		var l = Math.floor(t / s.timeStampSplit[i]);
+		if(l > 0) {
+			ago = l;
+			ts = i
+			break;
+		}
 	}
-		
-	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+' (<span class="timestamp" title="'+s.timeStamp +'">'+t+'</span>)</div>');
+
+	vboxSetLangContext('VBoxGlobal');
+	switch(ts) {
+		case 'days':
+			ts = trans('%n day(s)', undefined, ago).replace('%n', ago);
+			break;
+		case 'hours':
+			ts = trans('%n hour(s)', ago).replace('%n', ago);
+			break;				
+		case 'minutes':
+			ts = trans('%n minute(s)', undefined, ago).replace('%n', ago);
+			break;				
+		case 'seconds':
+			ts = trans('%n second(s)', undefined, ago).replace('%n', ago);
+			break;				
+	}
+	vboxUnsetLangContext();
+	vboxSetLangContext('VBoxSnapshotsWgt');
+	ts = trans(' (%1 ago)').replace('%1', ts);
+	vboxUnsetLangContext();
+	
+	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+'<span class="timestamp" title="'+s.timeStamp +'">'+ts+'</span></div>');
 	if(s.children.length) {
-		var ul = document.createElement('ul');
+		var ul = $('<ul />');
 		for(var i = 0; i < s.children.length; i++) {
 			$(ul).append(__vboxTabSnapshot(s.children[i]));
 		}
@@ -435,16 +505,15 @@ function __vboxTabSnapshot(s) {
 /* Current state list item */
 function __vboxTabSnapshotCurrent() {
 
+	vboxSetLangContext('VBoxSnapshotsWgt');
+	
 	// Add 'current state'
-	var li = document.createElement('li');
-	$(li).data('state','current');
-	$(li).data('name',trans('Current State'));
-	$(li).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
+	var li = $('<li />').data({'state':'current','name':trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'))}).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
 
-	if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
-		$(li).children().first().append(' (' + trans('changed') +')');
-	}
 	$(li).addClass('last').addClass('vboxSnapshotCurrent');
+	
+	vboxUnsetLangContext();
+	
 	return li;
 }
 
@@ -471,21 +540,47 @@ function __vboxTabSnapshotTimestamps() {
 		// Check for max age.
 		if(Math.floor(t / 86400) > 30) {
 			var sdate = new Date(sts * 1000);
-			$(this).html(sdate.toLocaleString());
+			$(this).html(trans(' (%1)').replace('%1',sdate.toLocaleString()));
 			return;
 		}
 		
+		vboxSetLangContext('VBoxGlobal');
+		var ago = 0;
+		var ts = 'seconds';
 		for(var i in timeSpans) {
-			if(Math.floor(t / timeSpans[i]) > 0) {
-				ts =  trans('X ago').replace('%s',(Math.floor(t / timeSpans[i]) + ' ' + trans(i)));
+			var l = Math.floor(t / timeSpans[i]);
+			if(l > 0) {
+				ago = l;
+				ts = i
+				//ts =  trans('X ago').replace('%s',(Math.floor(t / timeSpans[i]) + ' ' + trans(i)));
 				break;
 			}
 		}
-		$(this).html(ts);
+		switch(ts) {
+			case 'days':
+				ts = trans('%n day(s)', undefined, ago).replace('%n', ago);
+				break;
+			case 'hours':
+				ts = trans('%n hour(s)', undefined, ago).replace('%n', ago);
+				break;				
+			case 'minutes':
+				ts = trans('%n minute(s)', undefined, ago).replace('%n', ago);
+				break;				
+			case 'seconds':
+				ts = trans('%n second(s)', undefined, ago).replace('%n', ago);
+				break;				
+		}
+		vboxUnsetLangContext();
+		vboxSetLangContext('VBoxSnapshotsWgt');
+		$(this).html(ts = trans(' (%1 ago)').replace('%1', ts));
+		vboxUnsetLangContext();
 	});
 	
 	var timerSet = (minTs >= 60 ? 60 : 10);
 	snapshotToolbar._timer = window.setTimeout(__vboxTabSnapshotTimestamps,(timerSet * 1000));
 }
+
+vboxUnsetLangContext();
+
 </script>
 </div>

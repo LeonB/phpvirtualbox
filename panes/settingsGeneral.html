@@ -17,21 +17,26 @@
 <div id='vboxSettingsTabGeneralBasic' title='Basic'>
 <table class='vboxVertical'>
 	<tr>
-		<th><span class='translate'>Name</span>:</th>
+		<th><span class='translate'>Name:</span></th>
 		<td colspan='2'><input type='text' class='vboxText' name='vboxSettingsGeneralName' /></td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Operating System</span>:</th>
+		<th><span class='translateos'>Operating System:</span></th>
 		<td><select name='vboxSettingsGeneralOSFamily' id='vboxSettingsGeneralOSFamily' >
 			<option value='Linux'>Linux</option>
 		</select></td>
 		<td rowspan='2'><img name='vboxOSTypeImg' height='32' width='32' /></td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Version</span>:</th>
+		<th><span class='translateos'>Version:</span></th>
 		<td><select id='vboxSettingsGeneralOSType' name='vboxSettingsGeneralOSType'>
 			<option value='Debian'>Debian</option>
 		</select></td>
+	</tr>
+	<tr id='vboxSettingsRowVMIcon' style='display:none'>
+		<th><span class='translate'>Icon URL:</span></th>
+		<td><input name='vboxSettingsGeneralIcon' type='text' class='vboxText' /></td>
+		<td><img src='about:blank' id='vboxSettingsGeneralIconImg' height='32' width='32' /></td>
 	</tr>
 </table>
 </div>
@@ -40,14 +45,14 @@
 <div id='vboxSettingsTabGeneralAdvanced' title='Advanced'>
 <table class='vboxVertical'>
 	<tr>
-		<th><span class='translate'>Snapshot Folder</span>:</th>
+		<th><span class='translate'>Snapshot Folder:</span></th>
 		<td class='vboxFileFolderInput'>
 					<input type='text' class='vboxText' name='vboxSettingsGeneralSnapshotFolder' /><input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)"
-						onClick="browseFolder($('input[name=vboxSettingsGeneralSnapshotFolder]').first().val(),function(f){if(f) $('input[name=vboxSettingsGeneralSnapshotFolder]').first().val(f);});" />
+						onClick="vboxSnapshotBrowseFolder(this);" />
 		</td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Removable Media</span>:</th>
+		<th><span class='translate'>Removable Media:</span></th>
 		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsGeneralRemovableMedia' style='width: auto'/>
 		<span class='translate'>Remember Runtime Changes</span></td>
 	</tr>
@@ -83,6 +88,16 @@
 
 <script type='text/javascript'>
 
+/* Translations */
+$('#vboxSettingsTabGeneralBasic').find(".translateos").html(function(i,h){return trans(h,'VBoxOSTypeSelectorWidget');});
+
+/* Browse for snapshot folder */
+function vboxSnapshotBrowseFolder(btn) {
+	vboxFileBrowser($(btn).siblings('input').first().val(),function(f){
+		if(f) $(btn).siblings('input').first().val(f);
+	},true,trans('Snapshot Folder:','UIMachineSettingsGeneral').replace(':',''));
+}
+
 /*
  * Remove input if advancedconfig is not set
  * else set default values
@@ -93,6 +108,20 @@ if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 } else {
 	$(document.forms['frmVboxSettings'].vboxSettingsTabGeneralInputKeyboard).val($('#vboxSettingsDialog').data('vboxMachineData').keyboardHidType);
 	$(document.forms['frmVboxSettings'].vboxSettingsTabGeneralInputMouse).val($('#vboxSettingsDialog').data('vboxMachineData').pointingHidType);
+}
+
+if($('#vboxIndex').data('vboxConfig').enableCustomIcons) {
+	
+	$('#vboxSettingsRowVMIcon').css('display','');
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').customIcon) {
+		$(document.forms['frmVboxSettings'].vboxSettingsGeneralIcon).val($('#vboxSettingsDialog').data('vboxMachineData').customIcon);
+		$('#vboxSettingsGeneralIconImg').attr('src',$('#vboxSettingsDialog').data('vboxMachineData').customIcon);
+	}
+	
+	$(document.forms['frmVboxSettings'].vboxSettingsGeneralIcon).blur(function(){
+		$('#vboxSettingsGeneralIconImg').attr('src',(this.value ? this.value : 'about:blank'));
+	});
 }
 
 /*
@@ -190,6 +219,9 @@ $('#vboxSettingsDialog').bind('save',function(){
 		$('#vboxSettingsDialog').data('vboxMachineData').keyboardHidType = $(document.forms['frmVboxSettings'].vboxSettingsTabGeneralInputKeyboard).val();
 		$('#vboxSettingsDialog').data('vboxMachineData').pointingHidType = $(document.forms['frmVboxSettings'].vboxSettingsTabGeneralInputMouse).val();
 	}
+
+	if($('#vboxIndex').data('vboxConfig').enableCustomIcons)
+		$('#vboxSettingsDialog').data('vboxMachineData').customIcon = $(document.forms['frmVboxSettings'].vboxSettingsGeneralIcon).val();
 
 	
 });

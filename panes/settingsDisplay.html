@@ -15,7 +15,7 @@
 <div id='vboxSettingsTabDisplayVideo' title='Video'>
 <table style='width: 100%'>
 	<tr>
-		<th><span class='translate'>Video Memory</span>:</th>
+		<th><span class='translate'>Video Memory:</span></th>
 		<td style='width: 100%; white-space: nowrap'>
 		<table style='width: 100%'>
 			<tr>
@@ -84,29 +84,29 @@
 		<td colspan='2'><input type='checkbox' class='vboxCheckbox vboxEnablerCheckbox' name='vboxSettingsDisplayRDPEnabled' /> <span class='translate'>Enable Server</span></td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Server Port</span>:</th>
+		<th><span class='translate'>Server Port:</span></th>
 		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPPort' /></td>
 	</tr>
 	<tr id='vboxSettingsDisplayRDPAddrRow'>
-		<th><span class='translate'>Net Address</span>:</th>
+		<th><span class='translate'>Net Address:</span></th>
 		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPAddr' /></td>
 	</tr>	
 	<tr>
-		<th><span class='translate'>Authentication Method</span>:</th>
+		<th><span class='translate'>Authentication Method:</span></th>
 		<td>
-             <select name='vboxSettingsDisplayRDPAuth' style='width: 100%'>
-              <option value='' class='translate'>None</option>
+             <select name='vboxSettingsDisplayRDPAuth' id='vboxSettingsDisplayRDPAuthID' style='width: 100%'>
+              <option value='' >None</option>
 				<option value='External' class='translate'>External</option>
 				<option value='Guest' class='translate'>Guest</option>
              </select>
           </td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Authentication Timeout</span>:</th>
+		<th><span class='translate'>Authentication Timeout:</span></th>
 		<td><input type='text' class='vboxText' style='width: 100%' name='vboxSettingsDisplayRDPAuthTimeout' /></td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Extended Features</span>:</th>
+		<th><span class='translate'>Extended Features:</span></th>
 		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsDisplayRDPMulti' /> <span class='translate vboxEnablerListen'>Allow Multiple Connections</span></td>
 	</tr>	
 </table>
@@ -114,6 +114,9 @@
 <script type='text/javascript'>
 
 /* Display */
+
+/* auth method translatiosn */
+$('#vboxSettingsDisplayRDPAuthID').find('option').html(function(i,h){return trans(h,'VBoxGlobal');});
 
 $('#vboxSettingsDisplayMemory').data('form','frmVboxSettings');
 $('#vboxSettingsDisplayMemory').slider({'min':parseInt($('#vboxIndex').data('vboxSystemProperties').minGuestVRAM),'max':parseInt($('#vboxIndex').data('vboxSystemProperties').maxGuestVRAM)});

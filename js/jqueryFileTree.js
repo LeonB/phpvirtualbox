@@ -62,7 +62,7 @@ if(jQuery) (function($){
 						$(c).removeClass('wait').append(data);
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
 						if(o.scrollTo) {
-							var sto = $(o.scrollTo).find('li.vboxListItemSelected').first();
+							var sto = $(o.scrollTo).find('a.vboxListItemSelected').first();
 							if(sto[0]) {
 								$(o.scrollTo).scrollTo(sto,{'axis':'y','offset':{'top':-15}});
 							}
@@ -105,6 +105,8 @@ if(jQuery) (function($){
 				// Get the initial file list
 				showTree( $(this), o.root, true);
 			});
+			
+			return this;
 		}
 	});
 	

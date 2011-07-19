@@ -4,8 +4,7 @@
  */
 
 # Turn off PHP notices
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
-
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING);
 
 require_once(dirname(__FILE__).'/lib/config.php');
 require_once(dirname(__FILE__).'/lib/utils.php');
@@ -13,15 +12,16 @@ require_once(dirname(__FILE__).'/lib/vboxconnector.php');
 
 
 // Allow caching of some screenshot data
-Header('ETag: "' . $_REQUEST['vm'].'_'.$_REQUEST['randid'].'"');
+@Header('ETag: "' . $_REQUEST['vm'].'_'.$_REQUEST['randid'].'"');
 session_cache_limiter('private_no_expire');
 
 // Check for valid session
+global $_SESSION;
 session_init();
-if(!$_SESSION['valid']) return;
+if(!@$_SESSION['valid']) return;
 
 // Clean request
-$_REQUEST = array_merge($_GET,$_POST);
+$_REQUEST = array_merge(@$_GET,@$_POST);
 
 $settings = new phpVBoxConfigClass();
 $vbox = new vboxconnector();
@@ -138,7 +138,7 @@ try {
 
 		$vbox->session->unlockMachine();
 		$vbox->session->releaseRemote();
-
+		
 	} else {
 
 		// Let the browser cache saved state images
@@ -174,8 +174,7 @@ try {
 	header("Content-type: image/png",true);
 
 	foreach($imageraw as $i) {
-		if(is_array($i))
-			foreach($i as $b) echo(chr($b));
+		if(is_array($i)) echo(base64_decode($i[0]));
 	}
 
 

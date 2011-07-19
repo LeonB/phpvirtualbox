@@ -1,0 +1,281 @@
+<!-- 
+
+	Panes for new hard disk wizard. Logic in vboxWizard()
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id$
+
+ -->
+<!-- Step 1 -->
+<div id='wizardCopyHDStep1' title='Welcome to the virtual disk copying wizard' style='display: none'>
+	
+	<span class='translate'>&lt;p&gt;This wizard will help you to copy a virtual disk.&lt;/p&gt;</span>
+	
+	<p class='vboxWizButtonsMessage'>wizard buttons message</p>
+	
+	<p class='translate'>Please select the virtual disk which you would like to copy if it is not already selected. You can either choose one from the list or use the folder icon beside the list to select a virtual disk file.</p>
+
+	<span class='vboxTableLabel translatepre'>Virtual disk to copy</span>
+	<div class='vboxBordered'>
+		<table class='vboxOptions'>
+			<tr style='vertical-align: top;'>
+				<td><select id="copyHDDiskSelectId" name="copyHDDiskSelect" onchange='wizardCopyHDUpdateName(this)'></select></td>
+				<td style='width:1%' id='newVMDiskVMM'></td>
+			</tr>
+		</table>
+	</div>
+	<input type='hidden' name='wizardCopyHDSizeValue' />
+</div>
+
+
+<!-- Step 2 -->
+<div id='wizardCopyHDStep2' title='Virtual disk file type' style='display: none'>
+
+	<span class='translate'>&lt;p&gt;Please choose the type of file that you would like to use for the new virtual disk. If you do not need to use it with other virtualization software you can leave this setting unchanged.&lt;/p&gt;</span>
+
+	<span class='vboxTableLabel translate'>File type</span>
+	<div class='vboxBordered'>
+		<table class='vboxOptions'>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' checked='checked' name='copyHDFileType' value='vdi' /> <span class='translate'>VDI (VirtualBox Disk Image)</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' name='copyHDFileType' value='vmdk' /> <span class='translate'>VMDK (Virtual Machine Disk)</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' name='copyHDFileType' value='vhd' /> <span class='translate'>VHD (Virtual Hard Disk)</span></td>
+			</tr>
+			
+		</table>
+	</div>
+	
+</div>
+
+
+<!-- Step 3 -->
+<div id='wizardCopyHDStep3' title='Virtual disk storage details' style='display: none'>
+
+	<p class='translate'>Please choose whether the new virtual disk file should be allocated as it is used or if it should be created fully allocated.</p>
+	
+	<span class='translate'>&lt;p&gt;A &lt;b&gt;dynamically allocated&lt;/b&gt; virtual disk file will only use space on your physical hard disk as it fills up, although it will not shrink again automatically when space on it is freed.&lt;/p&gt;</span>
+	
+	<span class='translate'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
+	
+	<span class='vboxTableLabel translatevar'>Storage details</span>
+	<div class='vboxBordered'>
+		<table class='vboxOptions'>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /><span class='translate'>Dynamically allocated</span></td>
+			</tr>
+			<tr style='vertical-align: top;'>
+				<td><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /><span class='translate'>Fixed size</span></td>
+			</tr>	
+		</table>
+	</div>
+</div>
+
+<!-- Step 4 -->
+<div id='wizardCopyHDStep4' title='Virtual disk file location' style='display: none'>
+
+	<p class='translate'>Press the &lt;b&gt;Select&lt;/b&gt; button to select the location of a file to store the virtual disk data or type a file name in the entry field.</p>
+	
+	<span class='vboxTableLabel translate'>Location</span>
+	<div class='vboxBordered'>
+		<table class='vboxOptions'>
+			<tr>
+				<td style='width: 100%; white-space: nowrap'>
+					<input type='text' class='vboxText' name='wizardCopyHDLocation' style='width: 100%'/>
+				</td>
+				<td style='width: auto; white-space: nowrap;' class='vboxFileFolderInput'>
+					<input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="wizardCopyHDBrowseLocation()" />
+				</td>
+			</tr>
+		</table>
+	</div>	
+
+</div>
+
+<!-- Step 5 -->
+<div id='wizardCopyHDStep5' title='Summary' style='display: none'>
+
+	<p class='translate'>You are going to create a copied virtual disk with the following parameters:</p>
+	
+	<div style='padding: 4px; margin: 2px;' class='vboxBordered'>
+		<table class='vboxVertical' style='padding: 4px;'>
+			<tr>
+				<th style='text-align: right'><span class='translate'>File type</span></th>
+				<td id='wizardCopyHDTypeLabel'>Dynamically expanding storage</td>
+			</tr>
+			<tr>
+				<th style='text-align: right'><span class='translate'>Details</span></th>
+				<td id='wizardCopyHDDetailsLabel'>Dynamically expanding storage</td>
+			</tr>			
+			<tr>
+				<th style='text-align: right'><span class='translate'>Location</span></th>
+				<td id='wizardCopyHDLocationLabel'></td>
+			</tr>
+			<tr>
+				<th style='text-align: right'><span class='translate'>Size</span></th>
+				<td id='wizardCopyHDSizeLabel'></td>
+			</tr>		
+		</table>
+	</div>
+	<p id='vboxWizCpHDFin'></p>
+
+</div>
+
+<script type='text/javascript'>
+
+$('#wizardCopyHDStep1').find('span.translatepre').html(function(i,h){return trans(h,'UINewHDWizardPageWelcome');});
+$('#wizardCopyHDStep3').find('span.translatevar').html(function(i,h){return trans(h,'UINewHDWizardPageVariant');});
+$('#vboxWizCpHDFin').html(trans('If the above settings are correct, press the <b>%1</b> button. Once you press it the new virtual disk file will be created.','UINewHDWizard').replace('%1',trans('Copy','UINewHDWizard')));
+
+
+var sButtons = new Array(
+		{
+			/* Add Attachment Button */
+			'name' : 'mselecthdbtn',
+			'label' : 'Choose a virtual hard disk file...',
+			'icon' : 'select_file',
+			'context':'UINewHDWizardPageWelcome',
+			'click' : function () {
+				vboxMedia.actions.choose(null,'HardDisk',function(med){
+					if(med) copyHDFillDisks(med.base);
+				});
+			}
+		}		
+);
+
+var wizardCopyHDToolbar = new vboxToolbarSmall(sButtons);
+wizardCopyHDToolbar.disabledString = 'dis';
+wizardCopyHDToolbar.addButtons('newVMDiskVMM');		
+
+/* Set up disk selection box */
+function copyHDFillDisks(sel) {
+
+	document.forms['frmwizardCopyHD'].copyHDDiskSelect.options.length = 0;
+	$(document.forms['frmwizardCopyHD'].copyHDDiskSelect).children().remove();
+		
+	var s = vboxMedia.mediaForAttachmentType('HardDisk');
+	
+	// Sort media
+	s.sort(function(a,b){return strnatcasecmp(a.name,b.name);});
+	
+	var mediumSelects = [];
+	for(var i = 0; i < s.length; i++) {
+		document.forms['frmwizardCopyHD'].copyHDDiskSelect.options[i] = new Option(vboxMedia.mediumPrint(s[i]),s[i].id);
+		if(s[i].readOnly && s[i].deviceType == 'HardDisk') $(document.forms['frmwizardCopyHD'].copyHDDiskSelect.options[i]).addClass('vboxMediumReadOnly');
+		mediumSelects[i] = {'attachedId':s[i].id,'id':s[i].id,'base':s[i].base,'label':vboxMedia.mediumPrint(s[i])};
+	}
+	if(sel) {
+		$(document.forms['frmwizardCopyHD'].copyHDDiskSelect).val(sel);
+	}
+	
+	$(document.forms['frmwizardCopyHD'].copyHDDiskSelect).mediumselect({'type':'HardDisk','showdiff':false,'media':mediumSelects});
+
+}
+copyHDFillDisks();
+
+/* Browse for new disk location */
+function wizardCopyHDBrowseLocation() {
+
+	// Get current location
+	var loc = document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value;
+	var os = null;
+	if(loc.indexOf(':') > 0) {
+		// windows
+		loc = loc.replace(/.*\\/,'');
+		os = 'win';
+	} else if(loc.indexOf('/') != -1) {
+		// *nix
+		loc = loc.replace(/.*\//,'');
+		os = 'unix';
+	} else {
+		// no path set
+		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder;
+	}
+		
+	vboxFileBrowser(loc,function(f){
+		if(!f) return;
+		// get file name
+		file = document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value;
+		document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value = f+$('#vboxIndex').data('vboxConfig').DSEP+file;
+	},true);
+
+}
+
+/* Update new HD name */
+function wizardCopyHDUpdateName(sel) {
+	var n = $(sel).val();
+	var m = vboxMedia.getMediumById(n);
+	if(!m) return;
+	document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value = trans('%1_copy','UINewHDWizard').replace('%1',m.name.replace(/\.[^\.]+?$/,''));
+	document.forms['frmwizardCopyHD'].elements.wizardCopyHDSizeValue.value = m.logicalSize;
+}
+
+ /* Suggested Data exists */
+$('#wizardCopyHDStep1').bind('show',function(e,wiz){
+
+	// Already initialized?
+	if($('#wizardCopyHDStep1').data('init')) return;
+
+	
+    if(wiz && wiz.suggested && wiz.suggested.medium)
+    	$(document.forms['frmwizardCopyHD'].copyHDDiskSelect).mediumselect({'selectMedium':wiz.suggested.medium});
+    
+    
+	$('#wizardCopyHDStep1').data('init',true);
+	
+});
+
+/* When showing summary */
+$('#wizardCopyHDStep5').bind('show',function(e,wiz){
+
+	var format = document.forms['frmwizardCopyHD'].elements['copyHDFileType'];
+	for(var i = 0; i < format.length; i++) {
+		if(format[i].checked) {
+			format=format[i].value;
+			break;
+		}
+	}
+	// Type (Format) label
+	$('#wizardCopyHDTypeLabel').html(vboxMedia.getFormat({'format':format}));
+
+	// Details label
+	$('#wizardCopyHDDetailsLabel').html((document.forms['frmwizardCopyHD'].elements.newHardDiskType[1].checked ? trans('Fixed size storage','VBoxGlobal') : trans('Dynamically allocated storage','VBoxGlobal')));
+
+	var loc = document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value;
+	if(loc.search(/[\/|\\]/) < 0) {
+		if($('#wizardCopyHDStep4').data('suggestedpath'))
+			loc = $('#wizardCopyHDStep4').data('suggestedpath') + loc;
+		else
+			loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + loc;
+	}
+	
+	if(loc.substring(loc.length-format.length-1).toLowerCase() != '.' + format) loc += '.' + format;
+	
+	$('#wizardCopyHDLocationLabel').html($('<div />').text(loc).html());
+	
+	/* Check to see if file exists */
+	var fileExists = false;
+	var l = new vboxLoader();
+	l.mode='save';
+	l.add('fileExists',function(d){
+		fileExists = d.exists;
+	},{'file':loc});
+	l.onLoad = function() { 
+		if(fileExists) {
+			vboxAlert(trans('<p>The hard disk storage unit at location <b>%1</b> already exists. You cannot create a new virtual hard disk that uses this location because it can be already used by another virtual hard disk.</p><p>Please specify a different location.</p>','VBoxProblemReporter').replace('%1',loc));
+			wiz.displayStep(4);
+		}
+	}
+	l.run();
+	
+
+	// Fix size if we need to
+	var mbytes = vboxConvertMbytes(document.forms['frmwizardCopyHD'].elements.wizardCopyHDSizeValue.value);
+	document.forms['frmwizardCopyHD'].elements.wizardCopyHDSizeValue.value = vboxMbytesConvert(mbytes);
+	$('#wizardCopyHDSizeLabel').html(document.forms['frmwizardCopyHD'].elements.wizardCopyHDSizeValue.value + ' ('+mbytes+' '+trans('MB','VBoxGlobal')+')');
+});
+ 
+</script>

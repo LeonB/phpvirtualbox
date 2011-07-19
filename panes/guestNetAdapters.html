@@ -8,23 +8,23 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 <div id='vboxGuestNetAdapterTemplate' class='vboxDialogContent vboxTabContent' style='display: none'>
 	<table class="vboxVertical">
 		<tr>
-			<th><span class='translate'>IPv4Addr</span>:</th>
+			<th><span class='translate'>IPv4 Address</span>:</th>
 			<td><span title='/V4/IP'></span></td>
 		</tr>
 		<tr>
-			<th><span class='translate'>IPv4Mask</span>:</th>
+			<th><span class='translate'>IPv4 Network Mask</span>:</th>
 			<td><span title='/V4/Netmask'></span></td>
 		</tr>
 		<tr class='vboxIPv6' style='display: none'>
-			<th><span class='translate'>IPv6Addr</span>:</th>
+			<th><span class='translate'>IPv6 Address</span>:</th>
 			<td><span title='/V6/Ip'></span></td>
 		</tr>
 		<tr class='vboxIPv6' style='display: none'>
-			<th><span class='translate'>IPv6Mask</span>:</th>
+			<th><span class='translate'>IPv6 Network Mask Length</span>:</th>
 			<td><span title='/V6/Netmask'></span></td>
 		</tr>
 		<tr>
-			<th><span class='translate'>Mac Address</span>:</th>
+			<th><span class='vboxGuestMac'>MAC Address</span>:</th>
 			<td><span title='/MAC'></span></td>
 		</tr>		
 	</table>
@@ -32,6 +32,13 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 	
 <script type='text/javascript'>
 
+/* Translate */
+// Mac is special
+$('#vboxGuestNetAdapterTemplate').find('span.vboxGuestMac').html(trans('MAC Address','VBoxVMNetworkSettings'));
+
+vboxSetLangContext('UIGlobalSettingsNetwork');
+$('#vboxGuestNetAdapterTemplate').find(".translate").html(function(i,h){return trans($('<div />').html(h).text());}).removeClass('translate');
+vboxUnsetLangContext();
 
 /*
  * Get data and pass to init function
@@ -50,7 +57,7 @@ function vboxVMNetAdaptersInit(vm,index) {
 
 function vboxVMNetAdaptersDisplay(d) {
 	
-	vboxSetLangContext('vboxGuestNetAdapters');
+	vboxSetLangContext('UIGlobalSettingsNetwork');
 	
 	// Create hash / assoc array / mapping
 	var data = {};
@@ -62,26 +69,23 @@ function vboxVMNetAdaptersDisplay(d) {
 	$('#vboxGuestNetAdapters').children().first().remove();
 
 	// Append tab list
-	var adl = document.createElement('div');
-	$(adl).attr({'id':'vboxGuestNetAdapterList','class':'vboxTabbed'});
+	var adl = $('<div />').attr({'id':'vboxGuestNetAdapterList','class':'vboxTabbed'});
 
 	// Check for data
 	if(!data['Count'] || data['Count'] < 1) {
-		$(adl).html(trans('Unable to retrieve guest properties'));
+		$(adl).html(trans('Unable to retrieve guest properties. Make sure the virtual machine is running and has the VirtualBox Guest Additions installed.','phpVirtualBox'));
 		$('#vboxGuestNetAdapters').prepend(adl);
 		return;
 	}
 
 	// Create list
-	var ul = document.createElement('ul');
+	var ul = $('<ul />');
 	
 	// Each net adapter
 	for(var i = 0; i < data['Count']; i++) {
 
 		// Tab link
-		var li = document.createElement('li');
-		li.innerHTML = '<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter') + ' ' + (i + 1) + '</span></a>';
-		ul.appendChild(li);
+		$(ul).append($('<li />').html('<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter %1').replace('%1',(i + 1)) + '</span></a>'));
 
 		// Tab content
 		var tmpl = $("#vboxGuestNetAdapterTemplate").clone(true);
@@ -98,10 +102,8 @@ function vboxVMNetAdaptersDisplay(d) {
 	// prepend tabs
 	$("#vboxGuestNetAdapters").prepend(adl);
 
-	// Update it all
+	// Init display
 	vboxInitDisplay('vboxGuestNetAdapters');
-
-	vboxUnsetLangContext();
 
 }
 

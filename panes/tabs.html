@@ -10,14 +10,13 @@
 <script type='text/javascript'>
 
 // Create UL
-var ul = document.createElement('ul');
-ul.setAttribute('id','tablistMain');
-$('#vboxTabsList').append(ul);
+$('#vboxTabsList').append($('<ul />').attr({'id':'tablistMain'}));
+
 
 var tabs = [
     {'name':'vboxTabVMDetails','content':'tabVMDetails','label':'Details','icon':'settings','enabled':function(){return true;}},
     {'name':'vboxTabVMConsole','content':'tabVMConsole','label':'Console','icon':'vrdp','enabled':function(vm){
-    	return (vm && vm.id != 'host' && vm.state == 'Running' && vm.VRDEServer && vm.VRDEServer.VRDEExtPack && vm.consolePort > 0);
+    	return (vm && vm.id != 'host' && vm.state == 'Running' && vm.consoleInfo && vm.consoleInfo.consolePort > 0);
     }},
     {'name':'vboxTabVMSnapshots','content':'tabVMSnapshots','label':'Snapshots','icon':'take_snapshot','enabled':function(vm){
     	return (vm && vm.id && vm.id != 'host');
@@ -29,6 +28,7 @@ var tabsMain = new vboxTabs('tabMainContent');
 
 var tabLoader = new vboxLoader();
 
+vboxSetLangContext('UIVMDesktop');
 for(var i = 0; i < tabs.length; i++) {
 
 	// Tab disabled?
@@ -36,12 +36,12 @@ for(var i = 0; i < tabs.length; i++) {
 		continue;
 
 	// Tab link
-	var li = document.createElement('li');
-	$(li).attr({'class':'ui-corner-all','id':'tabsMain-'+tabs[i].name}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');
+	$('<li />').attr({'class':'ui-corner-all','id':'tabsMain-'+tabs[i].name}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label)+'</span></span></a>').appendTo('#tablistMain');
 	
 	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#tabMainContent').append(f);},tabs[i].name);
 	
 }
+vboxUnsetLangContext();
 
 tabLoader.onLoad = function(){
 

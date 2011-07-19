@@ -20,9 +20,9 @@ class cache {
 
 	/* set up temp path */
 	function __construct() {
-		if($_ENV['TEMP'] && @is_writable($_ENV['TEMP'])) {
+		if(@$_ENV['TEMP'] && @is_writable($_ENV['TEMP'])) {
 			$this->path = $_ENV['TEMP'];
-		} else if($_ENV['TMP'] && @is_writable($_ENV['TMP'])) {
+		} else if(@$_ENV['TMP'] && @is_writable($_ENV['TMP'])) {
 			$this->path = $_ENV['TMP'];
 		// PHP >= 5.2.1
 		} else if(function_exists('sys_get_temp_dir')) {
@@ -160,7 +160,7 @@ class cache {
 		$fname = $this->_fname($key);
 
 		// Pre-existing locked read
-		if($this->locked[$key]) {
+		if(@$this->locked[$key]) {
 			@fseek($this->locked[$key],0);
 			$str = @fread($this->locked[$key],@filesize($fname));
 			@fseek($this->locked[$key],0);

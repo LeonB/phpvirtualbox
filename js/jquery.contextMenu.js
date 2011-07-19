@@ -124,7 +124,7 @@ if(jQuery)( function() {
 					
 					
 					// Detect mouse position
-					var d = {}, posX, posY;
+					var d = {};
 					
 					if(mode == 'menu') {
 				 		var x = $(srcElement).offset().left;
@@ -170,12 +170,13 @@ if(jQuery)( function() {
 					y = (bottom > windowHeight) ? y - (bottom - windowHeight) : y;
 
 					
+					$(menu).one('menuLoaded',function(){
+						menuItems(menu, srcElement);
+					});
+					
 					// Check for callback if nothing is present
 					if($(menu).children().length == 0 && $(menu).data('callback')) {
 						
-						$(menu).one('menuLoaded',function(){
-							menuItems(menu, srcElement);
-						});
 						
 						var m = window[$(menu).data('callback')](menu);
 						
@@ -239,13 +240,8 @@ if(jQuery)( function() {
 				});
 				
 				// Disable text selection
-				if( $.browser.mozilla ) {
-					$('#' + o.menu).each( function() { $(this).css({ 'MozUserSelect' : 'none' }); });
-				} else if( $.browser.msie ) {
-					$('#' + o.menu).each( function() { $(this).bind('selectstart.disableTextSelect', function() { return false; }); });
-				} else {
-					$('#' + o.menu).each(function() { $(this).bind('mousedown.disableTextSelect', function() { return false; }); });
-				}
+				$('#' + o.menu).disableSelection();
+				
 				// Disable browser context menu (requires both selectors to work in IE/Safari + FF/Chrome)
 				$(el).add($('UL.contextMenu')).bind('contextmenu', function() { return false; });
 				

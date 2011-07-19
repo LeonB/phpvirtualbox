@@ -12,27 +12,27 @@
 		<td colspan='2'><input name='vboxSettingsSPortEnabled' class='vboxCheckbox vboxEnablerCheckbox' type='checkbox' /> <span class='translate'>Enable Serial Port</span></td>
 	</tr>
 	<tr>
-		<th style='min-width: 120px'><span class='translate'>Port Number</span>:</th>
+		<th style='min-width: 120px'><span class='translate'>Port Number:</span></th>
 		<td class='vboxEnablerTrigger'>
 			<select style='width: auto' name='vboxSettingsPortNumber' onchange='vboxSettingsUpdateSPortOptions(this);'>
-				<option value='COM1' class='translate'>COM1</option>
-				<option value='COM2' class='translate'>COM2</option>
-				<option value='COM3' class='translate'>COM3</option>
-				<option value='COM4' class='translate'>COM4</option>
+				<option value='COM1'>COM1</option>
+				<option value='COM2'>COM2</option>
+				<option value='COM3'>COM3</option>
+				<option value='COM4'>COM4</option>
 				<option value='User-defined' class='translate'>User-defined</option>	
 			</select>
-			<span class='translate'>IRQ</span>: <input type='text' name='vboxSettingsSPortIRQ' size='2' disabled='disabled' />
-			<span class='translate'>I/O Port</span>: <input type='text' name='vboxSettingsSPortIO' size='5' disabled='disabled' />
+			<span class='vboxEnablerListen'><span class='translate'>IRQ:</span></span> <input type='text' name='vboxSettingsSPortIRQ' size='2' disabled='disabled' />
+			<span class='vboxEnablerListen'><span class='translate'>I/O Port:</span></span> <input type='text' name='vboxSettingsSPortIO' size='5' disabled='disabled' />
         </td>
 	</tr>
 	<tr>
-		<th><span class='translate'>Port Mode</span>:</th>
+		<th><span class='translate'>Port Mode:</span></th>
 		<td class='vboxEnablerTrigger'>
 			<select style='width: auto' name='vboxSettingsPortMode' onchange='vboxSettingsUpdateSPortMode(this);'>
-				<option value='Disconnected' class='translate'>Disconnected</option>
-				<option value='HostPipe' class='translate'>HostPipe</option>
-				<option value='HostDevice' class='translate'>HostDevice</option>
-				<option value='RawFile' class='translate'>RawFile</option>
+				<option value='Disconnected' >Disconnected</option>
+				<option value='HostPipe' >HostPipe</option>
+				<option value='HostDevice' >HostDevice</option>
+				<option value='RawFile' >RawFile</option>
 			</select>
           </td>
 	</tr>
@@ -44,7 +44,7 @@
 		</td>
 	</tr>
 	<tr>
-		<th class='vboxSPortPathLabel'><span class='translate'>Port/File Path</span>: </th>
+		<th class='vboxSPortPathLabel'><span class='translate'>Port/File Path:</span></th>
 		<td>
 			<input type='text' class='vboxText vboxSPortPathBox' style='width: 100%' name='vboxSettingsSPortPath'/>
 		</td>
@@ -65,15 +65,15 @@ var vboxSettingsSPortContainer = $(vboxSettingsSPortTemplate).parent();
 
 /* translated select values */
 for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPortNumber.options.length; i++) {
-	document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text);
+	document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text,'VBoxGlobal');
 }
 for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPortMode.options.length; i++) {
-	document.forms['frmVboxSettings'].vboxSettingsPortMode.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsPortMode.options[i].text);
+	document.forms['frmVboxSettings'].vboxSettingsPortMode.options[i].text = trans(vboxSerialMode(document.forms['frmVboxSettings'].vboxSettingsPortMode.options[i].text),'VBoxGlobal');
 }
 
 
 /* Serial Port tab links */
-var ul = document.createElement('ul');
+var ul = $('<ul />');
 $(vboxSettingsSPortContainer).append(ul);
 
 vboxSetLangContext('vboxSerialPorts');
@@ -81,18 +81,12 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').serialP
 
 	
 	/* tab */
-	var li = document.createElement('li');
-	li.innerHTML = '<a href="#' + vboxSettingsSPortTemplate.id + (i + 1) +'"><span>' + trans('Port X').replace('%s',i + 1) + '</span></a>';
-	ul.appendChild(li);
+	ul.append($('<li />').html('<a href="#' + vboxSettingsSPortTemplate.id + (i + 1) +'"><span>' + trans('Port %1','UIMachineSettingsSerial').replace('%1',i + 1) + '</span></a>'));
 
 	/* tab content */
 	var newTab = $("#vboxSettingsTabSerialPort").clone(true);
-	newTab.attr('id',vboxSettingsSPortTemplate.id + (i + 1));
-	newTab.css('display','block');
-
-	// Enable / disable trigger
-	newTab.find('.vboxEnablerTrigger').bind('enable',function(){
-		$(this).children('select').trigger('change');
+	newTab.attr({'id':vboxSettingsSPortTemplate.id + (i + 1)}).css({'display':'block'}).find('.vboxEnablerTrigger').bind('enable',function(){
+		$(this).find('select').trigger('change');
 	});
 	
 	newTab.appendTo(vboxSettingsSPortContainer);
@@ -150,10 +144,10 @@ function vboxSettingsUpdateSPortOptions(sel) {
 
 	// IRQ and IO text boxes
 	if(sel.value == 'User-defined') {
-		$(sel).siblings('input').attr('disabled','');
+		$(sel).siblings('input').prop('disabled',false);
 		$(sel).siblings('span').removeClass('vboxDisabled');
 	} else {
-		$(sel).siblings('input').attr('disabled','disabled');
+		$(sel).siblings('input').prop('disabled',true);
 		$(sel).siblings('span').addClass('vboxDisabled');
 		for(var i = 0; i < vboxSP.ports.length; i++) {
 			if(vboxSP.ports[i].name == sel.value) {
@@ -169,18 +163,18 @@ function vboxSettingsUpdateSPortOptions(sel) {
  * When serial port mode changes
  */
 function vboxSettingsUpdateSPortMode(sel) {
-	var ptable = $(sel).parentsUntil('table').parent();
+	var ptable = $(sel).closest('table');
 	if(sel.value == 'HostPipe') {
-		ptable.find('input.vboxSettingsSPortCreatePipe').attr({'disabled':''}).siblings().removeClass('vboxDisabled');
+		ptable.find('input.vboxSettingsSPortCreatePipe').prop({'disabled':false}).siblings().removeClass('vboxDisabled');
 	} else {
-		ptable.find('input.vboxSettingsSPortCreatePipe').attr({'disabled':'disabled'}).siblings().addClass('vboxDisabled');
+		ptable.find('input.vboxSettingsSPortCreatePipe').prop({'disabled':true}).siblings().addClass('vboxDisabled');
 	}
 	if(sel.value == 'Disconnected') {
 		ptable.find('.vboxSPortPathLabel').addClass('vboxDisabled');
-		ptable.find('.vboxSPortPathBox').attr('disabled','disabled');
+		ptable.find('.vboxSPortPathBox').prop('disabled',true);
 	} else {
 		ptable.find('.vboxSPortPathLabel').removeClass('vboxDisabled');
-		ptable.find('.vboxSPortPathBox').attr('disabled','');
+		ptable.find('.vboxSPortPathBox').prop('disabled',false);
 	}
 }
 

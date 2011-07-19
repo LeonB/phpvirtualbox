@@ -18,7 +18,7 @@ var $location = 'http://127.0.0.1:18083/';
  * Can also be changed in File -> Preferences -> Language in
  * phpVirtualBox.
  */
-var $language = 'en_us';
+var $language = 'en';
 
 /*
  *
@@ -66,6 +66,9 @@ var $servers = array(
 // http://www.wikipedia.org/wiki/Aspect_ratio_%28image%29#Previous_and_presently_used_aspect_ratios
 #var $previewAspectRatio = 1.6;
 
+// Enable custom VM icons
+#var $enableCustomIcons = true;
+
 /*
 Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
 If this is not set, files are always kept. If this is set, you will be PROMPTED
@@ -73,17 +76,17 @@ to decide whether or not you would like to delete the harddisk file(s) when you
 remove a harddisk from virtual media manager. You may still choose not to delete
 the file when prompted.
 */
-#var $deleteOnRemove = true;
+var $deleteOnRemove = true;
 
 /*
  * File / Folder browser settings
  */
 
 // Restrict file types
-#var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
+var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 // Restrict locations / folders
-#var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like '/home/vbox','/var/ISOs'
+#var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like array('/home/vbox','/var/ISOs')
 
 // Force use of local, webserver based file browser instead of going through vboxwebsrv
 #var $browserLocal = true;
@@ -95,32 +98,18 @@ the file when prompted.
  * Misc
  */
 
-/* Session Security Level
-	
-The following options are valid:
-
-0 - Use only Browser's User-Agent string
-1 - Use first octet of client IP
-2 - Use second octet of client IP
-3 - Use third octet of client IP
-4 - Use entire client IP
-
-Each option stacks with previous options. For example, the default setting of 2 uses:
-	Browser's User-Agent string + first octet of client IP + second octet of client IP
-
-Do not change / set unless you have a good reason.
-*/
-#var $sessionSecurityLevel = 2;
- 
 /* Disable any of phpVirtualBox's main tabs */
 #var $disableTabVMSnapshots = true; // Snapshots tab
 #var $disableTabVMConsole = true; // Console tab
 
 /* Screen resolutions for console tab */
-#var $consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
+var $consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
+
+/* Console tab keyboard layout. Currently Oracle's RDP client only supports EN and DE. */
+var $consoleKeyboardLayout = 'EN';
 
 /* Max number of network cards per VM. Do not set above VirtualBox's limit (typically 8) or below 1 */
-#var $nicMax = 4;
+var $nicMax = 4;
 
 /* Enable advanced configuration items (normally hidden in the VirtualBox GUI)
  * Note that some of these items may not be translated to languages other than english. 
@@ -152,6 +141,16 @@ Do not change / set unless you have a good reason.
 */
 #var $vmListSort = 'name';
 
+// Authentication library.
+var $authLib = 'Builtin';
+
+// VM ownership
+#var $enforceVMOwnership = true;
+
+// Per-user VM quota
+#var $vmQuotaPerUser = 2;
+
+
 // Allow VDE network configuration. This must be supported by the underlying VirtualBox installation!
 #var $enableVDE = true; 
 
@@ -159,10 +158,7 @@ Do not change / set unless you have a good reason.
 #var $disableSataPortCount = true;
 
 /* Enable Parallel Port configuration - EXPERIMENTAL
-LPT support may or may not work for you. Conflicting information
-is available regarding VirtualBox's implementation. I cannot
-provide support or instructions for implementing this. I doubt one
-could get support from VirtualBox for it.
+LPT support may or may not work for you. 
 
 !!! VirtualBox LPT support only works in Linux. !!!
 

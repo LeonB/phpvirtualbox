@@ -7,7 +7,6 @@
  *
  */
 
-
 /*
  * Initialize session
  */
@@ -17,27 +16,26 @@ function session_init() {
 	$settings = new phpVBoxConfigClass();
 
 	// No session support? No login...
-	if(!function_exists('session_start') || $settings->noAuth) {
+	if(@$settings->noAuth) {
 		global $_SESSION;
 		$_SESSION['valid'] = true;
 		$_SESSION['authCheckHeartbeat'] = time();
+		$_SESSION['admin'] = true;
 		return;
 	}
+	
+	// Session is auto-started by PHP?
+	if(ini_get('session.auto_start')) return;
+	
 	ini_set('session.use_trans_sid', 0);
 	ini_set('session.use_only_cookies', 1);
 	
 	// Session path
-	if($settings->sessionSavePath) {
+	if(isset($settings->sessionSavePath)) {
 		session_save_path($settings->sessionSavePath);
 	}
-	// Session id calculation
-	if(intval($settings->sessionSecurityLevel) < 0) $settings->sessionSecurityLevel = 2;
-	$remote = explode('.',$_SERVER["REMOTE_ADDR"]);
-	$levels = array($_SERVER["HTTP_USER_AGENT"],$remote[0],$remote[1],$remote[2],$remote[3]);
-	for($i = 0; $i < intval($settings->sessionSecurityLevel) && $i < count($levels); $i++) $sid .= $levels[$i];
-	session_id(md5($sid));
-	
-	session_name(($settings->session_name ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'])));
+
+	session_name((isset($settings->session_name) ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'].$_SERVER['HTTP_USER_AGENT'])));
 	session_start();
 }
 

@@ -14,6 +14,7 @@ ul.contextMenu {
 	background: #e9e9e9;
 	background: -webkit-gradient(linear, left top, right top, from(#ffffff), to(#d9d9d9)); /* for webkit browsers */
 	background: -moz-linear-gradient(left,  #ffffff, #d9d9d9); /* for firefox 3.6+ */
+	background: -o-linear-gradient(left,  #ffffff, #d9d9d9);
 	filter: progid:DXImageTransform.Microsoft.gradient(GradientType=1, startColorstr='#ffffff', endColorstr='#d9d9d9'); /* for IE */	
 }
 
@@ -22,6 +23,7 @@ ul.contextMenu {
 	padding: 0px;
 	margin: 0px;
 	white-space: nowrap;
+	border: 1px solid transparent;
 }
 
 .contextMenu LI input {
@@ -38,7 +40,7 @@ ul.contextMenu {
 	outline: none;
 	padding: 1px 5px;
 	padding-left: 28px;
-	border: 1px solid transparent;
+	border: 0px solid transparent;
 	cursor: pointer;
 	white-space: nowrap;
 }
@@ -58,16 +60,13 @@ ul.contextMenuNoBG A {
 	padding-left: 2px;
 }
 
-.contextMenu LI.hover A, ul.contextMenuNoBG LI.hover {
+ul.contextMenu LI.hover {
 	background-color: #f0f8ff;
 	border: 1px solid #aaaaaa;
 }
-
+ 
 .contextMenu LI.disabled img {
 	display: none;
-}
-.contextMenu LI.disabled A {
-	border: 1px solid transparent;
 }
 
 .contextMenu LI.hover.disabled, .contextMenu LI.disabled A, .contextMenu LI.disabled SPAN {

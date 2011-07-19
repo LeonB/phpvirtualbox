@@ -26,7 +26,7 @@
     <link rel="stylesheet" type="text/css" href="css/layout.css"/>
 
     <!-- External / vendor scripts -->
-    <script type="text/javascript" src="js/jquery-1.5.1-min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.6.2-min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.9-min.js"></script>
     <script type="text/javascript" src="js/jquery.contextMenu.js"></script>
 	<script type="text/javascript" src="js/jquery.tipped-2.1b.min.js"></script>
@@ -141,9 +141,10 @@
 				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
 				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
 				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-				l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
 				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-				l.add('RecentMediums',function(d){$('#vboxIndex').data('vboxRecentMediums',d);});
+				l.add('RecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
+				l.add('RecentMediumPaths',function(d){$('#vboxIndex').data('vboxRecentMediumPaths',d);});
 				
 				l.onLoad = function(){$('#vboxIndex').trigger('hostChanged');}
 
@@ -159,9 +160,10 @@
 				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
 				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
 				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-				l.add('Mediums',function(d){$('#vboxIndex').data('vboxMediums',d);});
+				l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
 				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-				l.add('RecentMediums',function(d){$('#vboxIndex').data('vboxRecentMediums',d);});
+				l.add('RecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
+				l.add('RecentMediumPaths',function(d){$('#vboxIndex').data('vboxRecentMediumPaths',d);});
 	
 				l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
 				l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{})
@@ -200,6 +202,7 @@
 				if($('#vboxIndex').data('vboxSession') && !$('#vboxIndex').data('vboxSession').result) {
 					return;
 				}
+				
 
 				// No valid session. Load login pane
 				$('#vboxLogin').find('input[name=password]').val('');
@@ -207,7 +210,7 @@
 				
 				// Display error if we tried to log in
 				if(tried) {
-					vboxAlert('Invalid username or password.',{'width':'auto'});
+					vboxAlert(trans('Invalid username or password.','UIUsers'),{'width':'auto'});
 				}
 				
 			}
@@ -218,10 +221,11 @@
 			login.onLoad = function() {
 
 				var buttons = {};
-				buttons[trans('Log in')] = function() {
+				buttons[trans('Log in','UIUsers')] = function() {
 					var u = $('#vboxLogin').find('input[name=username]').val();
 					var p = $('#vboxLogin').find('input[name=password]').val();
-					$(this).dialog('close');
+					if(!(u&&p)) return;
+					$('#vboxLogin').dialog('close');
 					var trylogin = new vboxLoader();
 					trylogin.add('login',function(d){$('#vboxIndex').data('vboxSession',d);},{'u':u,'p':p});
 					trylogin.onLoad = function() { vboxCheckSession(true);}
@@ -230,7 +234,9 @@
 				}
 				
 				// Create but do not open dialog
-				$('#vboxLogin').dialog({'closeOnEscape':false,'width':300,'height':160,'buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox :: ' + trans('Log in')});
+				if($.browser.webkit) heightadd = 5;
+				else heightadd = 0;
+				$('#vboxLogin').dialog({'closeOnEscape':false,'width':300,'height':'auto','buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox :: ' + trans('Log in','UIUsers')});
 				$('#vboxLogin').find('input[name=username]').first().focus();
 				
 				// Trick loader into not showing root pane again

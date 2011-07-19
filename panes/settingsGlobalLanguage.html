@@ -8,7 +8,7 @@
  -->
 <table style='width: auto; margin-left:auto; margin-right:auto;'>
 <tr>
-<td style='text-align: left'><span class='translate'>Interface Language</span>:</td>
+<td style='text-align: left'><span class='translate'>Interface Language:</span></td>
 </tr>
 <tr>
 <td>
@@ -25,23 +25,21 @@
 
 /* Fill Languages */
 var vboxLanguages = [
-	{'id':'en_us','name':'English'},
+	{'id':'en','name':'English'},
 	{'id':'pt_br','name':'Portuguese (Brazil)','name_tr':'Português (Brasil)'},
-	{'id':'ru_ru','name':'Russian','name_tr':'Русский'},
-	{'id':'it_it','name':'Italian','name_tr':'Italiano'},
-	{'id':'fr_fr','name':'French','name_tr':'Français'},
-	{'id':'de_de','name':'German','name_tr':'Deutsch'},
-	{'id':'es_la','name':'Spanish (Latin America)','name_tr':'Español (América Latina)'},
-	{'id':'nb_no','name':'Norwegian (Bokmål)','name_tr':'Bokmål'}
+	{'id':'ru','name':'Russian','name_tr':'Русский'},
+	{'id':'it','name':'Italian','name_tr':'Italiano'},
+	{'id':'fr','name':'French','name_tr':'Français'},
+	{'id':'de','name':'German','name_tr':'Deutsch'},
+	{'id':'es','name':'Spanish','name_tr':'Español'},
+	{'id':'ja','name':'Japanese','name_tr':'日本語'}
 ];
 var lList = $('#vboxLanguageList'); 
 $(lList).children().remove();
 var defLang = __vboxLangName;
 for(var i = 0; i < vboxLanguages.length; i++) {
-	var li = document.createElement('li');
-	$(li).data('language', vboxLanguages[i]);
-	$(li).html((vboxLanguages[i].name_tr ? vboxLanguages[i].name_tr : vboxLanguages[i].name));
-	$(li).attr('class','vboxListItem').hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+	var li = $('<li />').data({'language':vboxLanguages[i]}).html((vboxLanguages[i].name_tr ? vboxLanguages[i].name_tr : vboxLanguages[i].name)).attr('class','vboxListItem').hover(function(){
+		$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
 	if(defLang == vboxLanguages[i].id) {
 		$(li).addClass('vboxListItemSelected');
 		$('#vboxLanguageName').html(vboxLanguages[i].name + (vboxLanguages[i].name_tr ? ' / ' + vboxLanguages[i].name_tr : ''));

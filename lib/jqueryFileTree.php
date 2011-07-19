@@ -85,9 +85,6 @@ if($vboxRequest['dir'] != DSEP && count($folders)) {
 		}
 	}
 	if(!$valid) {
-		folder_start();
-		echo('<li>Access denied to '.htmlentities($dir).' (' . htmlentities(urldecode($vboxRequest['dir'])).')</li>');
-		folder_end();
 		$vboxRequest['dir'] = DSEP;
 	}
 }
@@ -180,14 +177,14 @@ function printdir($dir, $recurse=array()) {
 	for($i = 0; $i < count($files); $i++) {
 		$file = $files[$i];
 		$file = $dir.$file;
+		
 		// Folder
 		if($types[$i] == 4) {
-			if(count($recurse) > 1 && (strcasecmp($recurse[0],vbox_basename($file)) == 0)) {
-				folder_folder($file,false,true);
+			
+			if(count($recurse) && (strcasecmp($recurse[0],vbox_basename($file)) == 0)) {
+				folder_folder($file,false,true,count($recurse) == 1);
 				printdir($dir.array_shift($recurse),$recurse);
 				echo('</li>');
-			} elseif(count($recurse) == 1 && (strcasecmp($recurse[0],vbox_basename($file)) == 0)) {
-				folder_folder($file,false,false,true);
 			} else {
 				folder_folder($file);
 			}
@@ -232,12 +229,10 @@ function printdirlocal($dir, $recurse=array()) {
 	foreach( $files as $file ) {
 		$file = $dir.DSEP.$file;
 		if( file_exists($file) && is_dir($file) ) {
-			if(count($recurse) > 1 && (strcasecmp($recurse[0],vbox_basename($file)) == 0)) {
-				folder_folder($file,false,true);
+			if(count($recurse) && (strcasecmp($recurse[0],vbox_basename($file)) == 0)) {
+				folder_folder($file,false,true,count($recurse) == 1);
 				printdir($dir.DSEP.array_shift($recurse),$recurse);
 				echo('</li>');
-			} elseif(count($recurse) == 1 && (strcasecmp($recurse[0],vbox_basename($file)) == 0)) {
-				folder_folder($file,false,false,true);
 			} else {
 				folder_folder($file);
 			}
@@ -267,7 +262,7 @@ function folder_file($f) {
 	echo "<li class=\"file file_{$ext} vboxListItem\"><a href=\"#\" name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(vbox_basename($f))."</a></li>";
 }
 function folder_folder($f,$full=false,$expanded=false,$selected=false) {
-	echo "<li class=\"directory ".($expanded ? 'expanded' : 'collapsed')." vboxListItem".($selected ? 'Selected' : '')."\"><a href=\"#\" name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(($full ? $f : vbox_basename($f)))."</a>".($expanded ? '' : '</li>');
+	echo "<li class=\"directory ".($expanded ? 'expanded' : 'collapsed')." vboxListItem\"><a href=\"#\" class='".($selected ? 'vboxListItemSelected' : '')."' name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(($full ? $f : vbox_basename($f)))."</a>".($expanded ? '' : '</li>');
 }
 
 function folder_start() { echo "<ul class=\"jqueryFileTree\" style=\"display: none;\">"; }

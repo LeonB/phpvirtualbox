@@ -1,0 +1,83 @@
+<!-- 
+
+	Panes for new virtual machine wizard. Logic in vboxWizard()
+	Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+	
+	$Id$
+
+ -->
+<!-- Step 1 -->
+<div id='wizardCloneVMStep1' title='Welcome to the virtual machine clone wizard' style='display: none'>
+
+	<span class='translate'>&lt;p&gt;This wizard will help you to create a clone of your virtual machine.&lt;/p&gt;</span>
+
+	<p class='vboxWizButtonsMessage'></p>
+	
+	<span class='translate'>&lt;p&gt;Please choose a name for the new virtual machine:&lt;/p&gt;</span>
+	
+	<input type='text' class='vboxText' name='cloneVMName' style='width: 95%' />
+	
+	<p><input type='checkbox' class='vboxCheckbox' name='vboxCloneReinitNetwork' />
+		<span class='translate'>Reinitialize the MAC address of all network cards</span>
+	</p>
+
+</div>
+
+
+<!-- Step 2 -->
+<div id='wizardCloneVMStep2' title='Cloning Configuration' style='display: none'>
+
+	<p class='translate'>Please choose which parts of the virtual machine should be cloned.</p>
+	
+	<p><span class='translate'>If you select &lt;b&gt;Current machine state&lt;/b&gt;, only the current state of the virtual machine is cloned.</span>
+		<span class='translate' id='wizardCloneVMCurrentAll'>If you select &lt;b&gt;Current machine and all child states&lt;/b&gt; the current state of the virtual machine and any states of child snapshots are cloned.</span>
+		<span class='translate'>If you select &lt;b&gt;All states&lt;/b&gt;, the current machine state and all snapshots are cloned.</span>
+		</p>
+	
+	<table>
+		<tr style='vertical-align: bottom;'>
+			<td><input type='radio' class='vboxRadio' checked='checked' name='vmState' value='MachineState' /> <span class='translate'>Current machine state</span></td>
+		</tr>
+		<tr style='vertical-align: bottom;' id='vboxCloneCurrentAll'>
+			<td><input type='radio' class='vboxRadio' name='vmState' value='MachineAndChildStates' /> <span class='translate'>Current machine and all child states</span></td>
+		</tr>		
+		<tr style='vertical-align: bottom;'>
+			<td><input type='radio' class='vboxRadio' name='vmState' value='AllStates' /> <span class='translate'>All states</span></td>
+		</tr>	
+	</table>
+
+</div>
+
+
+
+<script type='text/javascript'>
+
+$('#wizardCloneVMStep1').bind('show',function(e,wiz){
+
+	// Already initialized?
+	if($('#wizardCloneVMStep1').data('init') || !wiz.args) return;
+	
+	$('#wizardCloneVMStep1').data('init',1);
+	
+	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
+	
+	if(!(wiz.args.snapshot && wiz.args.snapshot.children && wiz.args.snapshot.children.length)) {
+		$('#wizardCloneVMCurrentAll').hide();
+		$('#vboxCloneCurrentAll').hide();
+	}
+
+});
+
+/* When going to step2, make sure a name is entered */
+$('#wizardCloneVMStep2').bind('show',function(e,wiz){
+
+	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = jQuery.trim(document.forms['frmwizardCloneVM'].elements.cloneVMName.value);
+
+	if(!document.forms['frmwizardCloneVM'].elements.cloneVMName.value) {
+		// Go back
+		wiz.displayStep(1);
+	}
+
+});
+
+</script>

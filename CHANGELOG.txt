@@ -1,14 +1,141 @@
 -------------------------------------
-	4.0-5	
+	4.1-0	2011-7-19
+-------------------------------------
+VirtualBox 4.1.x compatibility.
+
+jquery upgrade to 1.6.2.
+
+Fixed issue where exported disks would be incorrectly named when
+exporting a virtual machine.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=307
+
+UI updates for wizards.
+
+Most translations are now taken from the VirtualBox source .qt
+files.
+
+-------------------------------------
+	4.0-7	2011-6-8
+-------------------------------------
+Removed $sessionSecurityLevel setting and associated logic as it
+really provided no extra session security.
+
+Fixed session bug where another client running the same browser
+from the same subnet could inherit another user's session.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=295
+
+Fixed bug that would not allow you to edit more than one host-only
+networking adapter.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=310
+
+Added $consoleKeyboardLayout setting.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=248
+
+-------------------------------------
+	4.0-6	2011-5-24
+-------------------------------------
+Pressing Esc key now closes most dialog boxes.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=237
+
+File / folder browser no longer shows "Access Denied" message
+when $restrictFolders is configured.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=238
+
+Hard disks that are already attached to a VM are not elected to
+be attached when adding a Hard Disk attachment in VM settings.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=239
+
+Pressing Enter key works on add user form.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=240
+
+Fixed bug in appliance import wizard where changed values would
+not be reflected in the interface after changing them.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=243
+
+Added simple authentication plugin framework.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=249
+
+Added disableHostTimeSync option when $enableAdvancedConfig is
+set.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=226
+
+When selecting media, the file / folder browser remembers the last
+media location.
+
+Added custom VM icons functionality and related $enableCustomIcons
+setting.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=225
+
+Added "Bind to IP" setting for NAT network adapters when
+$enableAdvancedConfig is set.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=232
+
+Fixed bug that would not correctly set the host network adapter of
+a running VM when changing the adapter to bridged mode.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=245
+
+Port forwarding protocol is now selectable in advanced NAT
+options.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=263 
+
+Network adapters on the VirtualBox Host details page now shows
+which VMs (and their adapters) are attached.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=276
+
+Host / port setting is now exposed and editable on the console
+tab.
+
+Fixed bug when viewing snapshot details that would keep appending
+rows to the details pane rather than clearing then redrawing info.
+
+Fixed bug that would throw an exception when a DHCP server does not
+exist on a host-only interface.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=278
+
+Fixed bug that would cause IPv6 information to not be displayed
+for host interfaces when viewing VirtualBox host details.
+
+-------------------------------------
+	4.0-5	2011-3-26
 -------------------------------------
 Added Norwegian translation.
+
+Added Japanese translation.
 
 Fixed translation of 'Log in' in log in dialog.
 
 Fixed bug that would not allow editing of NAT port forwarding
 http://code.google.com/p/phpvirtualbox/issues/detail?id=215
 
-Virtual Media Manager now has scrolling media list.
+Virtual Media Manager now has scrolling media list and sortable
+columns.
+
+Fixed bug / error in RDP file generation script that occurs when
+the remote console port is configured for a range or list of
+ports.
+
+Storage controller pane now resizes as expected.
+
+Attached USB devices in VM settings is now obtained in real-time
+rather than only when the settings dialog is first opened.
+
+Fixed clone medium bug that would always clone a disk as 
+dynamically expanding storage type no matter which option was
+selected.
+
+Fixed bug when removing a VM when using PHP < 5.2.0.
+
+Fixed bug when editing shared folders of a non-running VM.
+
+Log in form now submits when pressing enter.
+
+Import / Export Appliances now has scrolling lists.
+
+Fixed bug when PHP does not have session support enabled. This
+incorrectly displays the error 'Not logged in.' each time an
+action is attempted in phpVirtualBox.
+
+Fixed CRLF injection security hole in rdp.php.
 
 -------------------------------------
 	4.0-4b	2011-3-1

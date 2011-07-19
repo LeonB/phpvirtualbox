@@ -14,7 +14,7 @@ var RDPWebClient = {
       var params = {};
       params.wmode="opaque";
       params.menu="false";
-      params.bgcolor="#e9e9e9";
+      params.bgcolor="#ffffff";
       params.quality="low";
       params.allowScriptAccess="always";
 
@@ -56,7 +56,7 @@ var RDPWebClient = {
                 window.addEventListener("contextmenu", function(event) { return RDPWebClient._MozillaContextMenu(event); }, true);
                 window.addEventListener("mousedown", function(event) { return RDPWebClient._MozillaMouse(event, true); }, true);
                 window.addEventListener("mouseup", function(event) { return RDPWebClient._MozillaMouse(event, false); }, true);
-                flash.addEventListener("mouseout", function(event) { return RDPWebClient._MozillaMouseOut(event); }, true);
+                flash.addEventListener("mouseout", function(event) { return RDPWebClient._MozillaMouseOut(); }, true);
             }
             else
             {
@@ -117,9 +117,8 @@ var RDPWebClient = {
             }
         }
     },
-    _MozillaMouseOut: function(event)
+    _MozillaMouseOut: function()
     {
-    	if(!event) return true;
         if (RDPWebClient.isRDPWebControlById(event.target.id))
         {
             RDPWebClient._callMouseOut(event.target.id);

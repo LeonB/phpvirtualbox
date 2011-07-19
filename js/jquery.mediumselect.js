@@ -11,12 +11,18 @@
 
 	$.fn.mediumselect = function(options) {
 		
+		/* Public access to select medium */
+		if(options.selectMedium) {
+			$('#'+$(this).attr('id')+'-mediumselect-'+options.selectMedium).click();
+			return;
+		}
+		
 		/* Defaults */
 		if(!options.type) options.type = 'HardDisk';
-		if(!options.mediums) options.mediums = [];
+		if(!options.media) options.media = [];
 		
-		/* Select Medium */
-		function selectmedium(d,sel) {
+		/* Internal Select Medium */
+		function _selectmedium(d,sel) {
 						
 			if($(d).hasClass('vboxMediumReadOnly')) {
 				$(sel).addClass('vboxMediumSelectReadOnly').addClass('vboxMediumReadOnly');
@@ -38,6 +44,7 @@
 
 
 		}
+		
 		
 
 		/* Generate and return list item */
@@ -66,7 +73,7 @@
 			$(d).data('label',m.label);
 			$(d).data('id',m.attachedId);
 			
-			$(d).click(function(){selectmedium(this,sel);});
+			$(d).click(function(){_selectmedium(this,sel);});
 			
 			$(li).append(d);
 
@@ -88,7 +95,7 @@
 			var list = $('#'+$(sel).attr('id')+'-list');
 			var sTop = $(sel).offset().top + $(sel).outerHeight();
 			var sLeft = $(sel).offset().left;
-			var sWidth = $(sel).outerWidth() + $(sel).parentsUntil('table').parent().find('.vboxMediumSelectImg').outerWidth();
+			var sWidth = $(sel).outerWidth() + $(sel).closest('table').find('.vboxMediumSelectImg').outerWidth();
 						
 			// Hide menu when clicking anywhere else
 			$(document).one('click',function(){$(list).hide();});
@@ -123,11 +130,15 @@
 				$(tbl).css({'padding':'0px','margin':'0px','border':'0px','width':'100%','border-spacing':'0px'});
 				var tr = document.createElement('tr');
 				var td = document.createElement('td');
-				$(td).css({'padding':'0px','margin':'0px','border':'0px','width':'100%'});
+				$(td).attr({'class':'vboxMediumSelectTableLeft'}).css({'padding':'0px','margin':'0px','width':'100%'});
 				$(td).append(sel);
 				$(tr).append(td);
-				td = document.createElement('td');
-				$(td).css({'padding':'0px','margin':'0px','border':'0px','width':'auto'});
+				var td = document.createElement('td');
+				$(td).attr({'class':'vboxMediumSelectTableRight'}).css({'padding':'0px','margin':'0px','width':'auto'});
+				$(td).click(function(){
+					$(this).closest('table').find('div.vboxMediumSelect').first().trigger('click');
+				});
+				
 				$(td).append(img);
 				$(tr).append(td);
 				$(tbl).append(tr);
@@ -141,7 +152,7 @@
 				
 				$(this).before(tbl);
 				
-				$(sel).click(function(){
+				$(sel).bind('click',function(){
 					if($('#'+$(this).data('origId')+'-table').hasClass('vboxDisabled')) return;
 					return showList(this);
 				});
@@ -157,13 +168,7 @@
 			// Hide list if it exists
 			$('#'+$(this).attr('id')+'-mediumselect-list').hide();
 					
-			// Set background image to medium attachment type	       
-			var bgimg = 'hd';
-			switch(options.type) {
-				case 'DVD': bgimg = 'cd'; break;
-				case 'Floppy': bgimg = 'fd'; break;
-			}
-			$('#'+$(this).attr('id')+'-mediumselectimg').css({'background-image':'url(images/vbox/'+bgimg+'_16px.png)'});
+			$('#'+$(this).attr('id')+'-mediumselectimg').css({'background-image':'url(images/downArrow.png)'});
 			
 			// Compile list
 			var list = $('#'+$(this).attr('id')+'-mediumselect-list');
@@ -172,18 +177,18 @@
 			var sel = $('#'+$(this).attr('id')+'-mediumselect');
 			var old = this;
 			
-			for(var i = 0; i < options.mediums.length; i++) {
-				if(options.mediums[i].base && options.mediums[i].id != options.mediums[i].base) continue;
-				$(list).append(listItem(options.mediums[i],sel,old,options.showdiff));
+			for(var i = 0; i < options.media.length; i++) {
+				if(options.media[i].base && options.media[i].id != options.media[i].base) continue;
+				$(list).append(listItem(options.media[i],sel,old,options.showdiff));
 			}
 
 			// Set initial text and styles
-			var oldopt = $(this).children('option:eq('+Math.max($(this).attr('selectedIndex'),0)+')');
+			var oldopt = $(this).children('option:eq('+Math.max($(this).prop('selectedIndex'),0)+')');
 			
 			if(!$(oldopt).val()) {
-				selectmedium($(list).find('div').first(), sel, old);
+				_selectmedium($(list).find('div').first(), sel, old);
 			} else {
-				selectmedium($('#'+$(sel).attr('id')+'-'+$(oldopt).val()), sel, old);
+				_selectmedium($('#'+$(sel).attr('id')+'-'+$(oldopt).val()), sel, old);
 			}
 		}); // </ .each() >
 	 
