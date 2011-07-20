@@ -1,4 +1,20 @@
 -------------------------------------
+	4.1-1
+-------------------------------------
+
+Upgraded jquery-ui to 1.8.14
+
+Translation bug fixes.
+
+VM settings are now available while VM is running. Some settings
+can be modified.
+
+Minor UI updates.
+
+Fixed bug that would activate all configured USB filters when
+saving a VM.
+
+-------------------------------------
 	4.1-0	2011-7-19
 -------------------------------------
 VirtualBox 4.1.x compatibility.

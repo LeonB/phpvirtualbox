@@ -122,20 +122,20 @@
 
 		</td>
 	</tr>
-	<tr>
+	<tr class='vboxRunningEnabled'>
 		<th style='text-align:right'><span class='translate'>Execution Cap:</span></th>
 		<td style='width: 100%; white-space: nowrap'>
 		<table style='width: 100%'>
-			<tr>
+			<tr class='vboxRunningEnabled'>
 				<td style='width: 100%; border: 0px; margin: 0px; padding: 0px;'>
 				   <div style='margin-top: 4px' id='vboxSettingsSystemProcessorCap' class='slider'><div class='sliderScale'></div></div>
 				</td>
-				<td><input type='text' class='vboxText' name='vboxSettingsSystemProcessorCapValue' size='2' class='sliderValue' /></td>
+				<td><input type='text' class='vboxText vboxRunningEnabled' name='vboxSettingsSystemProcessorCapValue' size='2' class='sliderValue' /></td>
 			</tr>
-			<tr style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxRunningEnabled'>
 				<td style='border: 0px; margin: 0px; padding: 0px;'>
                    <table width='100%; border: 0px; margin: 0px; padding: 0px;'>
-					<tr style='vertical-align: top'>
+					<tr style='vertical-align: top' class='vboxRunningEnabled'>
 						<td style='text-align: left;'><span class='vboxSliderMin'>%1%</span></td>
 						<td style='text-align: right;'><span class='vboxSliderMax'>%1%</span></td>
 					</tr>
@@ -254,20 +254,6 @@ if(!$('#vboxSettingsDialog').data('vboxMachineData').chipsetType || $('#vboxInde
  * Ordered lists (Boot order)
  *
  */
-$("#vboxVMBootOrderList").children("li").click(function() {
-
-	// Update class
-	$(this).siblings().prop('className','vboxListItem');
-	$(this).prop('className','vboxListItemSelected');
-
-	var isFirst = ($(this).parent().children().first().attr('id') == $(this).attr('id'));
-	var isLast = ($(this).parent().children().last().attr('id') == $(this).attr('id'));
-	
-	// update buttons
-	$(this).closest("table").find('input.imgMvUp').css('background-image', 'url(images/vbox/list_moveup' + (isFirst ? '_disabled' : '') + '_16px.png)').prop('disabled', isFirst);
-	$(this).closest("table").find('input.imgMvDn').css('background-image', 'url(images/vbox/list_movedown' + (isLast ? '_disabled' : '') + '_16px.png)').prop('disabled', isLast);
-					
-}).first().trigger('click');
 
 $("#vboxVMBootOrder").find("input.imgMvUp").click(function() {
 
@@ -307,6 +293,46 @@ var a = new Image();
 a.src = "images/vbox/list_movedown_16px.png";
 var b = new Image();
 b.src = "images/vbox/list_moveup_16px.png";
+
+
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		
+		var p = $('#vboxSettingsTabSystemMotherboard').parent().children('div'); 
+		$(p).find('tr:not(.vboxRunningEnabled)').find('span').addClass('disabled');
+		$(p).find('tr:not(.vboxRunningEnabled)').find('input,select,textarea').prop('disabled',true);
+		$('#vboxSettingsSystemMemory').slider('disable');
+		$('#vboxSettingsSystemProcessor').slider('disable');
+		
+		var t = $('#vboxVMBootOrder');
+		t.find('input.imgMvUp').css('background-image', 'url(images/vbox/list_moveup_disabled_16px.png)');
+		t.find('input.imgMvDn').css('background-image', 'url(images/vbox/list_movedown_disabled_16px.png)');
+		t.find('img').each(function(){
+			$(this).prop('src',$(this).prop('src').replace('_16','_disabled_16'));
+		});
+		
+	} else {
+		
+		$("#vboxVMBootOrderList").children("li").click(function() {
+
+			// Update class
+			$(this).siblings().prop('className','vboxListItem');
+			$(this).prop('className','vboxListItemSelected');
+
+			var isFirst = ($(this).parent().children().first().attr('id') == $(this).attr('id'));
+			var isLast = ($(this).parent().children().last().attr('id') == $(this).attr('id'));
+			
+			// update buttons
+			$(this).closest("table").find('input.imgMvUp').css('background-image', 'url(images/vbox/list_moveup' + (isFirst ? '_disabled' : '') + '_16px.png)').prop('disabled', isFirst);
+			$(this).closest("table").find('input.imgMvDn').css('background-image', 'url(images/vbox/list_movedown' + (isLast ? '_disabled' : '') + '_16px.png)').prop('disabled', isLast);
+							
+		}).first().trigger('click');
+		
+	}
+
+});
 
 
 /* Change general settings onSave() */

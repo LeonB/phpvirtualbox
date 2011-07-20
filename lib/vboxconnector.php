@@ -287,14 +287,16 @@ class vboxconnector {
 	/*
 	 * Save Running VM shared folder settings
 	 */
-	public function saveVMSharedFolders($args,&$response) {
+	public function saveVMSharedFolders($args,&$response,$fromSaveVM=false) {
 
-		$this->__vboxwebsrvConnect();
-		
-		$machine = $this->vbox->findMachine($args['id']);
-		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
-		$machine->lockMachine($this->session->handle, 'Shared');
-		
+		if(!$fromSaveVM) {
+			$this->__vboxwebsrvConnect();
+			
+			$machine = $this->vbox->findMachine($args['id']);
+			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+			$machine->lockMachine($this->session->handle, 'Shared');
+		}
+				
 		// Compose incoming list
 		$sf_inc = array();
 		foreach($args['sharedFolders'] as $s) {
@@ -315,35 +317,44 @@ class vboxconnector {
 		foreach($tsf_tmp as $sf) {
 			$tsf[$sf->name] = $sf;
 		}
-
+		
 		/*
 		 *  Step through list and remove non-matching folders
 		 */
 		foreach($sf_inc as $sf) {
 			
-			// Already exists in list. Check Settings.
-			if($psf[$sf['name']] || $tsf[$sf['name']]) {
+			// Already exists in perm list. Check Settings.
+			if($sf['type'] == 'machine' && $psf[$sf['name']]) {
 				
 				/* Remove if it doesn't match */
-				if(($tsf[$sf['name']] && $sf['type'] == 'machine') || ($psf[$sf['name']] && $sf['type'] != 'machine') || $sf['hostPath'] != $psf[$sf['name']]->hostPath || (bool)$sf['autoMount'] != (bool)$psf[$sf['name']]->autoMount || (bool)$sf['writable'] != (bool)$psf[$sf['name']]->writable) {
+				if($sf['hostPath'] != $psf[$sf['name']]->hostPath || (bool)$sf['autoMount'] != (bool)$psf[$sf['name']]->autoMount || (bool)$sf['writable'] != (bool)$psf[$sf['name']]->writable) {
 					
-					if($psf[$sf['name']]) $this->session->machine->removeSharedFolder($sf['name']);
-					else $this->session->console->removeSharedFolder($sf['name']);
-					
-					unset($psf[$sf['name']]);
-					unset($tsf[$sf['name']]);
-					
-				/* Matches. Don't add or remove. */
-				} else {
-					unset($psf[$sf['name']]);
-					unset($tsf[$sf['name']]);
-					continue;
+					$this->session->machine->removeSharedFolder($sf['name']);
+					$this->session->machine->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
 				}
+				
+				unset($psf[$sf['name']]);
+
+			// Already exists in perm list. Check Settings.
+			} else if($sf['type'] != 'machine' && $tsf[$sf['name']]) {
+				
+				/* Remove if it doesn't match */
+				if($sf['hostPath'] != $tsf[$sf['name']]->hostPath || (bool)$sf['autoMount'] != (bool)$tsf[$sf['name']]->autoMount || (bool)$sf['writable'] != (bool)$tsf[$sf['name']]->writable) {
+					
+					$this->session->console->removeSharedFolder($sf['name']);
+					$this->session->console->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
+					
+				}
+				
+				unset($tsf[$sf['name']]);
+				
+			} else {
+			
+				// Does not exist or was removed. Add it.
+				if($sf['type'] != 'machine') $this->session->console->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
+				else $this->session->machine->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
 			}
 			
-			// Does not exist or was removed. Add it.
-			if($sf['type'] != 'machine') $this->session->console->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
-			else $this->session->machine->createSharedFolder($sf['name'],$sf['hostPath'],(bool)$sf['writable'],(bool)$sf['autoMount']);
 		}
 
 		/*
@@ -354,6 +365,8 @@ class vboxconnector {
 		
 		// Expire shared folder info
 		$this->cache->expire('__getSharedFolders'.$args['id']);
+		
+		if($fromSaveVM) return;
 		
 		$this->session->machine->saveSettings();
 		$this->session->unlockMachine();
@@ -528,56 +541,23 @@ class vboxconnector {
 		$response['data']['result'] = 1;
 	}
 	
-	/*
-	 * Save Running VM USB device attachments
-	 */
-	public function saveVMUSBDevices($args,&$response) {
-
-		$this->__vboxwebsrvConnect();
-		
-		// create session and lock machine
-		$machine = $this->vbox->findMachine($args['id']);
-		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
-		$machine->lockMachine($this->session->handle, 'Shared');
-		
-		// Existing USB devices
-		$attached = array();
-		foreach($this->session->console->USBDevices as $u) {
-			$attached[$u->id] = 1;
-		}
-		
-		if(!is_array($args['usbdevs'])) $args['usbdevs'] = array();
-		foreach($args['usbdevs'] as $u) {
-			try {
-				if(intval($u['attached']) && !$attached[$u['id']])
-					$this->session->console->attachUSBDevice($u['id']);
-				else if(!intval($u['attached']) && $attached[$u['id']])
-					$this->session->console->detachUSBDevice($u['id']);
-			} catch (Exception $e) {
-				$this->errors[] = $e;
-			}
-		}
-
-		$this->session->unlockMachine();
-		$this->session->releaseRemote();
-		unset($this->session);
-		$machine->releaseRemote();
-		
-	}
 	
 	/*
 	 * Save Running VM Network settings
 	 */
-	public function saveVMNetwork($args,&$response) {
+	public function saveVMNetwork($args,&$response,$fromSaveVMRunning = false) {
 		
-		$this->__vboxwebsrvConnect();
+		if(!$fromSaveVMRunning) {
+			
+			$this->__vboxwebsrvConnect();
+			
+			// create session and lock machine
+			$machine = $this->vbox->findMachine($args['id']);
+			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+			$machine->lockMachine($this->session->handle, 'Shared');
+			$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['enableAdvancedConfig']);
 		
-		// create session and lock machine
-		$machine = $this->vbox->findMachine($args['id']);
-		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
-		$machine->lockMachine($this->session->handle, 'Shared');
-		
-		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['enableAdvancedConfig']);
+		}		
 		
 		// Network Adapters
 		$netprops = array('enabled','attachmentType','adapterType','MACAddress','bridgedInterface','hostOnlyInterface','internalNetwork','NATNetwork','cableConnected','promiscModePolicy','genericDriver');
@@ -635,6 +615,8 @@ class vboxconnector {
 		// Expire network info
 		$this->cache->expire('__getNetworkAdapters'.$args['id']);
 		$this->cache->expire('getHostNetworking');
+		
+		if($fromSaveVMRunning) return;
 		
 		$this->session->machine->saveSettings();
 		$this->session->unlockMachine();
@@ -707,6 +689,193 @@ class vboxconnector {
 	}
 	
 	/*
+	 * Save all running VM settings
+	 * 
+	 * called from saveVM() when VM is running
+	 */
+	public function saveVMRunning($args,&$response) {
+
+		// Client and server must agree on advanced config setting
+		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
+		
+		// Shorthand
+		$m = &$this->session->machine;
+
+		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
+		$m->description = $args['description'];
+		
+		$m->setExtraData('GUI/SaveMountedAtRuntime', ($args['GUI']['SaveMountedAtRuntime'] == 'no' ? 'no' : 'yes'));
+		
+		// VRDE settings
+		try {
+			if($m->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
+				$m->VRDEServer->enabled = intval($args['VRDEServer']['enabled']);
+				$m->VRDEServer->setVRDEProperty('TCP/Ports',$args['VRDEServer']['ports']);
+				$m->VRDEServer->authType = ($args['VRDEServer']['authType'] ? $args['VRDEServer']['authType'] : null);
+				$m->VRDEServer->authTimeout = intval($args['VRDEServer']['authTimeout']);
+			}
+		} catch (Exception $e) {
+		}
+		
+		$this->cache->expire('__getMachine'.$args['id']);
+
+		// Storage Controllers
+		$scs = $m->storageControllers;
+		$attachedEx = $attachedNew = array();
+		foreach($scs as $sc) {
+			$mas = $m->getMediumAttachmentsOfController($sc->name);
+			foreach($mas as $ma) {
+				$attachedEx[$sc->name.$ma->port.$ma->device] = (($ma->medium->handle && $ma->medium->id) ? $ma->medium->id : null);				
+			}
+		}
+
+		// Incoming list
+		foreach($args['storageControllers'] as $sc) {
+
+			$sc['name'] = trim($sc['name']);
+			$name = ($sc['name'] ? $sc['name'] : $sc['bus'].' Controller');
+
+			// Medium attachments
+			foreach($sc['mediumAttachments'] as $ma) {
+				
+				if($ma['medium'] == 'null') $ma['medium'] = null;
+				
+				$attachedNew[$name.$ma['port'].$ma['device']] = $ma['medium']['id'];
+				
+				// Compare incoming list with existing
+				if($ma['type'] != 'HardDisk' && $attachedNew[$name.$ma['port'].$ma['device']] != $attachedEx[$name.$ma['port'].$ma['device']]) {
+					
+					if(is_array($ma['medium']) && $ma['medium']['id'] && $ma['type']) {
+	
+						// Host drive
+						if(strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true) {
+							// CD / DVD Drive
+							if($ma['type'] == 'DVD') {
+								$drives = $this->vbox->host->DVDDrives;
+							// floppy drives
+							} else {
+								$drives = $this->vbox->host->floppyDrives;
+							}
+							foreach($drives as $md) {
+								if($md->id == $ma['medium']['id']) {
+									$med = &$md;
+									break;
+								}
+								$md->releaseRemote();
+							}
+						} else {						
+							$med = $this->vbox->findMedium($ma['medium']['id'],$ma['type']);
+						}
+					} else {
+						$med = null;
+					}
+					$m->mountMedium($name,$ma['port'],$ma['device'],(is_object($med) ? $med->handle : null),true);
+					if(is_object($med)) $med->releaseRemote();
+				}
+				
+				if($ma['type'] == 'DVD') {
+					if((strtolower($ma['medium']['hostDrive']) != 'true' && $ma['medium']['hostDrive'] !== true))
+						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],($ma['temporaryEject'] ? true : false));
+				}
+			}
+
+		}
+		// Expire storage
+		$this->cache->expire('__getStorageControllers'.$args['id']);
+		
+		// Expire media?
+		ksort($attachedEx);
+		ksort($attachedNew);
+		if(serialize($attachedEx) != serialize($attachedNew))
+			$this->cache->expire('getMedia');
+		
+			
+		/* Networking */
+		$this->saveVMNetwork($args,$null,true);
+		
+		/* Shared Folders */
+		$this->saveVMSharedFolders($args,$null,true);
+		
+		/*
+		 * USB Filters
+		 */
+
+		$usbchanged = false;
+		$usbEx = array();
+		$usbNew = array();
+
+		$usbc = $this->__getCachedMachineData('__getUSBController',$args['id'],$this->session->machine);
+		
+		if($usbc['enabled']) {
+		
+			// filters
+			if(!is_array($args['USBController']['deviceFilters'])) $args['USBController']['deviceFilters'] = array();
+			if(count($usbc['deviceFilters']) != count($args['USBController']['deviceFilters']) || @serialize($usbc['deviceFilters']) != @serialize($args['USBController']['deviceFilters'])) {
+	
+				$usbchanged = true;
+	
+				// usb filter properties to change
+				$usbProps = array('vendorId','productId','revision','manufacturer','product','serialNumber','port','remote');
+	
+				// Remove and Add filters
+				try {
+	
+	
+					$max = max(count($usbc['deviceFilters']),count($args['USBController']['deviceFilters']));
+					$offset = 0;
+	
+					// Remove existing
+					for($i = 0; $i < $max; $i++) {
+	
+						// Only if filter differs
+						if(@serialize($usbc['deviceFilters'][$i]) != @serialize($args['USBController']['deviceFilters'][$i])) {
+	
+							// Remove existing?
+							if($i < count($usbc['deviceFilters'])) {
+								$m->USBController->removeDeviceFilter(($i-$offset));
+								$offset++;
+							}
+	
+							// Exists in new?
+							if(count($args['USBController']['deviceFilters'][$i])) {
+	
+								// Create filter
+								$f = $m->USBController->createDeviceFilter($args['USBController']['deviceFilters'][$i]['name']);
+								$f->active = (bool)$args['USBController']['deviceFilters'][$i]['active'];
+	
+								foreach($usbProps as $p) {
+									$f->$p = $args['USBController']['deviceFilters'][$i][$p];
+								}
+	
+								$m->USBController->insertDeviceFilter($i,$f->handle);
+								$f->releaseRemote();
+								$offset--;
+							}
+						}
+	
+					}
+	
+				} catch (Exception $e) { $this->errors[] = $e; }
+	
+			}
+	
+			// Expire USB info?
+			if($usbchanged) $this->cache->expire('__getUSBController'.$args['id']);
+		}
+
+
+		$this->session->machine->saveSettings();
+		$this->session->unlockMachine();
+		$this->session->releaseRemote();
+		unset($this->session);
+		$m->releaseRemote();
+		
+		$response['data']['result'] = 1;
+		return true;
+		
+	}
+	
+	/*
 	 * Save all VM settings
 	 */
 	public function saveVM($args,&$response) {
@@ -715,8 +884,12 @@ class vboxconnector {
 
 		// create session and lock machine
 		$machine = $this->vbox->findMachine($args['id']);
+		$vmRunning = ($machine->state->__toString() == 'Running');
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
-		$machine->lockMachine($this->session->handle, 'Write');
+		$machine->lockMachine($this->session->handle, ($vmRunning ? 'Shared' : 'Write'));
+
+		// Switch to saveVMRunning()?
+		if($vmRunning) return $this->saveVMRunning($args,$response);
 		
 		// Client and server must agree on advanced config setting
 		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
@@ -738,12 +911,10 @@ class vboxconnector {
 			// skip this VM as it is not owned by the user we're logged in as
 			throw new Exception("Not authorized to modify this VM");
 		}
-		
+
 		$m->name = $args['name'];
-		$m->description = $args['description'];
 		$m->OSTypeId = $args['OSTypeId'];
 		$m->CPUCount = $args['CPUCount'];
-		$m->CPUExecutionCap = $args['CPUExecutionCap'];
 		$m->memorySize = $args['memorySize'];
 		$m->firmwareType = $args['firmwareType'];
 		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
@@ -752,14 +923,7 @@ class vboxconnector {
 			$m->hpetEnabled = intval($args['hpetEnabled']);
 			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
 		}
-
 		$m->VRAMSize = $args['VRAMSize'];
-
-		/* Unsupported at this time
-		$m->monitorCount = max(1,intval($args['monitorCount']));
-		$m->accelerate3DEnabled = $args['accelerate3DEnabled'];
-		$m->accelerate2DVideoEnabled = $args['accelerate2DVideoEnabled'];
-		*/
 
 		/* Only if advanced configuration is enabled */
 		if(@$this->settings['enableAdvancedConfig']) {
@@ -781,11 +945,22 @@ class vboxconnector {
 
 
 		$m->setCpuProperty('PAE', ($args['CpuProperties']['PAE'] ? 1 : 0));
-
-		$m->setExtraData('GUI/SaveMountedAtRuntime', ($args['GUI']['SaveMountedAtRuntime'] == 'no' ? 'no' : 'yes'));
-
+		
 		// IOAPIC
 		$m->BIOSSettings->IOAPICEnabled = ($args['BIOSSettings']['IOAPICEnabled'] ? 1 : 0);
+
+		/* Unsupported at this time
+		$m->monitorCount = max(1,intval($args['monitorCount']));
+		$m->accelerate3DEnabled = $args['accelerate3DEnabled'];
+		$m->accelerate2DVideoEnabled = $args['accelerate2DVideoEnabled'];
+		*/
+		
+		
+		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
+		$m->description = $args['description'];
+
+		
+		$m->setExtraData('GUI/SaveMountedAtRuntime', ($args['GUI']['SaveMountedAtRuntime'] == 'no' ? 'no' : 'yes'));
 
 		// VRDE settings
 		try {
@@ -815,7 +990,7 @@ class vboxconnector {
 				$m->setBootOrder(($i + 1),null);
 			}
 		}
-
+		
 		// Expire machine cache
 		$expire[] = '__getMachine'.$args['id'];
 
@@ -825,7 +1000,9 @@ class vboxconnector {
 		foreach($scs as $sc) {
 			$mas = $m->getMediumAttachmentsOfController($sc->name);
 			foreach($mas as $ma) {
+				
 				$attachedEx[$sc->name.$ma->port.$ma->device] = (($ma->medium->handle && $ma->medium->id) ? $ma->medium->id : null);
+				
 				if($ma->controller) {
 					$m->detachDevice($ma->controller,$ma->port,$ma->device);
 				}
@@ -841,11 +1018,11 @@ class vboxconnector {
 			$sc['name'] = trim($sc['name']);
 			$name = ($sc['name'] ? $sc['name'] : $sc['bus'].' Controller');
 
+
 			$bust = new StorageBus(null,$sc['bus']);
 			$c = $m->addStorageController($name,$bust->__toString());
 			$c->controllerType = $sc['controllerType'];
 			$c->useHostIOCache = ($sc['useHostIOCache'] ? 1 : 0);
-
 			// Set sata port count
 			if($sc['bus'] == 'SATA') {
 				$max = max(1,intval(@$sc['portCount']));
@@ -863,8 +1040,11 @@ class vboxconnector {
 			}
 			$c->releaseRemote();
 			
+			
 			// Medium attachments
 			foreach($sc['mediumAttachments'] as $ma) {
+				
+				if($ma['medium'] == 'null') $ma['medium'] = null;
 				
 				$attachedNew[$name.$ma['port'].$ma['device']] = $ma['medium']['id'];
 				
@@ -894,7 +1074,7 @@ class vboxconnector {
 				}
 				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],(is_object($med) ? $med->handle : null));
 				if($ma['type'] == 'DVD') {
-					if(strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true)
+					if((strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true))
 						$m->passthroughDevice($name,$ma['port'],$ma['device'],($ma['passthrough'] ? true : false));
 					else 
 						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],($ma['temporaryEject'] ? true : false));
@@ -1046,7 +1226,7 @@ class vboxconnector {
 			if($lptChanged) $expire[] = '__getParallelPorts'.$args['id']; 
 		}		
 
-		// Shared Folders
+		
 		$sharedchanged = false;
 		$sharedEx = array();
 		$sharedNew = array();
@@ -1069,7 +1249,6 @@ class vboxconnector {
 		// Expire shared folders?
 		if($sharedchanged) $expire[] = '__getSharedFolders'.$args['id'];
 
-
 		// USB Filters
 
 		$usbchanged = false;
@@ -1078,13 +1257,13 @@ class vboxconnector {
 
 		$usbc = $this->__getCachedMachineData('__getUSBController',$args['id'],$this->session->machine);
 
-		// controller properties
+		// controller properties		
 		if((bool)$usbc['enabled'] != (bool)$args['USBController']['enabled'] || (bool)$usbc['enabledEhci'] != (bool)$args['USBController']['enabledEhci']) {
 			$usbchanged = true;
 			$m->USBController->enabled = (bool)$args['USBController']['enabled'];
 			$m->USBController->enabledEhci = (bool)$args['USBController']['enabledEhci'];
 		}
-
+		
 		// filters
 		if(!is_array($args['USBController']['deviceFilters'])) $args['USBController']['deviceFilters'] = array();
 		if(count($usbc['deviceFilters']) != count($args['USBController']['deviceFilters']) || @serialize($usbc['deviceFilters']) != @serialize($args['USBController']['deviceFilters'])) {

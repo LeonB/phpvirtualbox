@@ -80,13 +80,11 @@ var vboxVMActions = {
 		'icon_16':'settings',
 		'click':function(){
 			
-			if($('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM').state == 'Running') return;
-			
 			vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 			});
 		},
-		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Aborted','Teleported']) > -1));}
+		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Aborted','Teleported','Running']) > -1));}
 	},
 
 	/* Clone VM */
@@ -784,7 +782,7 @@ function vboxToolbarSmall(buttons) {
 		// Pre-load disabled version of icon if enabled function exists
 		if(b.enabled) {
 			var a = new Image();
-			a.src = "images/vbox/" + b.icon + "_" + self.disabledString + "_" + self.size + "px.png";
+			a.src = "images/vbox/" + (b.icon_exact ? b.icon_disabled : b.icon + '_'+self.disabledString+'_'+self.size)+'px.png'
 		}
 
 		var btn = $('<input />').attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,'type':'button','value':'',
@@ -903,23 +901,25 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 	
 	self.enableButton = function() {
 		var b = self.button;
-		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.size+'px.png)').removeClass('vboxDisabled');
+		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.size+'px.png)').removeClass('vboxDisabled').html('<img src="images/downArrow.png" style="margin:0px;padding:0px;float:right;width:6px;height:6px;" />');
 	}
 	self.disableButton = function() {
 		var b = self.button;
-		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').removeClass('vboxToolbarSmallButtonHover').addClass('vboxDisabled');
+		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').removeClass('vboxToolbarSmallButtonHover').addClass('vboxDisabled').html('');
 	}
 
 	// Enable menu
 	self.enable = function() {
 		self.enabled = true;
 		self.update(self.lastItem);
+		self.getButtonElm().enableContextMenu();
 	}
 
 	// Disable menu
 	self.disable = function() {
 		self.enabled = false;
 		self.disableButton();
+		self.getButtonElm().disableContextMenu();
 	}
 	
 	
@@ -939,6 +939,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 			'title':trans(b.label,'UIMachineSettingsStorage'),
 			'style':self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);text-align:right;vertical-align:bottom;'
 		}).click(function(e){
+			if($(this).hasClass('vboxDisabled')) return;
 			$(this).addClass('vboxButtonMenuButtonDown');
 			var tbtn = $(this);
 			e.stopPropagation();
@@ -1199,43 +1200,6 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				vboxMedia.actions.choose(self.mediumPath,self.type,function(med){
 					self.callback(med);
 					self.updateRecent(med);
-				});
-				
-				return;
-				
-				vboxFileBrowser(self.mediumPath,function(f){
-					if(!f) return;
-					var med = vboxMedia.getMediumByLocation(f);
-					if(med && med.deviceType == self.type) {
-						self.callback(med);
-						self.updateRecent(med);
-						return;
-					} else if(med) {
-						return;
-					}
-					var ml = new vboxLoader();
-					ml.mode='save';
-					ml.add('mediumAdd',function(ret){
-						var l = new vboxLoader();
-						if(ret && ret.id) {
-							var med = vboxMedia.getMediumById(ret.id);
-							// Not registered yet. Refresh media.
-							if(!med)
-								l.add('Media',function(data){$('#vboxIndex').data('vboxMedia',data);});
-						}
-						l.onLoad = function() {
-							if(ret && ret.id) {
-								var med = vboxMedia.getMediumById(ret.id);
-								if(med && med.deviceType == self.type) {
-									self.callback(med);
-									self.updateRecent(med);
-									return;
-								}
-							}
-						}
-						l.run();
-					},{'path':f,'type':self.type});
-					ml.run();
 				});
 				
 				break;

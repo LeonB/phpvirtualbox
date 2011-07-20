@@ -14,7 +14,7 @@
 					style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
 					<tr style='vertical-align: middle'>
 						<td style='white-space: nowrap; width: auto;'><span
-							class='translate'>Storage Tree</span></td>
+							class='translate vboxRunningEnabled'>Storage Tree</span></td>
 						<td style='width: 100%'>
 							<hr style='width: 100%;' class='vboxSeperatorLine'/>
 						</td>
@@ -52,7 +52,7 @@
 					style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
 					<tr style='vertical-align: middle'>
 						<td style='white-space: nowrap; width: auto;'><span
-							class='translate'>Attributes</span></td>
+							class='translate vboxRunningEnabled'>Attributes</span></td>
 						<td style='width: 100%; white-space: nowrap;'><hr style='width: 100%;' class='vboxSeperatorLine'/></td>
 					</tr>
 				</table>
@@ -93,7 +93,7 @@
 				<div id='vboxSettingsStorageAttachment' style='display: none'>
 					<table class='vboxVertical'>
 						<tr style='vertical-align: middle;'>
-							<th><span class='translate' id='vboxSettingsControllerSlotLabel'>HardDisk</span></th>
+							<th><span class='translate vboxRunningEnabled' id='vboxSettingsControllerSlotLabel'>HardDisk</span></th>
 							<td style='width: 100%'>
 								<table class='vboxInvisible' style='width: 100%'>
 									<tr style='vertical-align: middle'>
@@ -123,7 +123,7 @@
 						style='width: 100%; border-spacing: 0; border: 0px; margin: 0px; padding: 0px;'>
 						<tr style='vertical-align: middle'>
 							<td style='white-space: nowrap; width: auto;'><span
-								class='translate'>Information</span></td>
+								class='translate vboxRunningEnabled'>Information</span></td>
 							<td style='width: 100%'>
 							<hr style='width: 100%; ' class='vboxSeperatorLine'/>
 							</td>
@@ -135,51 +135,51 @@
 					<div id='vboxSettingsHDInfo'>
 						<table class='vboxVertical'>
 							<tr>
-								<th><span class='translate'>Type (Format):</span></th>
-								<td><span id='vboxSettingsHDtype'>Image</span></td>
+								<th><span class='translate vboxRunningEnabled'>Type (Format):</span></th>
+								<td><span id='vboxSettingsHDtype' class='vboxRunningEnabled'>Image</span></td>
 							</tr>				
 							<tr>
-								<th><span class='translate'>Virtual Size:</span></th>
-								<td><span id='vboxSettingsHDvsize'>30 GB</span></td>
+								<th><span class='translate vboxRunningEnabled'>Virtual Size:</span></th>
+								<td><span id='vboxSettingsHDvsize' class='vboxRunningEnabled'>30 GB</span></td>
 							</tr>
 							<tr>
-								<th><span class='translate'>Actual Size:</span></th>
-								<td><span id='vboxSettingsHDasize'>30 GB</span></td>
+								<th><span class='translate vboxRunningEnabled'>Actual Size:</span></th>
+								<td><span id='vboxSettingsHDasize' class='vboxRunningEnabled'>30 GB</span></td>
 							</tr>
 							<tr>
-								<th><span class='translate'>Details:</span></th>
-								<td><span id='vboxSettingsHDDetails'>Dynamic</span></td>
+								<th><span class='translate vboxRunningEnabled'>Details:</span></th>
+								<td><span id='vboxSettingsHDDetails' class='vboxRunningEnabled'>Dynamic</span></td>
 							</tr>							
 							<tr>
-								<th><span class='translate'>Location:</span></th>
-								<td><span id='vboxSettingsHDlocation'>/usr/local/blah/etc..</span></td>
+								<th><span class='translate vboxRunningEnabled'>Location:</span></th>
+								<td><span id='vboxSettingsHDlocation' class='vboxRunningEnabled'>/usr/local/blah/etc..</span></td>
 							</tr>
 							<tr>
-								<th><span class='translate'>Attached To:</span></th>
-								<td><span id='vboxSettingsHDattached'>Some Virtual
+								<th><span class='translate vboxRunningEnabled'>Attached To:</span></th>
+								<td><span id='vboxSettingsHDattached' class='vboxRunningEnabled'>Some Virtual
 								Machine Name</span></td>
 							</tr>
 						</table>
 					</div>
 		
-					<!-- DVD/CD Media  -->
+					<!-- DVD/CD Media and Floppy -->
 					<div id='vboxSettingsImageInfo'>
 						<table class='vboxVertical'>
 							<tr>
-								<th><span class='translate'>Type:</span></th>
-								<td><span id='vboxSettingsImageType'>Image</span></td>
+								<th><span class='translate vboxRunningEnabled'>Type:</span></th>
+								<td><span id='vboxSettingsImageType' class='vboxRunningEnabled'>Image</span></td>
 							</tr>		
 							<tr>
-								<th><span class='translate'>Size:</span></th>
-								<td><span id='vboxSettingsImageSize'>30 GB</span></td>
+								<th><span class='translate vboxRunningEnabled'>Size:</span></th>
+								<td><span id='vboxSettingsImageSize' class='vboxRunningEnabled'>30 GB</span></td>
 							</tr>
 							<tr>
-								<th><span class='translate'>Location:</span></th>
-								<td><span id='vboxSettingsImageLocation'>/usr/local/blah/etc..</span></td>
+								<th><span class='translate vboxRunningEnabled'>Location:</span></th>
+								<td><span id='vboxSettingsImageLocation' class='vboxRunningEnabled'>/usr/local/blah/etc..</span></td>
 							</tr>
 							<tr>
-								<th><span class='translate'>Attached To:</span></th>
-								<td><span id='vboxSettingsImageAttached'>Some Virtual
+								<th><span class='translate vboxRunningEnabled'>Attached To:</span></th>
+								<td><span id='vboxSettingsImageAttached' class='vboxRunningEnabled'>Some Virtual
 								Machine Name</span></td>
 							</tr>
 						</table>
@@ -356,11 +356,10 @@ function vboxSettingsAddController(con,list) {
     ).appendTo(tr);
 
     // Controller name
-    $(tr).append($('<td />').html('<span class="vboxSettingsControllerTitle">'+$('<div/>').text(con.name).html()+"</span>"));
+    $(tr).append($('<td />').html('<span class="vboxSettingsControllerTitle vboxRunningEnabled">'+$('<div/>').text(con.name).html()+"</span>"));
     
     // Buttons
-    $(tr).append($('<td />').attr({'id':'vboxSettingsController' + con.bus + 'BtnCD','style':'width: 22px;'}));
-    $(tr).append($('<td />').attr({'id':'vboxSettingsController' + con.bus + 'BtnDrive','style':'width: 22px;'}));
+    $(tr).append($('<td />').attr({'id':'vboxSettingsController' + con.bus + 'BtnDrive','style':'width: 22px;','class':'vboxControllerAttachmentButton'}));
     
     $(tbl).append(tr).appendTo(li);
 
@@ -377,9 +376,6 @@ function vboxSettingsAddController(con,list) {
 				'name' : con.bus+'addcd',
 				'label' : 'Add CD/DVD Device',
 				'icon' : 'cd_add',
-				'enabled' : function (item) {
-					return true;
-				},
 				'click' : function () { vboxSettingsStorageAddMedium(con.bus,'DVD'); }
 			};
     	} else if(dtypes[i] == 'disk') {
@@ -387,9 +383,6 @@ function vboxSettingsAddController(con,list) {
 		    		'name' : con.bus+'adddrive',
 		    		'label' : 'Add Hard Disk',
 		    		'icon' : 'hd_add',
-		    		'enabled' : function (item) {
-		    			return true;
-		    		},
 		    		'click' : function (item) { vboxSettingsStorageAddMedium(con.bus); }
 		    	};
     		
@@ -404,6 +397,7 @@ function vboxSettingsAddController(con,list) {
 	   	tb.buttonStyle = 'margin:0px;padding:0px;border:0px;background-repeat:no-repeat;background-position:0px 0px;';
 	   	tb.noHover = true;
 	   	tb.addButtons('vboxSettingsController' + con.bus + 'BtnDrive');
+   		tb.disable();
 	}
 
     	
@@ -494,6 +488,10 @@ function vboxSettingsSelectAttachment(tbl) {
     var cbox = null;
     
     vboxSetLangContext('UIMachineSettingsStorage');
+    if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+    	$('#vboxSettingsControllerDeviceOptionLabel').addClass('disabled');
+    	$(document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption).prop('disabled',true);
+    }
     switch(ma.type) {
     	case 'HardDisk':
         	label = 'Hard Disk:';
@@ -510,6 +508,10 @@ function vboxSettingsSelectAttachment(tbl) {
             } else {
 	    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Live CD/DVD'));  
 	    		document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption.checked = (ma.temporaryEject ? 'checked' : '');
+
+	    		$('#vboxSettingsControllerDeviceOptionLabel').removeClass('disabled');
+	        	$(document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption).prop('disabled',false);
+	    		
             }            	
         	break;
     	case 'Floppy':
@@ -630,29 +632,31 @@ $(document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption).click(fu
 /* Generate tooltip for medium */
 function vboxSettingsMediumTip(m) {
 
-	if(!m || !m.id) return trans('Empty');
+	vboxSetLangContext('UIMachineSettingsStorage');
+	
+	if(!m || !m.id) return trans('Empty','VBoxGlobal');
 	if(m.hostDrive) return vboxMedia.getMediumName(m);
 
 	// DVD / Floppy images
 	if(m.deviceType != 'HardDisk') {
-		return '<b>'+m.location+'</b><p>'+trans('Attached to')+': '+vboxMediumAttachedTo(m)+'</p>';
+		return '<b>'+m.location+'</b><p>'+trans('Attached To:')+' '+vboxMediumAttachedTo(m)+'</p>';
 	}
 	
 	var mbase = m;
 	if(m.base != m.id) {
 		var mbase = vboxMedia.getMediumById(m.base);
 	}
-	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format)')+': '+m.type+' ('+m.format+')</p><p>'+trans('Attached to')+': '+vboxMediumAttachedTo(mbase)+'</p>';
+	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):')+' '+m.type+' ('+m.format+')</p><p>'+trans('Attached To:')+' '+vboxMediumAttachedTo(mbase)+'</p>';
 		
 	// Is this a medium that is attached indirectly
 	if(vboxSettingsStorageBusses.isAttachedIndirect(m) && m.base != m.id) {
 		var p = vboxSettingsStorageBusses.isAttached(m);
-       	tip += '<hr />'+trans('base disk indirectly attached')+'<p>';
-       	tip += '<b>'+p.location+'</b></p><p>'+trans('Type (Format)')+': '+vboxMediumType(p) + ' (' + p.format + ')'+'</p><p>'+trans('Attached to')+': '+vboxMediumAttachedTo(p)+'</p>';
+		tip = trans('%1<hr>This base hard disk is indirectly attached using the following differencing hard disk:<br>%2%3','VBoxGlobal').replace('%1',tip).replace('%2','<b>'+p.location+'</b></p><p>'+trans('Type (Format):')+' '+vboxMediumType(p) + ' (' + p.format + ')'+'</p>').replace('%3','<p>'+trans('Attached To:')+' '+vboxMediumAttachedTo(p)+'</p>');
 	} else if(m.readOnly) {
-    	tip += '<hr />'+trans('storage attached indirectly');
+    	tip += trans('<hr><img src=%1/> Attaching this hard disk will be performed indirectly using a newly created differencing hard disk.','VBoxGlobal').replace('%1','"about:blank" style="display:none"');
 	}
 
+	vboxUnsetLangContext();
 	return tip;
 
 }
@@ -736,7 +740,8 @@ function vboxSettingsSelectController(tbl) {
 
     /* Enable / disable buttons */
 	if($(tbl).parent().find('ul').children('li').length < ($(tbl).data('controller').maxPortCount * $(tbl).data('controller').maxDevicesPerPortCount)) {
-		$(tbl).find('.vboxToolbarSmall').trigger('enable');
+		if($('#vboxSettingsDialog').data('vboxMachineData').state != 'Running')
+			$(tbl).find('.vboxToolbarSmall').trigger('enable');
 	} else {
 		$(tbl).find('.vboxToolbarSmall').trigger('disable');		
 	}
@@ -1326,5 +1331,26 @@ $('#vboxSettingsStorageTableWrapper').one('show',function(){
 	
 });
 
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		
+		var p = $('#vboxSettingsStorageTableWrapper'); 
+		p.find('span:not(.vboxRunningEnabled)').addClass('disabled');
+		p.find('input,select,textarea').prop('disabled',true);
+		
+		// Storage tree toolbars
+		$('#vboxSettingsStorageTree').find('.vboxControllerAttachmentButton').trigger('disable');
+		
+		// Hard Disk Media menu button
+		$('#vboxSettingsAddAttachmentsMenuHDDiv').trigger('disable');
+		
+		// bottom toolbar
+		scToolbar.disable();
+		
+	}
+	
+});
 
 </script>

@@ -178,6 +178,18 @@ function vboxSettingsUpdateSPortMode(sel) {
 	}
 }
 
+
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		
+		vboxSettingsSPortContainer.find('span').addClass('disabled');
+		vboxSettingsSPortContainer.find('input,select,textarea').prop('disabled',true);
+
+	}
+});
+
 /* Change settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){
 

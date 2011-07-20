@@ -20,8 +20,13 @@ html,body,input,select,.ui-widget, .ui-tabs, .ui-widget-content,textarea {
 */
 html,body,#vboxIndex,#vboxTableMain {
 	height: 100%;
+	margin: 0px;
+	padding: 0px;
 }
-
+body { overflow-y: hidden; } /* avoid scrollbars */
+/* left-margins */
+div.vboxMenuBar { padding-left: 4px; }
+#vboxPaneToolbar { margin-left: 4px; }
 
 /* Common */
 #vboxIndex table, div.vboxDialogContent table { width: 100%; }
@@ -303,9 +308,10 @@ div.vboxAjaxErrorDetails form textarea { height: 100%; }
 	#vboxVirtualMediaManager table.vboxVMMList span { vertical-align: middle; height: 16px; background-position: 0px 0px; }
 #vboxVirtualMediaManager table.vboxVMMList span { display: inline-block; } 
 #vboxVirtualMediaManager div.vboxVMMMediumInfo { font-size: 0.9em; }
-#vboxVirtualMediaManager .vboxVMMMediumInfo table { border: 1px solid #000; margin-top: 12px; width: 100%; background: #fafafa; }
-#vboxVirtualMediaManager .vboxVMMMediumInfo th { padding-left: 18px; text-align: right; width: auto; white-space: nowrap; }
-#vboxVirtualMediaManager .vboxVMMMediumInfo td { padding-left: 10px; text-align: left; width: 100%; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo input { padding: 0px; margin: 0px; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo table { padding;0px; border: 1px solid #000; border-spacing:0px; margin-top: 12px; width: 100%; background: #fafafa; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo th { padding:2px; padding-left: 18px; text-align: right; width: auto; white-space: nowrap; }
+#vboxVirtualMediaManager .vboxVMMMediumInfo td { padding:0px; padding-left: 10px; text-align: left; width: 100%; }
 #vboxVirtualMediaManager .vboxVMMSortImgFaded img {
 	opacity: .30;
 	filter:alpha(opacity=30);

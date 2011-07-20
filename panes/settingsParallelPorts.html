@@ -132,6 +132,17 @@ function vboxSettingsUpdatePPortOptions(sel) {
 	}
 }
 
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		
+		vboxSettingsPPortContainer.find('span').addClass('disabled');
+		vboxSettingsPPortContainer.find('input,select,textarea').prop('disabled',true);
+
+	}
+});
+
 
 /* Change settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){

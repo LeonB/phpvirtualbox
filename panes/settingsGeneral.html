@@ -51,7 +51,7 @@
 						onClick="vboxSnapshotBrowseFolder(this);" />
 		</td>
 	</tr>
-	<tr>
+	<tr class='vboxRunningEnabled'>
 		<th><span class='translate'>Removable Media:</span></th>
 		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsGeneralRemovableMedia' style='width: auto'/>
 		<span class='translate'>Remember Runtime Changes</span></td>
@@ -61,13 +61,13 @@
 
 <!-- Description Tab -->
 <div id='vboxSettingsTabGeneralDescription' title='Description'>
-    <textarea rows='16' cols='20' name='vboxSettingsGeneralDescription'></textarea>
+    <textarea class='vboxRunningEnabled' rows='16' cols='20' name='vboxSettingsGeneralDescription'></textarea>
 </div>
 <!-- Input Tab -->
 <div id='vboxSettingsTabGeneralInput' title='Input'>
     <table class='vboxVertical'>
     	<tr>
-    		<th><span class='translate'>Keyboard</span>:</th>
+    		<th><span class='translate'>Keyboard:</span></th>
     		<td><select name='vboxSettingsTabGeneralInputKeyboard'>
     			<option value='PS2Keyboard'>PS/2 Keyboard</option>
     			<option value='USBKeyboard'>USB Keyboard</option>
@@ -75,7 +75,7 @@
     		</td>
     	</tr>    
     	<tr>
-    		<th><span class='translate'>Mouse</span>:</th>
+    		<th><span class='translate'>Mouse:</span></th>
     		<td><select name='vboxSettingsTabGeneralInputMouse'>
     			<option value='PS2Mouse'>PS/2 Mouse</option>
     			<option value='USBMouse'>USB Mouse</option>
@@ -203,6 +203,19 @@ document.forms['frmVboxSettings'].vboxSettingsGeneralSnapshotFolder.value = $('#
 document.forms['frmVboxSettings'].vboxSettingsGeneralRemovableMedia.checked = ($('#vboxSettingsDialog').data('vboxMachineData').GUI.SaveMountedAtRuntime == 'yes');
 document.forms['frmVboxSettings'].vboxSettingsGeneralDescription.innerHTML = $('#vboxSettingsDialog').data('vboxMachineData').description;
 
+
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		var p = $('#vboxSettingsTabGeneralBasic').parent().children('div'); 
+		$(p).find('tr:not(.vboxRunningEnabled)').find('span').addClass('disabled');
+		$(p).find('tr:not(.vboxRunningEnabled)').find('input,select,textarea').prop('disabled',true);
+		$('#vboxSettingsTabGeneralAdvanced').find('input.vboxImgButton').css('background-image','url(images/vbox/select_file_dis_16px.png)');
+		$(document.images["vboxOSTypeImg"]).css({'opacity':'.40','-ms-filter': "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)",'filter':'alpha(opacity=40)'});
+	}
+
+});
 
 /* Change general settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){

@@ -67,7 +67,18 @@ if(($('#vboxSettingsDialog').data('vboxMachineData').audioAdapter.enabled)) {
 	document.forms['frmVboxSettings'].vboxSettingsAudioEnabled.checked = true;
 }
 
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		
+		var p = $(document.forms['frmVboxSettings'].vboxSettingsAudioController).closest('table'); 
+		$(p).find('span').addClass('disabled');
+		$(p).find('input,select,textarea').prop('disabled',true);
 
+	}
+});
+	
 /* Change settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){
 

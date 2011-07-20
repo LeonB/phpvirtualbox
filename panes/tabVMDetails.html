@@ -272,8 +272,6 @@ $('#vboxIndex').bind('vmloading',function(){
 	// Hide all tab children first
 	$('#vboxTabVMDetails').children().hide();
 	
-	$('#vboxVMDetails').data('vmusb', false);
-	
 	vboxSetLangContext('UIDetailsPagePrivate');
 
 	// vboxTabVMDetails
@@ -300,7 +298,6 @@ $('#vboxIndex').bind('vmloading',function(){
 				$('#vboxDetailsShowMenuItemParallelPorts').css('display','none');
 			}
 			
-			$('#vboxVMDetails').data('vmusb',(vm['USBController'] && vm['USBController']['enabled']));
 			__vboxDisplayDetailsData(vm,null,true,true);
 			
 		}
@@ -357,15 +354,9 @@ $('#vboxDetailsTableBoxPreview').css('min-width',$('#vboxIndex').data('vboxConfi
 								
 // Returns link to settings
 function vboxDetailSettingsLink(section) {
-	if($('#vboxIndex').data('selectedVM').sessionState == 'Unlocked' && $('#vboxIndex').data('selectedVM').state != 'Saved') {
+	
+	if(($('#vboxIndex').data('selectedVM').state == 'Running' || $('#vboxIndex').data('selectedVM').sessionState == 'Unlocked') && $('#vboxIndex').data('selectedVM').state != 'Saved') {
 		vboxVMsettingsInit($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);},section);
-	} else if($('#vboxIndex').data('selectedVM').state == 'Running') {
-		
-		// Special case for USB
-		if(section == 'USB' && !$('#vboxVMDetails').data('vmusb')) return;
-		
-		if(window['vboxVMsettingsInit' + section])
-			window['vboxVMsettingsInit' + section]($('#vboxIndex').data('selectedVM').id,function(){$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);});
 	}
 }
 
@@ -547,7 +538,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	if(links === undefined)
 		links = true;
 
-	var settings = (links == true && data.sessionState == 'Unlocked' && data.state != 'Saved');
+	var settings = (links == true && (data.sessionState == 'Unlocked' || data.state == 'Running') && data.state != 'Saved');
 
 	if(settings) {
 		$('#vboxVMDetails').find('th.vboxDetailsSection').children('div').removeClass('vboxNoLinks');

@@ -367,10 +367,6 @@ $('#vboxSettingsDialog').one('show',function(){
 		for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 			
 			var a = (i + 1);
-			// Disable tabs for disabled adapters	
-			if(!document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked) {
-				$(vboxSettingsNetContainer).tabs('disable', i);	
-			}
 			
 			/* Disable these inputs */
 			document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].disabled ='disabled';
@@ -386,6 +382,7 @@ $('#vboxSettingsDialog').one('show',function(){
 		}
 		// Expand all advanced settings
 		$('#vboxSettingsDialog').find('input.netImgAdvanced').trigger('click');
+
 		// Disable mac address generation
 		$('#vboxSettingsDialog').find('input.vboxSettingsNetMacGen').prop('disabled',true);
 	}

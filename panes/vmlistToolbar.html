@@ -16,7 +16,11 @@ var tButtons = [
 	/* All toolbar items need a 'name' property */
 	$.extend({},vboxVMActions['new'],{'name':'new'}),
 	$.extend({},vboxVMActions['settings'],{'name':'settings','enabled':function(vm){
-		return ((vm && vm.state == 'Running') || vboxVMActions['settings'].enabled(vm));
+		return (vboxVMActions['settings'].enabled(vm));
+	},'click':function(){
+		if($('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM').state == 'Running') return;
+		vboxVMActions['settings'].click();
+		
 	}}),
 	$.extend({},vboxVMActions['start'],{'name':'start'}),
 	{
@@ -50,6 +54,10 @@ $('#vboxIndex').bind('vmloading',function(){
 /* 'Settings' menu items / actions */
 var vboxVMListSettingsMenu = {
 		
+	'settings' : {
+		'label' : vboxVMActions['settings'].label,
+		'icon' : vboxVMActions['settings'].icon_16
+	},
 	'storage' : {
 		'label' : 'Storage',
 		'icon' : 'hd'
@@ -134,6 +142,11 @@ $("#vboxToolbarButton-vboxPaneToolbar-settings").contextMenu({
 				$('#vboxIndex').trigger('vmselect',$('#tabMainContent').data('machine'));
 			},{'vm':vm.id,'enabled':(vm.consoleInfo.enabled ? 0 : 1)});
 			l.run();
+			return;
+		}
+		
+		if(a == 'settings') {
+			vboxVMActions['settings'].click()
 			return;
 		}
 		

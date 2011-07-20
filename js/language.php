@@ -44,7 +44,7 @@ function trans(s,c,n) {
 	
 	if(typeof r != 'string') {
 	   // debug
-	   // alert(s + ' ' + c + ' ' + typeof(r));
+	   alert(s + ' ' + c + ' ' + typeof(r));
 	   return s;
 	}
 	return r;

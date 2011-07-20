@@ -13,15 +13,15 @@
 	<tr>
 		<td style='width: 100%; padding-left: 20px;'><input type='checkbox' class='vboxCheckbox' name='vboxSettingsUSBEnabledEHCI' /> <span class='translate vboxEnablerListen'>Enable USB 2.0 (EHCI) Controller</span></td>
 	</tr>
-	<tr style='vertical-align: middle'>
+	<tr style='vertical-align: middle' class='vboxRunningEnabled'>
 		<td style='width: 100%; padding-left: 20px;'>
-			<table class='vboxSettingsHeadingLine' style='width:100%;border-spacing:0;border:0px;margin:0px;padding:0px;'><tr style='vertical-align:middle'><td style='white-space: nowrap; width: auto'><span class='translate vboxEnablerListen'>USB Device Filters</span></td><td style='width: 100%'><hr style='width: 100%;'  class='vboxSeperatorLine'/></td></tr></table>
+			<table class='vboxSettingsHeadingLine' style='width:100%;border-spacing:0;border:0px;margin:0px;padding:0px;'><tr style='vertical-align:middle' class='vboxRunningEnabled'><td style='white-space: nowrap; width: auto'><span class='translate vboxEnablerListen'>USB Device Filters</span></td><td style='width: 100%'><hr style='width: 100%;'  class='vboxSeperatorLine'/></td></tr></table>
 		</td>
 	</tr>
-	<tr>
+	<tr class='vboxRunningEnabled'>
 		<td style='width: 100%; padding-left: 20px;'>
 		<table style='width: 100%'>
-			<tr>
+			<tr class='vboxRunningEnabled'>
 				<td id='vboxSettingsUSBFilters' style='width: 100%;' class='vboxBordered vboxEnablerListen'>
 					<ul id='vboxSettingsUSBFilterList' class='vboxList vboxHover' style='width: 100%'>
 						<li class='vboxListItem'><input type='checkbox' class='vboxCheckbox' />a</li>
@@ -253,16 +253,21 @@ $('#vboxSettingsUSBFilterList').bind('select',usbToolbar.update);
 /* Adds a USB filter to list */
 function vboxSettingsAddUSBFilter(f,noColor) {
 	
-	var li = $('<li />').data({'filter':f}).click(function(){
-		$(this).parent().children().removeClass('vboxListItemSelected');
-		$(this).addClass('vboxListItemSelected');
-		$('#vboxSettingsUSBFilterList').trigger('select',this);
-	}).attr({'id':'vboxSettingsUSBFilterNumber' + (Math.floor(Math.random()*1000)),'class':'vboxListItem'}).dblclick(function(e){
-		e.preventDefault();
-		usbToolbar.click('usbedit');
-	}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).disableSelection();
-
-	$('<input />').attr({'type':'checkbox','checked':(f.active ? 'checked':'')}).appendTo(li);
+	var li = $('<li />').data({'filter':f}).attr({'id':'vboxSettingsUSBFilterNumber' + (Math.floor(Math.random()*1000)),'class':'vboxListItem'})
+	
+	if(!($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running' && !document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked)) {
+		
+		li.click(function(){
+			$(this).parent().children().removeClass('vboxListItemSelected');
+			$(this).addClass('vboxListItemSelected');
+			$('#vboxSettingsUSBFilterList').trigger('select',this);
+		}).dblclick(function(e){
+			e.preventDefault();
+			usbToolbar.click('usbedit');
+		}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).disableSelection();
+	}
+	
+	$('<input />').attr({'type':'checkbox'}).prop('checked',(f.active ? true : false)).appendTo(li);
 	
 	$(li).append(' <span class="vboxSettingsUSBFilterTitle">'+$('<div/>').text(f.name).html()+'</span>').appendTo($('#vboxSettingsUSBFilterList'));
 
@@ -277,8 +282,8 @@ $(list).children().remove();
 // add filters
 for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters.length; i++) {
 	vboxSettingsAddUSBFilter($('#vboxSettingsDialog').data('vboxMachineData').USBController.deviceFilters[i],true);
-	vboxColorRows($('#vboxSettingsUSBFilterList'));
 }
+vboxColorRows($('#vboxSettingsUSBFilterList'));
 
 // set checkboxes for USB and EHCI
 document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabled);
@@ -324,6 +329,18 @@ $("#vboxSettingsUSBAddDeviceClick").contextMenu({
 	}
 );
 
+
+/* Disable non-editable items when VM is running */
+$('#vboxSettingsDialog').one('show',function(){
+	
+	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+		
+		var p = $('#vboxSettingsUSBTable');
+		$(p).find('tr:not(.vboxRunningEnabled)').find('span').addClass('disabled');
+		$(p).find('tr:not(.vboxRunningEnabled)').find('input,select,textarea').prop('disabled',true);
+
+	}
+});
 
 
 /* Change settings onSave() */
