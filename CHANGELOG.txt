@@ -14,6 +14,21 @@ Minor UI updates.
 Fixed bug that would activate all configured USB filters when
 saving a VM.
 
+Implemented overwriting of existing file in appliance export
+wizard.
+
+Fixed bug in IE that would not allow for the entry of internal
+network names in VM settings.
+
+Fixed Clone VM wizard bug that would force the selection of
+"Current machine and all child states."
+
+Removed "Current machine and all child states" option from Clone
+VM wizard as it is unsupported by VirtualBox at this time.
+
+Fixed display bug in VM log viewer when pressing the Refresh
+button.
+
 -------------------------------------
 	4.1-0	2011-7-19
 -------------------------------------

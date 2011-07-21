@@ -62,9 +62,10 @@ $('#wizardCloneVMStep1').bind('show',function(e,wiz){
 	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
 	
 	if(!(wiz.args.snapshot && wiz.args.snapshot.children && wiz.args.snapshot.children.length)) {
-		$('#wizardCloneVMCurrentAll').hide();
-		$('#vboxCloneCurrentAll').hide();
 	}
+	// Unsupported by VirtualBox
+	$('#wizardCloneVMCurrentAll').hide();
+	$('#vboxCloneCurrentAll').hide();
 
 });
 

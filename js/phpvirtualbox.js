@@ -161,7 +161,7 @@ var vboxVMActions = {
 			
     	
     	},
-    	'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Aborted','Teleported','Inaccessible']) > -1));}
+    	'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Aborted','Teleported','Inaccessible','Saved']) > -1));}
     },
     
     /* Discard VM State */

@@ -13,8 +13,9 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 
 function vboxShowLogsInit(vm) {
 
-	$('#vboxVMLogTabs').empty().remove();
-
+	$('#vboxVMLogsTabsList').empty();
+	$('#vboxVMLogTabsContainer').empty();
+	
 	$('<div />').attr({'id':'vboxVMLogTabs','style':'margin: 0px; padding: 0px;'}).appendTo($('#vboxVMLogTabsContainer'));
 	
 	var logs = $('#vboxVMLogsDialog').data('logs');

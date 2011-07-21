@@ -348,11 +348,11 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		
 		for(var i = 0; i < src.length; i++) {
 			var hSrc = $('<div />').text(src[i]).html();
-			$(nsel).append('<option name="' + hSrc + '" ' + (src[i] == defaultSel ? ' selected ' : '') + ' value="' + hSrc + '">' + hSrc + '</option>');
+			$(nsel).append('<option ' + (src[i] == defaultSel ? ' selected ' : '') + ' value="' + hSrc + '">' + hSrc + '</option>');
 		}
 	}
 
-	// Special case for Internal and VDE network selects
+	// Special case for Internal, Generic, and VDE network selects
 	if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value == 'Generic') {
 		$(nsel).jec();
 	}

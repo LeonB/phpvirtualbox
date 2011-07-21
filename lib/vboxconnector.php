@@ -646,7 +646,7 @@ class vboxconnector {
 		$cm = new CloneMode(null,$args['vmState']);
 		$state = $cm->ValueMap[$args['vmState']];
 		
-		$progress = $src->cloneTo($m->handle,$state,($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
+		$progress = $src->cloneTo($m->handle,$args['vmState'],($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
 		
 		// Does an exception exist?
 		try {
@@ -1749,6 +1749,25 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$app = $this->vbox->createAppliance();
+		
+		// Overwrite existing file?
+		if($args['overwrite']) {
+			
+			$dsep = $this->settings['DSEP'];
+		
+			$path = str_replace($dsep.$dsep,$dsep,$args['file']);
+			$dir = dirname($path);
+			$file = basename($path);
+		
+			if(substr($dir,-1) != $dsep) $dir .= $dsep;
+			
+			$vfs = $app->createVFSExplorer('file://'.$dir);
+			$progress = $vfs->remove(array($file));
+			$progress->waitForCompletion(-1);
+			$progress->releaseRemote();
+			
+			$vfs->releaseRemote();			
+		}
 
 		$appProps = array(
 			'name' => 'Name',

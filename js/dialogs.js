@@ -124,11 +124,12 @@ function vboxWizardExportApplianceInit() {
 				var buttons = {};
 				buttons[trans('Yes','QIMessageBox')] = function() {
 					vboxExportApp(1);
+					$(this).remove();
 				}
 				vboxConfirm(trans('A file named <b>%1</b> already exists. Are you sure you want to replace it?<br /><br />Replacing it will overwrite its contents.','VBoxProblemReporter').replace('%1',vboxBasename(loc)),buttons,trans('No','QIMessageBox'));
 				return;
 			}
-			vboxExportApp();
+			vboxExportApp(0);
 			
 		}
 		fe.run();
@@ -253,6 +254,18 @@ function vboxWizardCloneVMInit(callback,args) {
 			var src = vbw.args.vm.id;
 			var snapshot = vbw.args.snapshot;
 			var allNetcards = document.forms['frmwizardCloneVM'].elements.vboxCloneReinitNetwork.checked;
+			
+			// Only one step? We can assume that state has no child states.
+			// Force current state only
+			var vmState = 'MachineState';
+			if(wiz.steps > 1) {
+				for(var a = 0; a < document.forms['frmwizardCloneVM'].elements.vmState.length; a++) {
+					if(document.forms['frmwizardCloneVM'].elements.vmState[a].checked) {
+						vmState = document.forms['frmwizardCloneVM'].elements.vmState[a].value;
+						break;
+					}
+				}
+			}
 	
 			var l = new vboxLoader();
 			l.mode = 'save';
@@ -579,8 +592,8 @@ function vboxPrefsInit() {
 	// Prefs
 	var panes = new Array(
 		{'name':'GlobalGeneral','label':'General','icon':'machine','context':'UIGlobalSettingsGeneral'},
-		{'name':'GlobalNetwork','label':'Network','icon':'nw','context':'UIGlobalSettingsNetwork'},
 		{'name':'GlobalLanguage','label':'Language','icon':'site','context':'UIGlobalSettingsLanguage'},
+		{'name':'GlobalNetwork','label':'Network','icon':'nw','context':'UIGlobalSettingsNetwork'},
 		{'name':'GlobalUsers','label':'Users','icon':'register','context':'UIUsers'}
 	);
 	
