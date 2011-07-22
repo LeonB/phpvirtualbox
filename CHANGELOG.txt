@@ -29,7 +29,7 @@ VM wizard as it is unsupported by VirtualBox at this time.
 Fixed display bug in VM log viewer when pressing the Refresh
 button.
 
-Snapshots tab now propts to take a new snapshot when attempting to
+Snapshots tab now prompts to take a new snapshot when attempting to
 restore a snapshot while VM is in a (changed) Saved state.
 
 Added license agreement dialog when importing appliances that have
@@ -39,6 +39,11 @@ Added a check for phpVirtualBox <-> VirtualBox versions.
 
 Added "Restore Defaults" button and functionality to appliance
 import wizard.
+
+Added Page Fusion setting in VM Settings -> System -> Motherboard
+when $enableAdvancedConfig is set in config.php.
+
+Fixed bug that would not allow a disk to be set to Multi-attach.
 
 -------------------------------------
 	4.1-0	2011-7-19

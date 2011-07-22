@@ -30,7 +30,7 @@
 	<p class='translate'>Please choose which parts of the virtual machine should be cloned.</p>
 	
 	<p><span class='translate'>If you select &lt;b&gt;Current machine state&lt;/b&gt;, only the current state of the virtual machine is cloned.</span>
-		<span class='translate' id='wizardCloneVMCurrentAll'>If you select &lt;b&gt;Current machine and all child states&lt;/b&gt; the current state of the virtual machine and any states of child snapshots are cloned.</span>
+		<span class='translate' id='wizardCloneVMCurrentAll' style='display: none;'>If you select &lt;b&gt;Current machine and all child states&lt;/b&gt; the current state of the virtual machine and any states of child snapshots are cloned.</span>
 		<span class='translate'>If you select &lt;b&gt;All states&lt;/b&gt;, the current machine state and all snapshots are cloned.</span>
 		</p>
 	
@@ -38,7 +38,7 @@
 		<tr style='vertical-align: bottom;'>
 			<td><input type='radio' class='vboxRadio' checked='checked' name='vmState' value='MachineState' /> <span class='translate'>Current machine state</span></td>
 		</tr>
-		<tr style='vertical-align: bottom;' id='vboxCloneCurrentAll'>
+		<tr style='vertical-align: bottom; display:none;' id='vboxCloneCurrentAll'>
 			<td><input type='radio' class='vboxRadio' name='vmState' value='MachineAndChildStates' /> <span class='translate'>Current machine and all child states</span></td>
 		</tr>		
 		<tr style='vertical-align: bottom;'>
@@ -61,11 +61,15 @@ $('#wizardCloneVMStep1').bind('show',function(e,wiz){
 	
 	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
 	
-	if(!(wiz.args.snapshot && wiz.args.snapshot.children && wiz.args.snapshot.children.length)) {
+	// Unsupported by VirtualBox in 4.1.0
+	var vers = $('#vboxIndex').data('vboxConfig').version.string.split('.');
+	if(vers.length < 3) return;
+	if(vers[0] == '4' && vers[1] == '1' && parseInt(vers[2]) < 1) return;
+	
+	if((wiz.args.snapshot && wiz.args.snapshot.children && wiz.args.snapshot.children.length)) {
+		$('#wizardCloneVMCurrentAll').show();
+		$('#vboxCloneCurrentAll').show();
 	}
-	// Unsupported by VirtualBox
-	$('#wizardCloneVMCurrentAll').hide();
-	$('#vboxCloneCurrentAll').hide();
 
 });
 

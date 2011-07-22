@@ -65,6 +65,7 @@ function vboxVMList(anchorid) {
 	this.lastUpdatedDiv = null;
 	this.anchor = $('#'+anchorid);
 	this.interval = 5;
+	this.versionChecked = false;
 	this.contextMenuItems = null;
 	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
 	vboxSetLangContext('UIVMListView');
@@ -306,13 +307,15 @@ function vboxVMList(anchorid) {
 			
 			$(td).append(' - ' + $('#vboxIndex').data('vboxConfig').version.string);
 			
-			// Check for version mismatches
-			var vStr = '4.1';			
-			var vers = $('#vboxIndex').data('vboxConfig').version.string.split('.');
-			if(vers[0]+'.'+vers[1] != vStr) {
-				vboxAlert('This version of phpVirtualBox ('+vStr+'-x) is incompatible with VirtualBox ' + $('#vboxIndex').data('vboxConfig').version.string + ". You probably need to <a href='http://code.google.com/p/phpvirtualbox/downloads/list?q=phpvirtualbox-"+vers[0]+'.'+vers[1]+"' target=_blank>download the latest phpVirtualBox " + vers[0]+'.'+vers[1] + "-x</a>.<p>See the Versioning section <a href='http://code.google.com/p/phpvirtualbox/downloads/detail?name=README.txt' target=_blank>here</a> for more information</p>",{'width':'auto'});
-			}
-			
+			// Check for version mismatches?
+			if(!self.versionChecked) {
+				self.versionChecked = true;
+				var vStr = '4.1';			
+				var vers = $('#vboxIndex').data('vboxConfig').version.string.split('.');
+				if(vers[0]+'.'+vers[1] != vStr) {
+					vboxAlert('This version of phpVirtualBox ('+vStr+'-x) is incompatible with VirtualBox ' + $('#vboxIndex').data('vboxConfig').version.string + ". You probably need to <a href='http://code.google.com/p/phpvirtualbox/downloads/list?q=phpvirtualbox-"+vers[0]+'.'+vers[1]+"' target=_blank>download the latest phpVirtualBox " + vers[0]+'.'+vers[1] + "-x</a>.<p>See the Versioning section <a href='http://code.google.com/p/phpvirtualbox/downloads/detail?name=README.txt' target=_blank>here</a> for more information</p>",{'width':'auto'});
+				}
+			}			
 		}
 		
 		$(tr).append(td).appendTo(tbl);

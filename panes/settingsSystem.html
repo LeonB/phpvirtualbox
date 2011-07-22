@@ -40,6 +40,10 @@
 		</table>
 		</td>
 	</tr>
+	<tr class='vboxSettingsSystemAdvancedOnly'>
+		<th></th>
+		<td><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemPageFusion' /> <span class='translate'>Enable Page Fusion</span></td>
+	</tr>	
 	<tr style='vertical-align: top'>
 		<th style='text-align:right'><span class='translate'>Boot Order:</span></th>
 		<td>
@@ -217,6 +221,7 @@ if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 	document.forms['frmVboxSettings'].settingsSystemLargePages.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages);
 	document.forms['frmVboxSettings'].settingsSystemExclusive.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Exclusive);
 	document.forms['frmVboxSettings'].settingsSystemVPID.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.VPID);
+	document.forms['frmVboxSettings'].vboxSettingsSystemPageFusion.checked = ($('#vboxSettingsDialog').data('vboxMachineData').pageFusionEnabled);
 	
 /* Else, remove advanced settings */
 } else {
@@ -352,6 +357,7 @@ $('#vboxSettingsDialog').bind('save',function(){
 		
 	/* Only if advanced config is enabled */
 	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+		$('#vboxSettingsDialog').data('vboxMachineData').pageFusionEnabled = (document.forms['frmVboxSettings'].vboxSettingsSystemPageFusion.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').hpetEnabled = (document.forms['frmVboxSettings'].vboxSettingsSystemHPET.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').disableHostTimeSync = (document.forms['frmVboxSettings'].vboxSettingsSystemDisableHostTimeSync.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);

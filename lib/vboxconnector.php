@@ -920,6 +920,7 @@ class vboxconnector {
 		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
 		if($m->snapshotFolder != $args['snapshotFolder']) $m->snapshotFolder = $args['snapshotFolder'];
 		if(@$this->settings['enableAdvancedConfig']) {
+			$m->pageFusionEnabled = intval($args['pageFusionEnabled']);
 			$m->hpetEnabled = intval($args['hpetEnabled']);
 			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
 		}
@@ -3053,6 +3054,7 @@ class vboxconnector {
 			'firmwareType' => $m->firmwareType->__toString(),
 			'snapshotFolder' => $m->snapshotFolder,
 			'monitorCount' => $m->monitorCount,
+			'pageFusionEnabled' => intval($m->pageFusionEnabled),
 			'VRDEServer' => (!$m->VRDEServer ? null : array(
 				'enabled' => $m->VRDEServer->enabled,
 				'ports' => $m->VRDEServer->getVRDEProperty('TCP/Ports'),
