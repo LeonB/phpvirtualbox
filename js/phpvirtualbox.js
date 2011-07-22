@@ -239,7 +239,14 @@ var vboxVMActions = {
 		'label' : 'Reset',
 		'icon' : 'reset',
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
-		'click' : function() {vboxVMActions.powerAction('reset'); }
+		'click' : function() {
+			var buttons = {};
+			buttons[trans('Reset','VBoxProblemReporter')] = function() {
+				$(this).remove();
+				vboxVMActions.powerAction('reset');
+			}
+			vboxConfirm(trans('<p>Do you really want to reset the virtual machine?</p><p>This will cause any unsaved data in applications running inside it to be lost.</p>','VBoxProblemReporter'),buttons);
+		}
 	},
 	
 	/* Power Action Helper function */
@@ -517,6 +524,11 @@ function vboxWizard(name, title, img, bg, icon) {
 
 			// buttons
 			var buttons = { };
+			if(self.stepButtons) {
+				for(var i = 0; i < self.stepButtons.length; i++) {
+					buttons[self.stepButtons[i].name] = self.stepButtons[i].click;
+				}
+			}
 			buttons['< '+self.backText] = self.displayPrev;
 			buttons[(self.steps > 1 ? self.nextText +' >' : self.finishText)] = self.displayNext;
 			buttons[self.cancelText] = self.close;
@@ -552,6 +564,11 @@ function vboxWizard(name, title, img, bg, icon) {
 			$('#'+self.name+'Step'+(i+1)).css({'display':'none'});
 		}
 		/* update buttons */
+		if(self.stepButtons) {
+			for(var i = 0; i < self.stepButtons.length; i++) {
+				$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.stepButtons[i].name+'")').parent().css({'display':(jQuery.inArray(step,self.stepButtons[i].steps) > -1 ? '' : 'none')});
+			}
+		}
 		if(step == 1) {
 			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("< '+self.backText+'")').parent().addClass('disabled').blur();
 			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text((self.steps > 1 ? self.nextText+' >' : self.finishText)).html());

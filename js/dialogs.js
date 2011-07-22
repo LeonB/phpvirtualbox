@@ -21,38 +21,102 @@ function vboxWizardImportApplianceInit() {
 		vbw.finishText = trans('Import','UIImportApplianceWzd');
 		vbw.context = 'UIImportApplianceWzd';
 		vbw.perPageContext = 'UIImportApplianceWzdPage%1';
+		vbw.stepButtons = [
+		   {
+			   'name' : trans('Restore Defaults','UIImportApplianceWzd'),
+			   'steps' : [2],
+			   'click' : function() {
+				   wizardImportApplianceParsed();
+			   } 
+		   }
+		]
 		vbw.onFinish = function(wiz,dialog) {
 		
 			var file = $(document.forms['frmwizardImportAppliance'].elements.wizardImportApplianceLocation).val();
 			var descriptions = $('#vboxImportProps').data('descriptions');
 			var reinitNetwork = document.forms['frmwizardImportAppliance'].elements.vboxImportReinitNetwork.checked;
 			
+			// Import function
+			var vboxImportApp = function() {
+				
+				$(dialog).trigger('close').empty().remove();
+				
+				var l = new vboxLoader();
+				l.mode = 'save';
+				l.add('applianceImport',function(d){
+					if(d && d.progress) {
+						vboxProgress(d.progress,function(){
+							$('#vboxIndex').trigger('vmlistreload');
+							// Imported media must be refreshed
+							var ml = new vboxLoader();
+							ml.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
+							ml.run();
+						},{},'progress_import_90px.png',trans('Import Appliance','VBoxSelectorWnd').replace(/\./g,''));
+					}
+				},{'descriptions':descriptions,'file':file,'reinitNetwork':reinitNetwork});
+				l.run();				
+			}
+			
+			// license agreements
+			var licenses = [];
+			
 			// Step through each VM and obtain value
 			for(var a = 0; a < descriptions.length; a++) {
 				var children = $('#vboxImportProps').children('tr.vboxChildOf'+a);
 				descriptions[a][5] = []; // enabled / disabled
+				var lic = null;
+				var vmname = null;
 				for(var b = 0; b < children.length; b++) {
 					descriptions[a][5][b] = !$(children[b]).data('propdisabled');
 					descriptions[a][3][$(children[b]).data('descOrder')] = $(children[b]).children('td:eq(1)').data('descValue');
+					// check for license
+					if(descriptions[a][0][b] == 'License') {
+						lic = descriptions[a][2][b];
+					} else if(descriptions[a][0][b] == 'Name') {
+						vmname = descriptions[a][2][b]; 
+					}
+				}
+				if(lic) {
+					if(!vmname) vmname = trans('Virtual System %1','VBoxApplianceEditorWgt').replace('%1',a);
+					licenses[licenses.length] = {'name':vmname,'license':lic};
 				}
 			}
+
 			
-			var l = new vboxLoader();
-			l.mode = 'save';
-			l.add('applianceImport',function(d){
-				if(d && d.progress) {
-					vboxProgress(d.progress,function(){
-						$('#vboxIndex').trigger('vmlistreload');
-						// Imported media must be refreshed
-						var ml = new vboxLoader();
-						ml.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
-						ml.run();
-					},{},'progress_import_90px.png',trans('Import Appliance','VBoxSelectorWnd').replace(/\./g,''));
+			if(licenses.length) {
+				
+				var msg = trans('<b>The virtual system "%1" requires that you agree to the terms and conditions of the software license agreement shown below.</b><br /><br />Click <b>Agree</b> to continue or click <b>Disagree</b> to cancel the import.','UIImportLicenseViewer')
+				var a = 0;
+				var buttons = {};
+				buttons[trans('Agree','UIImportLicenseViewer')] = function() {
+
+					a++;
+					if(a >= licenses.length) {
+						$(this).remove();
+						vboxImportApp();
+						return;
+					}
+					$(this).dialog('close');
+					$('#vboxImportWizLicTitle').html(msg.replace('%1',licenses[a]['name']));
+					$('#vboxImportWizLicContent').val(licenses[a]['license']);
+					$(this).dialog('open');
+
 				}
-			},{'descriptions':descriptions,'file':file,'reinitNetwork':reinitNetwork});
-			$(dialog).trigger('close').empty().remove();
-			l.run();
-	
+				buttons[trans('Disagree','UIImportLicenseViewer')] = function() {
+					$(this).remove();
+				}
+				
+				var dlg = $('<div />').dialog({'closeOnEscape':false,'width':600,'height':500,'buttons':buttons,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':'<img src="images/vbox/os_type_16px.png" class="vboxDialogTitleIcon" /> ' + trans('Software License Agreement','UIImportLicenseViewer')});
+				
+				$(dlg).html('<p id="vboxImportWizLicTitle" /><textarea rows="20" spellcheck="false" wrap="off" readonly="true"id="vboxImportWizLicContent" style="width:100%; margin:2px; padding:2px;"></textarea>');
+				$('#vboxImportWizLicTitle').html(msg.replace('%1',licenses[a]['name']));
+				$('#vboxImportWizLicContent').val(licenses[a]['license']);
+				$(dlg).dialog('open');
+
+			} else {
+				vboxImportApp();				
+			}
+			
 	
 		};
 		vbw.run();

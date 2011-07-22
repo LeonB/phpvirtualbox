@@ -261,8 +261,12 @@ $('#wizardImportApplianceDialog').bind('dialogresizestop',wizardImportAppResize)
 /* After appliance file is parsed */
 function wizardImportApplianceParsed(d) {
 	
+	// Remove any existing data
+	$('#vboxImportProps').children().remove();
+	
 	var tbl = $('#vboxImportProps');
-	$(tbl).data('descriptions',d.descriptions);
+	if(!d) d = {'descriptions':$(tbl).data('descriptions')}; 
+	else $(tbl).data('descriptions',d.descriptions);
 	
 
 	vboxSetLangContext('VBoxApplianceEditorWgt');

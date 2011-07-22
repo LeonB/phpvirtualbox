@@ -416,13 +416,13 @@ ul.vboxMenuBar li {
 	border: 1px solid #aaaaaa;
 }
 #vboxPaneVMList td.vboxVMTitle { width: 100% }
-#vboxVMList table.vboxVMListVM { margin-bottom: 5px; vertical-align: top; }
-#vboxVMList table.vboxVMListVM td { padding: 2px; white-space: nowrap; }
+#vboxVMList table.vboxVMListVM { margin-bottom: 4px; vertical-align: top; }
+#vboxVMList table.vboxVMListVM td { padding: 0px; white-space: nowrap; }
 #vboxVMList table.vboxVMListVM span.vboxVMName { font-weight: bold; }
 #vboxVMList table.vboxVMListVM span.vboxVMState { font-size: 0.9em; }
 #vboxVMList table.vboxVMListVM td.vboxVMSessionOpen { font-style: italic; }
 #vboxPaneVMList img.vboxHostIcon { border: 1px solid #999; }
-#vboxPaneVMList img.vboxVMIcon { height: 32px; width: 32px; }
+#vboxPaneVMList img.vboxVMIcon { height: 32px; width: 32px; margin: 4px; margin-left: 6px; }
 
 /* Toolbar above vm list */
 #vboxPaneToolbar { float: left; }

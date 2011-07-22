@@ -98,7 +98,7 @@ var tButtons = [
   			var vm = $('#vboxTabVMSnapshots').data('machine');
   			return (item && $(item).data('state') == 'current' && vm.state != 'RestoringSnapshot' && vm.state != 'LiveSnapshotting' && vm.state != 'DeletingSnapshot');
   		},
-  		'click' : function () {
+  		'click' : function (callback) {
 
   			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
 
@@ -129,7 +129,8 @@ var tButtons = [
 					if(d && d.progress) {
 						vboxSetLangContext('VBoxSnapshotsWgt');
 						vboxProgress(d.progress,function(){
-							$('#vboxTabVMSnapshots').trigger('refresh');
+							if(callback) callback();
+							else $('#vboxTabVMSnapshots').trigger('refresh');
 						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot'));
 						vboxUnsetLangContext();
 					} else if(d && d.error) {
@@ -155,30 +156,72 @@ var tButtons = [
   		'icon' : 'discard_cur_state',
   		'enabled' : function(item) {
 			var vm = $('#vboxTabVMSnapshots').data('machine');
-  			return ( item && $(item).data('name') && $(item).data('state') != 'current' && vm.state != 'Running');
+  			return ( item && $(item).data('name') && $(item).data('state') != 'current' && vm.state != 'Running' && vm.state != 'Paused');
   		},
   		'click' : function () {
+  			
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
+  	  		
 			var buttons = {};
 			vboxSetLangContext('VBoxProblemReporter');
-			buttons[trans('Restore')] = function() {
-	  	  		var l = new vboxLoader();
-	  	  		l.mode = 'save';
-	  	  		l.add('snapshotRestore',function(d){
-					if(d && d.progress) {
-						vboxSetLangContext('VBoxSnapshotsWgt');
-						vboxProgress(d.progress,function(){
-							$('#vboxTabVMSnapshots').trigger('refresh');
-						},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot'));
-						vboxUnsetLangContext();
-					} else if(d && d.error) {
-						vboxAlert(d.error);
+			
+			// Check for saved state
+			if($('#vboxTabVMSnapshots').data('machine').state == 'Saved' && $('#vboxTabVMSnapshots').data('machine').currentStateModified) {
+
+				var q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>');
+				q += '<p><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state') + '</p>';
+				
+				buttons[trans('Restore')] = function() {
+
+					var snrestore = function(){
+			  	  		var l = new vboxLoader();
+			  	  		l.mode = 'save';
+			  	  		l.add('snapshotRestore',function(d){
+							if(d && d.progress) {
+								vboxSetLangContext('VBoxSnapshotsWgt');
+								vboxProgress(d.progress,function(){
+									$('#vboxTabVMSnapshots').trigger('refresh');
+								},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot'));
+								vboxUnsetLangContext();
+							} else if(d && d.error) {
+								vboxAlert(d.error);
+							}
+			 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
+						l.run();										
 					}
-	 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
-	  	  		$(this).empty().remove();
-				l.run();				
-			};
-			vboxConfirm(trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>').replace('%1',$('<div />').text(snapshot.name).html()),buttons);
+					
+					if($('#vboxRestoreSnapshotCreate').prop('checked')) {
+						tButtons[0].click(snrestore);
+					} else {
+						snrestore();
+					}
+		  	  		$(this).empty().remove();
+				};
+
+			} else {
+				
+				var q = trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>');
+				
+				buttons[trans('Restore')] = function() {
+		  	  		var l = new vboxLoader();
+		  	  		l.mode = 'save';
+		  	  		l.add('snapshotRestore',function(d){
+						if(d && d.progress) {
+							vboxSetLangContext('VBoxSnapshotsWgt');
+							vboxProgress(d.progress,function(){
+								$('#vboxTabVMSnapshots').trigger('refresh');
+							},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot'));
+							vboxUnsetLangContext();
+						} else if(d && d.error) {
+							vboxAlert(d.error);
+						}
+		 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
+		  	  		$(this).empty().remove();
+					l.run();				
+				};
+			}
+
+			vboxConfirm(q.replace('%1',$('<div />').text(snapshot.name).html()),buttons);
 			vboxUnsetLangContext();
   	  	},
   	},
@@ -508,7 +551,7 @@ function __vboxTabSnapshotCurrent() {
 	vboxSetLangContext('VBoxSnapshotsWgt');
 	
 	// Add 'current state'
-	var li = $('<li />').data({'state':'current','name':trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'))}).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans('Current State')).html()+'</div>');
+	var li = $('<li />').data({'state':'current','name':trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'))}).html(' <div class="vboxListItem"><img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'))).html()+'</div>');
 
 	$(li).addClass('last').addClass('vboxSnapshotCurrent');
 	

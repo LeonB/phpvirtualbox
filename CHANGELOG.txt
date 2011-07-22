@@ -10,7 +10,7 @@ VM settings are now available while VM is running. Some settings
 can be modified.
 
 Minor UI updates.
-
+	
 Fixed bug that would activate all configured USB filters when
 saving a VM.
 
@@ -28,6 +28,17 @@ VM wizard as it is unsupported by VirtualBox at this time.
 
 Fixed display bug in VM log viewer when pressing the Refresh
 button.
+
+Snapshots tab now propts to take a new snapshot when attempting to
+restore a snapshot while VM is in a (changed) Saved state.
+
+Added license agreement dialog when importing appliances that have
+a license.
+
+Added a check for phpVirtualBox <-> VirtualBox versions.
+
+Added "Restore Defaults" button and functionality to appliance
+import wizard.
 
 -------------------------------------
 	4.1-0	2011-7-19

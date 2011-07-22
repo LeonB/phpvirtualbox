@@ -3,13 +3,14 @@
  * $Id$
  */
 
+# Turn off PHP errors
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING);
+
 global $_vbox_language;
 
 require_once(dirname(dirname(__FILE__)).'/lib/language.php');
 
 if(!is_object($_vbox_language)) $_vbox_language = new __vbox_language();
-
-error_reporting(0);
 
 if($_GET['debug']) {
 	print_r($_vbox_language->langdata);
