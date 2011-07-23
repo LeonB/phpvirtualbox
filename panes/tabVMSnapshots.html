@@ -169,7 +169,7 @@ var tButtons = [
 			if($('#vboxTabVMSnapshots').data('machine').state == 'Saved' && $('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 
 				var q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>');
-				q += '<p><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state') + '</p>';
+				q += '<p><label><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state') + '</label></p>';
 				
 				buttons[trans('Restore')] = function() {
 

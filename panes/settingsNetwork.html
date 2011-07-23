@@ -9,7 +9,7 @@
 <div id='vboxSettingsTabNetAdapter' title='Adapter' style='display: none'>
 <table class='vboxVertical'>
 	<tr>
-		<td colspan='2'><input name='vboxSettingsNetEnabled' class='vboxCheckbox vboxEnablerCheckbox' type='checkbox' /> <span class='translate'>Enable Network Adapter</span></td>
+		<td colspan='2'><label><input name='vboxSettingsNetEnabled' class='vboxCheckbox vboxEnablerCheckbox' type='checkbox' /> <span class='translate'>Enable Network Adapter</span></label></td>
 	</tr>
 	<tr>
 		<th style='min-width: 120px'><span class='translate'>Attached to:</span></th>
@@ -39,16 +39,16 @@
 	<tr class='vboxSettingsAdvancedNat' style='display: none'>
 		<th><span class='translate'>NAT Alias Mode:</span></th>
 		<td>
-			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeProxyOnly' /> <span class='translate vboxEnablerListen'>Proxy Only</span><br />
-			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeSamePorts' /> <span class='translate vboxEnablerListen'>Same Ports</span><br />
+			<label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeProxyOnly' /> <span class='translate vboxEnablerListen'>Proxy Only</span></label><br />
+			<label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetAliasModeSamePorts' /> <span class='translate vboxEnablerListen'>Same Ports</span></label><br />
 		</td>
 	</tr>
 	<tr class='vboxSettingsAdvancedNat' style='display: none'>
 		<th><span class='translate'>Advanced NAT Options</span> :</th>
 		<td>
-			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetPassDNSDomain' /> <span class='translate vboxEnablerListen'>Pass DNS Domain</span><br />
-			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetDNSProxy' /> <span class='translate vboxEnablerListen'>DNS Proxy</span><br />
-			<input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetUseHostResolver' /> <span class='translate vboxEnablerListen'>Use Host Resolver</span><br />
+			<label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetPassDNSDomain' /> <span class='translate vboxEnablerListen'>Pass DNS Domain</span></label><br />
+			<label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetDNSProxy' /> <span class='translate vboxEnablerListen'>DNS Proxy</span></label><br />
+			<label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetUseHostResolver' /> <span class='translate vboxEnablerListen'>Use Host Resolver</span></label><br />
 			<span class='translate vboxEnablerListen'>Bind to IP</span> <input type='text' class='vboxTextbox' class='vboxEnablerListen' name='vboxSettingsNetBindIp' size='16'/>
 		</td>
 	</tr>
@@ -84,7 +84,7 @@
 	</tr>
 	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
 		<th></th>
-		<td><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetConnected' /> <span class='translate vboxEnablerListen'>Cable connected</span></td>
+		<td><label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetConnected' /> <span class='translate vboxEnablerListen'>Cable connected</span></label></td>
 	</tr>
 	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
 		<th></th>

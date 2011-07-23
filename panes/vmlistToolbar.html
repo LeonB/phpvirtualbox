@@ -218,6 +218,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 		var hostUSB = $('#vboxPaneToolbar').data('hostUSB');
 		var guestUSB = $('#vboxPaneToolbar').data('guestUSB');
 		$(menu).children().remove();
+		
 		for(var i = 0; i < hostUSB.length; i++) {
 
 			if(!hostUSB[i].product) {

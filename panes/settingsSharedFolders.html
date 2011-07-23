@@ -311,15 +311,15 @@ function vboxSettingsSFEditDialog() {
 	$('<tr />').append($('<th />').html(trans('Folder Name:'))).append($('<td />').html('<input type="text" class="vboxText" id="vboxSettingsSFName" style="width: 100%" />')).appendTo(tbl);
 
 	// Read only
-	$('<tr />').append($('<th />')).append($('<td />').html('<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFRO" /> ' + trans('Read-only'))).appendTo(tbl);
+	$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFRO" /> ' + trans('Read-only')+'</label>')).appendTo(tbl);
 	
 	// Auto mount
-	$('<tr />').append($('<th />')).append($('<td />').html('<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFAM" /> ' + trans('Auto-mount'))).appendTo(tbl);
+	$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFAM" /> ' + trans('Auto-mount')+'</label>')).appendTo(tbl);
 	
 	// Add "Make Permanent"?
 	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 		
-		$('<tr />').append($('<th />')).append($('<td />').html('<input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFPerm" /> ' + trans('Make Permanent'))).appendTo(tbl);
+		$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFPerm" /> ' + trans('Make Permanent')+'</label>')).appendTo(tbl);
 	}
 	
 	$(d).append(tbl).dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxNonTabbed','title':'<img src="images/vbox/shared_folder_16px.png" class="vboxDialogTitleIcon" /> '+trans('Edit Share')});

@@ -1282,7 +1282,7 @@ for(var i = 0; i < sections.length; i++) {
 	
 	var li = $('<li />').attr('id','vboxDetailsShowMenuItem'+sections[i].replace(' ',''));
 
-	$('<input />').attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
+	$(li).append($('<label />').append($('<input />').attr({'type':'checkbox','class':'vboxCheckbox','name':sections[i].replace(' ',''),'checked':checked}).click(function(){
 
 		vboxSetCookie("vboxSectionShow"+$(this).attr('name'),(this.checked ? 1 : 0));
 		$('#vboxDetailsTableBox'+$(this).attr('name')).css('display',(this.checked ? '' : 'none'));
@@ -1303,9 +1303,8 @@ for(var i = 0; i < sections.length; i++) {
 			}				
 		}
 		
-	}).appendTo(li);
+	})).append($('<span />').html(' ' + trans(sections[i])))).appendTo(ul);
 
-	$(li).append($('<span />').html(' ' + trans(sections[i]))).appendTo(ul);
 
 }
 
@@ -1338,10 +1337,10 @@ var li = $('<li />').hover(function(){
 	$(this).addClass('hover');
 },function(){
 	$(this).removeClass('hover');
-}).append(radio);
+});
 
 
-$(li).append($('<span />').html(trans('Update Disabled','UIVMPreviewWindow')).click(function(){$(this).siblings('input').click();}));
+$(li).append($('<label />').append(radio).append($('<span />').html(trans('Update Disabled','UIVMPreviewWindow'))));
 
 $(ul).append(li);
 
@@ -1377,9 +1376,7 @@ for(var i = 0; i < ints.length; i++) {
 		$(this).removeClass('hover');
 	});
 	
-	$('<span />').html(trans('Every %1 seconds','UIVMPreviewWindow').replace('%1',ints[i])).click(function(){
-		$(this).siblings('input').click();
-	}).appendTo(li);
+	$('<label />').append(radio).append($('<span />').html(trans('Every %1 seconds','UIVMPreviewWindow').replace('%1',ints[i]))).appendTo(li);
 
 	$(ul).append(li);
 	

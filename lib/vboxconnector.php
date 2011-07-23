@@ -1104,50 +1104,24 @@ class vboxconnector {
 
 
 		// Network Adapters
-		$netchanged = false;
 		$netprops = array('enabled','attachmentType','adapterType','MACAddress','bridgedInterface','hostOnlyInterface','internalNetwork','NATNetwork','cableConnected','promiscModePolicy','genericDriver');
 		if(@$this->settings['enableVDE']) $netprops[] = 'VDENetwork';
 		$adapters = $this->__getCachedMachineData('__getNetworkAdapters',$args['id'],$this->session->machine);
 		
 		for($i = 0; $i < count($args['networkAdapters']); $i++) {
 
-			// Is there a property diff?
-			$ndiff = false;
-			foreach($netprops as $p) {
-				try {
-					if($args['networkAdapters'][$i][$p] == $adapters[$i][$p]) continue;
-				} catch (Exception $e) {
-					// ignore
-				}
-				$ndiff = true;
-				break;
-			}
-
-			// Check for redirection rules diff
-			$ndiff = ($ndiff || (@serialize($args['networkAdapters'][$i]['redirects']) != @serialize($adapters[$i]['redirects'])));
-
-			// Check for nat engine options change
-			if(!$ndiff && @$this->settings['enableAdvancedConfig'] && @$args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
-				$neProps = array('aliasMode','dnsPassDomain','dnsProxy','dnsUseHostResolver');
-				foreach($neProps as $p) {
-					if(intval($args['networkAdapters'][$i]['natDriver'][$p]) == intval($adapters[$i]['natDriver'][$p])) continue;
-					$ndiff = true;
-					break;
-				}
-				if(!$ndiff) $ndiff = ($args['networkAdapters'][$i]['natDriver']['hostIP'] != $adapters[$i]['natDriver']['hostIP']);
-				
-			}
-
-			if(!$ndiff) { continue; }
-			$netchanged = true;
-
-
 			$n = $m->getNetworkAdapter($i);
+			
+			// Skip disabled adapters
+			if(intval($n->enabled) + intval($args['networkAdapters'][$i][$netprops['enabled']]) == 0) continue;
 			
 			for($p = 0; $p < count($netprops); $p++) {
 				$n->{$netprops[$p]} = @$args['networkAdapters'][$i][$netprops[$p]];
-				#echo("setting {$netprops[$p]} to {$args['networkAdapters'][$i][$netprops[$p]]}\n");
 			}
+			
+			// Special case for boolean values
+			$n->enabled = intval($args['networkAdapters'][$i][$netprops['enabled']]);
+			$n->cableConnected = intval($args['networkAdapters'][$i][$netprops['cableConnected']]);
 
 			if($args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
 				
@@ -1176,11 +1150,10 @@ class vboxconnector {
 			}
 			$n->releaseRemote();
 		}
+
 		// Expire network info?
-		if($netchanged) {
-			$expire[] = '__getNetworkAdapters'.$args['id'];
-			$expire[] = 'getHostNetworking';
-		}
+		$expire[] = '__getNetworkAdapters'.$args['id'];
+		$expire[] = 'getHostNetworking';
 
 		// Serial Ports
 		$spChanged = false;

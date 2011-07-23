@@ -17,8 +17,8 @@
 	
 	<input type='text' class='vboxText' name='cloneVMName' style='width: 95%' />
 	
-	<p><input type='checkbox' class='vboxCheckbox' name='vboxCloneReinitNetwork' />
-		<span class='translate'>Reinitialize the MAC address of all network cards</span>
+	<p><label><input type='checkbox' class='vboxCheckbox' name='vboxCloneReinitNetwork' />
+		<span class='translate'>Reinitialize the MAC address of all network cards</span></label>
 	</p>
 
 </div>
@@ -36,13 +36,13 @@
 	
 	<table>
 		<tr style='vertical-align: bottom;'>
-			<td><input type='radio' class='vboxRadio' checked='checked' name='vmState' value='MachineState' /> <span class='translate'>Current machine state</span></td>
+			<td><label><input type='radio' class='vboxRadio' checked='checked' name='vmState' value='MachineState' /> <span class='translate'>Current machine state</span></label></td>
 		</tr>
 		<tr style='vertical-align: bottom; display:none;' id='vboxCloneCurrentAll'>
-			<td><input type='radio' class='vboxRadio' name='vmState' value='MachineAndChildStates' /> <span class='translate'>Current machine and all child states</span></td>
+			<td><label><input type='radio' class='vboxRadio' name='vmState' value='MachineAndChildStates' /> <span class='translate'>Current machine and all child states</span></label></td>
 		</tr>		
 		<tr style='vertical-align: bottom;'>
-			<td><input type='radio' class='vboxRadio' name='vmState' value='AllStates' /> <span class='translate'>All states</span></td>
+			<td><label><input type='radio' class='vboxRadio' name='vmState' value='AllStates' /> <span class='translate'>All states</span></label></td>
 		</tr>	
 	</table>
 
