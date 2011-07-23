@@ -45,6 +45,10 @@ when $enableAdvancedConfig is set in config.php.
 
 Fixed bug that would not allow a disk to be set to Multi-attach.
 
+Fixed bug with PHP versions < 5.2 that would not enable network
+cards of VMs when saving VM settings.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=333
+
 -------------------------------------
 	4.1-0	2011-7-19
 -------------------------------------

@@ -1113,15 +1113,20 @@ class vboxconnector {
 			$n = $m->getNetworkAdapter($i);
 			
 			// Skip disabled adapters
-			if(intval($n->enabled) + intval($args['networkAdapters'][$i][$netprops['enabled']]) == 0) continue;
+			if(intval($n->enabled) + intval($args['networkAdapters'][$i]['enabled']) == 0) continue;
 			
 			for($p = 0; $p < count($netprops); $p++) {
+				switch($netprops[$p]) {
+					case 'enabled':
+					case 'cableConnected':
+						continue;
+				}
 				$n->{$netprops[$p]} = @$args['networkAdapters'][$i][$netprops[$p]];
 			}
 			
 			// Special case for boolean values
-			$n->enabled = intval($args['networkAdapters'][$i][$netprops['enabled']]);
-			$n->cableConnected = intval($args['networkAdapters'][$i][$netprops['cableConnected']]);
+			$n->enabled = intval($args['networkAdapters'][$i]['enabled']);
+			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
 
 			if($args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
 				

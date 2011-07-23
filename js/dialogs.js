@@ -414,7 +414,7 @@ function vboxShowLogsDialogInit(vm) {
 
 function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 
-	$('#vboxIndex').append($('<div />').attr({'id':'vboxVMMDialog'}));
+	$('#vboxIndex').append($('<div />').attr({'id':'vboxVMMDialog','class':'vboxVMMDialog'}));
 			
 	var l = new vboxLoader();
 	l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
@@ -449,7 +449,7 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 
 		vboxSetLangContext('VBoxMediaManagerDlg');
 		
-		$("#vboxVMMDialog").dialog({'closeOnEscape':true,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/diskimage_16px.png" class="vboxDialogTitleIcon" /> '+trans('Virtual Media Manager')}).bind("dialogbeforeclose",function(){
+		$("#vboxVMMDialog").dialog({'closeOnEscape':true,'width':800,'height':500,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxVMMDialog','title':'<img src="images/vbox/diskimage_16px.png" class="vboxDialogTitleIcon" /> '+trans('Virtual Media Manager')}).bind("dialogbeforeclose",function(){
 	    	$(this).parent().find('span:contains("'+trans('Close','VBoxMediaManagerDlg')+'")').trigger('click');
 	    });
 		
