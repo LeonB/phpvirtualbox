@@ -301,10 +301,8 @@ function vboxMachineStateIcon(state)
         return strIcon;
 
 }
+
 /* File or Folder browser */
-function browseFolder(root,fn) {
-	vboxFileBrowser(root,fn,true);
-}
 function vboxFileBrowser(root,fn,foldersonly,title,icon) {
 
 	var buttons = { };
@@ -365,21 +363,7 @@ function vboxConvertMbytes(str) {
 	
 }
 
-/* Medium Helpers */
-function vboxMediumAttachedTo(m,nullOnNone) {
-	var s = new Array();
-	if(!m.attachedTo) return (nullOnNone ? null : '<i>'+trans('Not Attached')+'</i>');
-	for(var i = 0; i < m.attachedTo.length; i++) {
-		s[s.length] = m.attachedTo[i].machine + (m.attachedTo[i].snapshots.length ? ' (' + m.attachedTo[i].snapshots.join(', ') + ')' : '');
-	}
-	return s.join(', ');
-}
 
-function vboxMediumType(m) {
-	if(!m || !m.type) return trans('Normal');
-	if(m.type == 'Normal' && m.parent) return trans('Differencing');
-	return trans(m.type);
-}
 /*
  * 
  * Error message dialog from ajax request
@@ -410,9 +394,13 @@ function vboxAjaxError(e) {
 	$(div).append(ddet);
 	
 	var buttons = { };
-	buttons[trans('OK','QIMessageBox')] = function(f) {$(this).trigger('close').empty().remove();};
+	buttons[trans('OK','QIMessageBox')] = function(f) {vboxNotifyBrowser();$(this).trigger('close').empty().remove();};
 
-    $(div).dialog({'closeOnEscape':false,'width':400,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});			
+    $(div).dialog({'closeOnEscape':false,'width':400,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});
+    
+    // Notify browser of alert
+    vboxNotifyBrowser(1);
+    
 	
 }
 /*
@@ -422,7 +410,7 @@ function vboxAlert(msg,xtraOpts) {
 
 
 	var buttons = { };
-	buttons[trans('OK','QIMessageBox')] = function(f) {$(this).trigger('close').empty().remove();};
+	buttons[trans('OK','QIMessageBox')] = function(f) {vboxNotifyBrowser();$(this).trigger('close').empty().remove();};
 	
 	var dialogOpts = {'closeOnEscape':false,'width':'50%','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'};
 
@@ -434,6 +422,8 @@ function vboxAlert(msg,xtraOpts) {
 	}
 	$('<div />').attr({'class':'vboxDialogContent'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" />').append(msg).dialog(dialogOpts);
 
+    // Notify browser of alert
+    vboxNotifyBrowser(1);
 
 }
 /*
@@ -835,19 +825,21 @@ function vboxBasename(p) {
 	}
 	return p;
 }
-/* Add a recent medium to list */
-function vboxAddRecentMedium(m,list) {
-	pos = jQuery.inArray(m,list);
-	if(pos == 0) return false; // no change
-	if(pos > 0) {
-		list.splice(pos,1);
-	}
-	list.splice(0,0,m);
-	while(list.length > 5) {
-		list.pop();
-	}
-	return true; // changed
+
+/* Update browser title to notify of change */
+__vboxNotifyBrowserChanges = 0;
+__vboxNotifyBrowserTitle = document.title;
+function vboxNotifyBrowser(add) {
+
+	if(!$('#vboxIndex').data('vboxConfig').enableAppTabSupport) return;
+	
+	if(add) __vboxNotifyBrowserChanges++;
+	else __vboxNotifyBrowserChanges--;
+	
+	document.title = __vboxNotifyBrowserTitle + (__vboxNotifyBrowserChanges ? ' ('+__vboxNotifyBrowserChanges+')' : '');
+
 }
+
 function strnatcasecmp(str1, str2) {
     // Returns the result of case-insensitive string comparison using 'natural' algorithm  
     // 

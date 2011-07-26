@@ -303,7 +303,7 @@ function vboxWizardCloneVMInit(callback,args) {
 	},{'vm':args.vm.id});
 	l.onLoad = function() {
 		
-		var vbw = new vboxWizard('wizardCloneVM',trans('Clone a virtual machine','UICloneVMWizard'),'images/vbox/vmw_clone.png','images/vbox/vmw_clone_bg.png','vm_clone');
+		var vbw = new vboxWizard('wizardCloneVM',trans('Clone a virtual machine','UICloneVMWizard'),'images/vbox/vmw_clone.png','images/vbox/vmw_clone_bg.png','vm_clone');		
 		vbw.steps = (args.vm.snapshotCount > 0 ? 2 : 1);
 		vbw.args = args;
 		vbw.finishText = trans('Clone','UICloneVMWizard');

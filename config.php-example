@@ -98,6 +98,11 @@ var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.h
  * Misc
  */
 
+/* Enable Firefox's "App Tab" notification support by changing the browser's title
+ * when something in phpVirtualBox's VM list changes or an alert is triggered.
+ */
+#var $enableAppTabSupport = true;
+
 /* Disable any of phpVirtualBox's main tabs */
 #var $disableTabVMSnapshots = true; // Snapshots tab
 #var $disableTabVMConsole = true; // Console tab

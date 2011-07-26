@@ -646,7 +646,7 @@ class vboxconnector {
 		$cm = new CloneMode(null,$args['vmState']);
 		$state = $cm->ValueMap[$args['vmState']];
 		
-		$progress = $src->cloneTo($m->handle,$args['vmState'],($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
+		$progress = $src->cloneTo($m->handle,$args['vmState'],array($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
 		
 		// Does an exception exist?
 		try {

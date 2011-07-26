@@ -65,6 +65,7 @@ function vboxVMList(anchorid) {
 	this.lastUpdatedDiv = null;
 	this.anchor = $('#'+anchorid);
 	this.interval = 5;
+	this.changed = false;
 	this.versionChecked = false;
 	this.contextMenuItems = null;
 	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
@@ -72,7 +73,6 @@ function vboxVMList(anchorid) {
 	this.tip = trans('<nobr>%1<br></nobr><nobr>%2 since %3</nobr><br><nobr>Session %4</nobr>');
 	vboxUnsetLangContext();
 
-;
 	
 	// If there are multiple servers configured, setup menu
 	if($('#vboxIndex').data('vboxConfig').servers.length) {
@@ -162,15 +162,17 @@ function vboxVMList(anchorid) {
 		}
 	
 		// Each item in list
+		var changed = false;
 		for(var i = 0; i < currVMList.length; i++) {	
 		
 			
 			// Does not exist, add to list
 			if(!self.vms[currVMList[i].id]) {
 				self.addVM(currVMList[i]);
+				changed = true;
 			// Update
 			} else {
-				self.updateVM(currVMList[i]);
+				changed = (self.updateVM(currVMList[i]) || changed);
 			}
 
 			self.vms[currVMList[i].id].lastUpdated = self.time;
@@ -185,6 +187,7 @@ function vboxVMList(anchorid) {
 		for(var id in self.vms) {
 			if(self.vms[id].lastUpdated != self.time) {
 				self.removeVM(id);
+				changed = true;
 			}
 		}
 		
@@ -198,6 +201,14 @@ function vboxVMList(anchorid) {
 			
 			$(self.lastUpdatedDiv).html(hours+':'+minutes+':'+secs);
 		}
+		
+		if(changed && !self.changed) {
+			vboxNotifyBrowser(1);
+		} else if(self.changed && !changed) {
+			vboxNotifyBrowser();
+		}
+		
+		self.changed = changed;
 		
 	}
 	
@@ -231,6 +242,8 @@ function vboxVMList(anchorid) {
 		}
 		if(!vmUpdate.selected)
 			self.vms[vmUpdate.id] = vmUpdate;
+
+		return changed;
 
 	}
 

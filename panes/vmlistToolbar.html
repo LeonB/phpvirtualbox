@@ -335,7 +335,7 @@ function vboxUpdateSettingsMenu(e,vm) {
 				var m = vm['storageControllers'][a]['mediumAttachments'][b].medium;
 				m = vboxMedia.getMediumById((m && m.id ? m.id : null));
 				
-				var mName = vboxMedia.getMediumName(m);
+				var mName = vboxMedia.getName(m);
 				mName = $('<div />').text(mName).html();
 				
 				

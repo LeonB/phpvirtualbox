@@ -441,7 +441,7 @@ function vboxSettingsAddAttachment(d,bus) {
     $(tr).append($('<td />').attr({'class':'vboxSettingsStorageTypeIcon vboxSettingsMediaType' + d.type}).html('<img src="images/vbox/blank.gif" />'));
     
     // Medium name
-    $(tr).append($('<td />').attr({'class':'vboxSettingsStorageMediumName'}).html(vboxMedia.getMediumName(vboxMedia.getMediumById((m && m.base ? m.base : (m && m.id ? m.id : null))))));
+    $(tr).append($('<td />').attr({'class':'vboxSettingsStorageMediumName'}).html(vboxMedia.getName(vboxMedia.getMediumById((m && m.base ? m.base : (m && m.id ? m.id : null))))));
     
     
     $(tbl).append(tr).appendTo(li);
@@ -544,7 +544,7 @@ function vboxSettingsSelectAttachment(tbl) {
     $('#vboxSettingsStorageTree').trigger('itemselect',tbl);
 
 	var m = ma.medium;
-	var name = 	vboxMedia.getMediumName(m);
+	var name = 	vboxMedia.getName(m);
 
 	// Read-only medium selected
 	if(ma.medium && ma.medium.readOnly) {
@@ -557,14 +557,14 @@ function vboxSettingsSelectAttachment(tbl) {
     if(m && m.deviceType == 'HardDisk') {
 
     	var disp = vboxMedia.getMediumById(m.base);
-    	name = vboxMedia.getMediumName(disp);
+    	name = vboxMedia.getName(disp);
     		
         $('#vboxSettingsHDvsize').html(vboxMbytesConvert(disp.logicalSize));
         $('#vboxSettingsHDasize').html(vboxBytesConvert(disp.size));
         $('#vboxSettingsHDDetails').html(trans(vboxMedia.getHardDiskVariant(disp),'VBoxGlobal'));
         $('#vboxSettingsHDlocation').html(disp.location);
         $('#vboxSettingsHDtype').html(trans(disp.type,'VBoxGlobal') + ' (' + disp.format + ')');
-        $('#vboxSettingsHDattached').html(vboxMediumAttachedTo(disp));            
+        $('#vboxSettingsHDattached').html(vboxMedia.attachedTo(disp));            
 
         
     } else {
@@ -572,7 +572,7 @@ function vboxSettingsSelectAttachment(tbl) {
     	$('#vboxSettingsImageType').html(m ? trans((m.hostDrive ? 'Host Drive' : 'Image'),'UIMachineSettingsStorage'): '--');
         $('#vboxSettingsImageSize').html((m && !m.hostDrive ? vboxBytesConvert(m.size):'--'));
         $('#vboxSettingsImageLocation').html((m && !m.hostDrive ? m.location:'--'));
-        $('#vboxSettingsImageAttached').html((m && !m.hostDrive ? vboxMediumAttachedTo(m) :'--'));
+        $('#vboxSettingsImageAttached').html((m && !m.hostDrive ? vboxMedia.attachedTo(m) :'--'));
         
     }
 
@@ -635,23 +635,23 @@ function vboxSettingsMediumTip(m) {
 	vboxSetLangContext('UIMachineSettingsStorage');
 	
 	if(!m || !m.id) return trans('Empty','VBoxGlobal');
-	if(m.hostDrive) return vboxMedia.getMediumName(m);
+	if(m.hostDrive) return vboxMedia.getName(m);
 
 	// DVD / Floppy images
 	if(m.deviceType != 'HardDisk') {
-		return '<b>'+m.location+'</b><p>'+trans('Attached To:')+' '+vboxMediumAttachedTo(m)+'</p>';
+		return '<b>'+m.location+'</b><p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(m)+'</p>';
 	}
 	
 	var mbase = m;
 	if(m.base != m.id) {
 		var mbase = vboxMedia.getMediumById(m.base);
 	}
-	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):')+' '+m.type+' ('+m.format+')</p><p>'+trans('Attached To:')+' '+vboxMediumAttachedTo(mbase)+'</p>';
+	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):')+' '+m.type+' ('+m.format+')</p><p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(mbase)+'</p>';
 		
 	// Is this a medium that is attached indirectly
 	if(vboxSettingsStorageBusses.isAttachedIndirect(m) && m.base != m.id) {
 		var p = vboxSettingsStorageBusses.isAttached(m);
-		tip = trans('%1<hr>This base hard disk is indirectly attached using the following differencing hard disk:<br>%2%3','VBoxGlobal').replace('%1',tip).replace('%2','<b>'+p.location+'</b></p><p>'+trans('Type (Format):')+' '+vboxMediumType(p) + ' (' + p.format + ')'+'</p>').replace('%3','<p>'+trans('Attached To:')+' '+vboxMediumAttachedTo(p)+'</p>');
+		tip = trans('%1<hr>This base hard disk is indirectly attached using the following differencing hard disk:<br>%2%3','VBoxGlobal').replace('%1',tip).replace('%2','<b>'+p.location+'</b></p><p>'+trans('Type (Format):')+' '+vboxMedia.getType(p) + ' (' + p.format + ')'+'</p>').replace('%3','<p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(p)+'</p>');
 	} else if(m.readOnly) {
     	tip += trans('<hr><img src=%1/> Attaching this hard disk will be performed indirectly using a newly created differencing hard disk.','VBoxGlobal').replace('%1','"about:blank" style="display:none"');
 	}

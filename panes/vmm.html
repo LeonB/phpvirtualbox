@@ -720,7 +720,7 @@ function vboxVMMMediaInfo(e,m) {
 	var attchElm = $('#vboxVirtualMediaManager').find('.vmmMediumAttachedTo');
 	attchElm.css({'font-style':''});
 	if(m) {
-		attch = vboxMediumAttachedTo(m,true);
+		attch = vboxMedia.attachedTo(m,true);
 		if(!attch) {
 			attch = trans('Not Attached','UIDetailsPagePrivate');
 			attchElm.css({'font-style':'italic'});

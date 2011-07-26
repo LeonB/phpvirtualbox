@@ -1,7 +1,6 @@
 -------------------------------------
 	4.1-1
 -------------------------------------
-
 Upgraded jquery-ui to 1.8.14
 
 Translation bug fixes.
@@ -9,7 +8,7 @@ Translation bug fixes.
 VM settings are now available while VM is running. Some settings
 can be modified.
 
-Minor UI updates.
+Minor UI changes.
 	
 Fixed bug that would activate all configured USB filters when
 saving a VM.
@@ -48,6 +47,9 @@ Fixed bug that would not allow a disk to be set to Multi-attach.
 Fixed bug with PHP versions < 5.2 that would not enable network
 cards of VMs when saving VM settings.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=333
+
+Added $enableAppTabSupport configuration option and feature. See
+config.php-example for more information.
 
 -------------------------------------
 	4.1-0	2011-7-19

@@ -283,13 +283,13 @@ var vboxMedia = {
 
 	// Returns printable medium name with size and type
 	mediumPrint : function(m,nosize) {
-		name = vboxMedia.getMediumName(m);
+		name = vboxMedia.getName(m);
 		if(nosize || !m || m.hostDrive) return name;
 		return name + ' (' + (m.deviceType == 'HardDisk' ? trans(m.type,'VBoxGlobal') + ', ' : '') + vboxMbytesConvert(m.logicalSize) + ')';
 	},
 
 	// Get medium name only
-	getMediumName : function(m) {
+	getName : function(m) {
 		if(!m) return trans('Empty','VBoxGlobal');
 		if(m.hostDrive) {
 			if (m.description && m.name) {
@@ -303,6 +303,13 @@ var vboxMedia = {
 		return m.name;
 	},
 
+	// Get medium type
+	getType : function(m) {
+		if(!m || !m.type) return trans('Normal');
+		if(m.type == 'Normal' && m.parent) return trans('Differencing');
+		return trans(m.type);
+	},
+	
 	// Get medium format
 	getFormat : function (m) {
 		if(!m) return '';
@@ -349,6 +356,15 @@ var vboxMedia = {
 		return vboxTraverse($('#vboxIndex').data('vboxMedia').concat($('#vboxIndex').data('vboxHostDetails').DVDDrives.concat($('#vboxIndex').data('vboxHostDetails').floppyDrives)),'id',id,false,true);
 	},
 
+	attachedTo: function(m,nullOnNone) {
+		var s = new Array();
+		if(!m.attachedTo || !m.attachedTo.length) return (nullOnNone ? null : '<i>'+trans('Not Attached')+'</i>');
+		for(var i = 0; i < m.attachedTo.length; i++) {
+			s[s.length] = m.attachedTo[i].machine + (m.attachedTo[i].snapshots.length ? ' (' + m.attachedTo[i].snapshots.join(', ') + ')' : '');
+		}
+		return s.join(', ');
+	},
+
 	// Update recent media menu and global recent media list
 	updateRecent : function(m) {
 		
@@ -360,8 +376,16 @@ var vboxMedia = {
 		$('#vboxIndex').data('vboxRecentMediumPaths')[m.deviceType] = vboxDirname(m.location);
 		
 		// Update recent media
-		var changed = vboxAddRecentMedium(m.location, $('#vboxIndex').data('vboxRecentMedia')[m.deviceType]);
-		
+		var pos = jQuery.inArray(m.location,$('#vboxIndex').data('vboxRecentMedia')[m.deviceType]);		
+		var changed = (pos != 0);
+		if(pos > 0) {
+			$('#vboxIndex').data('vboxRecentMedia')[m.deviceType].splice(pos,1);
+		}
+		$('#vboxIndex').data('vboxRecentMedia')[m.deviceType].splice(0,0,m.location);
+		while($('#vboxIndex').data('vboxRecentMedia')[m.deviceType].length > 5) {
+			$('#vboxIndex').data('vboxRecentMedia')[m.deviceType].pop();
+		}
+
 		if(changed) {
 			// Update Recent Media in background
 			vboxAjaxRequest('mediumRecentUpdate',{'type':m.deviceType,'list':$('#vboxIndex').data('vboxRecentMedia')[m.deviceType]},function(){});
@@ -437,7 +461,7 @@ var vboxMedia = {
 	} // </ actions >
 }
 /*
- * Wizard (new HardDisk or VM)
+ * Base Wizard (new HardDisk, VM, etc..)
  */
 function vboxWizard(name, title, img, bg, icon) {
 	
@@ -468,26 +492,13 @@ function vboxWizard(name, title, img, bg, icon) {
 		var tbl = $('<table />').attr({'class':'vboxWizard','style':'height: 100%; margin:0px; padding:0px;border:0px;'});
 		var tr = $('<tr />');
 
-		/*
-		if(this.img) {
-			$('<td />').attr({'class':'vboxWizardImg'}).css({'background-image':'url(images/wizard_bg.png)','background-repeat':'repeat-y','padding':'0px','margin':'0px'}).append('<img src="' + self.img + '" style="width: 145px; height: 290px" />').appendTo(tr);
-		}
-		*/
-		
 		
 		var td = $('<td />').attr({'id':self.name+'Content','class':'vboxWizardContent'});
 		
 		if(self.bg) {
-			//$(d).css({'background':'url('+this.bg+') -10px -60px no-repeat','background-color':'#fff'});
-			$(d).css({'background':'url('+this.bg+') ' + (this.width - 360) +'px -60px no-repeat','background-color':'#fff'});
-			/*
-			if($.browser.msie)
-				$(td).css({"filter":"progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', src='"+this.bg+"', sizingMethod='scale')"});
-			else
-				$(td).css({'background':'url('+this.bg+') top left no-repeat','-moz-background-size':'auto 100%','background-size':'auto 100%','-webkit-background-size':'auto 100%'});
-			*/
-				
+			$(d).css({'background':'url('+this.bg+') ' + (this.width - 360) +'px -60px no-repeat','background-color':'#fff'});				
 		}
+		
 		// Title and content table
 		var t = $('<h3 />').attr('id',self.name+'Title').html(self.title).appendTo(td);
 
@@ -856,7 +867,7 @@ function vboxToolbarSmall(buttons) {
 }
 
 /*
- * Media menu 
+ * Media menu button
  */
 function vboxButtonMediaMenu(type,callback,mediumPath) {
 	
@@ -1010,7 +1021,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 }
 
 /*
- * Button media menu object
+ *  Media menu object
  */
 function vboxMediaMenu(type,callback,mediumPath) {
 
@@ -1058,7 +1069,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		var meds = vboxMedia.mediaForAttachmentType(self.type);
 		for(var i =0; i < meds.length; i++) {
 			if(!meds[i].hostDrive) continue;
-			$('<li />').html("<a href='#"+meds[i].id+"'>"+vboxMedia.getMediumName(meds[i])+"</a>").appendTo(ul);
+			$('<li />').html("<a href='#"+meds[i].id+"'>"+vboxMedia.getName(meds[i])+"</a>").appendTo(ul);
 		}
 		
 	}

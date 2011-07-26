@@ -1231,7 +1231,7 @@ function __vboxDisplayHostDetailsData(data) {
 			
 			var m = vboxMedia.getMediumById(data['DVDDrives'][i].id);
 			
-			$(vboxDetailsTable).append(__vboxDetailRow(vboxMedia.getMediumName(m),''));
+			$(vboxDetailsTable).append(__vboxDetailRow(vboxMedia.getName(m),''));
 			
 		}
 
@@ -1248,7 +1248,7 @@ function __vboxDisplayHostDetailsData(data) {
 			
 			var m = vboxMedia.getMediumById(data['floppyDrives'][i].id);
 			
-			$(vboxDetailsTable).append(__vboxDetailRow(vboxMedia.getMediumName(m),''));
+			$(vboxDetailsTable).append(__vboxDetailRow(vboxMedia.getName(m),''));
 			
 		}
 
