@@ -646,7 +646,7 @@ function vboxSettingsMediumTip(m) {
 	if(m.base != m.id) {
 		var mbase = vboxMedia.getMediumById(m.base);
 	}
-	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):')+' '+m.type+' ('+m.format+')</p><p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(mbase)+'</p>';
+	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):')+' '+vboxMedia.getType(m)+' ('+m.format+')</p><p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(mbase)+'</p>';
 		
 	// Is this a medium that is attached indirectly
 	if(vboxSettingsStorageBusses.isAttachedIndirect(m) && m.base != m.id) {

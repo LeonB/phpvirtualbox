@@ -831,7 +831,8 @@ __vboxNotifyBrowserChanges = 0;
 __vboxNotifyBrowserTitle = document.title;
 function vboxNotifyBrowser(add) {
 
-	if(!$('#vboxIndex').data('vboxConfig').enableAppTabSupport) return;
+	var cfg = $('#vboxIndex').data('vboxConfig');
+	if(!cfg || !cfg.enableAppTabSupport) return;
 	
 	if(add) __vboxNotifyBrowserChanges++;
 	else __vboxNotifyBrowserChanges--;

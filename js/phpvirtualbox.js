@@ -305,9 +305,9 @@ var vboxMedia = {
 
 	// Get medium type
 	getType : function(m) {
-		if(!m || !m.type) return trans('Normal');
-		if(m.type == 'Normal' && m.parent) return trans('Differencing');
-		return trans(m.type);
+		if(!m || !m.type) return trans('Normal','VBoxGlobal');
+		if(m.type == 'Normal' && m.base && m.base != m.id) return trans('Differencing','VBoxGlobal');
+		return trans(m.type,'VBoxGlobal');
 	},
 	
 	// Get medium format
