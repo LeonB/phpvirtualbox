@@ -282,10 +282,10 @@ var vboxVMActions = {
 var vboxMedia = {
 
 	// Returns printable medium name with size and type
-	mediumPrint : function(m,nosize) {
+	mediumPrint : function(m,nosize,italics) {
 		name = vboxMedia.getName(m);
 		if(nosize || !m || m.hostDrive) return name;
-		return name + ' (' + (m.deviceType == 'HardDisk' ? trans(m.type,'VBoxGlobal') + ', ' : '') + vboxMbytesConvert(m.logicalSize) + ')';
+		return name + ' (' + (m.deviceType == 'HardDisk' ? (italics ? '<i>' : '') + trans(m.type,'VBoxGlobal') + (italics ? '</i>' : '') + ', ' : '') + vboxMbytesConvert(m.logicalSize) + ')';
 	},
 
 	// Get medium name only
@@ -327,7 +327,10 @@ var vboxMedia = {
 	// Get HD type
 	getHardDiskVariant : function(m) {
 		if(!m) return '';
-		return trans(m.fixed ? 'Fixed size storage': 'Dynamically allocated storage');
+		if(m.split) {
+			return trans(m.fixed ? 'Fixed size storage split into files of less than 2GB': 'Dynamically allocated storage split into files of less than 2GB','VBoxGlobal');
+		}
+		return trans(m.fixed ? 'Fixed size storage': 'Dynamically allocated storage','VBoxGlobal');
 	},
 
 	/* Return media and drives available for attachment type */

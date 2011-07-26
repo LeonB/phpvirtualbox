@@ -3525,6 +3525,7 @@ class vboxconnector {
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
 		$mv = new MediumVariant();
 		$type = $mv->ValueMap[$type];
+		if($args['split'] && $format == 'VMDK') $type += $mv->ValueMap['VmdkSplit2G'];
 		
 		$progress = $src->cloneTo($target->handle,$type,null);
 		
@@ -3657,12 +3658,15 @@ class vboxconnector {
 			$args['file'] = implode('/', $dirparts);
 		}
 		
-		$format = strtoupper(preg_replace('/.*\./','',$args['file']));
-		if($format != 'VDI' && $format != 'VMDK') $format = 'VDI';
-		$hd = $this->vbox->createHardDisk($format,$args['file']);
+		$format = strtoupper($args['format']);
+		if($format != 'VDI' && $format != 'VMDK' && $format != 'VHDI') $format = 'VDI';
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
 		$mv = new MediumVariant();
-		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$mv->ValueMap[$type]);
+		$type = $mv->ValueMap[$type];
+		if($args['split'] && $format == 'VMDK') $type += $mv->ValueMap['VmdkSplit2G'];
+
+		$hd = $this->vbox->createHardDisk($format,$args['file']);
+		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$type);
 
 		// Does an exception exist?
 		try {
@@ -3982,6 +3986,7 @@ class vboxconnector {
 
 		// For $fixed value
 		$mv = new MediumVariant();
+		$variant = $m->variant;
 		
 		return array(
 				'id' => $m->id,
@@ -4002,7 +4007,8 @@ class vboxconnector {
 				'autoReset' => $m->autoReset,
 				'hasSnapshots' => $hasSnapshots,
 				'lastAccessError' => $m->lastAccessError,
-				'fixed' => intval((intval($m->variant) & $mv->ValueMap['Fixed']) > 0),
+				'fixed' => intval((intval($variant) & $mv->ValueMap['Fixed']) > 0),
+				'split' => intval((intval($variant) & $mv->ValueMap['VmdkSplit2G']) > 0),
 				'machineIds' => array(),
 				'attachedTo' => $attachedTo
 			);

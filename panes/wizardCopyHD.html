@@ -61,15 +61,20 @@
 	
 	<span class='translate'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
 	
+	<span class='translate' id='vboxHDSplitOptionLabel'>&lt;p&gt;You can also choose to &lt;b&gt;split&lt;/b&gt; the virtual disk into several files of up to two gigabytes each. This is mainly useful if you wish to store the virtual machine on removable USB devices or old systems, some of which cannot handle very large files.</span>
+	
 	<span class='vboxTableLabel translatevar'>Storage details</span>
 	<div class='vboxBordered'>
 		<table class='vboxOptions'>
 			<tr style='vertical-align: top;'>
-				<td><label><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /><span class='translate'>Dynamically allocated</span></label></td>
+				<td><label><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /> <span class='translate'>Dynamically allocated</span></label></td>
 			</tr>
 			<tr style='vertical-align: top;'>
-				<td><label><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /><span class='translate'>Fixed size</span></label></td>
-			</tr>	
+				<td><label><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /> <span class='translate'>Fixed size</span></label></td>
+			</tr>
+			<tr id='vboxHDSplitOption' style='vertical-align: top;'>
+				<td><label><input type='checkbox' class='vboxCheckbox' name='newHardDiskSplit' /> <span class='translate'>Split into files of less than 2GB</span></label></td>
+			</tr>								
 		</table>
 	</div>
 </div>
@@ -191,8 +196,8 @@ function wizardCopyHDBrowseLocation() {
 		loc = loc.replace(/.*\//,'');
 		os = 'unix';
 	} else {
-		// no path set
-		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder;
+		// no path set, use src location
+		loc = vboxDirname(vboxMedia.getMediumById($(document.forms['frmwizardCopyHD'].copyHDDiskSelect).val()).location);
 	}
 		
 	vboxFileBrowser(loc,function(f){
@@ -219,13 +224,25 @@ $('#wizardCopyHDStep1').bind('show',function(e,wiz){
 	// Already initialized?
 	if($('#wizardCopyHDStep1').data('init')) return;
 
-	
     if(wiz && wiz.suggested && wiz.suggested.medium)
     	$(document.forms['frmwizardCopyHD'].copyHDDiskSelect).mediumselect({'selectMedium':wiz.suggested.medium});
     
     
 	$('#wizardCopyHDStep1').data('init',true);
 	
+});
+
+/* WHen showing step 3, show / hide split option */
+$('#wizardCopyHDStep3').bind('show',function(e,wiz){
+	
+	if(document.forms['frmwizardCopyHD'].copyHDFileType[1].checked) {
+		$('#vboxHDSplitOptionLabel').show();
+		$('#vboxHDSplitOption').show();
+	} else {
+		$('#vboxHDSplitOptionLabel').hide();
+		$('#vboxHDSplitOption').hide();
+	}
+
 });
 
 /* When showing summary */
@@ -240,16 +257,20 @@ $('#wizardCopyHDStep5').bind('show',function(e,wiz){
 	}
 	// Type (Format) label
 	$('#wizardCopyHDTypeLabel').html(vboxMedia.getFormat({'format':format}));
+	// uncheck vboxHDSplitOption if we're not using VMDK
+	if(format != 'vmdk') document.forms['frmwizardCopyHD'].newHardDiskSplit.checked = false;
 
 	// Details label
-	$('#wizardCopyHDDetailsLabel').html((document.forms['frmwizardCopyHD'].elements.newHardDiskType[1].checked ? trans('Fixed size storage','VBoxGlobal') : trans('Dynamically allocated storage','VBoxGlobal')));
+	var split = document.forms['frmwizardCopyHD'].newHardDiskSplit.checked;
+	$('#wizardCopyHDDetailsLabel').html(vboxMedia.getHardDiskVariant({'fixed':document.forms['frmwizardCopyHD'].elements.newHardDiskType[1].checked,'split':split}));
 
 	var loc = document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value;
 	if(loc.search(/[\/|\\]/) < 0) {
-		if($('#wizardCopyHDStep4').data('suggestedpath'))
+		if($('#wizardCopyHDStep4').data('suggestedpath')) {
 			loc = $('#wizardCopyHDStep4').data('suggestedpath') + loc;
-		else
-			loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + loc;
+		} else {
+			loc = vboxDirname(vboxMedia.getMediumById($(document.forms['frmwizardCopyHD'].copyHDDiskSelect).val()).location) + $('#vboxIndex').data('vboxConfig').DSEP + loc;
+		}
 	}
 	
 	if(loc.substring(loc.length-format.length-1).toLowerCase() != '.' + format) loc += '.' + format;

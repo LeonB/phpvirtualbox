@@ -497,7 +497,7 @@ table.vboxDetailsTable td.vboxDetailDescriptionCell { padding-left: 20px; }
 
 /* menus */
 #vboxDetailsShowMenu li, #vboxDetailsShowMenu li span { cursor: default; }
-#vboxDetailsPreviewMenu li input { display: inline; padding: 0px; margin: 0px; margin-right: 4px; margin-left: 4px;}
+#vboxDetailsShowMenu li input, #vboxDetailsPreviewMenu li input { display: inline; padding: 0px; margin: 0px; margin-right: 4px; margin-left: 4px;}
 
 /* preview box */
 #vboxDetailsTableBoxPreviewSpacer { padding: 4px; }

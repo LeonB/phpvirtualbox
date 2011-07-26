@@ -834,12 +834,14 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			var medium = (data['storageControllers'][a]['mediumAttachments'][b].medium && data['storageControllers'][a]['mediumAttachments'][b].medium.id ? vboxMedia.getMediumById(data['storageControllers'][a]['mediumAttachments'][b].medium.id) : null);
 			
 			// Get base medium (snapshot -> virtual disk file)
+			var it = false;
 			if(medium && medium.base && (medium.base != medium.id)) {
+				it = true;
 				medium = vboxMedia.getMediumById(medium.base);
 			}
 
 
-			portDesc = vboxMedia.mediumPrint(medium);
+			portDesc = vboxMedia.mediumPrint(medium,false,it);
 
 			$(vboxDetailsTable).append(__vboxDetailRowIndented(portName + (data['storageControllers'][a]['mediumAttachments'][b].type == 'DVD' ? ' ' + trans('(CD/DVD)') : ''), portDesc,(data['storageControllers'][a]['mediumAttachments'][b].type != 'HardDisk' ? true : false)));
 			
@@ -1303,7 +1305,7 @@ for(var i = 0; i < sections.length; i++) {
 			}				
 		}
 		
-	})).append($('<span />').html(' ' + trans(sections[i])))).appendTo(ul);
+	})).append($('<span />').html(trans(sections[i])))).appendTo(ul);
 
 
 }

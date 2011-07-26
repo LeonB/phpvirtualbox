@@ -508,12 +508,21 @@ function vboxWizardNewHDInit(callback,suggested) {
 		vbw.suggested = suggested;
 		vbw.context = 'UINewHDWizard';
 		vbw.finishText = trans('Create','UINewHDWizard');
+		vbw.height = 450;
 		
 		vbw.onFinish = function(wiz,dialog) {
 
-			var file = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
+			var file = $('#wizardNewHDLocationLabel').text();
 			var size = vboxConvertMbytes(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value);
 			var type = (document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? 'fixed' : 'dynamic');
+			var format = document.forms['frmwizardNewHD'].elements['newHardDiskFileType'];
+			for(var i = 0; i < format.length; i++) {
+				if(format[i].checked) {
+					format=format[i].value;
+					break;
+				}
+			}
+			var fsplit = (document.forms['frmwizardNewHD'].newHardDiskSplit.checked && format == 'vmdk');
 
 			$(dialog).trigger('close').empty().remove();
 
@@ -534,7 +543,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 				} else {
 					callback({},d.id);
 				}
-			},{'file':file,'type':type,'size':size});
+			},{'file':file,'type':type,'size':size,'format':format,'split':fsplit});
 			l.run();
 			
 		};
@@ -568,6 +577,8 @@ function vboxWizardCopyHDInit(callback,suggested) {
 		vbw.suggested = suggested;
 		vbw.context = 'UINewHDWizard';
 		vbw.finishText = trans('Copy','UINewHDWizard');
+		vbw.height = 450;
+		
 		vbw.onFinish = function(wiz,dialog) {
 
 
@@ -580,8 +591,9 @@ function vboxWizardCopyHDInit(callback,suggested) {
 					break;
 				}
 			}
+			var fsplit = (document.forms['frmwizardCopyHD'].newHardDiskSplit.checked && format == 'vmdk');
 			var location = $('#wizardCopyHDLocationLabel').text();
-			
+						
 			$(dialog).trigger('close').empty().remove();
 
 			var l = new vboxLoader();
@@ -601,7 +613,7 @@ function vboxWizardCopyHDInit(callback,suggested) {
 				} else {
 					callback(d.id);
 				}
-			},{'src':src,'type':type,'format':format,'location':location});
+			},{'src':src,'type':type,'format':format,'location':location,'split':fsplit});
 			l.run();
 			
 		};

@@ -51,6 +51,12 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=333
 Added $enableAppTabSupport configuration option and feature. See
 config.php-example for more information.
 
+Added "Split into files of less than 2GB" option when creating or
+copying VMDK disks.
+
+Fixed bug in New Virtual Disk Wizard that would create all hard
+disk images in VDI format regardless of which format was selected.
+
 -------------------------------------
 	4.1-0	2011-7-19
 -------------------------------------
