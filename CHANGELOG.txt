@@ -62,12 +62,21 @@ This should fix any WSDL file caching issues after a VBox upgrade.
 
 Fixed bug for OS X hosts that would not allow the Settings dialog
 to be displayed.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=338
+
+Fixed page fusion bug that would not allow VM settings to be saved
+when $enableAdvancedConfig was set and VBox is running on a 32-bit
+or Mac OS X host.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=338
 
 VM Settings -> System -> Acceleration tab now always appears, but
 is disabled if host CPU does not support virtualization extensions.
 
 CPUs are limited to 1 if host CPU does not support virtualization
 extensions. Just like in the VirtualBox GUI.
+
+Host CPU features are now displayed regardless of config.php
+$enableAdvancedConfig setting.
 
 -------------------------------------
 	4.1-0	2011-7-19

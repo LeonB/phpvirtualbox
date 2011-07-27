@@ -1175,7 +1175,7 @@ function __vboxDisplayHostDetailsData(data) {
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')')).append(__vboxDetailRow(trans("Base Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize']))).append(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 	
 	// Processor features?
-	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig && data.cpuFeatures) {
+	if(data.cpuFeatures) {
 		var cpuFeatures = new Array();
 		for(var f in data.cpuFeatures) {
 			if(!data.cpuFeatures[f]) continue;
