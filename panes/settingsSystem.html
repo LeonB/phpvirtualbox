@@ -152,7 +152,7 @@
 		</td>
 	</tr>
 	
-	<tr>
+	<tr id='vboxSettingsSystemPAERow'>
 		<th><span class='translate'>Extended Features:</span></th>
 		<td><label><input type='checkbox' class='vboxCheckbox' name='vboxSettingsSystemPAE' /> <span class='translate'>Enable PAE/NX</span></label></td>
 	</tr>
@@ -163,22 +163,22 @@
 <div id='settingsTabSystemAcceleration' title='Acceleration'>
 <table>
 	<tr>
-		<th style='text-align:right'><span class='translate'>Hardware Virtualization</span>:</th>
+		<th style='text-align:right'><span class='translate'>Hardware Virtualization:</span></th>
 		<td><label><input type='checkbox' name='settingsSystemVT' /> <span class='translate'>Enable VT-x/AMD-V</span></label></td>
 	</tr>
 	<tr>
 		<th></th>
 		<td><label><input type='checkbox' name='settingsSystemPaging' /> <span class='translate'>Enable Nested Paging</span></label></td>
 	</tr>
-	<tr>
+	<tr class='vboxSettingsSystemAdvancedOnly'>
 		<th></th>
 		<td><label><input type='checkbox' name='settingsSystemLargePages' /> <span class='translate'>Enable Large Pages</span></label></td>
 	</tr>
-	<tr>
+	<tr class='vboxSettingsSystemAdvancedOnly'>
 		<th></th>
 		<td><label><input type='checkbox' name='settingsSystemExclusive' /> <span class='translate'>Enable exclusive use of the hardware virtualization extensions</span></label></td>
 	</tr>	
-	<tr>
+	<tr class='vboxSettingsSystemAdvancedOnly'>
 		<th></th>
 		<td><label><input type='checkbox' name='settingsSystemVPID' /> <span class='translate'>Enable VT-x VPID (Intel only)</span></label></td>
 	</tr>			
@@ -210,24 +210,45 @@ document.forms['frmVboxSettings'].vboxSettingsSystemRTCUseUTC.checked = ($('#vbo
 $('#vboxSettingsSystemProcessor').slider('value',parseInt($('#vboxSettingsDialog').data('vboxMachineData').CPUCount));
 $('#vboxSettingsSystemProcessorCap').slider('value',parseInt($('#vboxSettingsDialog').data('vboxMachineData').CPUExecutionCap));
 document.forms['frmVboxSettings'].vboxSettingsSystemPAE.checked = ($('#vboxSettingsDialog').data('vboxMachineData').CpuProperties.PAE);
+document.forms['frmVboxSettings'].settingsSystemVT.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled);
+document.forms['frmVboxSettings'].settingsSystemPaging.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging);
 
 /* Only if acceleration config is enabled */
 if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 	
 	document.forms['frmVboxSettings'].vboxSettingsSystemHPET.checked = ($('#vboxSettingsDialog').data('vboxMachineData').hpetEnabled);
 	document.forms['frmVboxSettings'].vboxSettingsSystemDisableHostTimeSync.checked = ($('#vboxSettingsDialog').data('vboxMachineData').disableHostTimeSync);
-	document.forms['frmVboxSettings'].settingsSystemVT.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled);
-	document.forms['frmVboxSettings'].settingsSystemPaging.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging);
 	document.forms['frmVboxSettings'].settingsSystemLargePages.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages);
 	document.forms['frmVboxSettings'].settingsSystemExclusive.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Exclusive);
 	document.forms['frmVboxSettings'].settingsSystemVPID.checked = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.VPID);
 	document.forms['frmVboxSettings'].vboxSettingsSystemPageFusion.checked = ($('#vboxSettingsDialog').data('vboxMachineData').pageFusionEnabled);
 	
+	
 /* Else, remove advanced settings */
 } else {
 	$('#vboxSettingsTabSystemMotherboard').find('tr.vboxSettingsSystemAdvancedOnly').css('display','none');
-	$('#settingsTabSystemAccelerationLink').remove();
-	$('#settingsTabSystemAcceleration').remove();
+}
+
+/* Disable PAE if it is unsupported */
+if(!$('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures.PAE) {
+	$('#vboxSettingsSystemPAERow span').addClass('disabled');
+	document.forms['frmVboxSettings'].vboxSettingsSystemPAE.checked = false;
+	document.forms['frmVboxSettings'].vboxSettingsSystemPAE.disabled = true;
+}
+
+/* Set CPUs to 1 and disable if host cpu does not support HWVirtEx */
+if(!$('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures.HWVirtEx) {
+	var pt = $('#vboxSettingsSystemProcessor').slider('value',1).slider('disable').closest('table');
+	pt.find('span').addClass('disabled');
+	pt.find('input').prop('disabled',true);
+}
+
+/** @def VBOX_WITH_PAGE_SHARING
+ * Enables the page sharing code.
+ * @remarks This must match GMMR0Init; currently we only support page fusion on
+ *          all 64-bit hosts except Mac OS X */
+if(!$('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures['Long Mode (64-bit)'] || $('#vboxSettingsDialog').data('vboxHostDetails').operatingSystem.toLowerCase().search("darwin") >-1) {
+	$(document.forms['frmVboxSettings'].vboxSettingsSystemPageFusion).prop({'checked':false,'disabled':true}).siblings().addClass('disabled');
 }
 
 /* Boot Order */
@@ -336,6 +357,12 @@ $('#vboxSettingsDialog').one('show',function(){
 		}).first().trigger('click');
 		
 	}
+	
+	// Are virtualExtensions supported by the cpu?
+	if(!$('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures.HWVirtEx) {
+		$('#vboxSettingsTabSystemMotherboard').parent().tabs({disabled: [2]});
+	}
+
 
 });
 

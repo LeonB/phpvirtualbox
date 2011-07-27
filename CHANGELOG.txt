@@ -57,6 +57,18 @@ copying VMDK disks.
 Fixed bug in New Virtual Disk Wizard that would create all hard
 disk images in VDI format regardless of which format was selected.
 
+WSDL files now contain VirtualBox version number in file names.
+This should fix any WSDL file caching issues after a VBox upgrade.
+
+Fixed bug for OS X hosts that would not allow the Settings dialog
+to be displayed.
+
+VM Settings -> System -> Acceleration tab now always appears, but
+is disabled if host CPU does not support virtualization extensions.
+
+CPUs are limited to 1 if host CPU does not support virtualization
+extensions. Just like in the VirtualBox GUI.
+
 -------------------------------------
 	4.1-0	2011-7-19
 -------------------------------------

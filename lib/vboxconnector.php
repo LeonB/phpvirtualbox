@@ -88,7 +88,7 @@ class vboxconnector {
 		}
 
 		//Connect to webservice
-		$this->client = new SoapClient(dirname(__FILE__)."/vboxwebService.wsdl",
+		$this->client = new SoapClient(dirname(__FILE__)."/vboxwebService-4.1.wsdl",
 		    array(
 		    	'features' => (SOAP_USE_XSI_ARRAY_TYPE + SOAP_SINGLE_ELEMENT_ARRAYS),
 		        'cache_wsdl'=>WSDL_CACHE_MEMORY,
@@ -919,15 +919,29 @@ class vboxconnector {
 		$m->firmwareType = $args['firmwareType'];
 		if($args['chipsetType']) $m->chipsetType = $args['chipsetType']; 
 		if($m->snapshotFolder != $args['snapshotFolder']) $m->snapshotFolder = $args['snapshotFolder'];
-		if(@$this->settings['enableAdvancedConfig']) {
-			$m->pageFusionEnabled = intval($args['pageFusionEnabled']);
-			$m->hpetEnabled = intval($args['hpetEnabled']);
-			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
-		}
-		$m->VRAMSize = $args['VRAMSize'];
+		$m->RTCUseUTC = ($args['RTCUseUTC'] ? 1 : 0);
+		$m->setCpuProperty('PAE', ($args['CpuProperties']['PAE'] ? 1 : 0));
+		// IOAPIC
+		$m->BIOSSettings->IOAPICEnabled = ($args['BIOSSettings']['IOAPICEnabled'] ? 1 : 0);
+		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
+		$m->description = $args['description'];
+		
 
 		/* Only if advanced configuration is enabled */
 		if(@$this->settings['enableAdvancedConfig']) {
+			
+			/** @def VBOX_WITH_PAGE_SHARING
+ 			* Enables the page sharing code.
+			* @remarks This must match GMMR0Init; currently we only support page fusion on
+			 *          all 64-bit hosts except Mac OS X */
+			$hostData = array();
+			$this->getHostDetailsCached(array(),$hostData);
+			if($hostData['data']['cpuFeatures']['Long Mode (64-bit)'] && stripos($hostData['data']['operatingSystem'],"darwin")===false) {
+				$m->pageFusionEnabled = intval($args['pageFusionEnabled']);
+			}
+			
+			$m->hpetEnabled = intval($args['hpetEnabled']);
+			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
 			$m->keyboardHidType = $args['keyboardHidType'];
 			$m->pointingHidType = $args['pointingHidType'];
 			$m->setHWVirtExProperty('Enabled',($args['HWVirtExProperties']['Enabled'] ? 1 : 0));
@@ -942,24 +956,13 @@ class vboxconnector {
 		if(@$this->settings['enableCustomIcons'])
 			$m->setExtraData('phpvb/icon', $args['customIcon']);
 
-		$m->RTCUseUTC = ($args['RTCUseUTC'] ? 1 : 0);
-
-
-		$m->setCpuProperty('PAE', ($args['CpuProperties']['PAE'] ? 1 : 0));
-		
-		// IOAPIC
-		$m->BIOSSettings->IOAPICEnabled = ($args['BIOSSettings']['IOAPICEnabled'] ? 1 : 0);
-
+		$m->VRAMSize = $args['VRAMSize'];
 		/* Unsupported at this time
 		$m->monitorCount = max(1,intval($args['monitorCount']));
 		$m->accelerate3DEnabled = $args['accelerate3DEnabled'];
 		$m->accelerate2DVideoEnabled = $args['accelerate2DVideoEnabled'];
 		*/
 		
-		
-		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
-		$m->description = $args['description'];
-
 		
 		$m->setExtraData('GUI/SaveMountedAtRuntime', ($args['GUI']['SaveMountedAtRuntime'] == 'no' ? 'no' : 'yes'));
 
@@ -2262,7 +2265,7 @@ class vboxconnector {
 		 * Supported CPU features?
 		 */
 		$response['data']['cpuFeatures'] = array();
-		foreach(array('HWVirtEx'=>'VCPU','PAE'=>'PAE','NestedPaging'=>'Nested Paging','LongMode'=>'Long Mode (64-bit)') as $k=>$v) {
+		foreach(array('HWVirtEx'=>'HWVirtEx','PAE'=>'PAE','NestedPaging'=>'Nested Paging','LongMode'=>'Long Mode (64-bit)') as $k=>$v) {
 			$response['data']['cpuFeatures'][$v] = intval($host->getProcessorFeature($k));
 		}	
 		
