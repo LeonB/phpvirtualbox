@@ -76,6 +76,9 @@ $enableAdvancedConfig setting.
 Fixed bug in Storage settings that would always display the Port
 Count option. Even when a non-SATA controller was selected.
 
+Fixed bug that would not close the progress dialog after taking a
+snapshot.
+
 -------------------------------------
 	4.1-0	2011-7-19
 -------------------------------------

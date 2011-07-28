@@ -1405,7 +1405,7 @@ class vboxconnector {
 		$pop = $this->cache->get('ProgressOperations',false);
 
 		if(!($pop = @$pop[$args['progress']])) {
-			throw new Exception('Could not obtain progress operation: '.$args['progress']);
+			throw new Exception('Could not find progress operation: '.$args['progress']);
 		}
 
 		// Connect to vboxwebsrv
@@ -3400,7 +3400,7 @@ class vboxconnector {
 				if($progress->errorInfo->handle) {
 					$this->errors[] = new Exception($progress->errorInfo->text);
 					$progress->releaseRemote();
-					try{$this->session->unlockMachine(); $this->session=null;}catch(Exception $e){}
+					try{$this->session->unlockMachine(); $this->session=null;}catch(Exception $ed){}
 					return false;
 				}
 			} catch (Exception $null) {}
@@ -3412,7 +3412,6 @@ class vboxconnector {
 			$this->errors[] = $e;
 
 			$response['data']['error'][] = $e->getMessage();
-			$response['data']['progress'] = $progress->handle;
 			$response['data']['result'] = 0;
 
 			if(!$progress->handle && $this->session->handle) {
@@ -4038,7 +4037,7 @@ class vboxconnector {
 		$inprogress[$progress->handle] = array(
 			'session'=>$this->vbox->handle,
 			'progress'=>$progress->handle,
-			'cancelable'=>$cancelable,
+			'cancelable'=>$cancelable,		
 			'expire'=> $expire,
 			'started'=>time());
 
