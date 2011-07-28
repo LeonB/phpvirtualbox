@@ -3,7 +3,7 @@
 -------------------------------------
 Upgraded jquery-ui to 1.8.14
 
-Translation bug fixes.
+Numerous translation bug fixes.
 
 VM settings are now available while VM is running. Some settings
 can be modified.
@@ -64,19 +64,17 @@ Fixed bug for OS X hosts that would not allow the Settings dialog
 to be displayed.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=338
 
-Fixed page fusion bug that would not allow VM settings to be saved
-when $enableAdvancedConfig was set and VBox is running on a 32-bit
-or Mac OS X host.
-http://code.google.com/p/phpvirtualbox/issues/detail?id=338
-
 VM Settings -> System -> Acceleration tab now always appears, but
 is disabled if host CPU does not support virtualization extensions.
 
 CPUs are limited to 1 if host CPU does not support virtualization
-extensions. Just like in the VirtualBox GUI.
+extensions. Mimicking the VirtualBox GUI.
 
 Host CPU features are now displayed regardless of config.php
 $enableAdvancedConfig setting.
+
+Fixed bug in Storage settings that would always display the Port
+Count option. Even when a non-SATA controller was selected.
 
 -------------------------------------
 	4.1-0	2011-7-19

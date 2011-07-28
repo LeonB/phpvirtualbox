@@ -736,6 +736,8 @@ function vboxSettingsSelectController(tbl) {
 	    // disabled for now - $(document.forms['frmVboxSettings'].vboxSettingsControllerPortCount).val($('#vboxSettingsDialog').data('vboxMachineData').AutoSATAPortCount == 'yes' ? 0 : $(tbl).data('controller').portCount);
 	    $(document.forms['frmVboxSettings'].vboxSettingsControllerPortCount).val($(tbl).data('controller').portCount);
 	   	$('#vboxSettingsControllerPortCountRow').css('display','');
+	} else {
+		$('#vboxSettingsControllerPortCountRow').css('display','none');
 	}
 
     /* Enable / disable buttons */
@@ -875,13 +877,13 @@ function vboxSettingsStorageAddMedium(bus, type) {
  * Medium menu buttons
  */
 
-var mAttachToolbarHD = new vboxButtonMediaMenu('HardDisk',vboxSettingsControllerAttach,vboxDirname($('#vboxSettingsDialog').data('vboxMachineData').settingsFilePath));
+var mAttachToolbarHD = new vboxButtonMediaMenu('HardDisk',vboxSettingsControllerAttach);
 mAttachToolbarHD.addButton('vboxSettingsAddAttachmentsMenuHDDiv');
 
-var mAttachToolbarCD = new vboxButtonMediaMenu('DVD',vboxSettingsControllerAttach,'');
+var mAttachToolbarCD = new vboxButtonMediaMenu('DVD',vboxSettingsControllerAttach);
 mAttachToolbarCD.addButton('vboxSettingsAddAttachmentsMenuCDDiv');
 
-var mAttachToolbarFD = new vboxButtonMediaMenu('Floppy',vboxSettingsControllerAttach,'');
+var mAttachToolbarFD = new vboxButtonMediaMenu('Floppy',vboxSettingsControllerAttach);
 mAttachToolbarFD.addButton('vboxSettingsAddAttachmentsMenuFDDiv');
 
 

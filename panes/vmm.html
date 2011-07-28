@@ -249,8 +249,13 @@ var vmmButtons = new Array(
 		'label' : 'Add',
 		'icon' : 'hd_add',
 		'click' : function () {
+			switch($("#vboxVMMTabs").tabs('option','selected')) {
+				case 1: var type = 'DVD'; break;
+				case 2: var type = 'Floppy'; break;
+				default: var type = 'HardDisk'; break;
+			}
 			
-			vboxMedia.actions.choose(null,'HardDisk',function(ret){
+			vboxMedia.actions.choose(null,type,function(ret){
 				vboxVMMFillMedia((ret && ret.id ? ret.id : null));
 			});
 			

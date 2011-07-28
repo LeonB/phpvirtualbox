@@ -27,16 +27,12 @@ $settings = new phpVBoxConfigClass();
 $vbox = new vboxconnector();
 $vbox->connect();
 
-// Since the vbox screenshot function returns 4 bytes per pixel
-// AND we need to build an image from each pixel, the memory usage
-// of this script can get rather large. 800px wide usually keeps
-// it right under 150M.
 @ini_set('memory_limit', '512M');
 
 // Set width. Else assume we want real time updates if VM is running below
-if($_REQUEST['width'])
+if($_REQUEST['width']) {
 	$force_width = $_REQUEST['width'];
-
+}
 
 try {
 
@@ -118,7 +114,7 @@ try {
 			}
 
 		// If no width is set, we were reached from Open in New Window
-	    } else {
+	    } else if(!$_REQUEST['width']) {
 
 			//Set no caching
 			header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");

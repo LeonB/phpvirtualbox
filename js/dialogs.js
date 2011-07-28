@@ -437,6 +437,7 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 						sel = $('#vboxVMMFDList').find('tr.vboxListItemSelected').first();
 				}
 				if($(sel).length) {
+					vboxMedia.updateRecent(vboxMedia.getMediumById($(sel).data('medium')));
 					callback($(sel).data('medium'));
 				}
 				$('#vboxVMMDialog').trigger('close').empty().remove();

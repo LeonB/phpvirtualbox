@@ -189,7 +189,8 @@ $('#wizardNewHDStep2').bind('show',function(e,wiz){
 		ext = 'vhd';
 	}
 	
-	vboxWizardNewHDElectName(ext);
+	if(!(wiz && wiz.suggested && wiz.suggested.name))
+		vboxWizardNewHDElectName(ext);
 	
 });
 /* When showing summary */
@@ -290,7 +291,7 @@ $('#wizardNewHDStep1').bind('show',function(e,wiz){
 	if($('#wizardNewHDStep1').data('init') || !wiz || !wiz.suggested) return;
 
 	if(wiz.suggested.name) {
-		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = wiz.suggested.name + '.vdi';
+		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = wiz.suggested.name;
 	}
 	
 	if(wiz.suggested.size) {

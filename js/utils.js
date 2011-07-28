@@ -647,7 +647,7 @@ function vboxProgress(pid,callback,args,icon,title) {
 	
 	var td = $('<td />').css({'text-align':'center','padding':'4px'}).append($('<div />').attr({'id':'vboxProgressBar','margin':'4px'}).progressbar({ value: 1 }));
 	
-	$('<div />').attr({'id':'vboxProgressText'}).html('<img src="images/spinner.gif" />').appendTo(td);
+	$('<div />').attr({'id':'vboxProgressText'}).html('<img src="images/spinner.gif" />').append(pid).appendTo(td);
 	
 	// Cancel button
 	$('<div />').attr({'id':'vboxProgressCancel'}).css({'display':'none','padding':'8px'}).append(

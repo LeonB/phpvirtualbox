@@ -3418,6 +3418,7 @@ class vboxconnector {
 			if(!$progress->handle && $this->session->handle) {
 				try{$this->session->unlockMachine();$this->session=null;}catch(Exception $e){}
 			}
+			
 
 			return;
 		}
