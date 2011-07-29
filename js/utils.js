@@ -144,12 +144,22 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 			}
 		},
 		"json").error(function(d,etext,xlr) {
+			
+			// Fatal error previously occurred
+			if($('#vboxIndex').data('vboxFatalError')) return;
+
 			// Opera sometimes fails for seemingly no reason.
 			// No idea why. This takes care of it though.
 			if((!etext || !etext.length || etext == 'error') && run < 4) {
 				vboxAjaxRequest(fn,params,callback,xtra,(run+1));
 			} else {
 				if(etext != 'error') {
+					
+					// Halt on parse errors
+					if(etext.search(/parse/i) > -1) {
+						$('#vboxIndex').data('vboxFatalError',1);
+					}
+					
 					vboxAjaxError({'error':'Ajax error: ' + etext,'details':d.responseText});
 					//alert('ajax error: ' + + " " + d.responseText);
 				}

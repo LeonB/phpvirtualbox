@@ -175,7 +175,6 @@ function vboxVMListToolbarMediumMount(medium) {
 	mount.mode = 'save';
 	mount.add('mediumMount',function(ret,xtra){
 		var l = new vboxLoader();
-		l.add('VMDetails',function(d){$('#vboxIndex').data('vboxMachineData',d);},{'vm':xtra.vm});
 		l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
 		l.onLoad = function() {
 			$('#vboxIndex').trigger('vmselect',$('#vboxIndex').data('vboxMachineData'));

@@ -3938,8 +3938,7 @@ class vboxconnector {
 		unset($this->session);
 		$machine->releaseRemote();
 
-		$this->cache->expire('getMedia');
-		$this->cache->expire('__getStorageControllers'.$args['vm']);
+		$this->cache->expire(array('getMedia','__getStorageControllers'.$args['vm']));
 
 		return ($response['data']['result'] = 1);
 	}
