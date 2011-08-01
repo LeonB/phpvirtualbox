@@ -937,7 +937,10 @@ class vboxconnector {
 			$hostData = array();
 			$this->getHostDetailsCached(array(),$hostData);
 			if($hostData['data']['cpuFeatures']['Long Mode (64-bit)'] && stripos($hostData['data']['operatingSystem'],"darwin")===false) {
-				$m->pageFusionEnabled = intval($args['pageFusionEnabled']);
+				try {
+					$m->pageFusionEnabled = intval($args['pageFusionEnabled']);
+				} catch (Exception $null) {
+				}					
 			}
 			
 			$m->hpetEnabled = intval($args['hpetEnabled']);

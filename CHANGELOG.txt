@@ -1,4 +1,18 @@
 -------------------------------------
+	4.1-1b	2011-8-1
+-------------------------------------
+Added snapshot thumbnail and full image link when viewing snapshot
+details of an online snapshot.
+
+Added context menus for snapshots.
+
+Minor UI changes.
+
+Fixed page fusion setting bug for people running VirtualBox in a
+32-bit OS with a 64-bit processor.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=347
+
+-------------------------------------
 	4.1-1	2011-8-1
 -------------------------------------
 Upgraded jquery-ui to 1.8.14

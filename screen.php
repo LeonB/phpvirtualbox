@@ -42,18 +42,30 @@ try {
 		exit;
 	}
 
-	//Get a list of registered machines
 	$machine = $vbox->vbox->findMachine($_REQUEST['vm']);
-	switch($machine->state->__toString()) {
-		case 'Running':
-		case 'Saved':
-		case 'Restoring':
-			break;
-		default:
-			$machine->releaseRemote();
-			throw new Exception('The specified virtual machine is not in a Running state.');
-	}
+	
+	// Is snapshot specified?
+	if($_REQUEST['snapshot']) {
+		
+		$snapshot = $machine->findSnapshot($_REQUEST['snapshot']);
+		$machine->releaseRemote();
+		$machine = &$snapshot->machine;
+		
+	} else {
 
+		// Get machine state
+		switch($machine->state->__toString()) {
+			case 'Running':
+			case 'Saved':
+			case 'Restoring':
+				break;
+			default:
+				$machine->releaseRemote();
+				throw new Exception('The specified virtual machine is not in a Running state.');
+		}
+
+	}
+	
 	// Date last modified
 	$dlm = floor($machine->lastStateChange/1000);
 
@@ -65,7 +77,7 @@ try {
 
 
 	// Take active screenshot if machine is running
-	if($machine->state->__toString() == 'Running') {
+	if(!$_REQUEST['snapshot'] && $machine->state->__toString() == 'Running') {
 
 		// Let the browser cache images for 3 seconds
 		$ctime = 0;
