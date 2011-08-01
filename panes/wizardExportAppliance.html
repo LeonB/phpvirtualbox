@@ -75,7 +75,7 @@
 
 <script type='text/javascript'>
 
-$('#wizExportAppMsg').html(trans('<p>This wizard will guide you through importing an appliance.</p><p>%1</p><p>VirtualBox currently supports importing appliances saved in the Open Virtualization Format (OVF). To continue, select the file to import below:</p>','UIImportApplianceWzdPage1').replace('%1',trans('<p>'+trans('Use the <b>%1</b> button to go to the next page of the wizard and the <b>%2</b> button to return to the previous page. You can also press <b>%3</b> if you want to cancel the execution of this wizard.</p>','QIWizardPage').replace('%1',trans('Next','QIArrowSplitter')).replace('%2',trans('Back','QIArrowSplitter')).replace('%3',trans('Cancel','QIMessageBox')))));
+$('#wizExportAppMsg').html(trans('<p>This wizard will guide you through importing an appliance.</p><p>%1</p><p>VirtualBox currently supports importing appliances saved in the Open Virtualization Format (OVF). To continue, select the file to import below:</p>','UIImportApplianceWzdPage1').replace('%1','<span class="vboxWizButtonsMessage" />'));
 
 var l = new vboxLoader();
 l.add('VMsExportable',function(d){$('#wizardExportApplianceStep1').data('vms',d);});
@@ -196,7 +196,7 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 	}
 
 	if(vmSel.length > 1) {
-		var name = trans('Appliance');
+		var name = 'Appliance';
 		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.checked = false;
 		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.disabled = 'disabled';
 	} else {
@@ -248,18 +248,16 @@ $('#wizardExportApplianceStep4').bind('show',function(e,wiz){
 		$(trparent).append(td).data({'vm':$(vms[i]).data('vm'),'vboxOrder':i}).appendTo(tbl);
 		
 		// VM properties
-		vboxSetLangContext('VBoxApplianceEditorWgt');
 		for(var p in vboxApplianceProps) {
 			
 			var tr = $('<tr />').attr({'class':'vboxAppliance-'+vmid+' vboxChildOf' + i}).data({'vmprop':p});
 			
-			$('<td />').css({'padding-left':'18px','white-space':'nowrap','width':'1%'}).html('<img src="images/vbox/'+vboxApplianceProps[p].icon+'_16px.png" /> ' + trans(vboxApplianceProps[p].label)).appendTo(tr);
+			$('<td />').css({'padding-left':'18px','white-space':'nowrap','width':'1%'}).html('<img src="images/vbox/'+vboxApplianceProps[p].icon+'_16px.png" /> ' + trans(vboxApplianceProps[p].label,'VBoxApplianceEditorWgt')).appendTo(tr);
 
 			$('<td />').attr({'class':'vboxHideOverflow vboxAppProp'+p}).css({'width':'100%','padding-left':'10px','padding-right':'2px'}).html('<div>'+$('<div />').text(($(trparent).data('vm')[p]||'')).html()+'</div>').dblclick((vboxApplianceProps[p].textarea ? vboxExportAppliancePropEditArea : vboxExportAppliancePropEdit )).appendTo(tr);
 			
 			$(tbl).append(tr);
 		}
-		vboxUnsetLangContext();
 	}
 	vboxColorRows(tbl,false,'vboxTableParent');
 	

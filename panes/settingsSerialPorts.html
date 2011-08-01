@@ -53,11 +53,13 @@
 </div>
 <script type='text/javascript'>
 
+
 /*
  * 
  * Setup data for serial port options
  *
  */
+  
 var vboxSP = new vboxSerialPorts();
 
 var vboxSettingsSPortTemplate = document.getElementById('vboxSettingsTabSerialPort');
@@ -65,18 +67,20 @@ var vboxSettingsSPortContainer = $(vboxSettingsSPortTemplate).parent();
 
 /* translated select values */
 for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPortNumber.options.length; i++) {
-	document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text,'VBoxGlobal');
+	if($(document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i]).hasClass('translate'))
+		$(document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i]).text(trans(document.forms['frmVboxSettings'].vboxSettingsPortNumber.options[i].text,'VBoxGlobal')).removeClass('translate');
 }
 for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPortMode.options.length; i++) {
 	document.forms['frmVboxSettings'].vboxSettingsPortMode.options[i].text = trans(vboxSerialMode(document.forms['frmVboxSettings'].vboxSettingsPortMode.options[i].text),'VBoxGlobal');
 }
 
+// Translations
+$('#vboxSettingsTabSerialPort').find(".translate").html(function(i,h){return trans($('<div />').html(h).text(),'UIMachineSettingsSerial');}).removeClass('translate');
 
 /* Serial Port tab links */
 var ul = $('<ul />');
 $(vboxSettingsSPortContainer).append(ul);
 
-vboxSetLangContext('vboxSerialPorts');
 for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').serialPortCount); i++) {
 
 	
@@ -98,7 +102,6 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').serialP
 
 }
 
-vboxUnsetLangContext();
 
 /* Remove Template */
 $("#vboxSettingsTabSerialPort").empty().remove();

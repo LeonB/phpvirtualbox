@@ -31,11 +31,8 @@
 /*
  * Translate
  */
-vboxSetLangContext('UIPortForwardingModel');
-$('#vboxSettingsPortForwarding').find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');
-vboxUnsetLangContext();
+$('#vboxSettingsPortForwarding').find('.translate').html(function(i,h){return trans(h,'UIPortForwardingModel');}).removeClass('translate');
 
-vboxSetLangContext('UIMachineSettingsPortForwardingDlg');
 /*
  * Init port forwarding buttons and toolbar
  */
@@ -48,7 +45,6 @@ var sButtons = new Array(
 		'click' : function () {
 			var rname = null;
 			var rules = $('#vboxSettingsPortForwardingList').children('tr');
-			vboxSetLangContext('vboxPortForwarding');
 			for(var n = 1; n < 100; n++) {
 				var rname = trans('Rule %1').replace('%1',n);
 				for(var i = 0; i < rules.length; i++) {
@@ -59,7 +55,6 @@ var sButtons = new Array(
 				}
 				if(rname) break;
 			}
-			vboxUnsetLangContext();
 			vboxSettingsPortForwardingAdd(rname+',1,,,,');
 		}
 	},
@@ -75,9 +70,9 @@ var sButtons = new Array(
 	}
 );
 pfToolbar = new vboxToolbarSmall(sButtons);
+pfToolbar.context = 'UIMachineSettingsPortForwardingDlg';
 pfToolbar.addButtons('vboxSettingsPortForwardingToolbar');
 
-vboxUnsetLangContext();
 
 $('#vboxSettingsPortForwardingList').bind('select',pfToolbar.update);
 $('#vboxSettingsPortForwardingList').trigger('select');
@@ -98,30 +93,6 @@ function vboxSettingsPortForwardingEdit(td,type) {
 			case 2:
 			case 4:
 				$(this).val($(this).val().replace(/[^0-9\.]/,''));
-				/*
-				if($(this).val()) {
-					var ips = $(this).val().split('.');
-					if(ips.length != 4 || ips[0] < 1) {
-						vboxSetLangContext('vboxPortForwarding');
-						alert(trans('Invalid IP Address'));
-						vboxUnsetLangContext();
-						$(this).focus();
-						return false;
-					}
-					for(var i = 0; i < 4; i++) {
-						if(ips[i] > 255 || ips[i] < 0) {
-							vboxSetLangContext('vboxPortForwarding');
-							alert(trans('Invalid IP Address'));
-							vboxUnsetLangContext();
-							$(this).focus();
-							return false;						
-						} else if(!ips[i]) {
-							ips[i] = '0';
-						}
-					}
-					$(this).val(ips.join('.'));
-				}
-				*/
 				break;
 			/* ports */
 			case 3:
@@ -162,23 +133,18 @@ function vboxSettingsPortForwardingEdit(td,type) {
 /* Edit protocol */
 function vboxSettingsPortForwardingEditProto(td) {
 	var ex = $(td).parent().data('vboxRule')[1];
-	vboxSetLangContext('vboxPortForwarding');
 	
 	if(ex == 0) val = 1;
 	else val = 0;
 
 	$(td).parent().data('vboxRule')[1] = val;
 	
-	vboxSetLangContext('vboxPortForwarding');
 	$(td).html(val == '1' ? trans('TCP','VBoxGlobal') : trans('UDP','VBoxGlobal'));
-	vboxUnsetLangContext();
 	
 }
 /* Add forwarding rule */
 function vboxSettingsPortForwardingAdd(r) {
 
-	vboxSetLangContext('vboxPortForwarding');
-	
 	var rule = r.split(',');
 	var tr = $('<tr />').attr({'class':'vboxListItem'});
 	
@@ -212,7 +178,6 @@ function vboxSettingsPortForwardingAdd(r) {
 	}
 	$(tr).data({'vboxRule':rule}).appendTo($('#vboxSettingsPortForwardingList'));
 	
-	vboxUnsetLangContext();
 }
 function vboxSettingsPortForwardingInit(rules) {
 	for(var r = 0; r < rules.length; r++) {

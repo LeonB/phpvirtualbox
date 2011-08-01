@@ -96,9 +96,9 @@
 <script type='text/javascript'>
 
 /* Translations */
-$(document.forms['frmVboxSettings'].vboxSettingsNetAttachedTo).find('option').html(function(i,h){return trans(h,'VBoxGlobal');});
-$(document.forms['frmVboxSettings'].vboxSettingsNetAdapterPromiscuousMode).find('option').html(function(i,h){return trans(h,'VBoxGlobal');});
-
+$(document.forms['frmVboxSettings'].vboxSettingsNetAttachedTo).find('option').html(function(i,h){return trans(h,'VBoxGlobal');}).removeClass('translate');
+$(document.forms['frmVboxSettings'].vboxSettingsNetAdapterPromiscuousMode).find('option').html(function(i,h){return trans(h,'VBoxGlobal');}).removeClass('translate')
+$('#vboxSettingsTabNetAdapter').find(".translate").html(function(i,h){return trans($('<div />').html(h).text(),'UIMachineSettingsNetwork');}).removeClass('translate');
 
 /*
  * 
@@ -114,7 +114,7 @@ var vboxSettingsNetNetworks = new Array();
  */
 var nics = $('#vboxSettingsDialog').data('vboxNetworkAdapterTypes');
 for(var i = 1; i < nics.length; i++) { // index 0 is 'Null' and not used
-	var opt = new Option(trans(vboxNetworkAdapterTypeChipset(nics[i]),'VBoxGlobal'),nics[i]);
+	var opt = new Option(trans(vboxNetworkAdapterType(nics[i]),'VBoxGlobal'),nics[i]);
 	document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options[document.forms['frmVboxSettings'].vboxSettingsNetAdapter.options.length] = opt;
 }
 

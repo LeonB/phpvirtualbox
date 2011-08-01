@@ -194,7 +194,7 @@
 				<th class='vboxDetailsSection' colspan='2'>
 					<div>
 						<img style='float:left;  margin-right: 3px;' src='images/vbox/shared_folder_16px.png' />
-						<span style='float:left'><a href="javascript:vboxDetailSettingsLink('SharedFolders');" class='translate'>Shared Folders</a></span>
+						<span style='float:left'><a href="javascript:vboxDetailSettingsLink('SharedFolders');" class='translate' trcomment='details report (shared folders)'>Shared Folders</a></span>
 						<span class='vboxDetailsUpDnImgSpan' style='float:right'>
 							<img src='images/arrow_grad_up.png' />
 						</span>
@@ -272,8 +272,6 @@ $('#vboxIndex').bind('vmloading',function(){
 	// Hide all tab children first
 	$('#vboxTabVMDetails').children().hide();
 	
-	vboxSetLangContext('UIDetailsPagePrivate');
-
 	// vboxTabVMDetails
 	if(vm && vm.id) {
 		
@@ -311,11 +309,9 @@ $('#vboxIndex').bind('vmloading',function(){
 
 	
 	}
-	vboxUnsetLangContext();
 
 });
 
-vboxSetLangContext('UIDetailsPagePrivate');
 
 // Collapsable sections and link translations
 ///////////////////////////////////////////////
@@ -338,11 +334,10 @@ $('#vboxVMDetails').find('tr.vboxDetailsHead').each(function(){
 		$(this).addClass('hover');},
 		function(){$(this).removeClass('hover');}
 	).disableSelection();
-}).disableSelection().find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');
+	
+}).disableSelection().find('.translate').html(function(i,h){return trans(h,'UIDetailsPagePrivate',0,$(this).attr('trcomment'));}).removeClass('translate');
 
 
-// translate loading
-$('#vboxDetailsLoading').find('.translate').html(function(i,h){return trans(h);}).removeClass('translate');
 
 // Set preview box width
 // Make sure previewWidth is set
@@ -372,7 +367,7 @@ function __vboxDetailHeader(icon,name,linkto,vm,boxes) {
 		$(th).html("<img style='float:left; margin-right: 3px; ' src='images/vbox/" + icon + "' /> ");
 	}
 	
-	var sp = $('<span />').css({'float':'left'}).append(document.createTextNode(trans(name)+' '));
+	var sp = $('<span />').css({'float':'left'}).append(document.createTextNode(name +' '));
 
 	if(boxes) {
 		$(div).append(sp);
@@ -555,12 +550,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 		targetdiv = $('#vboxDetailsVMInaccessible');
 		
-		$(targetdiv).html('<div style="width: 50%">'+trans('The selected virtual machine is <i>inaccessible</i>. Please inspect the error message shown below and press the <b>Refresh</b> button if you want to repeat the accessibility check:')+'</div>');
+		$(targetdiv).html('<div style="width: 50%">'+trans('The selected virtual machine is <i>inaccessible</i>. Please inspect the error message shown below and press the <b>Refresh</b> button if you want to repeat the accessibility check:','UIDetailsPagePrivate')+'</div>');
 		
 		// Details Table
-		vboxSetLangContext('VBoxProblemReporter');
-		var vboxDetailsTable = $('<table />').attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("Error"), data.accessError['text'])).append(__vboxDetailRow(trans('Result Code: '), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component: "), data.accessError['component'])).appendTo(targetdiv);
-		vboxUnsetLangContext();
+		var vboxDetailsTable = $('<table />').attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("VirtualBox - Error",'VBoxProblemReporter'), data.accessError['text'])).append(__vboxDetailRow(trans('Result Code: ','VBoxProblemReporter'), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component: ",'VBoxProblemReporter'), data.accessError['component'])).appendTo(targetdiv);
 		
 		var d = $('<div />').attr({'style':'width: 50%; padding: 4px;'});
 		
@@ -597,10 +590,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 				
 	} else {
 		// Enclosing details Table
-		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable'}).append(__vboxDetailHeader("machine_16px.png","General"));
+		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable'}).append(__vboxDetailHeader("machine_16px.png",trans("General")));
 	}
 
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), trans(data['OSTypeDesc'])));
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), data['OSTypeDesc']));
 	
 	// System
 	//////////////////
@@ -619,13 +612,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('chipset_16px.png',"System"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('chipset_16px.png',trans("System")));
 	}
 	
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Base Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize'])));
 	
 	if(parseInt(data['CPUCount']) > 1)
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Processors"), data['CPUCount']));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Processors",'UIDetailsPagePrivate'), data['CPUCount']));
 	
 	// CPU Execution cap
 	if(parseInt(data['CPUExecutionCap']) < 100) {
@@ -641,7 +634,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	
 	// Acceleration (PAE/NX)
 	if(data['CpuProperties']['PAE']) {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Acceleration"), trans('PAE/NX')));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Acceleration",'UIDetailsPagePrivate'), trans('PAE/NX')));
 	}
 
 	// HW advanced config enabled?
@@ -761,7 +754,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('fullscreen_16px.png',"Display"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('fullscreen_16px.png',trans("Display")));
 	}
 	 
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Video Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['VRAMSize'])));
@@ -785,7 +778,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 		
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Desktop Server"), trans('Disabled')));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Remote Desktop Server"), trans('Disabled','VBoxGlobal',null,'details report (VRDE Server)')));
 	}
 
 
@@ -807,7 +800,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('hd_16px.png',"Storage"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('hd_16px.png',trans("Storage")));
 	}
 
 	for(var a = 0; a < data['storageControllers'].length; a++) {
@@ -867,11 +860,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('sound_16px.png',"Audio"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('sound_16px.png',trans("Audio")));
 	}
 	
 	if(!data['audioAdapter']['enabled']) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans("Disabled")+'</span>', "", true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans("Disabled",'VBoxGlobal',null,'details report (audio)')+'</span>', "", true));
 	} else {
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Host Driver"), trans(vboxAudioDriver(data['audioAdapter']['audioDriver']),'VBoxGlobal'))).append(__vboxDetailRow(trans("Controller"), trans(vboxAudioController(data['audioAdapter']['audioController']),'VBoxGlobal')));
 	}
@@ -894,7 +887,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('nw_16px.png',"Network"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('nw_16px.png',trans("Network")));
 	}
 	
 
@@ -933,13 +926,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 					break;
 			}
 
-			$(vboxDetailsTable).append(__vboxDetailRow(trans("Adapter %1",'VBoxGlobal').replace('%1',(i + 1)), trans(vboxNetworkAdapterType(nic.adapterType)) + ' (' + adp + ')'));
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Adapter %1",'VBoxGlobal').replace('%1',(i + 1)), trans(vboxNetworkAdapterType(nic.adapterType)).replace(/\(.*\)/,'') + ' (' + adp + ')'));
 		}
 				
 	}
 	
 	if(vboxDetailsTableNics == 0) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled','VBoxGlobal',null,'details report (network)')+'</span>','',true));
 		
 	// Link nic to guest networking info?
 	} else if(links && data['state'] == 'Running') {
@@ -964,7 +957,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('serial_port_16px.png',"Serial Ports"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('serial_port_16px.png',trans("Serial Ports")));
 	}
 	
 
@@ -977,7 +970,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		if(!p.enabled) continue;
 		
 		// compose extra info
-		var xtra = trans(vboxSP.getPortName(p.IRQ,p.IOBase),'VBoxGlobal');
+		var xtra = vboxSP.getPortName(p.IRQ,p.IOBase);
 		
 		var mode = p.hostMode
 		xtra += ', ' + trans(vboxSerialMode(mode),'VBoxGlobal')
@@ -985,13 +978,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			xtra += ' (' + p.path + ')'
 		}
 		
-		$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal').replace('%1',(i + 1)), xtra));
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal',null,'details report (serial ports)').replace('%1',(i + 1)), xtra));
 		vboxDetailsTableSPorts++;
 				
 	}
 	
 	if(vboxDetailsTableSPorts == 0) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));		
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled','VBoxGlobal',null,'details report (serial ports)')+'</span>','',true));		
 	}
 
 	// Parallel Ports
@@ -1013,7 +1006,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			}
 	
 		} else {
-			$(vboxDetailsTable).append(__vboxDetailHeader('parallel_port_16px.png',"Parallel Ports"));
+			$(vboxDetailsTable).append(__vboxDetailHeader('parallel_port_16px.png',trans("Parallel Ports")));
 		}
 		
 	
@@ -1029,13 +1022,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			var xtra = trans(vboxSP.getPortName(p.IRQ,p.IOBase));
 			xtra += ' (' + p.path + ')'
 			
-			$(vboxDetailsTable).append(__vboxDetailRow(trans("Port X").replace('%s',(i + 1)), xtra));
+			$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal',null,'details report (parallel ports)').replace('%1',(i + 1)), xtra));
 			vboxDetailsTableSPorts++;
 					
 		}
 		
 		if(vboxDetailsTableSPorts == 0) {
-			$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled')+'</span>','',true));		
+			$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('Disabled','VBoxGlobal',null,'details report (parallel ports)')+'</span>','',true));		
 		}
 
 	} else {
@@ -1059,7 +1052,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else if(data['USBController']) {
-		$(vboxDetailsTable).append(__vboxDetailHeader('usb_16px.png',"USB"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('usb_16px.png',trans("USB")));
 	} else{
 		$('#vboxDetailsTableBoxUSB').hide();
 	}
@@ -1074,7 +1067,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Device Filters"), trans('%1 (%2 active)').replace('%1',tot).replace('%2',act)));
 	} else if(data['USBController']) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans("Disabled")+'</span>',"", true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans("Disabled",null,null,'details report (USB)')+'</span>',"", true));
 	}
 
 
@@ -1095,11 +1088,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('shared_folder_16px.png',"Shared Folders"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('shared_folder_16px.png',trans("Shared Folders")));
 	}
 	
 	if(!data['sharedFolders'] || data['sharedFolders'].length < 1) {
-		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('None')+'</span>', '', true));
+		$(vboxDetailsTable).append(__vboxDetailRow('<span class="vboxDetailsNone">'+trans('None',null,null,'details report (shared folders)')+'</span>', '', true));
 	} else {
 		$(vboxDetailsTable).append(__vboxDetailRow(trans('Shared Folders'), data['sharedFolders'].length));
 	}
@@ -1123,11 +1116,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$(vboxDetailsTable).append(__vboxDetailHeader('description_16px.png',"Description"));
+		$(vboxDetailsTable).append(__vboxDetailHeader('description_16px.png',trans("Description",'UIDetailsPagePrivate')));
 	}
 
 	var dtr = $('<tr />').attr({'class':'vboxDetailRow'});
-	var dtd = $('<td />').attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None")+'</span>').appendTo(dtr);
+	var dtd = $('<td />').attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None",null,null,'details report (description)')+'</span>').appendTo(dtr);
 	$(vboxDetailsTable).append(dtr);
 	
 	// Append Table or show div
@@ -1172,7 +1165,7 @@ function __vboxDisplayHostDetailsData(data) {
 	// General
 	$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png",trans("General"),null,null,true));
 	if($('#vboxIndex').data('vboxConfig').servers.length) $(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')')).append(__vboxDetailRow(trans("Base Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize']))).append(__vboxDetailRow(trans("Processors"), data['cpus'][0] + ' (' + data['cpus'].length +')'));
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')')).append(__vboxDetailRow(trans("Base Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize']))).append(__vboxDetailRow(trans("Processors",'UIDetailsPagePrivate'), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 	
 	// Processor features?
 	if(data.cpuFeatures) {
@@ -1305,7 +1298,7 @@ for(var i = 0; i < sections.length; i++) {
 			}				
 		}
 		
-	})).append($('<span />').html(trans(sections[i])))).appendTo(ul);
+	})).append($('<span />').html(trans(sections[i],'UIDetailsPagePrivate')))).appendTo(ul);
 
 
 }
@@ -1428,6 +1421,5 @@ $("#vboxVMDetails").mouseup( function(e) {
 });
 $("#vboxVMDetails").bind('contextmenu', function() { return false; }).bind('click',function(e){return e.button!=2;});
 
-vboxUnsetLangContext();
 </script>
 </div>

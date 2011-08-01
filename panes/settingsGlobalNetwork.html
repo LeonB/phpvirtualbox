@@ -50,7 +50,7 @@
 					<td><input type='text' class='vboxText' id='vboxSettingsGlobalNetIPv4' /></td>
 				</tr>
 				<tr>
-					<th><span class='translate'>IPv4 Mask:</span></th>
+					<th><span class='translate'>IPv4 Network Mask:</span></th>
 					<td><input type='text' class='vboxText' id='vboxSettingsGlobalNetIPv4Mask' /></td>
 				</tr>
 				<tr>
@@ -58,7 +58,7 @@
 					<td><input type='text' class='vboxText' id='vboxSettingsGlobalNetIPv6' /></td>
 				</tr>
 				<tr>
-					<th><span class='translate'>IPv6 Mask:</span></th>
+					<th><span class='translate'>IPv6 Network Mask Length:</span></th>
 					<td><input type='text' class='vboxText' id='vboxSettingsGlobalNetIPv6Mask' /></td>
 				</tr>
 			</table>
@@ -66,7 +66,7 @@
 		<div id="vboxSettingsGlobalNetEditDHCP" class='vboxDialogContent vboxTabContent'>
 			<table class="vboxSettingsTable">
 				<tr>
-					<td colspan='2'><label><input type='checkbox' class='vboxCheckbox vboxEnablerCheckbox' id='vboxSettingsGlobalNetDHCPEnabled' /><span class='translate'>Enable Server</span></label></td>
+					<td colspan='2'><label><input type='checkbox' class='vboxCheckbox vboxEnablerCheckbox' id='vboxSettingsGlobalNetDHCPEnabled' /> <span class='translate'>Enable Server</span></label></td>
 				</tr>
 				<tr>
 					<th><span class='translate'>Server Address:</span></th>
@@ -182,11 +182,10 @@ var sButtons = new Array(
 	}
 );
 
-vboxSetLangContext('UIGlobalSettingsNetwork');
 netToolbar = new vboxToolbarSmall(sButtons);
+netToolbar.context = 'UIGlobalSettingsNetwork'
 netToolbar.addButtons('vboxSettingsGlobalNetToolbar');
 $('#vboxSettingsGlobalNetList').bind('select',netToolbar.update);
-vboxUnsetLangContext();
 
 $('#vboxSettingsGlobalNetList').bind('select',function(e,i){
 	if(i) {
@@ -249,8 +248,7 @@ $('#vboxSettingsGlobalNetList').trigger('select',null);
  * Edit Network Interface Dialog 
  *
  */
-vboxSetLangContext('UIGlobalSettingsNetworkDetails')
-vboxInitDisplay('vboxSettingsGlobalNetEditDialog');
+vboxInitDisplay('vboxSettingsGlobalNetEditDialog','UIGlobalSettingsNetworkDetails');
 var buttons = {};
 buttons[trans('OK','QIMessageBox')] = function(){
 
@@ -274,7 +272,6 @@ buttons[trans('OK','QIMessageBox')] = function(){
 buttons[trans('Cancel','QIMessageBox')] = function(){$(this).dialog("close");};
 $('#vboxSettingsGlobalNetEditDialog').dialog({'buttons':buttons,'width':500,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/nw_16px.png" class="vboxDialogTitleIcon" /> ' +trans('Host-only Network Details','UIGlobalSettingsNetworkDetails')});
 
-vboxUnsetLangContext();
 
 function vboxSettingsGlobalNetEditDialog() {
 

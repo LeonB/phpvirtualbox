@@ -35,6 +35,7 @@ div.vboxMenuBar { padding-left: 4px; }
 #vboxIndex input, div.vboxDialogContent input { vertical-align: middle; }
 #vboxIndex input.vboxCheckbox, div.vboxDialogContent input.vboxCheckbox,
 	#vboxIndex input.vboxRadio, div.vboxDialogContent input.vboxRadio { vertical-align: middle; }
+input.vboxRadio, input.vboxCheckbox { padding: 0px; margin: 1px 1px 3px 2px; display: inline }
 #vboxIndex th, div.vboxDialogContent th { white-space: nowrap; }
 #vboxIndex .vboxDisabled, div.vboxDialogContent .vboxDisabled { color: #999; cursor: default; }
 #vboxIndex a, div.vboxDialogContent a,

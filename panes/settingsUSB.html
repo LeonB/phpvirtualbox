@@ -127,30 +127,26 @@
 			var vboxSettingsUSBFilterProps = [
 				['Name','name'],['Vendor ID','vendorId'],['Product ID','productId'],
 				['Revision','revision'],['Manufacturer','manufacturer'],['Product','product'],
-				['Serial No.','serialNumber'],['Port','port',]];
+				['Serial No.','serialNumber'],['Port','port']];
 			
 			/* Get Defaults */
 			var filter = $('#vboxSettingsUSBFilterList').find('li.vboxListItemSelected').first().data('filter');
 
-			vboxSetLangContext('UIMachineSettingsUSBFilterDetails');
-			
           	for(var i = 0; i < vboxSettingsUSBFilterProps.length; i++) {
               	
           		var val = (filter[vboxSettingsUSBFilterProps[i][1]]||'');
-          		$('<tr />').append($('<th />').attr({'style':'white-space: nowrap; width: auto; text-align: right;'}).html(trans(vboxSettingsUSBFilterProps[i][0]+':'))).append($('<td />').attr({'style':'width: 100%'}).html('<input type="text" class="vboxText" style="width: 100%" id="vboxSettingsUSBF'+vboxSettingsUSBFilterProps[i][1]+'" value="'+$('<div />').text((filter[vboxSettingsUSBFilterProps[i][1]]||'')).html()+'"/>')).appendTo(tbl);
+          		$('<tr />').append($('<th />').attr({'style':'white-space: nowrap; width: auto; text-align: right;'}).html(trans(vboxSettingsUSBFilterProps[i][0]+':','UIMachineSettingsUSBFilterDetails'))).append($('<td />').attr({'style':'width: 100%'}).html('<input type="text" class="vboxText" style="width: 100%" id="vboxSettingsUSBF'+vboxSettingsUSBFilterProps[i][1]+'" value="'+$('<div />').text((filter[vboxSettingsUSBFilterProps[i][1]]||'')).html()+'"/>')).appendTo(tbl);
           	}
           	
           	// Generate select box
           	var sel = $('<select />').attr({'id':'vboxSettingsUSBFRemote'});
-          	var opts = [['',trans('Any')],['yes',trans('Yes')],['no',trans('No')]];
+          	var opts = [['',trans('Any','UIMachineSettingsUSBFilterDetails')],['yes',trans('Yes','UIMachineSettingsUSBFilterDetails')],['no',trans('No','UIMachineSettingsUSBFilterDetails')]];
           	for(var i = 0; i < opts.length; i++) {
               	var o = new Option(opts[i][1],opts[i][0],((filter['remote']||'')==opts[i][0]));
               	$(sel).prop('options').add(o);
           	}
           	
-          	$('<tr />').append($('<th />').attr({'style':'white-space: nowrap; width: auto; text-align: right;'}).html(trans('Remote:'))).append($('<td />').attr({'style':'width: 100%'}).append(sel)).appendTo(tbl);
-          	
-          	vboxUnsetLangContext();
+          	$('<tr />').append($('<th />').attr({'style':'white-space: nowrap; width: auto; text-align: right;'}).html(trans('Remote:','UIMachineSettingsUSBFilterDetails'))).append($('<td />').attr({'style':'width: 100%'}).append(sel)).appendTo(tbl);
           	
           	$(d).append(tbl).appendTo($('#vboxIndex'));
           	
@@ -241,10 +237,9 @@
 			
  );
 
-vboxSetLangContext('UIMachineSettingsUSB');
 usbToolbar = new vboxToolbarSmall(sButtons);
+usbToolbar.context = 'UIMachineSettingsUSB';
 usbToolbar.addButtons('vboxSettingsUSBButtons');
-vboxUnsetLangContext();
 
 $('#vboxSettingsUSBFilterList').bind('select',usbToolbar.update);
 

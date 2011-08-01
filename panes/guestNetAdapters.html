@@ -36,9 +36,7 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 // Mac is special
 $('#vboxGuestNetAdapterTemplate').find('span.vboxGuestMac').html(trans('MAC Address','VBoxVMNetworkSettings'));
 
-vboxSetLangContext('UIGlobalSettingsNetwork');
-$('#vboxGuestNetAdapterTemplate').find(".translate").html(function(i,h){return trans($('<div />').html(h).text());}).removeClass('translate');
-vboxUnsetLangContext();
+$('#vboxGuestNetAdapterTemplate').find(".translate").html(function(i,h){return trans(h,'UIGlobalSettingsNetwork');}).removeClass('translate');
 
 /*
  * Get data and pass to init function
@@ -56,8 +54,6 @@ function vboxVMNetAdaptersInit(vm,index) {
 }
 
 function vboxVMNetAdaptersDisplay(d) {
-	
-	vboxSetLangContext('UIGlobalSettingsNetwork');
 	
 	// Create hash / assoc array / mapping
 	var data = {};
@@ -85,7 +81,7 @@ function vboxVMNetAdaptersDisplay(d) {
 	for(var i = 0; i < data['Count']; i++) {
 
 		// Tab link
-		$(ul).append($('<li />').html('<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter %1').replace('%1',(i + 1)) + '</span></a>'));
+		$(ul).append($('<li />').html('<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter %1','UIGlobalSettingsNetwork').replace('%1',(i + 1)) + '</span></a>'));
 
 		// Tab content
 		var tmpl = $("#vboxGuestNetAdapterTemplate").clone(true);

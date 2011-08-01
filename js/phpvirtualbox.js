@@ -51,6 +51,7 @@ var vboxVMActions = {
 		'label' : 'Start',
 		'icon' : 'vm_start',
 		'icon_16' : 'start',
+		'context' : 'VBoxSelectorWnd',
 		'click' : function (btn) {
 		
 			// Disable toolbar button that triggered this action?
@@ -129,10 +130,8 @@ var vboxVMActions = {
 		'icon':'delete',
 		'click':function(){
 
-			vboxSetLangContext('VBoxProblemReporter');
-
 			var buttons = {};
-			buttons[trans('Delete all files')] = function(){
+			buttons[trans('Delete all files','VBoxProblemReporter')] = function(){
 				$(this).empty().remove();
 				vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
 					// check for progress operation
@@ -143,7 +142,7 @@ var vboxVMActions = {
 					}
 				});
 			}
-			buttons[trans('Remove only')] = function(){
+			buttons[trans('Remove only','VBoxProblemReporter')] = function(){
 				$(this).empty().remove();
 				vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
 					// check for progress operation
@@ -154,8 +153,7 @@ var vboxVMActions = {
 					}
 				});
 			}
-			var q = trans('<p>You are about to remove the virtual machine <b>%1</b> from the machine list.</p><p>Would you like to delete the files containing the virtual machine from your hard disk as well? Doing this will also remove the files containing the machine\'s virtual hard disks if they are not in use by another machine.</p>').replace('%1',$('#vboxIndex').data('selectedVM').name);
-			vboxUnsetLangContext();
+			var q = trans('<p>You are about to remove the virtual machine <b>%1</b> from the machine list.</p><p>Would you like to delete the files containing the virtual machine from your hard disk as well? Doing this will also remove the files containing the machine\'s virtual hard disks if they are not in use by another machine.</p>','VBoxProblemReporter').replace('%1',$('#vboxIndex').data('selectedVM').name);
 				
 			vboxConfirm(q,buttons);
 			
@@ -170,10 +168,8 @@ var vboxVMActions = {
 		'icon':'discard',
 		'click':function(){
 			
-			vboxSetLangContext('VBoxProblemReporter');
-			
 			var buttons = {};
-			buttons[trans('Discard')] = function(){
+			buttons[trans('Discard','VBoxProblemReporter')] = function(){
 				$(this).empty().remove();
 				var l = new vboxLoader();
 				l.add('setStateVMdiscardSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
@@ -181,8 +177,7 @@ var vboxVMActions = {
 				l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
 				l.run();
 			}
-			vboxConfirm(trans('<p>Are you sure you want to discard the saved state of the virtual machine <b>%1</b>?</p><p>This operation is equivalent to resetting or powering off the machine without doing a proper shutdown of the guest OS.</p>').replace('%1',$('#vboxIndex').data('selectedVM').name),buttons);
-			vboxUnsetLangContext();
+			vboxConfirm(trans('<p>Are you sure you want to discard the saved state of the virtual machine <b>%1</b>?</p><p>This operation is equivalent to resetting or powering off the machine without doing a proper shutdown of the guest OS.</p>','VBoxProblemReporter').replace('%1',$('#vboxIndex').data('selectedVM').name),buttons);
 		},
 		'enabled':function(vm){ return (vm && vm.state == 'Saved'); }
     },
@@ -315,11 +310,11 @@ var vboxMedia = {
 		if(!m) return '';
 		switch(m.format.toLowerCase()) {
 			case 'vdi':
-				return trans('VDI (VirtualBox Disk Image)');
+				return trans('VDI (VirtualBox Disk Image)','UINewHDWizard');
 			case 'vmdk':
-				return trans('VMDK (Virtual Machine Disk)');
+				return trans('VMDK (Virtual Machine Disk)','UINewHDWizard');
 			case 'vhd':
-				return trans('VHD (Virtual Hard Disk)');
+				return trans('VHD (Virtual Hard Disk)','UINewHDWizard');
 		}
 		return m.format;
 	},
@@ -492,7 +487,7 @@ function vboxWizard(name, title, img, bg, icon) {
 	this.backText = trans('Back','QIArrowSplitter');
 	this.nextText = trans('Next','QIArrowSplitter');
 	this.cancelText = trans('Cancel','QIMessageBox');
-	this.finisText = trans('Finish','QIMessageBox');
+	this.finisText = 'Finish';
 	this.context = '';
 	this.perPageContext = '';
 	
@@ -534,7 +529,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		l.onLoad = function(){
 		
 			var bmesg = '<p>'+trans('Use the <b>%1</b> button to go to the next page of the wizard and the <b>%2</b> button to return to the previous page. You can also press <b>%3</b> if you want to cancel the execution of this wizard.</p>','QIWizardPage').replace('%1',self.nextText).replace('%2',self.backText).replace('%3',self.cancelText);
-			$('#'+self.name+'Content').find('p.vboxWizButtonsMessage').html(bmesg);
+			$('#'+self.name+'Content').find('.vboxWizButtonsMessage').html(bmesg);
 			
 			// Opera hidden select box bug
 			////////////////////////////////
@@ -561,16 +556,15 @@ function vboxWizard(name, title, img, bg, icon) {
 			
 			// Translations
 			if(self.perPageContext) {
-				for(var i = 1; i <= self.steps; i++) {
-					vboxSetLangContext(self.perPageContext.replace('%1',i));
-					$('#'+self.name+'Step'+i).find(".translate").html(function(i,h){return trans($('<div />').html(h).text());}).removeClass('translate');
-					vboxUnsetLangContext();
+
+				for(var s = 1; s <= self.steps; s++) {
+					vboxInitDisplay($('#'+self.name+'Step'+s),self.perPageContext.replace('%1',s));
 				}
+				
+			} else {
+				vboxInitDisplay(self.name+'Content',self.context);
 			}
 			
-			if(self.context) vboxSetLangContext(self.context);
-			vboxInitDisplay(self.name+'Content');
-			if(self.context) vboxUnsetLangContext();
 			
 			$(d).dialog({'closeOnEscape':true,'width':self.width,'height':self.height,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent vboxWizard','title':(icon ? '<img src="images/vbox/'+icon+'_16px.png" class="vboxDialogTitleIcon" /> ' : '') + self.title});
 
@@ -690,16 +684,14 @@ function vboxToolbar(buttons) {
 		}
 		
 		// TD
-		if(b.context) vboxSetLangContext(b.context);
 		var td = $('<td />').attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,
 			'class':'vboxToolbarButton ui-corner-all vboxEnabled vboxToolbarButton'+self.size,
 			'style':self.buttonStyle+'; min-width: '+(self.size+12)+'px;'
-		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" style="height:'+self.size+'px;width:'+self.size+'px;"/><br />' + $('<div />').html(trans(b.label,b.context).replace(/\./g,'')).text()).bind('click',function(){
+		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" style="height:'+self.size+'px;width:'+self.size+'px;"/><br />' + $('<div />').html(trans(b.label,(b.context ? b.context : (self.context ? self.context : null))).replace(/\./g,'')).text()).bind('click',function(){
 			if($(this).hasClass('vboxDisabled')) return;
 			$(this).data('toolbar').click($(this).data('name'));
 		// store data
 		}).data(b);
-		if(b.context) vboxUnsetLangContext();
 		
 		if(!self.noHover) {
 			$(td).hover(
@@ -830,7 +822,7 @@ function vboxToolbarSmall(buttons) {
 
 		var btn = $('<input />').attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,'type':'button','value':'',
 			'class':'vboxImgButton vboxToolbarSmallButton ui-corner-all',
-			'title':trans(b.label,b.context).replace(/\./g,''),
+			'title':trans(b.label,(b.context ? b.context : (self.context ? self.context : null))).replace(/\./g,''),
 			'style':self.buttonStyle+' background-image: url(images/vbox/' + b.icon + '_'+self.size+'px.png);'
 		}).click(b.click);		
 		
@@ -1089,21 +1081,18 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	// Add defaults to menu
 	self.menuAddDefaults = function (ul) {
 		
-		vboxSetLangContext('UIMachineSettingsStorage');
 		switch(this.type) {
 			
 			// HardDisk defaults
 			case 'HardDisk':
 				
-				$('<li />').html("<a href='#createD' style='background-image: url(images/vbox/hd_new_16px.png);' >"+trans('Create a new hard disk...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#createD' style='background-image: url(images/vbox/hd_new_16px.png);' >"+trans('Create a new hard disk...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
 
-				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
 				
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					vboxSetLangContext('VBoxSelectorWnd');
-					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...')+"</a>").appendTo(ul);
-					vboxUnsetLangContext();
+					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...','VBoxSelectorWnd')+"</a>").appendTo(ul);
 				}
 
 				// Hidden elm
@@ -1114,13 +1103,11 @@ function vboxMediaMenu(type,callback,mediumPath) {
 			// CD/DVD Defaults
 			case 'DVD':
 				
-				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
 
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					vboxSetLangContext('VBoxSelectorWnd');
-					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...')+"</a>").appendTo(ul);
-					vboxUnsetLangContext();
+					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...','VBoxSelectorWnd')+"</a>").appendTo(ul);
 				}
 				
 				// Add host drives
@@ -1131,20 +1118,18 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				if(!self.removeEnabled) {
 					$(li).addClass('disabled');
 				}				
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive','UIMachineSettingsStorage')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
 
 				break;
 			
 			// Floppy defaults
 			default:
 				
-				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...')+"</a>").appendTo(ul);
+				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
 
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					vboxSetLangContext('VBoxSelectorWnd');
-					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...')+"</a>").appendTo(ul);
-					vboxUnsetLangContext();
+					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...','VBoxSelectorWnd')+"</a>").appendTo(ul);
 				}
 				
 				// Add host drives
@@ -1155,12 +1140,11 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				if(!self.removeEnabled) {
 					$(li).addClass('disabled');
 				}
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive','UIMachineSettingsStorage')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
 				
 				break;
 				
 		}
-		vboxUnsetLangContext();
 		
 	}
 
@@ -1353,7 +1337,7 @@ function vboxMenuBar(name) {
 	this.menus = new Array();
 	this.menuClick = {};
 	this.iconStringDisabled = '_dis';
-	
+	this.context = null;
 	
 	/* Add menu to object */
 	self.addMenu = function(m) {
@@ -1367,7 +1351,7 @@ function vboxMenuBar(name) {
 			// 16px icon?
 			if(m.menu[i].icon_16) m.menu[i].icon = m.menu[i].icon_16;
 				
-			$('<a />').attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].label)).attr({
+			$('<a />').attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].label,(m.menu[i].context ? m.menu[i].context : self.context))).attr({
 				'style' : (m.menu[i].icon_absolute ? 'background-image: url('+m.menu[i].icon+')' : 'background-image: url(images/vbox/'+m.menu[i].icon+'_16px.png)')
 			}).appendTo($('<li />').addClass((m.menu[i].separator ? 'separator' : '')).appendTo(ul));			
 			
@@ -1388,7 +1372,7 @@ function vboxMenuBar(name) {
 		$('#'+id).prepend($('<div />').attr({'class':'vboxMenuBar','id':self.name+'MenuBar'}));
 		
 		for(var i = 0; i < self.menus.length; i++) {
-			$('#'+self.name+'MenuBar').append('<span id="'+self.menus[i].name+'">'+trans(self.menus[i].label)+'</span>');	
+			$('#'+self.name+'MenuBar').append('<span id="'+self.menus[i].name+'">'+trans(self.menus[i].label,(self.menus[i].context ? self.menus[i].context : self.context))+'</span>');	
 			$('#'+self.menus[i].name).contextMenu({
 			 		menu: self.menus[i].name+'Menu',
 			 		button: 0,
@@ -1757,6 +1741,7 @@ var vboxStorage = {
 /* Storage Controller Types */
 function vboxStorageControllerType(c) {
 	switch(c) {
+		case 'LsiLogic': return 'Lsilogic';
 		case 'LsiLogicSas': return 'LsiLogic SAS';
 		case 'IntelAhci': return 'AHCI';
 	}
@@ -1775,20 +1760,8 @@ function vboxSerialMode(m) {
 /* Network adapter type conversions */
 function vboxNetworkAdapterType(t) {
 	switch(t) {
-		case 'Am79C970A': return 'AMD PCNet-PCI II';
-		case 'Am79C973': return 'AMD PCNet-FAST III';
-		case 'I82540EM': return 'Intel PRO/1000 MT Desktop';
-		case 'I82543GC': return 'Intel PRO/1000 T Server';
-		case 'I82545EM': return 'Intel PRO/1000 MT Server';
-		case 'Virtio': return 'Paravirtualized Network';
-	}
-}
-
-/* Network adapter type conversions */
-function vboxNetworkAdapterTypeChipset(t) {
-	switch(t) {
-		case 'Am79C970A': return 'AMD PCNet-PCI II (Am79C970A)';
-		case 'Am79C973': return 'AMD PCNet-FAST III (Am79C973)';
+		case 'Am79C970A': return 'PCnet-PCI II (Am79C970A)';
+		case 'Am79C973': return 'PCnet-FAST III (Am79C973)';
 		case 'I82540EM': return 'Intel PRO/1000 MT Desktop (82540EM)';
 		case 'I82543GC': return 'Intel PRO/1000 T Server (82543GC)';
 		case 'I82545EM': return 'Intel PRO/1000 MT Server (82545EM)';

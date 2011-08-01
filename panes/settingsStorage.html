@@ -487,7 +487,6 @@ function vboxSettingsSelectAttachment(tbl) {
     var label = null;
     var cbox = null;
     
-    vboxSetLangContext('UIMachineSettingsStorage');
     if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
     	$('#vboxSettingsControllerDeviceOptionLabel').addClass('disabled');
     	$(document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption).prop('disabled',true);
@@ -496,17 +495,17 @@ function vboxSettingsSelectAttachment(tbl) {
     	case 'HardDisk':
         	label = 'Hard Disk:';
     		$('#vboxSettingsControllerDeviceOptionRow').css('display','');
-    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Solid-state drive'));  
+    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Solid-state drive','UIMachineSettingsStorage'));  
     		document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption.checked = (ma.nonRotational ? 'checked' : '');            
         	break;
     	case 'DVD':
         	label = 'CD/DVD Drive:';
            	$('#vboxSettingsControllerDeviceOptionRow').css('display','');
             if(ma.medium && ma.medium.id && ma.medium.hostDrive) {
-	    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Passthrough'));  
+	    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Passthrough','UIMachineSettingsStorage'));  
 	    		document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption.checked = (ma.passthrough ? 'checked' : '');
             } else {
-	    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Live CD/DVD'));  
+	    		$('#vboxSettingsControllerDeviceOptionLabel').html(trans('Live CD/DVD','UIMachineSettingsStorage'));  
 	    		document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption.checked = (ma.temporaryEject ? 'checked' : '');
 
 	    		$('#vboxSettingsControllerDeviceOptionLabel').removeClass('disabled');
@@ -519,8 +518,7 @@ function vboxSettingsSelectAttachment(tbl) {
         	$('#vboxSettingsControllerDeviceOptionRow').css('display','none');
         	break;
     }
-    $('#vboxSettingsControllerSlotLabel').html(trans(label));
-    vboxUnsetLangContext();
+    $('#vboxSettingsControllerSlotLabel').html(trans(label,'UIMachineSettingsStorage'));
 
     
     /* Show / Hide HD/Media Info */
@@ -561,7 +559,7 @@ function vboxSettingsSelectAttachment(tbl) {
     		
         $('#vboxSettingsHDvsize').html(vboxMbytesConvert(disp.logicalSize));
         $('#vboxSettingsHDasize').html(vboxBytesConvert(disp.size));
-        $('#vboxSettingsHDDetails').html(trans(vboxMedia.getHardDiskVariant(disp),'VBoxGlobal'));
+        $('#vboxSettingsHDDetails').html(vboxMedia.getHardDiskVariant(disp));
         $('#vboxSettingsHDlocation').html(disp.location);
         $('#vboxSettingsHDtype').html(trans(disp.type,'VBoxGlobal') + ' (' + disp.format + ')');
         $('#vboxSettingsHDattached').html(vboxMedia.attachedTo(disp));            
@@ -632,31 +630,28 @@ $(document.forms['frmVboxSettings'].vboxSettingsControllerDeviceOption).click(fu
 /* Generate tooltip for medium */
 function vboxSettingsMediumTip(m) {
 
-	vboxSetLangContext('UIMachineSettingsStorage');
-	
 	if(!m || !m.id) return trans('Empty','VBoxGlobal');
 	if(m.hostDrive) return vboxMedia.getName(m);
 
 	// DVD / Floppy images
 	if(m.deviceType != 'HardDisk') {
-		return '<b>'+m.location+'</b><p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(m)+'</p>';
+		return '<b>'+m.location+'</b><p>'+trans('Attached To:','UIMachineSettingsStorage')+' '+vboxMedia.attachedTo(m)+'</p>';
 	}
 	
 	var mbase = m;
 	if(m.base != m.id) {
 		var mbase = vboxMedia.getMediumById(m.base);
 	}
-	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):')+' '+vboxMedia.getType(mbase)+' ('+mbase.format+')</p><p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(mbase)+'</p>';
+	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):','UIMachineSettingsStorage')+' '+vboxMedia.getType(mbase)+' ('+mbase.format+')</p><p>'+trans('Attached To:','UIMachineSettingsStorage')+' '+vboxMedia.attachedTo(mbase)+'</p>';
 		
 	// Is this a medium that is attached indirectly
 	if(vboxSettingsStorageBusses.isAttachedIndirect(m) && m.base != m.id) {
 		var p = vboxSettingsStorageBusses.isAttached(m);
-		tip = trans('%1<hr>This base hard disk is indirectly attached using the following differencing hard disk:<br>%2%3','VBoxGlobal').replace('%1',tip).replace('%2','<b>'+p.location+'</b></p><p>'+trans('Type (Format):')+' '+vboxMedia.getType(p) + ' (' + p.format + ')'+'</p>').replace('%3','<p>'+trans('Attached To:')+' '+vboxMedia.attachedTo(p)+'</p>');
+		tip += '<hr />'+trans('This base hard disk is indirectly attached using the following differencing hard disk:','VBoxGlobal')+'<br /><b>'+p.location+'</b></p><p>'+trans('Type (Format):','UIMachineSettingsStorage')+' '+vboxMedia.getType(p) + ' (' + p.format + ')'+'</p><p>'+trans('Attached To:','UIMachineSettingsStorage')+' '+vboxMedia.attachedTo(p)+'</p>';
 	} else if(m.readOnly) {
-    	tip += trans('<hr><img src=%1/> Attaching this hard disk will be performed indirectly using a newly created differencing hard disk.','VBoxGlobal').replace('%1','"about:blank" style="display:none"');
+    	tip += '<hr />'+trans('Attaching this hard disk will be performed indirectly using a newly created differencing hard disk.','VBoxGlobal');
 	}
 
-	vboxUnsetLangContext();
 	return tip;
 
 }
@@ -784,11 +779,10 @@ function vboxSettingsStorageAddMedium(bus, type) {
 
 	var msg = '';
 	
-	vboxSetLangContext('VBoxProblemReporter');
 	// Hard Disk buttons
 	if (type == 'HardDisk') {
 		
-		buttons[trans('Create new disk')] = function() {
+		buttons[trans('Create new disk','VBoxProblemReporter')] = function() {
 			vboxWizardNewHDInit(function(id){
 				if(!id) return;
 				mAttachToolbarHD.mediaMenu.menuUpdateRecent();
@@ -798,7 +792,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			$(this).remove();
 			
 		};
-		buttons[trans('Choose existing disk')] = function() {
+		buttons[trans('Choose existing disk','VBoxProblemReporter')] = function() {
 			var dlg = $(this);
 			vboxMedia.actions.choose(null,'HardDisk',function(med){
 				if(med) {
@@ -810,12 +804,12 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			});
 		};
 		
-		msg = trans('<p>You are about to add a virtual hard disk to controller <b>%1</b>.</p><p>Would you like to create a new, empty file to hold the disk contents or select an existing one?</p>').replace('%1',controller);
+		msg = trans('<p>You are about to add a virtual hard disk to controller <b>%1</b>.</p><p>Would you like to create a new, empty file to hold the disk contents or select an existing one?</p>','VBoxProblemReporter').replace('%1',controller);
 	
 	// Floppy buttons
 	} else if(type == 'Floppy') {
 
-		buttons[trans('Choose disk')] = function() {
+		buttons[trans('Choose disk','VBoxProblemReporter')] = function() {
 			var dlg = $(this);
 			vboxMedia.actions.choose(null,'Floppy',function(med){
 				if(med) {
@@ -828,18 +822,18 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			
 		};
 
-		buttons[trans('Leave empty')] = function() {
+		buttons[trans('Leave empty','VBoxProblemReporter')] = function() {
 			vboxSettingsAddAttachment({'controller':controller,'port':port,'device':device,'type':type,'medium':null},bus);
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 			$(this).remove();
 		}
 		
-		msg = trans('<p>You are about to add a new floppy drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual floppy disk to put in the drive or to leave it empty for now?</p>').replace('%1',controller);
+		msg = trans('<p>You are about to add a new floppy drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual floppy disk to put in the drive or to leave it empty for now?</p>','VBoxProblemReporter').replace('%1',controller);
 		
 	// CD/DVD buttons
 	} else {
 
-		buttons[trans('Choose disk')] = function() {
+		buttons[trans('Choose disk','VBoxProblemReporter')] = function() {
 			var dlg = $(this);
 			vboxMedia.actions.choose(null,'DVD',function(med){
 				if(med) {
@@ -852,16 +846,15 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			
 		};
 		
-		buttons[trans('Leave empty')] = function() {
+		buttons[trans('Leave empty','VBoxProblemReporter')] = function() {
 			vboxSettingsAddAttachment({'controller':controller,'port':port,'device':device,'type':type,'medium':null},bus);
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 			$(this).remove();
 		}
 		
-		msg = trans('<p>You are about to add a new CD/DVD drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual CD/DVD disk to put in the drive or to leave it empty for now?</p>').replace('%1',controller);
+		msg = trans('<p>You are about to add a new CD/DVD drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual CD/DVD disk to put in the drive or to leave it empty for now?</p>','VBoxProblemReporter').replace('%1',controller);
 		
 	}
-	vboxUnsetLangContext();
 	
 	buttons[trans('Cancel','QIMessageBox')] = function() {
 		$(this).remove();
@@ -1052,9 +1045,8 @@ $('#vboxSettingsStorageTree').bind('itemselect',function(e,item){
 
  );
 
-vboxSetLangContext('UIMachineSettingsStorage');
-
 scToolbar = new vboxToolbarSmall(sButtons);
+scToolbar.context = 'UIMachineSettingsStorage';
 scToolbar.addButtons('vboxSettingsControllersButtons');
 $('#vboxSettingsStorageTree').bind('itemselect',scToolbar.update);
 
@@ -1088,15 +1080,14 @@ if(!$('#vboxSettingsAddAttachmentsMenu').attr('id')) {
 	
 	var ul = $('<ul />').attr({'id':'vboxSettingsAddAttachmentsMenu','class':'contextMenu','style':'display: none'});
 
-	$(ul).append($('<li />').html("<a href='#addCD' style='background-image: url(images/vbox/cd_add_16px.png);' >"+trans('Add CD/DVD Device')+"</a>"));
+	$(ul).append($('<li />').html("<a href='#addCD' style='background-image: url(images/vbox/cd_add_16px.png);' >"+trans('Add CD/DVD Device','UIMachineSettingsStorage')+"</a>"));
 
-	$(ul).append($('<li />').html("<a href='#addHD' style='background-image: url(images/vbox/hd_add_16px.png);' >"+trans('Add Hard Disk')+"</a>"));
+	$(ul).append($('<li />').html("<a href='#addHD' style='background-image: url(images/vbox/hd_add_16px.png);' >"+trans('Add Hard Disk','UIMachineSettingsStorage')+"</a>"));
 	
 	$('#vboxIndex').append(ul);
 
 }
 
-vboxUnsetLangContext();
 
  /* Add IDE attachment button menu initialization  */
 $("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").contextMenu({

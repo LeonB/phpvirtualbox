@@ -87,7 +87,7 @@ function __construct() {
 	}
 	// We still have no server set, use the first one from
 	// the servers array
-	if(!$this->location && @is_array($this->servers[0])) {
+	if(!@$this->location && @is_array($this->servers[0])) {
 		foreach($this->servers[0] as $k=>$v) $this->$k = $v;
 	}
 	// Make sure name is set

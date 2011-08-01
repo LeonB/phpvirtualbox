@@ -50,7 +50,7 @@
 <script type='text/javascript'>
 
 // Translations
-$('#wizImportAppMsg').html(trans('<p>This wizard will guide you through importing an appliance.</p><p>%1</p><p>VirtualBox currently supports importing appliances saved in the Open Virtualization Format (OVF). To continue, select the file to import below:</p>','UIImportApplianceWzdPage1').replace('%1',trans('<p>'+trans('Use the <b>%1</b> button to go to the next page of the wizard and the <b>%2</b> button to return to the previous page. You can also press <b>%3</b> if you want to cancel the execution of this wizard.</p>','QIWizardPage').replace('%1',trans('Next','QIArrowSplitter')).replace('%2',trans('Back','QIArrowSplitter')).replace('%3',trans('Cancel','QIMessageBox')))));
+$('#wizImportAppMsg').html(trans('<p>This wizard will guide you through importing an appliance.</p><p>%1</p><p>VirtualBox currently supports importing appliances saved in the Open Virtualization Format (OVF). To continue, select the file to import below:</p>','UIImportApplianceWzdPage1').replace('%1','<span class="vboxWizButtonsMessage" />'));
 
 
 $('#wizardImportApplianceStep2').find('span.translateglob').html(function(i,h){
@@ -75,7 +75,7 @@ var vboxApplianceImportProps = {
 				outSpeed : -1
 			},
 			function(a, el, pos, srcEl) {
-				$(elm).find('span.vboxApplianceOSTitle').html(trans(vboxSettingsOSTypesObj[a]['description']));
+				$(elm).find('span.vboxApplianceOSTitle').html(vboxSettingsOSTypesObj[a]['description']);
 				$(elm).find('img.vboxApplianceOSIcon').attr('src','images/vbox/'+vboxGuestOSTypeIcon(a));
 				$(elm).closest('td').data('descValue',a);
 				$('#vboxImportProps').trigger('selectProp');
@@ -86,7 +86,7 @@ var vboxApplianceImportProps = {
 			});
 			
 		},'display':function(val){
-			return $('<span />').append('<img class="vboxApplianceOSIcon" src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px; float: left; margin-top: 2px; margin-right: 4px; " /> <span class="vboxApplianceOSTitle">' + trans(val) +'</span>').disableSelection().bind('selectstart',function(e){e.preventDefault();return false;});
+			return $('<span />').append('<img class="vboxApplianceOSIcon" src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px; float: left; margin-top: 2px; margin-right: 4px; " /> <span class="vboxApplianceOSTitle">' + val +'</span>').disableSelection().bind('selectstart',function(e){e.preventDefault();return false;});
 		}},
 		'Name' : {'label':'Name','icon':'name','edit':'text'},
 		'Description' : {'label':'Description','icon':'description','edit':'textarea'},
@@ -106,8 +106,8 @@ var vboxApplianceImportProps = {
 			return trans(vboxAudioController($('#vboxIndex').data('vboxAudioControllerTypes')[val]),'VBoxGlobal');
 		}},
 		'USBController' : {'label':'USB Controller','icon':'usb','checkbox':true},
-		'NetworkAdapter' : {'label':'Network Adapter','icon':'nw','checkbox':true,'edit':'options','display':function(val){
-			return trans(vboxNetworkAdapterTypeChipset($('#vboxIndex').data('vboxNetworkAdapterTypes')[val]),'VBoxGlobal');
+		'NetworkAdapter' : {'label':'Network Adapter','icon':'nw','checkbox':true,'edit':'options','option_offset':-1,'display':function(val){
+			return trans(vboxNetworkAdapterType($('#vboxIndex').data('vboxNetworkAdapterTypes')[val]),'VBoxGlobal');
 		}},
 		'Floppy' : {'label':'Floppy','icon':'floppy','checkbox':true},
 		'CDROM' : {'label':'DVD','icon':'cd','checkbox':true,'edit':'checkbox'},
@@ -125,25 +125,23 @@ var vboxApplianceImportProps = {
  */
 // Storage controllers
 var stTypes = vboxStorage.getBusTypes();
-vboxSetLangContext('VBoxApplianceEditorWgt');
 for(var i = 0; i < stTypes.length; i++) {
 	
 	if(!vboxApplianceImportProps['HardDiskController'+stTypes[i]]) continue;
 
 	// Translate value
-	vboxApplianceImportProps['HardDiskController'+stTypes[i]]['display'] = function(val){return trans(val);};
+	vboxApplianceImportProps['HardDiskController'+stTypes[i]]['display'] = function(val){return trans(vboxStorageControllerType(val),'VBoxGlobal');};
 
 	var ctypes = vboxStorage[stTypes[i]].types;
 	if(ctypes.length < 2) continue;
 	
 	var opts = {};
 	for(var a = 0; a < ctypes.length; a++) {
-		opts[ctypes[a]] = trans(ctypes[a],'VBoxGlobal');
+		opts[ctypes[a]] = trans(vboxStorageControllerType(ctypes[a]),'VBoxGlobal');
 	}
 	vboxApplianceImportProps['HardDiskController'+stTypes[i]]['edit'] = 'options';
 	vboxApplianceImportProps['HardDiskController'+stTypes[i]]['options'] = opts;
 }
-vboxUnsetLangContext();
 
 vboxApplianceImportProps['NetworkAdapter']['options'] = [];
 vboxApplianceImportProps['SoundCard']['options'] = [];
@@ -151,7 +149,7 @@ vboxApplianceImportProps['SoundCard']['options'] = [];
 // Network adapters
 var cs = $('#vboxIndex').data('vboxNetworkAdapterTypes');
 for(var i = 1; i < cs.length; i++) {
-	vboxApplianceImportProps['NetworkAdapter']['options'][(i-1)] = trans(vboxNetworkAdapterTypeChipset(cs[i]),'VBoxGlobal');
+	vboxApplianceImportProps['NetworkAdapter']['options'][(i-1)] = trans(vboxNetworkAdapterType(cs[i]),'VBoxGlobal');
 }
 // Sound cards
 var cs = $('#vboxIndex').data('vboxAudioControllerTypes');
@@ -191,10 +189,10 @@ for(var i in vboxOSTypes) {
 
 var ul = $('<ul />').attr({'id':'vboxOSTypesMenu','class':'contextMenu contextMenuNoBG vboxOSTypesMenuList'});
 for(var i = i in vboxSettingsOSTypes) {
-	var li = $('<li />').html('<a href="#null-'+i+'">'+trans(vboxSettingsOSTypes[i].description)+'</a>');
+	var li = $('<li />').html('<a href="#null-'+i+'">'+vboxSettingsOSTypes[i].description+'</a>');
 	var ul2 = $('<ul />').addClass('vboxOSTypesMenuList');
 	for(var a in vboxSettingsOSTypes[i]['osTypes']) {
-		$('<li />').html('<a href="#'+vboxSettingsOSTypes[i]['osTypes'][a]['id']+'"><img style="height: 16px; width:16px; margin-left: -22px; margin-top: 2px; float: left; " src="images/vbox/'+vboxGuestOSTypeIcon(vboxSettingsOSTypes[i]['osTypes'][a]['id'])+'" /> '+trans(vboxSettingsOSTypes[i]['osTypes'][a]['description'])+"</a>").appendTo(ul2);
+		$('<li />').html('<a href="#'+vboxSettingsOSTypes[i]['osTypes'][a]['id']+'"><img style="height: 16px; width:16px; margin-left: -22px; margin-top: 2px; float: left; " src="images/vbox/'+vboxGuestOSTypeIcon(vboxSettingsOSTypes[i]['osTypes'][a]['id'])+'" /> '+vboxSettingsOSTypes[i]['osTypes'][a]['description']+"</a>").appendTo(ul2);
 	}
 	$(li).append(ul2).appendTo(ul);
 }
@@ -269,8 +267,6 @@ function wizardImportApplianceParsed(d) {
 	else $(tbl).data('descriptions',d.descriptions);
 	
 
-	vboxSetLangContext('VBoxApplianceEditorWgt');
-	
 	for(var vm = 0; vm < d.descriptions.length; vm++) {
 
 		var tr = $('<tr />').data({'vmDesc':d.descriptions[vm]}).attr({'class':'vboxApplianceHeaderRow'});
@@ -282,7 +278,7 @@ function wizardImportApplianceParsed(d) {
 			$(this).css({'background-image':'url(images/downArrow.png)'});
 			$(this).parent().parent().parent().children('tr.vboxChildOf'+$(this).data('vboxOrder')).css('display','');
 		}).appendTo(td);
-		$(td).append(trans('Virtual System %1').replace('%1',(vm+1))).appendTo(tr);
+		$(td).append(trans('Virtual System %1','VBoxApplianceEditorWgt').replace('%1',(vm+1))).appendTo(tr);
 		$(tbl).append(tr);
 
 		// Hard Disks are handled differently
@@ -377,7 +373,7 @@ function wizardImportApplianceParsed(d) {
 	if(d.warnings && d.warnings.length) {
 
 		var div = $('<div />');
-		$(div).append(trans('Warnings:'));
+		$(div).append(trans('Warnings:','VBoxApplianceEditorWgt'));
 		
 		var ul = $('<ul />');
 
@@ -390,8 +386,6 @@ function wizardImportApplianceParsed(d) {
 		$(div).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':trans('Warnings:')});
 		
 	}
-	
-	vboxUnsetLangContext();
 	
 
 };
@@ -420,9 +414,18 @@ function vboxImportAppliancePropEditOptions(elm,desc) {
 		*/
 	});
 	var val = $(elm).data('descValue');
+	if(desc.option_offset) {
+		val = parseInt(val) + parseInt(desc.option_offset);
+		val = ''+val;
+	}
+	selOpt = 0;
+	var a = 0;
 	for(var i in desc.options) {
 		$(s).prop('options').add(new Option(desc.options[i],i,(i == val),(i == val)));
+		if(i==val) selOpt = a;
+		a++;
 	}
+	$(s).attr('selectedIndex',selOpt);
 	$(elm).children().hide();
 	$(elm).append(s);
 	$('#vboxImportProps').one('selectProp',function(){

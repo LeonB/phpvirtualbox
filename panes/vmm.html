@@ -200,9 +200,8 @@
 /*
  * Translate
  */
- vboxSetLangContext('VBoxMediaManagerDlg');
  
-$("#vboxVMMTabs").find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
+$("#vboxVMMTabs").find(".translate").html(function(i,h){return trans(h,'VBoxMediaManagerDlg');}).removeClass('translate');
 
 
 /*
@@ -408,27 +407,19 @@ var vmmButtons = new Array(
 			l.addFile("panes/vmmModify.html",function(f){$(d).append(f);});
 			l.onLoad = function() {
 				
-				vboxSetLangContext('UIMediumTypeChangeDialog');
-				var msg = trans('<p>You are about to change the attributes of the virtual disk located in <b>%1</b>.</p><p>Please choose one of the following medium types and press <b>%2</b> to proceed or <b>%3</b> otherwise.</p>');
-				var title = trans('Modify medium attributes');
-				vboxUnsetLangContext();
+				var msg = trans('<p>You are about to change the attributes of the virtual disk located in <b>%1</b>.</p><p>Please choose one of the following medium types and press <b>%2</b> to proceed or <b>%3</b> otherwise.</p>','UIMediumTypeChangeDialog');
+				var title = trans('Modify medium attributes','UIMediumTypeChangeDialog');
 				
-				vboxSetLangContext('QIMessageBox');
 				msg = msg.replace('%1',med.location).replace('%2',trans('OK','QIMessageBox')).replace('%3',trans('Cancel','QIMessageBox'));
-				vboxUnsetLangContext();
 				
 				$(d).dialog({'width':400,'height':350,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/diskimage_16px.png" /> '+title});
 				
 				// Translations
 				$('#vboxVMMModifyInstructions').html(msg);
 				
-				vboxSetLangContext('UIMediumTypeChangeDialog');
-				$('#vboxVMMModify').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
-				vboxUnsetLangContext();
+				$('#vboxVMMModify').find(".translate").html(function(i,h){return trans(h,'UIMediumTypeChangeDialog');}).removeClass('translate');
 
-				vboxSetLangContext('VBoxGlobal');
-				$('#vboxVMMModify').find('table.vboxOptions').find('span').html(function(i,h){return trans(h);});
-				vboxUnsetLangContext();
+				$('#vboxVMMModify').find('table.vboxOptions').find('span').html(function(i,h){return trans(h,'VBoxGlobal');});
 				
 				// Set correct option
 				$('#vboxVMMModify').find('input').prop('checked',false);
@@ -471,17 +462,15 @@ var vmmButtons = new Array(
 			}
 			var m = vboxMedia.getMediumById($(elm).find('tr.vboxListItemSelected').first().data('medium'));
 
-			vboxSetLangContext('VBoxProblemReporter');
-			
 			// If we are removing a hard disk and configured to allow deletions
 			if(m.deviceType == 'HardDisk' && $('#vboxIndex').data('vboxConfig').deleteOnRemove && m.format != 'iSCSI') {
 
 				
-				var q = trans('<p>Do you want to delete the storage unit of the hard disk <nobr><b>%1</b></nobr>?</p><p>If you select <b>Delete</b> then the specified storage unit will be permanently deleted. This operation <b>cannot be undone</b>.</p><p>If you select <b>Keep</b> then the hard disk will be only removed from the list of known hard disks, but the storage unit will be left untouched which makes it possible to add this hard disk to the list later again.</p>').replace('%1',m.location);
+				var q = trans('<p>Do you want to delete the storage unit of the hard disk <nobr><b>%1</b></nobr>?</p><p>If you select <b>Delete</b> then the specified storage unit will be permanently deleted. This operation <b>cannot be undone</b>.</p><p>If you select <b>Keep</b> then the hard disk will be only removed from the list of known hard disks, but the storage unit will be left untouched which makes it possible to add this hard disk to the list later again.</p>','VBoxProblemReporter').replace('%1',m.location);
 				
 
 				var buttons = {};
-				buttons[trans('Delete')] = function(){
+				buttons[trans('Delete','VBoxProblemReporter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType,'delete':1},function(ret){
 						vboxProgress(ret.progress,function(){
 							var l = new vboxLoader();
@@ -493,7 +482,7 @@ var vmmButtons = new Array(
 					$(this).empty().remove();
 				};
 				
-				buttons[trans('Keep')] = function(){
+				buttons[trans('Keep','VBoxProblemReporter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
 						var l = new vboxLoader();
 						l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
@@ -505,11 +494,11 @@ var vmmButtons = new Array(
 				
 			} else {
 				
-				var q = trans('<p>Are you sure you want to remove the %1 <nobr><b>%2</b></nobr> from the list of known media?</p>').replace('%1',trans(mtype)).replace('%2',m.location);
-				q+= trans('<p>Note that the storage unit of this medium will not be deleted and that it will be possible to use it later again.</p>');
+				var q = trans('<p>Are you sure you want to remove the %1 <nobr><b>%2</b></nobr> from the list of known media?</p>','VBoxProblemReporter').replace('%1',trans(mtype,'VBoxProblemReporter')).replace('%2',m.location);
+				q+= trans('<p>Note that the storage unit of this medium will not be deleted and that it will be possible to use it later again.</p>','VBoxProblemReporter');
 				
 				var buttons = {};
-				buttons[trans('Remove')] = function(){
+				buttons[trans('Remove','VBoxProblemReporter')] = function(){
 					var b = this;
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
 						var l = new vboxLoader();
@@ -522,7 +511,6 @@ var vmmButtons = new Array(
 					
 			}
 			vboxConfirm(q,buttons);
-			vboxUnsetLangContext();
 		}
 	},
 
@@ -555,13 +543,12 @@ var vmmButtons = new Array(
 					break;
 			}
 			
-			vboxSetLangContext('VBoxProblemReporter');
 			
 			var m = vboxMedia.getMediumById($(elm).find('tr.vboxListItemSelected').first().data('medium'));
-			var q = trans('<p>Are you sure you want to release the %1 <nobr><b>%2</b></nobr>?</p><p>This will detach it from the following virtual machine(s): <b>%3</b>.</p>').replace('%1',trans(mtype)).replace('%2',m.location);
+			var q = trans('<p>Are you sure you want to release the %1 <nobr><b>%2</b></nobr>?</p><p>This will detach it from the following virtual machine(s): <b>%3</b>.</p>','VBoxProblemReporter').replace('%1',trans(mtype,'VBoxProblemReporter')).replace('%2',m.location);
 			
 			var buttons = {};
-			buttons[trans('Release')] = function(){
+			buttons[trans('Release','VBoxProblemReporter')] = function(){
 				var b = this;
 				vboxAjaxRequest('mediumRelease',{'id':m.id,'type':m.deviceType},function(ret){
 					// Check if current VM is in list
@@ -590,7 +577,6 @@ var vmmButtons = new Array(
 				q = q.replace('%3','<b>'+machines.join('</b>, <b>') + '</b>');
 			};
 			
-			vboxUnsetLangContext();
 			
 			vboxConfirm(q,buttons);	
 		}
@@ -622,6 +608,7 @@ if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 }
 
 var vmmToolbar = new vboxToolbar(vmmButtons);
+vmmToolbar.context = 'VBoxMediaManagerDlg';
 vmmToolbar.addButtons('vboxMMToolbar');
 
 /* Actions Menu */
@@ -701,7 +688,8 @@ var menu = {
 	]
 };
 
-var vmmMenu = new vboxMenuBar('vboxMMMenu');
+var vmmMenu = new vboxMenuBar('vboxMMMenu')
+vmmMenu.context = 'VBoxMediaManagerDlg';
 vmmMenu.addMenu(menu);
 vmmMenu.iconStringDisabled = '_disabled';
 vmmMenu.addMenuBar('vboxMMMenu');
@@ -713,7 +701,7 @@ function vboxVMMMediaInfo(e,m) {
 	
 	$('#vboxVirtualMediaManager').find('.vmmMediumLocation').val((m && m.location ? m.location : '--'));
 	$('#vboxVirtualMediaManager').find('.vmmMediumFormat').val(m ? m.format.toUpperCase() : '--');
-	$('#vboxVirtualMediaManager').find('.vmmMediumHDDetails').val(m ? trans(vboxMedia.getHardDiskVariant(m),'VBoxGlobal') : '--');
+	$('#vboxVirtualMediaManager').find('.vmmMediumHDDetails').val(m ? vboxMedia.getHardDiskVariant(m) : '--');
 	$('#vmmMediumType').val(m ? trans(m.type,'VBoxGlobal') : '--');
 	
 	if(m && m.parent) {
@@ -1108,7 +1096,6 @@ function vboxVMMInit(hideDiff,attached,vmPath) {
 	
 }
 
-vboxUnsetLangContext();
 
 </script>
 

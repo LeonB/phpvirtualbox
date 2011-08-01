@@ -386,7 +386,7 @@ function vboxAjaxError(e) {
 	var p = $('<p />').attr({'style':'text-align: center'});
 	
 	if(e.details) {
-		$('<a />').attr({'href':'#'}).html(trans('Details')).click(function(){
+		$('<a />').attr({'href':'#'}).html(trans('Details','QIMessageBox')).click(function(){
 			$(this).parent().parent().dialog('option',{'height':400,'position':'center'});
 			$(this).parent().siblings(".vboxAjaxErrorDetails").css({"display":""});
 			$(this).parent().css({'padding':'0px','margin':'0px'});
@@ -456,7 +456,7 @@ function vboxConfirm(q,buttons,cancelText) {
 /*
  * Common UI setup functions
  */
-function vboxInitDisplay(root) {
+function vboxInitDisplay(root,context) {
 	
 	if(typeof root == 'string')
 		root = $('#'+root);
@@ -508,8 +508,8 @@ function vboxInitDisplay(root) {
 		if(!$(this).data('noMinMaxLabels')) {
 			var min = $(this).slider('option','min');
 			var max = $(this).slider('option','max');
-			$(this).closest('table').find('.vboxSliderMin').html(function(i,h){return ' ' + trans(h).replace('%1',min);});
-			$(this).closest('table').find('.vboxSliderMax').html(function(i,h){return ' ' + trans(h).replace('%1',max);});
+			$(this).closest('table').find('.vboxSliderMin').html(function(i,h){return ' ' + trans(h,context,min,$(this).attr('title')).replace('%1',min);});
+			$(this).closest('table').find('.vboxSliderMax').html(function(i,h){return ' ' + trans(h,context,max,$(this).attr('title')).replace('%1',max);});
 	}
 	});
 
@@ -517,8 +517,7 @@ function vboxInitDisplay(root) {
 	/*
 	 * Translations
 	 */
-	$(root).find(".translate").html(function(i,h){return trans($('<div />').html(h).text());}).removeClass('translate');
-
+	$(root).find(".translate").html(function(i,h){return trans($('<div />').html(h).text(),context);}).removeClass('translate');
 
 	/*
 	 * Setup Tabs

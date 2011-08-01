@@ -69,9 +69,7 @@ function vboxVMList(anchorid) {
 	this.versionChecked = false;
 	this.contextMenuItems = null;
 	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
-	vboxSetLangContext('UIVMListView');
-	this.tip = trans('<nobr>%1<br></nobr><nobr>%2 since %3</nobr><br><nobr>Session %4</nobr>');
-	vboxUnsetLangContext();
+	this.tip = trans('<nobr>%1<br></nobr><nobr>%2 since %3</nobr><br><nobr>Session %4</nobr>','UIVMListView');
 
 	
 	// If there are multiple servers configured, setup menu
@@ -274,8 +272,6 @@ function vboxVMList(anchorid) {
 		// VM Name
 		var td = $('<td />').attr({'class':'vboxVMTitle'});
 		
-		vboxSetLangContext('VBoxGlobal');
-		
 		// Host can have HTML in name
 		if(vmn.id == 'host') {
 			// Check for multiple server config
@@ -302,7 +298,7 @@ function vboxVMList(anchorid) {
 			var sdate = new Date(vmn.lastStateChange * 1000);
 
 			// Table gets tool tips
-			tip = self.tip.replace('%1',('<b>'+$('<span />').text(vmn.name).html()+'</b>'+(vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''))).replace('%2',trans(vboxVMState(vmn.state))).replace('%3',sdate.toLocaleString()).replace('%4',trans(vmn.sessionState));
+			tip = self.tip.replace('%1',('<b>'+$('<span />').text(vmn.name).html()+'</b>'+(vmn.currentSnapshot ? ' (' + $('<span />').text(vmn.currentSnapshot).html() + ')' : ''))).replace('%2',trans(vboxVMState(vmn.state),'VBoxGlobal')).replace('%3',sdate.toLocaleString()).replace('%4',trans(vmn.sessionState,'VBoxGlobal'));
 			$(tbl).tipped({'source':tip,'position':'mouse','delay':2000});
 		}
 		
@@ -311,10 +307,8 @@ function vboxVMList(anchorid) {
 		
 		var tr = $('<tr />');
 		
-		var td = $('<td />').attr({'class':(vmn.id != 'host' && vmn.sessionState != 'Unlocked' ? 'vboxVMSessionOpen' : '')}).html("<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vboxVMState(vmn.state)) + '</span>');
+		var td = $('<td />').attr({'class':(vmn.id != 'host' && vmn.sessionState != 'Unlocked' ? 'vboxVMSessionOpen' : '')}).html("<img src='images/vbox/" + vboxMachineStateIcon(vmn.state) +"' /> <span class='vboxVMState'>" + trans(vboxVMState(vmn.state),'VBoxGlobal') + '</span>');
 
-		vboxUnsetLangContext();
-		
 		// Add VirtualBox version if hosting
 		if(vmn.id == 'host') {
 			
@@ -474,13 +468,12 @@ function vboxVMList(anchorid) {
 			
 			var ul = $('<ul />').attr({'id':self.contextMenuId,'style':'display: none;'});
 			
-			vboxSetLangContext('VBoxSelectorWnd');
 			for(var i = 0; i < self.contextMenuItems.length; i++) {
 				// Check for 16px icon
 				if(self.contextMenuItems[i].icon_16) self.contextMenuItems[i].icon = self.contextMenuItems[i].icon_16;
-				$('<li />').html("<a href='#" + self.contextMenuItems[i].name + "' style='background-image: url(images/vbox/" + self.contextMenuItems[i].icon +"_16px.png);' >"+trans(self.contextMenuItems[i].label)+"</a>").addClass((self.contextMenuItems[i].separator ? 'separator' : 'noseparator')).appendTo(ul);
+				$('<li />').html("<a href='#" + self.contextMenuItems[i].name + "' style='background-image: url(images/vbox/" + self.contextMenuItems[i].icon +"_16px.png);' >"+trans(self.contextMenuItems[i].label,'VBoxSelectorWnd')+"</a>").addClass((self.contextMenuItems[i].separator ? 'separator' : 'noseparator')).appendTo(ul);
 			}
-			vboxUnsetLangContext();
+
 			$('#vboxIndex').append(ul).bind('vmselect',function(e,vm){
 				for(var i = 0; i < self.contextMenuItems.length; i++) {
 					if(self.contextMenuItems[i].enabled(vm)) {

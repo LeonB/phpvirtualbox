@@ -137,9 +137,8 @@ var sButtons = new Array(
 
  );
 
-vboxSetLangContext('UIMachineSettingsSF');
-
 sfToolbar = new vboxToolbarSmall(sButtons);
+sfToolbar.context = 'UIMachineSettingsSF';
 sfToolbar.addButtons('vboxSettingsSFButtons');
 
 $('#vboxSettingsSharedFoldersList').bind('select',sfToolbar.update);
@@ -148,19 +147,13 @@ $('#vboxSettingsSharedFoldersList').bind('select',sfToolbar.update);
 
 function vboxSettingsAddSharedFolder(f, noColor) {
 	
-	vboxSetLangContext('UIMachineSettingsSF');
-	
 	var tr = $('<tr />').attr({'class':'vboxListItem'}).addClass(f.type == 'machine' ? 'vboxSFMachine' : 'vboxSFTransient').bind('refresh',function(){
 	
-		vboxSetLangContext('UIMachineSettingsSF');
-		
 		// bind refresh
 		$(this).children('td.vboxSettingsSFNameCell').children('span').first().html($('<div/>').text($(this).data('name')).html());
 		$(this).children('td.vboxSettingsSFPathCell').html($('<div/>').text($(this).data('hostPath')).html());
-		$(this).children('td.vboxSettingsSFAMCell').html($(this).data('autoMount') ? trans('Yes') : '');
-		$(this).children('td.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full') : trans('Read-only'));
-		
-		vboxUnsetLangContext();
+		$(this).children('td.vboxSettingsSFAMCell').html($(this).data('autoMount') ? trans('Yes','UIMachineSettingsSF') : '');
+		$(this).children('td.vboxSettingsSFROCell').html($(this).data('writable') ? trans('Full','UIMachineSettingsSF') : trans('Read-only','UIMachineSettingsSF'));
 		
 		// Move from one type to another
 		if($(this).data('type') == 'machine' && $(this).hasClass('vboxSFTransient')) {
@@ -183,10 +176,10 @@ function vboxSettingsAddSharedFolder(f, noColor) {
 	$('<td />').attr({'class':'vboxSettingsSFPathCell vboxHoverMid'}).html($('<div/>').text(f.hostPath).html()).appendTo(tr);
 	
 	// auto-mount?
-	$('<td />').attr({'class':'vboxSettingsSFAMCell vboxHoverMid'}).html(f.autoMount ? trans('Yes') : '').appendTo(tr);
+	$('<td />').attr({'class':'vboxSettingsSFAMCell vboxHoverMid'}).html(f.autoMount ? trans('Yes','UIMachineSettingsSF') : '').appendTo(tr);
 
 	// Read only?
-	$('<td />').attr({'class':'vboxSettingsSFROCell vboxHoverLast'}).html(f.writable ? trans('Full') : trans('Read-only')).appendTo(tr);
+	$('<td />').attr({'class':'vboxSettingsSFROCell vboxHoverLast'}).html(f.writable ? trans('Full','UIMachineSettingsSF') : trans('Read-only','UIMachineSettingsSF')).appendTo(tr);
 
 	
 	$(tr).children().click(function(){
@@ -208,8 +201,6 @@ function vboxSettingsAddSharedFolder(f, noColor) {
 		if(!noColor) vboxColorRows($('#vboxSFTransientBody'));
 	}
 
-	vboxUnsetLangContext();
-	
 	return tr;
 }
 
@@ -296,35 +287,31 @@ function vboxSFBrowseFolder(btn) {
  */
 function vboxSettingsSFEditDialog() {
 	
-	vboxSetLangContext('UIMachineSettingsSFDetails');
-	
 	var d = $('<div />').attr({'id':'vboxSettingsSFEdit','class':'vboxNonTabbed vboxDialogContent','style':'display: none;'});
 	
 	var tbl = $('<table />').attr({'style':'width: 100%','class':'vboxSettingsTable'});
 
 	// Path
-	$('<tr />').attr({'style':'vertical-align: middle'}).append($('<th />').attr({'style':'white-space: nowrap'}).html(trans('Folder Path:'))).append(
+	$('<tr />').attr({'style':'vertical-align: middle'}).append($('<th />').attr({'style':'white-space: nowrap'}).html(trans('Folder Path:','UIMachineSettingsSFDetails'))).append(
 			$('<td />').attr({'style':'white-space: nowrap'}).html('<table style="width: 100%"><tr><td style="width: 100%"><input type="text" class="vboxText" id="vboxSettingsSFPath" style="width: 100%"/></td><td style="width: auto" class="vboxFileFolderInput"><input type="button" class="vboxImgButton" style="background-image: url(images/vbox/select_file_16px.png)" onClick="vboxSFBrowseFolder(this)" /></td></tr></table>')
 	).appendTo(tbl);
 
 	// Name
-	$('<tr />').append($('<th />').html(trans('Folder Name:'))).append($('<td />').html('<input type="text" class="vboxText" id="vboxSettingsSFName" style="width: 100%" />')).appendTo(tbl);
+	$('<tr />').append($('<th />').html(trans('Folder Name:','UIMachineSettingsSFDetails'))).append($('<td />').html('<input type="text" class="vboxText" id="vboxSettingsSFName" style="width: 100%" />')).appendTo(tbl);
 
 	// Read only
-	$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFRO" /> ' + trans('Read-only')+'</label>')).appendTo(tbl);
+	$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFRO" /> ' + trans('Read-only','UIMachineSettingsSFDetails')+'</label>')).appendTo(tbl);
 	
 	// Auto mount
-	$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFAM" /> ' + trans('Auto-mount')+'</label>')).appendTo(tbl);
+	$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFAM" /> ' + trans('Auto-mount','UIMachineSettingsSFDetails')+'</label>')).appendTo(tbl);
 	
 	// Add "Make Permanent"?
 	if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 		
-		$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFPerm" /> ' + trans('Make Permanent')+'</label>')).appendTo(tbl);
+		$('<tr />').append($('<th />')).append($('<td />').html('<label><input type="checkbox" class="vboxCheckbox" id="vboxSettingsSFPerm" /> ' + trans('Make Permanent','UIMachineSettingsSFDetails')+'</label>')).appendTo(tbl);
 	}
 	
-	$(d).append(tbl).dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxNonTabbed','title':'<img src="images/vbox/shared_folder_16px.png" class="vboxDialogTitleIcon" /> '+trans('Edit Share')});
-
-	vboxUnsetLangContext();
+	$(d).append(tbl).dialog({'width':800,'modal':true,'autoOpen':false,'stack':true,'dialogClass':'vboxDialogContent vboxNonTabbed','title':'<img src="images/vbox/shared_folder_16px.png" class="vboxDialogTitleIcon" /> '+trans('Edit Share','UIMachineSettingsSFDetails')});
 	
 	return $('#vboxSettingsSFEdit');
 }
@@ -346,8 +333,6 @@ $('#vboxSettingsDialog').bind('save',function(){
 	$('#vboxSettingsDialog').data('vboxMachineData').sharedFolders = folders;
 
 });
-
-vboxUnsetLangContext();
 
 
 </script>

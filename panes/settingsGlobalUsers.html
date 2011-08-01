@@ -227,11 +227,10 @@ var sButtons = new Array(
 	}
 );
 
-vboxSetLangContext('UIUsers');
 userToolbar = new vboxToolbarSmall(sButtons);
+userToolbar.context = 'UIUsers';
 userToolbar.addButtons('vboxSettingsGlobalUsersToolbar');
 $('#vboxSettingsUserList').bind('select',userToolbar.update);
-vboxUnsetLangContext();
 
 /*
  *

@@ -46,8 +46,6 @@
 <script type='text/javascript'>
 
 // Translations
-vboxSetLangContext('vboxISCSI');
-$('#vboxISCSI').find(".translate").html(function(i,h){return trans(h);}).removeClass('translate');
-vboxUnsetLangContext();
+$('#vboxISCSI').find(".translate").html(function(i,h){return trans(h,'vboxISCSI');}).removeClass('translate');
 
 </script>

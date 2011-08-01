@@ -35,29 +35,26 @@ echo('var __vboxLangData = ' . json_encode($_vbox_language->langdata) .";\n\nvar
 
 ?>
 
-var __vboxLangContext = null;
-var __vboxLangContexts = [];
 
-// Temporary debug wrapper
-function trans(s,c,n) {
+// Failsafe wrapper
+function trans(s,c,n,h) {
 
-	var r = transreal(s,c,n);
+	if(!c) c = 'VBoxGlobal';
+
+	var r = transreal(s,c,n,h);
 	
-	if(typeof r != 'string') {
-	   // debug
-	   alert(s + ' ' + c + ' ' + typeof(r));
+	if(typeof r != 'string') {	
 	   return s;
 	}
+	
 	return r;
 }
 
-function transreal(w,context,number) {
-	
-	if(!context) context = __vboxLangContext;
-	if(!context) context = 'phpVirtualBox';
+function transreal(w,context,number,comment) {
 	
 	try {
 		if(__vboxLangData['contexts'][context]['messages'][w]['translation']) {
+		
 			if(number !== undefined && __vboxLangData['contexts'][context]['messages'][w]['translation']['numerusform']) {
 				var t = __vboxLangData['contexts'][context]['messages'][w]['translation']['numerusform'];
 				if(number == 0 && t[0]) return t[0];
@@ -66,26 +63,23 @@ function transreal(w,context,number) {
 				return t[1];
 			}
 			return __vboxLangData['contexts'][context]['messages'][w]['translation'];
+			
+		} else if(__vboxLangData['contexts'][context]['messages'][w][0]) {
+		
+			if(comment) {
+				for(var i in __vboxLangData['contexts'][context]['messages'][w]) {
+					if(__vboxLangData['contexts'][context]['messages'][w][i]['comment'] == comment) return __vboxLangData['contexts'][context]['messages'][w][i]['translation'];
+				}
+			}
+			return __vboxLangData['contexts'][context]['messages'][w][0]['translation'];
+			
 		} else {
 			return w;
 		}
+		
 	} catch(err) {
+		// alert(w + ' - ' + context + ': ' + err);
 		return w;
 	}	
 }
 
-function vboxSetLangContext(w) {
-	__vboxLangContexts[__vboxLangContexts.length] = w;
-	__vboxLangContext = w;
-}
-
-function vboxUnsetLangContext(w) {
-	if(__vboxLangContexts.length > 1) {
-		__vboxLangContexts.pop();
-		__vboxLangContext = __vboxLangContexts[(__vboxLangContexts.length - 1)];
-	} else {
-		if (__vboxLangContexts.length > 0) delete __vboxLangContexts[0];
-		__vboxLangContext = null;
-	}
-
-}

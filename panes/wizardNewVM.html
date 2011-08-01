@@ -82,12 +82,12 @@
 <!-- Step 4 -->
 <div id='wizardNewVMStep4' title='Virtual Hard Disk' style='display: none'>
 
-	<span class='translate'>&lt;p&gt;Select a virtual hard disk to be used as the boot hard disk of the virtual machine. You can either create a new hard disk or select an existing one from the drop-down list or by pressing corresponding button (to invoke file-open window).&lt;/p&gt;&lt;p&gt;If you need a more complicated hard disk setup, you can also skip this step and attach hard disks later using the VM Settings dialog.&lt;/p&gt;</span>
+	<span class='translate'>&lt;p&gt;If you wish you can now add a start-up disk to the new machine. You can either create a new virtual disk or select one from the list or from another location using the folder icon.&lt;/p&gt;&lt;p&gt;If you need a more complex virtual disk setup you can skip this step and make the changes to the machine settings once the machine is created.&lt;/p&gt;</span>
 	
 	<p id='newVMHDSizeLabel'></p>
 
 	
-	<span class='vboxTableLabel'><label><input type='checkbox' id='newVMBootDiskCheckbox' checked='checked' style='margin:0px' class='vboxCheckbox' name='newVMBootDisk' /> <span class='translate'>Boot Hard Disk</span></label></span>
+	<span class='vboxTableLabel'><label><input type='checkbox' id='newVMBootDiskCheckbox' checked='checked' style='margin:0px' class='vboxCheckbox' name='newVMBootDisk' /> <span class='translate'>Start-up Disk</span></label></span>
 	<div class='vboxBordered'>
 	
 		<table class='vboxOptions' id='newVMBootDiskTable' style='width:100%;'>
@@ -131,7 +131,7 @@
 				<td><span id='vmNewMemoryLabel'></span></td>
 			</tr>
 			<tr id='vmNewDiskRow'>
-				<th style='text-align: right'><span class='translate'>Boot Hard Disk</span>:</th>
+				<th style='text-align: right'><span class='translate'>Start-up Disk</span>:</th>
 				<td><span id='vmNewDiskLabel'></span></td>
 			</tr>			
 		</table>
@@ -151,7 +151,7 @@ $('#wizardNewVMStep2').find('table.vboxOptions').find('span.translate').html(fun
 	return trans(h,'VBoxOSTypeSelectorWidget');
 }).removeClass('translate');
 
-$('#newVMWizSumMsg').html(trans('<p>If the above is correct press the <b>%1</b> button. Once you press it, a new virtual machine will be created. </p><p>Note that you can alter these and all other setting of the created virtual machine at any time using the <b>Settings</b> dialog accessible through the menu of the main window.</p>','UINewVMWzdPage5').replace('%1',trans('Finish','UINewVMWzd')));
+$('#newVMWizSumMsg').html(trans('<p>If the above is correct press the <b>%1</b> button. Once you press it, a new virtual machine will be created. </p><p>Note that you can alter these and all other setting of the created virtual machine at any time using the <b>Settings</b> dialog accessible through the menu of the main window.</p>','UINewVMWzdPage5').replace('%1',trans('Create','UINewVMWzd')));
 
 var sButtons = new Array(
 		{
@@ -252,7 +252,7 @@ function newVMUpdateOS(ostype) {
 
 	$('#wizardNewVMSize').slider('value',ostype.recommendedRAM);	
 	$('#newVMSizeLabel').html(trans('The recommended base memory size is <b>%1</b> MB.','UINewVMWzdPage3').replace('%1',ostype.recommendedRAM));
-	$('#newVMHDSizeLabel').html(trans('The recommended size of the boot hard disk is <b>%1</b>.','UINewVMWzdPage4').replace('%1',vboxMbytesConvert(ostype.recommendedHDD)));
+	$('#newVMHDSizeLabel').html(trans('The recommended size of the start-up disk is <b>%1</b>.','UINewVMWzdPage4').replace('%1',vboxMbytesConvert(ostype.recommendedHDD)));
 	
 }
 

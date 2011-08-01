@@ -78,7 +78,7 @@ class phpvbAuthBuiltin {
 		}
 		
 		if(!@$_SESSION['valid'])
-			throw new Exception(trans('Not logged in.'), vboxconnector::PHPVB_ERRNO_FATAL);
+			throw new Exception(trans('Not logged in.','UIUsers'), vboxconnector::PHPVB_ERRNO_FATAL);
 	}
 	
 	function logout(&$response)

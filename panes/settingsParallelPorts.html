@@ -15,9 +15,9 @@
 		<th style='min-width: 120px'><span class='translate'>Port Number:</span></th>
 		<td class='vboxEnablerTrigger'>
 			<select style='width: auto' name='vboxSettingsPPortNumber' onchange='vboxSettingsUpdatePPortOptions(this);'>
-				<option value='LPT1' class='translate'>LPT1</option>
-				<option value='LPT2' class='translate'>LPT2</option>
-				<option value='LPT3' class='translate'>LPT3</option>
+				<option value='LPT1'>LPT1</option>
+				<option value='LPT2'>LPT2</option>
+				<option value='LPT3'>LPT3</option>
 				<option value='User-defined' class='translate'>User-defined</option>	
 			</select>
 			<span class='translate'>IRQ:</span> <input type='text' name='vboxSettingsPPortIRQ' size='2' disabled='disabled' />
@@ -46,14 +46,19 @@ var vboxSettingsPPortContainer = $(vboxSettingsPPortTemplate).parent();
 
 /* translated select values */
 for(var i = 0; i < document.forms['frmVboxSettings'].vboxSettingsPPortNumber.options.length; i++) {
-	document.forms['frmVboxSettings'].vboxSettingsPPortNumber.options[i].text = trans(document.forms['frmVboxSettings'].vboxSettingsPPortNumber.options[i].text,'VBoxGlobal');
+	if($(document.forms['frmVboxSettings'].vboxSettingsPPortNumber.options[i]).hasClass('translate'))
+		$(document.forms['frmVboxSettings'].vboxSettingsPPortNumber.options[i]).text(trans(document.forms['frmVboxSettings'].vboxSettingsPPortNumber.options[i].text,'VBoxGlobal')).removeClass('translate');
 }
+
+//Translations
+$('#vboxSettingsTabParallelPort').find(".translate").html(function(i,h){return trans($('<div />').html(h).text(),'UIMachineSettingsParallel');}).removeClass('translate');
+
+
 
 /* Parallel Port tab links */
 var ul = $('<ul />');
 $(vboxSettingsPPortContainer).append(ul);
 
-vboxSetLangContext('vboxParallelPorts');
 for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').parallelPortCount); i++) {
 
 	
@@ -79,7 +84,6 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxSystemProperties').paralle
 
 }
 
-vboxUnsetLangContext();
 
 /* Remove Template */
 $("#vboxSettingsTabParallelPort").empty().remove();

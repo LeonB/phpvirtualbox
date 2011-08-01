@@ -15,10 +15,9 @@
  * 
  */
 
-vboxSetLangContext('VBoxSelectorWnd');
- 
 // Top menu
 var topMenu = new vboxMenuBar('vboxTop');
+topMenu.context = 'VBoxSelectorWnd';
 
 var menu = {
 	'name':'vboxTopFile',
@@ -212,6 +211,5 @@ topMenu.addMenu(menu);
 topMenu.addMenuBar('vboxMenu');
 $('#vboxIndex').bind('vmselect',topMenu.update);
 
-vboxUnsetLangContext();
 
 </script>
