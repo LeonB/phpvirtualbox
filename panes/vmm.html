@@ -600,98 +600,27 @@ var vmmButtons = new Array(
 		
 );
 
-// CHeck for advanced config
+// Check for advanced config
 if(!$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 	vmmButtons.shift();
 	vmmButtons.shift();
 	vmmButtons.shift();
 }
 
+/* Toolbar */
 var vmmToolbar = new vboxToolbar(vmmButtons);
 vmmToolbar.context = 'VBoxMediaManagerDlg';
 vmmToolbar.addButtons('vboxMMToolbar');
 
 /* Actions Menu */
-var menu = {
-	'name':'vboxMMactions',
-	'label':'Actions',
-	'menu':[
-        {
-			'name':'vmmActionsCopy',
-			'label':'Copy...',
-			'icon':'vdm_add',
-			'click':function(){
-				var btn = vmmToolbar.getButtonByName('vmmcopy');
-				return btn.click(btn);				
-			},
-			'enabled':function(item){
-				var btn = vmmToolbar.getButtonByName('vmmcopy');
-				return btn.enabled(item);				
-			}
-        },
-        {
-			'name':'vmmActionsModify',
-			'label':'Modify...',
-			'icon':'vdm_new',
-			'click':function(){
-				var btn = vmmToolbar.getButtonByName('vmmmodify');
-				return btn.click(btn);				
-			},
-			'enabled':function(item){
-				var btn = vmmToolbar.getButtonByName('vmmmodify');
-				return btn.enabled(item);				
-			}
-        },        
-		{
-			/*
-			 *	Remove a medium
-			 */
-			'name' : 'vmmremove',
-			'label' : 'Remove',
-			'icon' : 'hd_remove',
-			'separator':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig,
-			'enabled' : function (item) {
-				var btn = vmmToolbar.getButtonByName('vmmremove');
-				return btn.enabled(item);				
-			},
-			'click' : function () {
-				var btn = vmmToolbar.getButtonByName('vmmremove');
-				btn.click(btn);
-			}
-		},
-		{
-			/*
-			 *	Release a medium from all attachments
-			 */
-			'name' : 'vmmrelease',
-			'label' : 'Release',
-			'icon' : 'hd_release',
-			'enabled' : function (item) {
-				var btn = vmmToolbar.getButtonByName('vmmrelease');
-				return btn.enabled(item);				
-			},
-			'click' : function () {
-				var btn = vmmToolbar.getButtonByName('vmmrelease');
-				btn.click(btn);				
-			}
-		},
-		{
-			'name' : 'vmmrefresh',
-			'label' : 'Refresh',
-			'icon' : 'refresh',
-			'click' : function () {
-				var btn = vmmToolbar.getButtonByName('vmmrefresh');
-				btn.click(btn);
-			}
-		}		
-        
-	]
-};
-
 var vmmMenu = new vboxMenuBar('vboxMMMenu')
 vmmMenu.context = 'VBoxMediaManagerDlg';
-vmmMenu.addMenu(menu);
 vmmMenu.iconStringDisabled = '_disabled';
+vmmMenu.addMenu({
+	'name':'vboxMMactions',
+	'label':'Actions',
+	'menu': vmmButtons
+});
 vmmMenu.addMenuBar('vboxMMMenu');
 
 /* Display selected media info */
@@ -730,6 +659,12 @@ function vboxVMMMediaInfo(e,m) {
 	}
 }
 
+// Update items on mediumselect
+$('#vboxVirtualMediaManager').bind('mediumselect',function(e,m){
+	vmmToolbar.update(e,m);
+	vboxVMMMediaInfo(e,m);
+	vmmMenu.update(e,m);
+});
 
 /*
  * Add medium to a table
@@ -1033,13 +968,6 @@ function vboxVMMInit(hideDiff,attached,vmPath) {
 
 	// Resize disks table body
 	vboxVMMSizeTable($('#vmmDisks'));
-	
-	// Update items on mediumselect
-	$('#vboxVirtualMediaManager').bind('mediumselect',function(e,m){
-		vmmToolbar.update(e,m);
-		vboxVMMMediaInfo(e,m);
-		vmmMenu.update(e,m);
-	});
 	
 	// Save options for later
 	$('#vboxVirtualMediaManager').data('hideDiff', hideDiff);

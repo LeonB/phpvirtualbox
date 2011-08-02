@@ -23,17 +23,7 @@ var tButtons = [
 		
 	}}),
 	$.extend({},vboxVMActions['start'],{'name':'start'}),
-	{
-		'name' : 'stop',
-		'label' : 'Stop',
-		'icon' : 'vm_poweroff',
-		'menu' : true,
-		'click' : function () { return true; /* handled by stop menu */ },
-		'enabled' : function (vm) {
-			vboxUpdateStopMenu(vm);
-			return (vm && (jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1));
-		}
-	}
+	$.extend({},vboxVMActions['stop'],{'name':'stop'})
 ];
 
 /* Append Top Toolbar */
@@ -266,11 +256,11 @@ function vboxVMListToolbarUSBUpdate(menu) {
 
 /*
  *  
- * Update vboxVMListStopMenu items. Called when 
+ * Update vboxStopMenu items. Called when 
  * vboxVMList selection changes $('#vboxIndex').onvmselect
  *
  */
-function vboxUpdateSettingsMenu(e,vm) {
+function vboxUpdateSettingsMenu(vm) {
 
 	if(vm && vm.state == 'Running') {
 		$("#vboxToolbarButton-vboxPaneToolbar-settings").enableContextMenu();
@@ -378,26 +368,14 @@ function vboxUpdateSettingsMenu(e,vm) {
 
 
 
-/* 'Stop' menu items / actions */
-var vboxVMListStopMenu = {
-	'savestate':vboxVMActions['savestate'],
-	/* 'sleep':vboxVMActions['sleep'], */
-	'powerbutton':vboxVMActions['powerbutton'],
-	'pause':vboxVMActions['pause'],
-	'powerdown':vboxVMActions['powerdown'],
-	'reset':vboxVMActions['reset']	
-};
-
-
 /* 'Stop' menu */
 var ul = $('<ul />').attr({'class':'contextMenu','style':'display: none','id':'vboxStopMenu'});
-for(var i in vboxVMListStopMenu) {
+for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
 	
-	// add name
-	vboxVMListStopMenu[i].name = i;
+	var n = vboxVMActions.stop_actions[i];
 
-	$(ul).append($('<li />').html("<a href='#" + i + "' style='background-image: url(images/vbox/" + vboxVMListStopMenu[i].icon +"_16px.png);' >"+trans(vboxVMListStopMenu[i].label,'UIActionsPool')+"</a>"));
-	
+	$(ul).append($('<li />').html("<a href='#" + n + "' style='background-image: url(images/vbox/" + vboxVMActions[n].icon +"_16px.png);' >"+trans(vboxVMActions[n].label,'UIActionsPool')+"</a>"));
+		
 }
 
 /* Append 'Stop' button Menu */
@@ -420,25 +398,28 @@ $("#vboxToolbarButton-vboxPaneToolbar-stop").contextMenu({
 
 /*
  *  
- * Update vboxVMListStopMenu items. Called when 
- * vboxVMList selection changes. Toolbar actually listens for event.
+ * Update vboxStopMenu items. Called when 
+ * vboxVMList selection changes.
  *
  */
 function vboxUpdateStopMenu(vm) {
 
 	var enabledOne = false;
-	for(var i in vboxVMListStopMenu) {
+	
+	for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
+		
+		var n = vboxVMActions.stop_actions[i];
 		
 		// enable or disable
-		if(vm && vboxVMActions[i].enabled(vm)) {
-			$('#vboxStopMenu').enableContextMenuItems('#'+i);
-			$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_16px.png)');
+		if(vm && vboxVMActions[n].enabled(vm)) {
+			$('#vboxStopMenu').enableContextMenuItems('#'+n);
+			$('#vboxStopMenu').find('a[href=#'+n+']').css('background-image','url(images/vbox/'+vboxVMActions[n].icon+'_16px.png)');
 			enabledOne = true;
 			continue;
 		}
 
-		$('#vboxStopMenu').disableContextMenuItems('#'+i);
-		$('#vboxStopMenu').find('a[href=#'+i+']').css('background-image','url(images/vbox/'+vboxVMListStopMenu[i].icon+'_disabled_16px.png)');
+		$('#vboxStopMenu').disableContextMenuItems('#'+n);
+		$('#vboxStopMenu').find('a[href=#'+n+']').css('background-image','url(images/vbox/'+vboxVMActions[n].icon+'_disabled_16px.png)');
 	}
 	
 	if(!enabledOne) {
@@ -455,6 +436,10 @@ $('#vboxIndex').bind('vmloading',function(){
 });
 
 // Update menu when vm is loaded
-$('#vboxIndex').bind('vmloaded',vboxUpdateSettingsMenu);
+$('#vboxIndex').bind('vmloaded',function(e,vm){
+	vboxUpdateSettingsMenu(vm);
+	vboxUpdateStopMenu(vm);
+});
+
 
 </script>

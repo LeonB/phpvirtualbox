@@ -1,4 +1,9 @@
 -------------------------------------
+	4.1-2
+-------------------------------------
+Added Stop options to VM list context menu.
+
+-------------------------------------
 	4.1-1b	2011-8-1
 -------------------------------------
 Added snapshot thumbnail and full image link when viewing snapshot

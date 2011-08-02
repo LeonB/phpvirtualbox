@@ -25,16 +25,21 @@ vboxVMList.interval = ($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $
 
 
 // VM List Context menu for each VM
+var sChildren = [];
+for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
+	sChildren[sChildren.length] = $.extend({},vboxVMActions[vboxVMActions.stop_actions[i]],{'name':vboxVMActions.stop_actions[i],'iconStringDisabled':'_disabled','context':'UIActionsPool'});
+}
 vboxVMList.contextMenuItems = [
 	$.extend({},vboxVMActions['settings'],{'name':'settings'}),
 	$.extend({},vboxVMActions['clone'],{'name':'clone'}),
 	$.extend({},vboxVMActions['remove'],{'name':'remove'}),
 	$.extend({},vboxVMActions['start'],{'name':'start','separator' : true}),
+	$.extend({},vboxVMActions['stop'],{'name':'stop','icon':'state_powered_off','children':sChildren,'hide_on_disabled':true}),
 	$.extend({},vboxVMActions['discard'],{'name':'discard'}),
-	$.extend({},vboxVMActions['pause'],{'name':'pause'}),
 	$.extend({},vboxVMActions['refresh'],{'name':'refresh','separator' : true}),
 	$.extend({},vboxVMActions['logs'],{'name':'logs'})
 ];
+
 
 // Initial action update
 $('#vboxIndex').trigger('vmselect',null);
@@ -68,6 +73,7 @@ function vboxVMList(anchorid) {
 	this.changed = false;
 	this.versionChecked = false;
 	this.contextMenuItems = null;
+	this.contextMenuObj = null;
 	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
 	this.tip = trans('<nobr>%1<br></nobr><nobr>%2 since %3</nobr><br><nobr>Session %4</nobr>','UIVMListView');
 
@@ -82,11 +88,6 @@ function vboxVMList(anchorid) {
 		}
 		$('#vboxIndex').append(ul);
 		
-	}
-	
-	// Context Menu Handler
-	self.contextMenuHandler = function(a) {
-		vboxVMActions[a].click();
 	}
 	
 	// Update list of VMs
@@ -328,13 +329,13 @@ function vboxVMList(anchorid) {
 		$(tr).append(td).appendTo(tbl);
 		
 		// Context menu?
-		if(self.contextMenuId) {
+		if(self.contextMenuObj) {
 			$(tbl).contextMenu({
-				menu: self.contextMenuId,
+				menu: self.contextMenuObj.menuId(),
 				menusetup : function(el) {
 					if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
 				}
-			},self.contextMenuHandler);
+			},self.contextMenuObj.menuClickCallback);
 		}
 		
 		return tbl;
@@ -370,7 +371,12 @@ function vboxVMList(anchorid) {
 	self.getSelectedVM = function () {
 		return (self.selected == null ? null : self.vms[self.selected]);
 	}
-	
+
+	/*
+	 *
+	 * Main run() function
+	 *
+	 */
 	self.run = function() {
 		
 		if(self._running) return;
@@ -464,26 +470,14 @@ function vboxVMList(anchorid) {
 		 */
 		if(self.contextMenuItems && self.contextMenuItems.length) {
 			
-			self.contextMenuId = 'vboxVMList-'+self.anchorid+'-contextMenu';
+			// Create context menu object
+			self.contextMenuObj = new vboxMenu(self.anchorid);
+			self.contextMenuObj.context = 'VBoxSelectorWnd';
+			self.contextMenuObj.addMenu(self.contextMenuItems);
 			
-			var ul = $('<ul />').attr({'id':self.contextMenuId,'style':'display: none;'});
-			
-			for(var i = 0; i < self.contextMenuItems.length; i++) {
-				// Check for 16px icon
-				if(self.contextMenuItems[i].icon_16) self.contextMenuItems[i].icon = self.contextMenuItems[i].icon_16;
-				$('<li />').html("<a href='#" + self.contextMenuItems[i].name + "' style='background-image: url(images/vbox/" + self.contextMenuItems[i].icon +"_16px.png);' >"+trans(self.contextMenuItems[i].label,'VBoxSelectorWnd')+"</a>").addClass((self.contextMenuItems[i].separator ? 'separator' : 'noseparator')).appendTo(ul);
-			}
-
-			$('#vboxIndex').append(ul).bind('vmselect',function(e,vm){
-				for(var i = 0; i < self.contextMenuItems.length; i++) {
-					if(self.contextMenuItems[i].enabled(vm)) {
-						$('#'+self.contextMenuId).enableContextMenuItems('#'+self.contextMenuItems[i].name);
-						$('#'+self.contextMenuId).find('a[href=#'+self.contextMenuItems[i].name+']').css('background-image','url(images/vbox/'+self.contextMenuItems[i].icon+'_16px.png)');						
-					} else {
-						$('#'+self.contextMenuId).disableContextMenuItems('#'+self.contextMenuItems[i].name);
-						$('#'+self.contextMenuId).find('a[href=#'+self.contextMenuItems[i].name+']').css('background-image','url(images/vbox/'+(self.contextMenuItems[i].icon_disabled ? self.contextMenuItems[i].icon_disabled : self.contextMenuItems[i].icon+'_dis')+'_16px.png)');												
-					}
-				}
+			// Update context menu when selected VM changes
+			$('#vboxIndex').bind('vmselect',function(e,vm){
+				self.contextMenuObj.update(vm);				
 			});
 		}
 		

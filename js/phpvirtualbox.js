@@ -197,20 +197,24 @@ var vboxVMActions = {
 	'savestate' : {
 		'label' : 'Save State',
 		'icon' : 'fd',
+		'stop_action' : true,
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {vboxVMActions.powerAction('savestate');}
 	},
-	/* Send sleep button */
+	/* Send sleep button
 	'sleep' : {
 		'label' : 'ACPI Sleep Button',
 		'icon' : 'acpi',
+		'stop_action' : true,
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {vboxVMActions.powerAction('sleep');}
 	},
+	*/
 	/* Send Power Button */
 	'powerbutton' : {
 		'label' : 'ACPI Shutdown',
 		'icon' : 'acpi',
+		'stop_action' : true,
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {vboxVMActions.powerAction('powerbutton');}
 	},
@@ -218,6 +222,7 @@ var vboxVMActions = {
 	'pause' : {
 		'label' : 'Pause',
 		'icon' : 'pause',
+		'stop_action' : true,
 		'icon_disabled' : 'pause_disabled',
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {vboxVMActions.powerAction('pause'); }
@@ -226,6 +231,7 @@ var vboxVMActions = {
 	'powerdown' : {
 		'label' : 'Power Off',
 		'icon' : 'poweroff',
+		'stop_action' : true,
 		'enabled' : function(vm) { return (vm && jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1); },
 		'click' : function() {vboxVMActions.powerAction('powerdown'); }
 	},
@@ -233,6 +239,7 @@ var vboxVMActions = {
 	'reset' : {
 		'label' : 'Reset',
 		'icon' : 'reset',
+		'stop_action' : true,
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {
 			var buttons = {};
@@ -241,6 +248,20 @@ var vboxVMActions = {
 				vboxVMActions.powerAction('reset');
 			}
 			vboxConfirm(trans('<p>Do you really want to reset the virtual machine?</p><p>This will cause any unsaved data in applications running inside it to be lost.</p>','VBoxProblemReporter'),buttons);
+		}
+	},
+	
+	/* Stop actions list*/
+	'stop_actions' : ['savestate','powerbutton','pause','powerdown','reset'],
+
+	'stop' : {
+		'name' : 'stop',
+		'label' : 'Stop',
+		'icon' : 'vm_poweroff',
+		'menu' : true,
+		'click' : function () { return true; /* handled by stop context menu */ },
+		'enabled' : function (vm) {
+			return (vm && (jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1));
 		}
 	},
 	
@@ -1050,6 +1071,9 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		if(self._menu) return self._menu;
 		
 		var id = self.menu_id();
+		
+		//self._menu = new vboxMenu(id,id)
+		
 		var elm = $('#'+id);
 		if(!elm.attr('id')) {
 			$('#vboxIndex').append($('<ul />').attr({'id':id,'class':'contextMenu','style':'display: none'}));
@@ -1322,6 +1346,128 @@ function vboxDataMediator() {
 
 
 
+/*
+ * Menu for use with context or button menus
+ */
+function vboxMenu(name, id) {
+
+	var self = this;
+	self.name = name;
+	self.context = 'VBoxGlobal';
+	self.menuItems = {};
+	self.iconStringDisabled = '_dis';
+	self.id = id;
+	
+	/* return menu id */
+	self.menuId = function() {
+		if(self.id) return self.id;
+		return self.name + 'Menu';
+	}
+	
+	/* Add menu to .. menu object */
+	self.addMenu = function(m) {
+		$('#vboxIndex').append(self.menuElement(m,self.menuId()));
+	}
+
+	/* Traverse menu and add items */
+	self.menuElement = function(m,mid) {
+
+		var ul = null;
+		
+		if(mid) {
+			ul = $('#'+mid);
+			if(ul && ul.attr('id')) {
+				ul.empty();
+			} else {
+				ul = $('<ul />').attr({'id':mid,'style':'display: none;'});
+			}
+		} else {
+			ul = $('<ul />').attr({'style':'display: none;'});
+		}
+		
+		for(var i in m) {
+			
+			if(typeof i == 'function') continue;
+
+			
+			// get menu item
+			var item = self.menuItem(m[i]);
+			
+			// Add to menu list
+			self.menuItems[m[i].name] = m[i];
+
+			// Children?
+			if(m[i].children && m[i].children.length) {
+				item.append(self.menuElement(m[i].children));
+			}
+			
+			ul.append(item);
+			
+		}
+		
+		return ul;
+		
+	}
+	
+	/* Menu click callback */
+	self.menuClickCallback = function(i) {
+		return self.menuItems[i].click();
+	}
+	
+	/* menu item HTML */
+	self.menuItem = function(i) {
+
+		return $('<li />').addClass((i.separator ? 'separator' : '')).append($('<a />').html(trans(i.label,(i.context ? i.context : self.context))).attr({
+			'style' : 'background-image: url('+self.menuIcon(i,false)+')',
+			'id': self.name+i.name,'href':'#'+i.name
+		}));		
+		
+	}
+	
+	/* Menu icon logic */
+	self.menuIcon = function(i,disabled) {
+		
+		// absolute url?
+		if(i.icon_absolute) {
+			if(disabled) return i.icon_disabled;
+			return i.icon;
+		}
+
+		// exact icon?
+		if(i.icon_exact) {
+			if(disabled) return 'images/vbox/' + i.icon_disabled + 'px.png';
+			return 'images/vbox/' + i.icon + 'px.png';
+		}
+		
+		if(disabled) {
+			return 'images/vbox/' + (i.icon_disabled ? i.icon_disabled : (i.icon_16 ? i.icon_16 : i.icon) + (i.iconStringDisabled ? i.iconStringDisabled : self.iconStringDisabled)) + '_16px.png';
+		}
+		
+		return 'images/vbox/' + (i.icon_16 ? i.icon_16 : i.icon) + '_16px.png';
+		
+	}
+	
+	/* Update Menu items */
+	self.update = function(test) {
+		
+		for(var i in self.menuItems) {
+			
+			if(typeof i != 'string') continue;
+			
+			if(self.menuItems[i].enabled && !self.menuItems[i].enabled(test)) {
+				if(self.menuItems[i].hide_on_disabled) $('#'+self.name+i).parent().hide();
+				else
+				$('#'+self.name+i).css({'background-image':'url('+self.menuIcon(self.menuItems[i],true)+')'}).parent().addClass('disabled');
+			} else {
+				if(self.menuItems[i].hide_on_disabled) $('#'+self.name+i).parent().show();
+				else
+				$('#'+self.name+i).css({'background-image':'url('+self.menuIcon(self.menuItems[i],false)+')'}).parent().removeClass('disabled');
+			}
+			
+		}
+	}
+	
+}
 
 /*
  * 
@@ -1342,51 +1488,43 @@ function vboxMenuBar(name) {
 	/* Add menu to object */
 	self.addMenu = function(m) {
 		
+		// Create menu object
+		m.menuObj = new vboxMenu(m.name);
+		
+		// Propagate config
+		if(m.context) m.menuObj.context = m.context;
+		else if(self.context) m.menuObj.context = self.context;
+		m.menuObj.iconStringDisabled = self.iconStringDisabled;
+		
+		// Add menu
+		m.menuObj.addMenu(m.menu);
 		self.menus[self.menus.length] = m;
-		
-		var ul = $('<ul />').attr({'id':m.name+'Menu','class':'','style':'display: none;'});
-		
-		for(var i in m.menu) {
-			if(typeof i == 'function') continue;
-			// 16px icon?
-			if(m.menu[i].icon_16) m.menu[i].icon = m.menu[i].icon_16;
 				
-			$('<a />').attr({'id':m.menu[i].name,'href':'#'+m.menu[i].name}).html(trans(m.menu[i].label,(m.menu[i].context ? m.menu[i].context : self.context))).attr({
-				'style' : (m.menu[i].icon_absolute ? 'background-image: url('+m.menu[i].icon+')' : 'background-image: url(images/vbox/'+m.menu[i].icon+'_16px.png)')
-			}).appendTo($('<li />').addClass((m.menu[i].separator ? 'separator' : '')).appendTo(ul));			
-			
-			this.menuClick[m.menu[i].name] = m.menu[i].click;
-		}
-		
-		$('#vboxIndex').append(ul);
 	}
 
-	/* add floating link or text */
-	self.addFloat = function (f) {
-		$('#'+self.name+'MenuBar').append($('<div />').attr({'class':'vboxFloatText'}).css({'float':'right'}).html(f));
-	}
-	
 	/* Create and add menu bar */
 	self.addMenuBar = function(id) {
 		
 		$('#'+id).prepend($('<div />').attr({'class':'vboxMenuBar','id':self.name+'MenuBar'}));
 		
 		for(var i = 0; i < self.menus.length; i++) {
-			$('#'+self.name+'MenuBar').append('<span id="'+self.menus[i].name+'">'+trans(self.menus[i].label,(self.menus[i].context ? self.menus[i].context : self.context))+'</span>');	
-			$('#'+self.menus[i].name).contextMenu({
-			 		menu: self.menus[i].name+'Menu',
-			 		button: 0,
-			 		mode: 'menu'
-				},
-				self.click
-			).hover(
-				function(){
-					$(this).addClass('vboxBordered');
-				},
-				function(){
-					$(this).removeClass('vboxBordered');
-				}
-			);
+			$('#'+self.name+'MenuBar').append(
+					$('<span />').attr({'id':+self.name+self.menus[i].name}).html(trans(self.menus[i].label,(self.menus[i].context ? self.menus[i].context : self.context)))
+					.contextMenu({
+				 		menu: self.menus[i].menuObj.menuId(),
+				 		button: 0,
+				 		mode: 'menu'
+						},
+						self.menus[i].menuObj.menuClickCallback
+					).hover(
+						function(){
+							$(this).addClass('vboxBordered');
+						},
+						function(){
+							$(this).removeClass('vboxBordered');
+						}
+					)
+				);
 		}
 		self.update();
 		
@@ -1395,26 +1533,12 @@ function vboxMenuBar(name) {
 	
 	/* Update Menu items */
 	self.update = function(e,item) {
-		
 		for(var i = 0; i < self.menus.length; i++) {
-			for(var a = 0; a < self.menus[i].menu.length; a++) {
-				var icon = self.menus[i].menu[a].icon;
-				if(self.menus[i].menu[a].enabled && !self.menus[i].menu[a].enabled(item)) {
-					if(self.menus[i].menu[a].icon_disabled) icon = self.menus[i].menu[a].icon_disabled;
-					else icon += self.iconStringDisabled;
-					$('#'+self.menus[i].menu[a].name).parent().addClass('disabled');
-				} else {
-					$('#'+self.menus[i].menu[a].name).parent().removeClass('disabled');
-				}
-				if(self.menus[i].menu[a].enabled)
-					$('#'+self.menus[i].menu[a].name).css({'background-image':'url(images/vbox/'+icon+'_16px.png)'});
-			}
+			self.menus[i].menuObj.update(item);
 		}
 		
 	}
 	
-	/* Pass click on to menu item */
-	self.click = function(fn) { self.menuClick[fn]();}
 	
 }
 

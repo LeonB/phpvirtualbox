@@ -323,11 +323,15 @@ snapshotToolbar.addButtons('vboxSnapshotToolbar');
 $('#vboxToolbarButton-vboxSnapshotToolbar-clone').css({'background-position':'6px 4px'});
 
 // Context menu for snapshots
-var ul = $('<ul />').attr({'id':'vboxSnapshotContextMenu'}).css({'display':'none'});
-for(var i = 0; i < vboxSnapshotButtons.length; i++) {
-	$('<li />').html("<a href='#" + vboxSnapshotButtons[i].name + "' style='background-image: url(images/vbox/" + (vboxSnapshotButtons[i].icon_exact ? vboxSnapshotButtons[i].icon : vboxSnapshotButtons[i].icon +"_16") + "px.png);' >"+trans(vboxSnapshotButtons[i].label,'VBoxSnapshotsWgt')+"</a>").addClass(((i > 1 && vboxSnapshotButtons[(i-1)].separator) ? 'separator' : 'noseparator')).appendTo(ul);
-}
-ul.appendTo('#vboxIndex');
+var vboxSnapshotContextMenu = new vboxMenu('vboxSnapshotContextMenu');
+vboxSnapshotContextMenu.context = snapshotToolbar.context;
+vboxSnapshotContextMenu.addMenu(vboxSnapshotButtons.slice(-(vboxSnapshotButtons.length-1)));
+
+//Context menu for current state
+var vboxSnapshotContextMenuCurrent = new vboxMenu('vboxSnapshotContextMenuCurrent');
+vboxSnapshotContextMenuCurrent.context =  snapshotToolbar.context;
+vboxSnapshotContextMenuCurrent.addMenu([vboxSnapshotButtons[0],vboxSnapshotButtons[(vboxSnapshotButtons.length-2)]]);
+
 
 /* Toolbar and menu updates*/
 $('#vboxSnapshotList').bind('select',function(target,item) {
@@ -335,17 +339,11 @@ $('#vboxSnapshotList').bind('select',function(target,item) {
 	// Update toolbar
 	snapshotToolbar.update(target,item);
 	
-	// Update menu
+	// Update menus
 	var lastItem = (item||target);
 	
-	var m = $('#vboxSnapshotContextMenu');
-	for(var i = 0; i < vboxSnapshotButtons.length; i++) {
-		if(vboxSnapshotButtons[i].enabled(lastItem)) {
-			m.find('a[href=#'+vboxSnapshotButtons[i].name+']').parent().show();						
-		} else {
-			m.find('a[href=#'+vboxSnapshotButtons[i].name+']').parent().hide();												
-		}
-	}	
+	vboxSnapshotContextMenu.update(lastItem);
+	vboxSnapshotContextMenuCurrent.update(lastItem);
 	
 });
 
@@ -524,11 +522,11 @@ function __vboxTabSnapshot(s) {
 	var d = $('<div />').attr({'class':'vboxListItem'}).html('<img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+'<span class="timestamp" title="'+s.timeStamp +'">'+ts+'</span>');
 	// Context menu
 	$(d).contextMenu({
-		menu: 'vboxSnapshotContextMenu',
+		menu: vboxSnapshotContextMenu.menuId(),
 		menusetup : function(el) {
 			if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
 		}
-	},vboxSnapshotContextMenuHandler);
+	},vboxSnapshotContextMenu.menuClickCallback);
 	
 	$(li).append(' ').append(d);
 	
@@ -552,25 +550,14 @@ function __vboxTabSnapshotCurrent() {
 
 	var li = $('<li />').data({'state':'current','name':trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'),'VBoxSnapshotsWgt')}).html(' ').addClass('last').addClass('vboxSnapshotCurrent');
 	$('<div />').attr({'class':'vboxListItem'}).html('<img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'),'VBoxSnapshotsWgt')).html()).contextMenu({
-		menu: 'vboxSnapshotContextMenu',
+		menu: vboxSnapshotContextMenuCurrent.menuId(),
 		menusetup : function(el) {
 			if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
 		}
-	},vboxSnapshotContextMenuHandler).appendTo(li);	
+	},vboxSnapshotContextMenuCurrent.menuClickCallback).appendTo(li);	
 	return li;
 }
 
-/*
- * Context menu click
- */
-function vboxSnapshotContextMenuHandler(btn) {
-
-	for(var i = 0; i < vboxSnapshotButtons.length; i++) {
-		if(vboxSnapshotButtons[i].name == btn)
-			vboxSnapshotButtons[i].click();
-	}
-
-}
  
 /* Update snapshot timestamps */
 function __vboxTabSnapshotTimestamps() {
@@ -605,8 +592,7 @@ function __vboxTabSnapshotTimestamps() {
 			var l = Math.floor(t / timeSpans[i]);
 			if(l > 0) {
 				ago = l;
-				ts = i
-				//ts =  trans('X ago').replace('%s',(Math.floor(t / timeSpans[i]) + ' ' + trans(i)));
+				ts = i;
 				break;
 			}
 		}
