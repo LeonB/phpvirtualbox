@@ -79,6 +79,10 @@ ul.contextMenu LI.hover {
 }
 
 .contextMenu LI.separator {
-	border-top: solid 1px #CCC;
+	border-top: 1px solid #CCC;
+}
+
+.contextMenu LI:first {
+	border-top: 1px solid transparent;
 }
 

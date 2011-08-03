@@ -86,6 +86,7 @@ if(jQuery)( function() {
 				 */
 				var menuItems = function(menu, srcElement) {
 					
+					
 					// When items are selected
 					$(menu).find('A').unbind('click');
 					$(menu).find('li').unbind('mouseenter').unbind('mouseleave');
@@ -108,7 +109,6 @@ if(jQuery)( function() {
 						if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), null, this); //{x: x - offset.left, y: y - offset.top, docX: x, docY: y} , this);
 						return false;
 					});
-					
 				}
 				
 				var showMenu = function(srcElement, menu, mode, e) {
@@ -121,7 +121,6 @@ if(jQuery)( function() {
 					
 					// Hide all other menus at this level
 					$('#vboxIndex').trigger('contextMenuShowLevel', {'level':$(menu).data('level'), 'id':$(menu).attr('id')});
-					
 					
 					// Detect mouse position
 					var d = {};
@@ -187,7 +186,7 @@ if(jQuery)( function() {
 							$('#vboxIndex').bind('contextMenuShowLevel',function(e,c){
 								if($(m).data('level') >= c.level && $(m).attr('id') != c.id) $(m).hide();
 							});
-;
+					
 							showMenu(srcElement, m, 'submenu', e);
 							return;
 						}
@@ -196,7 +195,7 @@ if(jQuery)( function() {
 					}
 					
 					// Menu  show
-					$(menu).css({ top: y, left: x }).fadeIn(o.inSpeed);
+					$(menu).css({ top: y, left: x}).show();//.fadeIn(o.inSpeed);
 					
 					
 				}

@@ -163,7 +163,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 					vboxAjaxError({'error':'Ajax error: ' + etext,'details':d.responseText});
 					//alert('ajax error: ' + + " " + d.responseText);
 				}
-				callback(null,xtra);
+				callback({},xtra);
 			}
 		});
 

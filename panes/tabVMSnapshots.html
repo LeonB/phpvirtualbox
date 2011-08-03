@@ -131,8 +131,7 @@ var vboxSnapshotButtons = [
   			
   			$('#vboxSnapshotNew').dialog({'closeOnEscape':false,'width':'400px','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/take_snapshot_16px.png" class="vboxDialogTitleIcon" /> ' + trans('Take Snapshot of Virtual Machine','VBoxTakeSnapshotDlg')});
   			
-  	  	},
-  		'separator' : true
+  	  	}
   	},
   	{
   		'name' : 'discard_cur_state',
@@ -202,6 +201,7 @@ var vboxSnapshotButtons = [
 
 			vboxConfirm(q.replace('%1',$('<div />').text(snapshot.name).html()),buttons);
   	  	},
+  	  'separator' : true
   	},
   	{
   		'name' : 'delete_snapshot',
@@ -230,8 +230,7 @@ var vboxSnapshotButtons = [
 				l.run();				
 			};
 			vboxConfirm(trans('<p>Deleting the snapshot will cause the state information saved in it to be lost, and disk data spread over several image files that VirtualBox has created together with the snapshot will be merged into one file. This can be a lengthy process, and the information in the snapshot cannot be recovered.</p></p>Are you sure you want to delete the selected snapshot <b>%1</b>?</p>','VBoxProblemReporter').replace('%1',$('<div />').text(snapshot.name).html()),buttons);  	  		
-  	  	},
-  		'separator' : true
+  	  	}
   	},
   	{
   		'name' : 'clone',
@@ -249,7 +248,8 @@ var vboxSnapshotButtons = [
   			
   	  		vboxWizardCloneVMInit(function(){},{'vm':$('#vboxTabVMSnapshots').data('machine'),'snapshot':snapshot});
   			
-  	  	}
+  	  	},
+  		'separator' : true
   	},
   	
   	{
@@ -306,6 +306,7 @@ var vboxSnapshotButtons = [
 			};
 			l.run();
   	  	},
+  	  'separator' : true
   	}
   	
   	
@@ -519,16 +520,20 @@ function __vboxTabSnapshot(s) {
 	}
 	ts = trans(' (%1 ago)','VBoxSnapshotsWgt').replace('%1', ts);
 	
-	var d = $('<div />').attr({'class':'vboxListItem'}).html('<img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+'<span class="timestamp" title="'+s.timeStamp +'">'+ts+'</span>');
-	// Context menu
-	$(d).contextMenu({
-		menu: vboxSnapshotContextMenu.menuId(),
-		menusetup : function(el) {
-			if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
-		}
-	},vboxSnapshotContextMenu.menuClickCallback);
+	$(li).append(' ').append(
 	
-	$(li).append(' ').append(d);
+	   $('<div />').attr({'class':'vboxListItem'}).html('<img src="images/vbox/'+(s.online ? 'online' : 'offline')+'_snapshot_16px.png" /> ' + $('<div />').text(s.name).html()+'<span class="timestamp" title="'+s.timeStamp +'">'+ts+'</span>')
+	      // Context menu
+		  .contextMenu({
+				menu: vboxSnapshotContextMenu.menuId(),
+				menusetup : function(el) {
+					if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
+				}
+			},vboxSnapshotContextMenu.menuClickCallback)
+			
+			// show details on dblclick
+			.dblclick(vboxSnapshotButtons[4].click).disableSelection()
+	);
 	
 	if(s.children.length) {
 		var ul = $('<ul />');

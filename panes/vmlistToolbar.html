@@ -163,7 +163,8 @@ function vboxVMListToolbarMediumMount(medium) {
 		var l = new vboxLoader();
 		l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
 		l.onLoad = function() {
-			$('#vboxIndex').trigger('vmselect',$('#vboxIndex').data('vboxMachineData'));
+			//$('#vboxIndex').trigger('vmselect',$('#vboxIndex').data('vboxMachineData'));
+			$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 		}
 		l.run();		
 	},args);
@@ -171,6 +172,7 @@ function vboxVMListToolbarMediumMount(medium) {
 }
 var vboxToolbarMediaMenuDVD = new vboxMediaMenu('DVD',vboxVMListToolbarMediumMount,''); 
 var vboxToolbarMediaMenuFD = new vboxMediaMenu('Floppy',vboxVMListToolbarMediumMount,'');
+
 function vboxVMListToolbarStorageUpdate(menu) {
 	vboxToolbarMediaLast = $(menu).data('storage');
 	if(vboxToolbarMediaLast.type == 'DVD') {
@@ -182,6 +184,8 @@ function vboxVMListToolbarStorageUpdate(menu) {
 	}
 }
 
+// Update host drives and recent media on host change.
+// Just recreate the menus
 $('#vboxIndex').bind('hostChanged',function(){
 	vboxToolbarMediaMenuDVD = new vboxMediaMenu('DVD',vboxVMListToolbarMediumMount,''); 
 	vboxToolbarMediaMenuFD = new vboxMediaMenu('Floppy',vboxVMListToolbarMediumMount,'');	

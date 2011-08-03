@@ -745,14 +745,15 @@ function vboxToolbar(buttons) {
 		
 		for(var i = 0; i < self.buttons.length; i++) {
 			
+			if(self.buttons[i].separator) {
+				$('<td />').attr({'class':'vboxToolbarSeparator'}).html('<br />').appendTo(tr);
+			}
+
 			self.buttons[i].toolbar = self;
 			$(tr).append(self.buttonElement(self.buttons[i]));
 			// If button can be enabled / disabled, disable by default
 			if(self.buttons[i].enabled) {
 				self.disableButton(self.buttons[i]);
-			}
-			if(self.buttons[i].separator) {
-				$('<td />').attr({'class':'vboxToolbarSeparator'}).html('<br />').appendTo(tr);
 			}
 
 		}
@@ -871,11 +872,11 @@ function vboxToolbarSmall(buttons) {
 		
 		for(var i = 0; i < self.buttons.length; i++) {
 			
-			$(targetElm).append(self.buttonElement(self.buttons[i]));
-			
 			if(self.buttons[i].separator) {
 				$(targetElm).append($('<hr />').attr({'style':'display: inline','class':'vboxToolbarSmall vboxSeperatorLine'}));
 			}
+
+			$(targetElm).append(self.buttonElement(self.buttons[i])); 
 				
 		}
 
@@ -1053,122 +1054,130 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
  */
 function vboxMediaMenu(type,callback,mediumPath) {
 
-	var self = this;
 	this.type = type;
 	this.callback = callback;
 	this.mediumPath = mediumPath;
 	this.removeEnabled = true;
+	var self = this;
 	
 	// Generate menu element ID
 	self.menu_id = function(){
-		return 'vboxMediaListMenu'+this.type;
+		return 'vboxMediaListMenu'+self.type;
 	}
 		
 	// Generate menu element
 	self.menuElement = function() {
 		
 		// Pointer already held
-		if(self._menu) return self._menu;
+		if(self._menuElm) return self._menuElm;
 		
 		var id = self.menu_id();
 		
-		//self._menu = new vboxMenu(id,id)
-		
-		var elm = $('#'+id);
-		if(!elm.attr('id')) {
-			$('#vboxIndex').append($('<ul />').attr({'id':id,'class':'contextMenu','style':'display: none'}));
-			elm = $('#'+id);
-		} else {
-			elm.children().remove();
-		}
-		
 		// Hold pointer
-		self.menuAddDefaults(elm);
+		self._menu = new vboxMenu(id,id)
+		self._menu.context = 'UIMachineSettingsStorage';
+		
+		// Add menu
+		self._menu.addMenu(self.menuGetDefaults());
+		
+		// Update recent list
 		self.menuUpdateRecent();
-		self._menu = elm;
-		return elm;
+		
+		self._menu.update();
+		
+		self._menuElm = $('#'+self.menu_id());
+		
+		return self._menuElm;
 	}
 	
-	// Add host drives to menu
-	self.menuAddDrives = function(ul) {
+	// Get host drives for menu
+	self.menuGetDrives = function(ul) {
+		
+		var menu = [];
 		
 		// Add host drives
 		var meds = vboxMedia.mediaForAttachmentType(self.type);
 		for(var i =0; i < meds.length; i++) {
 			if(!meds[i].hostDrive) continue;
-			$('<li />').html("<a href='#"+meds[i].id+"'>"+vboxMedia.getName(meds[i])+"</a>").appendTo(ul);
+			menu[menu.length] = {'name':meds[i].id,'label':vboxMedia.getName(meds[i]),'pretranslated':true};
 		}
+		
+		return menu;
 		
 	}
 	
 	
 	// Add defaults to menu
-	self.menuAddDefaults = function (ul) {
+	self.menuGetDefaults = function () {
+		
+		menus = [];
 		
 		switch(this.type) {
 			
 			// HardDisk defaults
 			case 'HardDisk':
-				
-				$('<li />').html("<a href='#createD' style='background-image: url(images/vbox/hd_new_16px.png);' >"+trans('Create a new hard disk...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
+		
+				// create hard disk
+				menus[menus.length] = {'name':'createD','icon':'hd_new','label':'Create a new hard disk...'};
 
-				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual hard disk file...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
+				// choose hard disk
+				menus[menus.length] = {'name':'chooseD','icon':'select_file','label':'Choose a virtual hard disk file...'};
 				
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...','VBoxSelectorWnd')+"</a>").appendTo(ul);
+					menus[menus.length] = {'name':'vmm','icon':'diskimage','label':'Virtual Media Manager...','context':'VBoxSelectorWnd'};
 				}
 
-				// Hidden elm
-				$('<li />').addClass('vboxMediumRecentBefore').css('display','none').appendTo(ul);
-				
+				// recent list place holder
+				menus[menus.length] = {'name':'vboxMediumRecentBefore','cssClass':'vboxMediumRecentBefore','enabled':function(){return false;},'hide_on_disabled':true};
+								
 				break;
 				
 			// CD/DVD Defaults
 			case 'DVD':
 				
-				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual CD/DVD disk file...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
+				// Choose disk image
+				menus[menus.length] = {'name':'chooseD','icon':'select_file','label':'Choose a virtual CD/DVD disk file...'};
 
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...','VBoxSelectorWnd')+"</a>").appendTo(ul);
+					menus[menus.length] = {'name':'vmm','icon':'diskimage','label':'Virtual Media Manager...','context':'VBoxSelectorWnd'};
 				}
 				
 				// Add host drives
-				self.menuAddDrives(ul);
-				
+				menus = menus.concat(self.menuGetDrives());
+								
 				// Add remove drive
-				var li = $('<li />');
-				if(!self.removeEnabled) {
-					$(li).addClass('disabled');
-				}				
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/cd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive','UIMachineSettingsStorage')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
+				menus[menus.length] = {'name':'removeD','icon':'cd_unmount','cssClass':'vboxMediumRecentBefore',
+						'label':'Remove disk from virtual drive','separator':true,
+						'enabled':function(){return self.removeEnabled;}};
 
 				break;
 			
 			// Floppy defaults
 			default:
-				
-				$('<li />').html("<a href='#chooseD' style='background-image: url(images/vbox/select_file_16px.png);' >"+trans('Choose a virtual floppy disk file...','UIMachineSettingsStorage')+"</a>").appendTo(ul);
+
+				// Choose disk image
+				menus[menus.length] = {'name':'chooseD','icon':'select_file','label':'Choose a virtual floppy disk file...'};
 
 				// Add VMM?
 				if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-					$('<li />').html("<a href='#vmm' style='background-image: url(images/vbox/diskimage_16px.png);' >"+trans('Virtual Media Manager...','VBoxSelectorWnd')+"</a>").appendTo(ul);
+					menus[menus.length] = {'name':'vmm','icon':'diskimage','label':'Virtual Media Manager...','context':'VBoxSelectorWnd'};
 				}
 				
 				// Add host drives
-				self.menuAddDrives(ul);
+				menus = menus.concat(self.menuGetDrives());
 
 				// Add remove drive
-				var li = $('<li />');
-				if(!self.removeEnabled) {
-					$(li).addClass('disabled');
-				}
-				$(li).html("<a href='#removeD' style='background-image: url(images/vbox/fd_unmount"+(self.removeEnabled ? '' : '_dis')+"_16px.png);' >"+trans('Remove disk from virtual drive','UIMachineSettingsStorage')+"</a>").addClass('separator').addClass('vboxMediumRecentBefore').appendTo(ul);
-				
+				menus[menus.length] = {'name':'removeD','icon':'fd_unmount','cssClass':'vboxMediumRecentBefore',
+						'label':'Remove disk from virtual drive','separator':true,
+						'enabled':function(){return self.removeEnabled;}};
+
 				break;
-				
+								
 		}
+		
+		return menus;
 		
 	}
 
@@ -1188,15 +1197,9 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		
 	// Update "remove image from disk" menu item
 	self.menuUpdateRemoveMedia = function(enabled) {
-		var menu = $('#'+self.menu_id());
 		self.removeEnabled = enabled;
-		if(enabled) {
-			menu.enableContextMenuItems('#removeD');
-			menu.find('a[href=#removeD]').css('background-image','url(images/vbox/'+(self.type == 'DVD' ? 'cd' : 'fd')+'_unmount_16px.png)');			
-		} else {
-			menu.disableContextMenuItems('#removeD');
-			menu.find('a[href=#removeD]').css('background-image','url(images/vbox/'+(self.type == 'DVD' ? 'cd' : 'fd')+'_unmount_dis_16px.png)');			
-		}
+		if(!self._menu) self.menuElement();
+		else self._menu.update();
 	}
 	
 	// Update recent media menu and global recent media list
@@ -1385,6 +1388,8 @@ function vboxMenu(name, id) {
 			ul = $('<ul />').attr({'style':'display: none;'});
 		}
 		
+		ul.addClass('contextMenu');
+		
 		for(var i in m) {
 			
 			if(typeof i == 'function') continue;
@@ -1417,15 +1422,19 @@ function vboxMenu(name, id) {
 	/* menu item HTML */
 	self.menuItem = function(i) {
 
-		return $('<li />').addClass((i.separator ? 'separator' : '')).append($('<a />').html(trans(i.label,(i.context ? i.context : self.context))).attr({
-			'style' : 'background-image: url('+self.menuIcon(i,false)+')',
-			'id': self.name+i.name,'href':'#'+i.name
-		}));		
+		return $('<li />').addClass((i.separator ? 'separator' : '')).addClass((i.cssClass ? i.cssClass : '')).append($('<a />')
+			.html((i.label ? (i.pretranslated ? i.label : trans(i.label,(i.context ? i.context : self.context))):''))
+			.attr({
+				'style' : (i.icon ? 'background-image: url('+self.menuIcon(i,false)+')' : ''),
+				'id': self.name+i.name,'href':'#'+i.name
+			}));		
 		
 	}
 	
 	/* Menu icon logic */
 	self.menuIcon = function(i,disabled) {
+		
+		if(!i.icon) return '';
 		
 		// absolute url?
 		if(i.icon_absolute) {
@@ -1452,16 +1461,37 @@ function vboxMenu(name, id) {
 		
 		for(var i in self.menuItems) {
 			
+			
 			if(typeof i != 'string') continue;
 			
-			if(self.menuItems[i].enabled && !self.menuItems[i].enabled(test)) {
-				if(self.menuItems[i].hide_on_disabled) $('#'+self.name+i).parent().hide();
-				else
-				$('#'+self.name+i).css({'background-image':'url('+self.menuIcon(self.menuItems[i],true)+')'}).parent().addClass('disabled');
+			
+			// If enabled function doesn't exist, there's nothing to do
+			if(!self.menuItems[i].enabled) continue;
+			
+			var mi = $('#'+self.name+i);
+			
+			// Disabled
+			if(!self.menuItems[i].enabled(test)) {
+				
+				if(self.menuItems[i].hide_on_disabled) {
+					mi.parent().hide();
+				} else {
+					if(self.menuItems[i].icon)
+						mi.css({'background-image':'url('+self.menuIcon(self.menuItems[i],true)+')'}).parent().addClass('disabled');
+					else
+						mi.parent().addClass('disabled');
+				}
+			
+			// Enabled
 			} else {
-				if(self.menuItems[i].hide_on_disabled) $('#'+self.name+i).parent().show();
-				else
-				$('#'+self.name+i).css({'background-image':'url('+self.menuIcon(self.menuItems[i],false)+')'}).parent().removeClass('disabled');
+				if(self.menuItems[i].hide_on_disabled) { 
+					mi.parent().show();
+				} else {
+					if(self.menuItems[i].icon)
+						mi.css({'background-image':'url('+self.menuIcon(self.menuItems[i],false)+')'}).parent().removeClass('disabled');
+					else
+						mi.parent().removeClass('disabled');
+				}
 			}
 			
 		}
@@ -1473,7 +1503,7 @@ function vboxMenu(name, id) {
  * 
  * Top Menu Bar
  * 
- * Works in harmony with heavily modified contextMenu jquery plugin
+ * Works in harmony with vboxMenu
  * 
  */
 function vboxMenuBar(name) {
@@ -1523,7 +1553,7 @@ function vboxMenuBar(name) {
 						function(){
 							$(this).removeClass('vboxBordered');
 						}
-					)
+					).disableSelection()
 				);
 		}
 		self.update();
