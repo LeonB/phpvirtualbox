@@ -588,11 +588,11 @@ class vboxconnector {
 
 				// Remove existing redirects
 				foreach($n->natDriver->getRedirects() as $r) {
-					$n->natDriver->removeRedirect(array_shift(split(',',$r)));
+					$n->natDriver->removeRedirect(array_shift(explode(',',$r)));
 				}
 				// Add redirects
 				foreach($args['networkAdapters'][$i]['redirects'] as $r) {
-					$r = split(',',$r);
+					$r = explode(',',$r);
 					$n->natDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
 				}
 				
@@ -1138,11 +1138,11 @@ class vboxconnector {
 				
 				// Remove existing redirects
 				foreach($n->natDriver->getRedirects() as $r) {
-					$n->natDriver->removeRedirect(array_shift(split(',',$r)));
+					$n->natDriver->removeRedirect(array_shift(explode(',',$r)));
 				}
 				// Add redirects
 				foreach($args['networkAdapters'][$i]['redirects'] as $r) {
-					$r = split(',',$r);
+					$r = explode(',',$r);
 					$n->natDriver->addRedirect($r[0],$r[1],$r[2],$r[3],$r[4],$r[5]);
 				}
 				

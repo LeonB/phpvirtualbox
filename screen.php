@@ -4,7 +4,7 @@
  */
 
 # Turn off PHP notices
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
 require_once(dirname(__FILE__).'/lib/config.php');
 require_once(dirname(__FILE__).'/lib/utils.php');

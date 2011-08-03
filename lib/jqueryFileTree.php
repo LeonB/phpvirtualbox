@@ -22,13 +22,15 @@
 //
 
 # Turn off PHP notices
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
 global $vbox, $localbrowser, $allowed;
 
 require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 require_once(dirname(__FILE__).'/vboxconnector.php');
+
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
 session_init();
 if(!$_SESSION['valid']) return;
@@ -51,7 +53,6 @@ $folders = $settings->browserRestrictFolders;
 if(is_array($folders) && $folders[0]) $folders = array_combine($folders,$folders);
 else $folders = array();
 
-error_reporting(E_ALL ^ E_NOTICE);
 
 /*
  * Clean request

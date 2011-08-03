@@ -3,6 +3,10 @@
 -------------------------------------
 Added Stop options to VM list context menu.
 
+Fixed bug in Global Preferences that would not allow you to save
+settings if a Language was not selected in the Languages section.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=348
+
 -------------------------------------
 	4.1-1b	2011-8-1
 -------------------------------------

@@ -4,7 +4,7 @@
  */
 
 # Turn off PHP errors
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
 global $_vbox_language;
 

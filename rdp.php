@@ -8,7 +8,7 @@
  */
 
 # Turn off PHP notices
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
 require_once(dirname(__FILE__).'/lib/utils.php');
 $_GET = clean_request();

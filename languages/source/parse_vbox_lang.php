@@ -40,9 +40,7 @@ foreach($arrXml['TS']['context'] as $c) {
        if(is_array($m['translation']) && count($m['translation']) == 0)
           continue;
 
-       // Numerus form check
        if(is_array($m['translation']) && @$m['translation']['numerusform']) {
-       	
           if(!is_array($m['translation']['numerusform'])) {
              $m['translation'] = clean($m['translation']['numerusform']);
           } else {
@@ -51,10 +49,9 @@ foreach($arrXml['TS']['context'] as $c) {
                 $m['translation']['numerusform'][$k] = clean($v);
              }
           }
-       
        } else if(is_array($m['translation'])) {
           
-	   		// assume unfinished
+	   // assume unfinished
            $m['translation'] = $s;
          
        } else {
@@ -64,6 +61,8 @@ foreach($arrXml['TS']['context'] as $c) {
        if($phpStyle) {
           $m['htmlized'] = htmlentities($s, ENT_NOQUOTES, 'UTF-8');
           if(strlen($m['htmlized']) == strlen($s)) unset($m['htmlized']);
+       } else {
+          #unset($m['comment']);
        }
 
        // Messages for this context is an array
@@ -90,6 +89,7 @@ foreach($arrXml['TS']['context'] as $c) {
 
     }
 }
+
 
 function clean($s) {
    return preg_replace('/<\/?qt>/','',str_replace('&','',html_entity_decode(str_replace('&nbsp;',' ',$s), ENT_NOQUOTES, 'UTF-8')));

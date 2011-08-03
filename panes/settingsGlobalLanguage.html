@@ -57,8 +57,8 @@ for(var i = 0; i < vboxLanguages.length; i++) {
  * 
  */
 $('#vboxSettingsDialog').bind('save',function(){
-	var lang = $('#vboxLanguageList').children('li.vboxListItemSelected').first();
+	var lang = $('#vboxLanguageList').children('li.vboxListItemSelected').first().data('language');
 	if(!lang) return;
-	$('#vboxSettingsDialog').data('language', $(lang).data('language').id);
+	$('#vboxSettingsDialog').data('language', lang.id);
 });
 </script>
