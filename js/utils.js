@@ -385,8 +385,6 @@ function vboxAjaxError(e) {
 	
 	var p = $('<p />').attr({'style':'text-align: center'});
 	
-	alert(e.details);
-	
 	if(e.details) {
 		$('<a />').attr({'href':'#'}).html(trans('Details','QIMessageBox')).click(function(){
 			$(this).parent().parent().dialog('option',{'height':400,'position':'center'});

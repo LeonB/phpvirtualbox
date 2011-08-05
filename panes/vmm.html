@@ -268,7 +268,6 @@ var vmmButtons = new Array(
 		'label' : 'Add iSCSI',
 		'icon' : 'hd_add',
 		'enabled' : function (item) { return(!$("#vboxVMMTabs").tabs('option','selected')); },		
-		'separator' : true,
 		'click' : function () {
 
 			
@@ -326,6 +325,7 @@ var vmmButtons = new Array(
 		'name' : 'vmmcopy',
 		'label' : 'Copy...',
 		'icon' : 'vdm_add',
+		'separator' : $('#vboxIndex').data('vboxConfig').enableAdvancedConfig,
 		'enabled' : function (item) {
 			if(!item) return false;
 			if($("#vboxVMMTabs").tabs('option','selected')) return false;

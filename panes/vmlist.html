@@ -522,6 +522,7 @@ function vboxVMList(anchorid) {
 		self.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
 		
 		self.refresh();
+		
 		// Run every X seconds?
 		self._running = window.setInterval(self.refresh,self.interval*1000);		
 	}
@@ -535,7 +536,10 @@ function vboxVMList(anchorid) {
 	}
 	
 	self.refresh = function() {
+		window.clearInterval(self._running);
 		dataMediator.get('VMs',null,self.updateList);
+		self._running = window.setInterval(self.refresh,self.interval*1000);
+		
 	}
 
 }

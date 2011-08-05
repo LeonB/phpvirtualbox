@@ -2160,7 +2160,7 @@ class vboxconnector {
 			} catch (Exception $null) {}
 
 			// Save progress
-			$this->__storeProgress($progress,null);
+			$this->__storeProgress($progress,array('getVMs'));
 
 			$response['data']['progress'] = $progress->handle;
 
@@ -2169,6 +2169,7 @@ class vboxconnector {
 		} else {
 
 			$this->session->console->$state(($states[$state]['force'] ? true : null));
+			$this->cache->expire('getVMs');
 
 		}
 
@@ -2227,7 +2228,7 @@ class vboxconnector {
 			}
 		} catch (Exception $null) {}
 
-		$this->__storeProgress($progress,null);
+		$this->__storeProgress($progress,array('getVMs'));
 
 		$response['data']['progress'] = $progress->handle;
 
@@ -3309,7 +3310,7 @@ class vboxconnector {
 				}
 			} catch (Exception $null) {}
 
-			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
+			$this->__storeProgress($progress,array('getVMs','__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
 
 		} catch (Exception $e) {
 
@@ -3408,7 +3409,7 @@ class vboxconnector {
 				}
 			} catch (Exception $null) {}
 
-			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
+			$this->__storeProgress($progress,array('getVMs','__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
 
 		} catch (Exception $e) {
 

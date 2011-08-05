@@ -118,7 +118,16 @@ var vboxSnapshotButtons = [
 	  	  		l.add('snapshotTake',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
-							$('#vboxTabVMSnapshots').trigger('refresh');
+
+							// Remove snapshots
+							$('#vboxSnapshotList').children().remove();
+							
+							// Append spinner
+							$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
+
+							// Refresh vm list
+							$('#vboxIndex').trigger('vmlistrefresh');							
+							
 						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot...','UIActionsPool'));
 					} else if(d && d.error) {
 						vboxAlert(d.error);
@@ -161,7 +170,16 @@ var vboxSnapshotButtons = [
 			  	  		l.add('snapshotRestore',function(d){
 							if(d && d.progress) {
 								vboxProgress(d.progress,function(){
-									$('#vboxTabVMSnapshots').trigger('refresh');
+
+									// Remove snapshots
+									$('#vboxSnapshotList').children().remove();
+									
+									// Append spinner
+									$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
+									
+									// Refresh vm list
+									$('#vboxIndex').trigger('vmlistrefresh');
+
 								},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot','VBoxSnapshotsWgt'));
 							} else if(d && d.error) {
 								vboxAlert(d.error);
@@ -188,7 +206,16 @@ var vboxSnapshotButtons = [
 		  	  		l.add('snapshotRestore',function(d){
 						if(d && d.progress) {
 							vboxProgress(d.progress,function(){
-								$('#vboxTabVMSnapshots').trigger('refresh');
+
+								// Remove snapshots
+								$('#vboxSnapshotList').children().remove();
+								
+								// Append spinner
+								$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
+
+								// Refresh vm list
+								$('#vboxIndex').trigger('vmlistrefresh');
+								
 							},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot','VBoxSnapshotsWgt'));
 						} else if(d && d.error) {
 							vboxAlert(d.error);
