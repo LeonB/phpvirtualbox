@@ -7,6 +7,8 @@ Fixed bug in Global Preferences that would not allow you to save
 settings if a Language was not selected in the Languages section.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=348
 
+Added context menus to VM Storage settings.
+
 -------------------------------------
 	4.1-1b	2011-8-1
 -------------------------------------

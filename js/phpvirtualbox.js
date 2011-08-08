@@ -1476,10 +1476,7 @@ function vboxMenu(name, id) {
 				if(self.menuItems[i].hide_on_disabled) {
 					mi.parent().hide();
 				} else {
-					if(self.menuItems[i].icon)
-						mi.css({'background-image':'url('+self.menuIcon(self.menuItems[i],true)+')'}).parent().addClass('disabled');
-					else
-						mi.parent().addClass('disabled');
+					self.disableItem(i,mi);
 				}
 			
 			// Enabled
@@ -1487,14 +1484,26 @@ function vboxMenu(name, id) {
 				if(self.menuItems[i].hide_on_disabled) { 
 					mi.parent().show();
 				} else {
-					if(self.menuItems[i].icon)
-						mi.css({'background-image':'url('+self.menuIcon(self.menuItems[i],false)+')'}).parent().removeClass('disabled');
-					else
-						mi.parent().removeClass('disabled');
+					self.enableItem(i,mi);
 				}
 			}
 			
 		}
+	}
+
+	self.disableItem = function(i, mi) {
+		if(!mi) mi = $('#'+self.name+i);
+		if(self.menuItems[i].icon)
+			mi.css({'background-image':'url('+self.menuIcon(self.menuItems[i],true)+')'}).parent().addClass('disabled');
+		else
+			mi.parent().addClass('disabled');		
+	}
+	self.enableItem = function(i, mi) {
+		if(!mi) mi = $('#'+self.name+i);
+		if(self.menuItems[i].icon)
+			mi.css({'background-image':'url('+self.menuIcon(self.menuItems[i],false)+')'}).parent().removeClass('disabled');
+		else
+			mi.parent().removeClass('disabled');		
 	}
 	
 }

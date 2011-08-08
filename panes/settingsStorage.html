@@ -284,6 +284,192 @@ for(var i=0;i<imgsToLoad.length;i++){
 	imgs2[i].src = 'images/vbox/'+imgsToLoad[i]+'_16px.png';
 }
 
+/*
+ * 
+ *		Init Storage Controller menus and toolbar
+ *
+ */ 
+
+ /* Menu for adding controllers */
+ var vboxSettingsCMenu = new vboxMenu('vboxSettingsAddControllerMenu','vboxSettingsAddControllerMenu');
+ vboxSettingsCMenu.context = 'UIMachineSettingsStorage';
+ vboxSettingsCMenu.iconStringDisabled = '_disabled';
+ var vboxSettingsCMenuItems = [];
+ var bustypes = vboxStorage.getBusTypes();
+ for(var i = 0; i < bustypes.length; i++) {
+ 	var bt = bustypes[i];
+ 	vboxSettingsCMenuItems[vboxSettingsCMenuItems.length] = {'name':'add'+bt,'icon':(vboxStorage[bt].displayInherit ? vboxStorage[bt].displayInherit.toLowerCase() : bt.toLowerCase())+"_add",'label':'Add '+bt+' Controller'};
+ }
+ vboxSettingsCMenu.addMenu(vboxSettingsCMenuItems);
+ 
+/* Only if machine is not running */
+ if($('#vboxSettingsDialog').data('vboxMachineData').state != 'Running') {
+	 $('#vboxSettingsStorageTree').contextMenu({
+	  		menu: vboxSettingsCMenu.menuId()
+	  	},
+	  	function(action, el, pos) {
+	
+	  		var bus = action.substring(3);
+	 		var c = {'name':trans(bus+' Controller','UIMachineSettingsStorage'),'bus':bus,'mediumAttachments':[],'controllerType':vboxStorage[bus].types[0],'useHostIOCache':1,
+	 				'maxPortCount':vboxStorage[bus]['maxPortCount'],'maxDevicesPerPortCount':vboxStorage[bus]['maxDevicesPerPortCount']};
+	
+	 		vboxSettingsAddController(c, $('#vboxSettingsStorageTree').children('ul').first());
+	
+	 		$('#vboxSettingsStorageTree').trigger('itemselect',$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first());
+	  	}
+	 );
+ }
+ 
+ var vboxSettingsStorageButtons = new Array(
+
+	{
+		/* Add Attachment Button */
+		'name' : 'addattach',
+		'label' : 'Add Attachment',
+		'icon' : 'attachment_add',
+		'enabled' : function (item) {
+		
+			if(!$(item).data('controller')) return false;
+			
+			// Determine how max and how many are used
+			if(!($(item).data('controller').maxPortCount && ($(item).parent().find('ul').children('li').length < ($(item).data('controller').maxPortCount * $(item).data('controller').maxDevicesPerPortCount))))
+				return false;
+
+			// Enable / Disable CD/DVD menu
+			var c = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
+			if($(c).data('controller').bus == 'IDE' || $(c).data('controller').bus == 'SATA') {
+				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").data('busType',$(c).data('controller').bus);
+				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").enableContextMenu();
+			} else {
+				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").disableContextMenu();
+			}
+			return true;
+			
+			},
+		'click' : function (item) {
+			// Let context menu handle IDE
+			var c = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
+			if($(c).data('controller').bus == 'IDE' || $(c).data('controller').bus == 'SATA') { return; }
+			vboxSettingsStorageAddMedium($(c).data('controller').bus,($(c).data('controller').bus == 'Floppy' ? 'Floppy' : 'HardDisk'));
+		}
+	},
+
+	{
+		/* Remove Attachment Button */
+		'name' : 'removeattach',
+		'label' : 'Remove Attachment',
+		'icon' : 'attachment_remove',
+		'enabled' : function (item) { return ($(item).data('attachment')); },
+		'click' : function () {
+
+			// Set previous item to last?
+			var cur = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent();
+			
+			if($(cur).hasClass('last')) {
+				$(cur).prev().addClass('last');
+			}
+			
+			var next = $(cur).next().find('table.vboxListItem').first();
+			if(!$(next).html()) {
+				var con = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().data('controller');
+				if(con) next = $('#vboxSettingsController'+con.bus).find('table.vboxListItem').first();
+			}
+			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().remove();
+			if(!$(next).trigger('click').html()) $('#vboxSettingsStorageTree').trigger('itemselect',null);
+		}		
+	},
+	
+	{
+		/* Add Controller Button */
+		'name' : 'addcontroller',
+		'label' : 'Add Controller',
+		'icon' : 'controller_add',
+		'enabled' : function (item) {
+			
+			// Draw menu items
+ 			var cons = $('#vboxSettingsStorageTree').find('table.vboxSettingsController');
+ 			var avail = vboxStorage.getBusTypes();
+ 			var used = {};
+ 			for(var i = 0; i < avail.length; i++) {
+ 	 			used[avail[i]] = false;
+ 			}
+
+ 			for(var i = 0; i < cons.length; i++) {
+ 	 			used[$(cons[i]).data('controller').bus] = true;
+ 			}
+ 			
+ 			
+ 			var mi = $('#'+vboxSettingsCMenu.menuId());
+ 			for(var i in used) {
+
+ 				if(used[i]) {
+	 				vboxSettingsCMenu.disableItem('add'+i);
+ 				} else {
+	 				vboxSettingsCMenu.enableItem('add'+i);
+ 				}
+ 			}
+ 			
+			// no more than 5 controllers
+			if($('#vboxSettingsStorageTree').children('ul').first().children().length > 4) {
+				return false;
+			}
+ 			
+ 			return true;
+ 			
+ 			
+		},
+		'click' : function (item) { return true; }		
+	},
+
+	{
+		/* Remove Controller Button */
+		'name' : 'removecontroller',
+		'label' : 'Remove Controller',
+		'icon' : 'controller_remove',
+		'enabled' : function (item) { return ($(item).data('controller')); },
+		'click' : function () {
+			var prev = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().prev().find('table.vboxListItem').first();
+			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().remove();
+			if(!$(prev).html()) {prev = $('#vboxSettingsStorageTree').find('table.vboxListItem').first();}
+			if(!$(prev).trigger('click').html()) $('#vboxSettingsStorageTree').trigger('itemselect',null);
+		}		
+	}
+	
+
+
+ );
+
+scToolbar = new vboxToolbarSmall(vboxSettingsStorageButtons);
+scToolbar.context = 'UIMachineSettingsStorage';
+scToolbar.addButtons('vboxSettingsControllersButtons');
+
+// disable toolbar if VM is running
+if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
+	scToolbar.disable();
+} else {
+	// initial toolbar update
+	scToolbar.update();
+	$('#vboxSettingsStorageTree').bind('itemselect',scToolbar.update);
+}
+
+
+/* Medium attachment menu */
+var vboxSettingsMAMenu = new vboxMenu('vboxSettingsMAMenuL')
+vboxSettingsMAMenu.addMenu([vboxSettingsStorageButtons[1]]);
+
+
+/*
+ * Medium menu buttons
+ */
+var mAttachToolbarHD = new vboxButtonMediaMenu('HardDisk',vboxSettingsControllerAttach);
+mAttachToolbarHD.addButton('vboxSettingsAddAttachmentsMenuHDDiv');
+
+var mAttachToolbarCD = new vboxButtonMediaMenu('DVD',vboxSettingsControllerAttach);
+mAttachToolbarCD.addButton('vboxSettingsAddAttachmentsMenuCDDiv');
+
+var mAttachToolbarFD = new vboxButtonMediaMenu('Floppy',vboxSettingsControllerAttach);
+mAttachToolbarFD.addButton('vboxSettingsAddAttachmentsMenuFDDiv');
+
 
 /*
  * 
@@ -379,10 +565,12 @@ $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).keyup(function(
     $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().find('span[class=vboxSettingsControllerTitle]').first().text(this.value);
 });
 
-/* Change storage controller name on blur of textbox */
+/* Set storage controller name on blur of textbox */
 $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).bind('blur',function(e){
 
 	var bus = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
+	
+	if(!$(bus).data('controller')) return;
 	
     if(jQuery.trim($(this).val().toString()).length < 1) {
     	$(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).val($(bus).data('controller').name);
@@ -390,7 +578,12 @@ $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).bind('blur',fun
     
     $(bus).data('controller').name = $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).val();
 	$(bus).find('span[class=vboxSettingsControllerTitle]').first().text($(bus).data('controller').name);
-});
+	
+	$(bus).find('span.vboxSettingsControllerTitle').html($('<div />').html(this.value).text());
+	
+}).keyup(function(){
+	$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().find('span.vboxSettingsControllerTitle').html($('<div />').html(this.value).text());
+})
 
 /* Change host cache value onClick of checkbox */
 $(document.forms['frmVboxSettings'].vboxSettingsStorageHostCache).click(function(){
@@ -398,26 +591,6 @@ $(document.forms['frmVboxSettings'].vboxSettingsStorageHostCache).click(function
 });
 
 
-
-/*
- * 
- *	Toolbars and menus
- *
- *
- */
-
- 
-/*
- * Medium menu buttons
- */
-var mAttachToolbarHD = new vboxButtonMediaMenu('HardDisk',vboxSettingsControllerAttach);
-mAttachToolbarHD.addButton('vboxSettingsAddAttachmentsMenuHDDiv');
-
-var mAttachToolbarCD = new vboxButtonMediaMenu('DVD',vboxSettingsControllerAttach);
-mAttachToolbarCD.addButton('vboxSettingsAddAttachmentsMenuCDDiv');
-
-var mAttachToolbarFD = new vboxButtonMediaMenu('Floppy',vboxSettingsControllerAttach);
-mAttachToolbarFD.addButton('vboxSettingsAddAttachmentsMenuFDDiv');
 
 
 /*
@@ -465,144 +638,7 @@ $('#vboxSettingsStorageTree').bind('itemselect',function(e,item){
 	}
 });
 
-/*
- * 
- *		Init Storage Controller buttons and toolbar
- *
- */ 
- var sButtons = new Array(
 
-	{
-		/* Add Attachment Button */
-		'name' : 'addattach',
-		'label' : 'Add Attachment',
-		'icon' : 'attachment_add',
-		'enabled' : function (item) {
-		
-			if(!$(item).data('controller')) return false;
-			
-			// Determine how max and how many are used
-			if(!($(item).data('controller').maxPortCount && ($(item).parent().find('ul').children('li').length < ($(item).data('controller').maxPortCount * $(item).data('controller').maxDevicesPerPortCount))))
-				return false;
-
-			// Enable / Disable CD/DVD menu
-			var c = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
-			if($(c).data('controller').bus == 'IDE' || $(c).data('controller').bus == 'SATA') {
-				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").data('busType',$(c).data('controller').bus);
-				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").enableContextMenu();
-			} else {
-				$("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").disableContextMenu();
-			}
-			return true;
-			
-			},
-		'click' : function (item) {
-			// Let context menu handle IDE
-			var c = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first();
-			if($(c).data('controller').bus == 'IDE' || $(c).data('controller').bus == 'SATA') { return; }
-			vboxSettingsStorageAddMedium($(c).data('controller').bus,($(c).data('controller').bus == 'Floppy' ? 'Floppy' : 'HardDisk'));
-		}
-	},
-
-	{
-		/* Remove Attachment Button */
-		'name' : 'removeattach',
-		'label' : 'Remove Attachment',
-		'icon' : 'attachment_remove',
-		'enabled' : function (item) { return ($(item).data('attachment')); },
-		'click' : function () {
-
-			// Set previous item to last?
-			var cur = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent();
-			
-			if($(cur).hasClass('last')) {
-				$(cur).prev().addClass('last');
-			}
-			
-			var next = $(cur).next().find('table.vboxListItem').first();
-			if(!$(next).html()) {
-				var con = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().data('controller');
-				if(con) next = $('#vboxSettingsController'+con.bus).find('table.vboxListItem').first();
-			}
-			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().remove();
-			if(!$(next).trigger('click').html()) $('#vboxSettingsStorageTree').trigger('itemselect',null);
-		}		
-	},
-	
-	{
-		/* Add Controller Button */
-		'name' : 'addcontroller',
-		'label' : 'Add Controller',
-		'icon' : 'controller_add',
-		'enabled' : function (item) {
-
-			// no more than 5 controllers
-			if($('#vboxSettingsStorageTree').children('ul').first().children().length > 4) {
-				return false;
-			}
-			
-			// Draw menu items
- 			var cons = $('#vboxSettingsStorageTree').find('table.vboxSettingsController');
- 			var avail = vboxStorage.getBusTypes();
- 			var used = {};
- 			for(var i = 0; i < avail.length; i++) {
- 	 			used[avail[i]] = false;
- 			}
-
- 			for(var i = 0; i < cons.length; i++) {
- 	 			used[$(cons[i]).data('controller').bus] = true;
- 			}
- 			
- 			var ul = document.getElementById('vboxSettingsAddControllerMenu');
- 			$(ul).children().remove();
-
- 			for(var i in used) {
- 	 			
- 				$(ul).append($('<li />').html("<a href='#add"+i+"' style='background-image: url(images/vbox/"+(vboxStorage[i].displayInherit ? vboxStorage[i].displayInherit.toLowerCase() : i.toLowerCase())+"_add_"+(used[i]?"disabled_":"") + "16px.png);' >"+trans('Add '+i+' Controller','UIMachineSettingsStorage')+"</a>"));
- 	 			(used[i]? $('#vboxSettingsAddControllerMenu').disableContextMenuItems('#add'+i) : null); 	 			
- 			}
- 			return true;
- 			
-		},
-		'click' : function (item) { return true; }		
-	},
-
-	{
-		/* Remove Controller Button */
-		'name' : 'removecontroller',
-		'label' : 'Remove Controller',
-		'icon' : 'controller_remove',
-		'enabled' : function (item) { return ($(item).data('controller')); },
-		'click' : function () {
-			var prev = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().prev().find('table.vboxListItem').first();
-			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().remove();
-			if(!$(prev).html()) {prev = $('#vboxSettingsStorageTree').find('table.vboxListItem').first();}
-			if(!$(prev).trigger('click').html()) $('#vboxSettingsStorageTree').trigger('itemselect',null);
-		}		
-	}
-	
-
-
- );
-
-scToolbar = new vboxToolbarSmall(sButtons);
-scToolbar.context = 'UIMachineSettingsStorage';
-scToolbar.addButtons('vboxSettingsControllersButtons');
-
-// disable toolbar if VM is running
-if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
-	scToolbar.disable();
-} else {
-	// initial toolbar update
-	scToolbar.update();
-	$('#vboxSettingsStorageTree').bind('itemselect',scToolbar.update);
-}
-
-
-/* Menu for adding controllers */
-if(!$('#vboxSettingsAddControllerMenu').attr('id')) {
-	$('#vboxIndex').append($('<ul />').attr({'id':'vboxSettingsAddControllerMenu','class':'contextMenu','style':'display: none'}));
-}
 
  /* Add controller button menu initialization  */
 $("#vboxToolbarButton-vboxSettingsControllersButtons-addcontroller").contextMenu({
@@ -635,7 +671,6 @@ if(!$('#vboxSettingsAddAttachmentsMenu').attr('id')) {
 
 }
 
-
  /* Add IDE attachment button menu initialization  */
 $("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").contextMenu({
  		menu: 'vboxSettingsAddAttachmentsMenu',
@@ -658,6 +693,8 @@ $("#vboxToolbarButton-vboxSettingsControllersButtons-addattach").contextMenu({
 /* Change settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){
 
+	$(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).trigger('blur');
+	
 	$('#vboxSettingsDialog').data('vboxMachineData').storageControllers = new Array();
 	
 	var storageList = $('#vboxSettingsStorageTree').children('ul').first();
@@ -746,6 +783,8 @@ function vboxSettingsSelectController(tbl) {
 	    $('#vboxSettingsStorageAttachment').css('display','none');
 	    return;
 	}
+	
+	$(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).trigger('blur');
 	
 	/* set classes for selected / unselected */
     $('#vboxSettingsStorageTree').find('table[class]').removeClass('vboxListItemSelected').addClass('vboxListItem');
@@ -1003,6 +1042,7 @@ function vboxSettingsAddController(con,list) {
     
     /* Generate Toolbars */
     var dtypes = vboxStorage[con.bus].driveTypes;
+    var mItems = [];
     for(var i = 0; i < dtypes.length; i++) {
     	var b = null;
     	if(dtypes[i] == 'dvd') {
@@ -1032,8 +1072,38 @@ function vboxSettingsAddController(con,list) {
 	   	tb.noHover = true;
 	   	tb.addButtons('vboxSettingsController' + con.bus + 'BtnDrive');
    		tb.disable();
+   		
+   		b['enabled'] = function() {
+   			return ($('#vboxSettingsController' + con.bus).find('li').length < (vboxStorage[con.bus].maxPortCount * vboxStorage[con.bus].maxDevicesPerPortCount));
+   			
+   		}
+   		mItems[mItems.length] = b;
 	}
+    
+    
+    mItems[mItems.length] = vboxSettingsStorageButtons[3]; // "Remove"
+    mItems[(mItems.length-1)].separator = true;
+    mItems[(mItems.length-1)].enabled = null; // always enabled
 
+    var vbm = new vboxMenu('vboxSettingsController'+con.bus+'Menu');
+    vbm.iconStringDisabled = '_disabled';
+    vbm.context = 'UIMachineSettingsStorage';
+    vbm.addMenu(mItems);
+    
+    // Only if machine is not running
+    if($('#vboxSettingsDialog').data('vboxMachineData').state != 'Running') {
+    	
+	    $('#vboxSettingsController' + con.bus).contextMenu({
+	 		menu: vbm.menuId(),
+			menusetup : function(el) {
+				vboxSettingsSelectController($(el).find('table.vboxSettingsController'));
+		 	}},
+		 	vbm.menuClickCallback
+	 	).children('table.vboxSettingsController').bind('click',function(){
+	 		vbm.update();
+	 	});
+	    
+    }    
     	
 }
 
@@ -1080,6 +1150,21 @@ function vboxSettingsAddAttachment(d,bus) {
     
     $(tbl).append(tr).appendTo(li);
     
+    // Only if not running
+    if($('#vboxSettingsDialog').data('vboxMachineData').state != 'Running') {
+
+    	$(li).contextMenu({
+		 		menu: vboxSettingsMAMenu.menuId(),
+				menusetup : function(el) {
+					vboxSettingsSelectAttachment($(el).find('table.vboxSettingsStorageAttachment'));
+				}
+		 	},
+		 	function(action, el, pos) {
+		 		vboxSettingsStorageButtons[1].click();
+		 	}
+		);
+    }
+    
     $(li).tipped({'source':vboxSettingsMediumTip(m),'position':'mouse','delay':1000}).appendTo(con);
     
 
@@ -1099,6 +1184,8 @@ function vboxSettingsSelectAttachment(tbl) {
 	    $('#vboxSettingsStorageAttachment').css('display','none');
 	    return;
 	}
+	
+	$(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).trigger('blur');
 	
 	/* Display Changes */
 	if(!$(tbl).hasClass('vboxListItemSelected')) {

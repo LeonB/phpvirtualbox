@@ -119,12 +119,6 @@ var vboxSnapshotButtons = [
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
 
-							// Remove snapshots
-							$('#vboxSnapshotList').children().remove();
-							
-							// Append spinner
-							$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
-
 							// Refresh vm list
 							$('#vboxIndex').trigger('vmlistrefresh');							
 							
@@ -135,6 +129,13 @@ var vboxSnapshotButtons = [
 	 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'name':$('#vboxSnapshotNewName').val(),'description':$('#vboxSnapshotNewDesc').val()});
 	 	  		$(this).dialog('close');
 				l.run();
+
+				// Remove snapshots
+				$('#vboxSnapshotList').children().remove();
+				
+				// Append spinner
+				$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
+				
   			};
   			buttons[trans('Cancel','QIMessageBox')] = function() { $(this).dialog('close'); }
   			
@@ -171,12 +172,6 @@ var vboxSnapshotButtons = [
 							if(d && d.progress) {
 								vboxProgress(d.progress,function(){
 
-									// Remove snapshots
-									$('#vboxSnapshotList').children().remove();
-									
-									// Append spinner
-									$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
-									
 									// Refresh vm list
 									$('#vboxIndex').trigger('vmlistrefresh');
 
@@ -186,6 +181,13 @@ var vboxSnapshotButtons = [
 							}
 			 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
 						l.run();										
+
+						// Remove snapshots
+						$('#vboxSnapshotList').children().remove();
+						
+						// Append spinner
+						$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
+						
 					}
 					
 					if($('#vboxRestoreSnapshotCreate').prop('checked')) {
@@ -207,12 +209,6 @@ var vboxSnapshotButtons = [
 						if(d && d.progress) {
 							vboxProgress(d.progress,function(){
 
-								// Remove snapshots
-								$('#vboxSnapshotList').children().remove();
-								
-								// Append spinner
-								$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
-
 								// Refresh vm list
 								$('#vboxIndex').trigger('vmlistrefresh');
 								
@@ -223,6 +219,13 @@ var vboxSnapshotButtons = [
 		 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id});
 		  	  		$(this).empty().remove();
 					l.run();				
+
+					// Remove snapshots
+					$('#vboxSnapshotList').children().remove();
+					
+					// Append spinner
+					$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
+					
 				};
 			}
 
