@@ -23,7 +23,7 @@
 	
 	
 				<!-- Storage Controllers -->
-				<div id='vboxSettingsStorageTree' style='height: 290px;' class='vboxBordered'>
+				<div id='vboxSettingsStorageTree' style='height: 290px; outline: none;' class='vboxBordered' tabindex='0'>
 					<ul class='vboxHover vboxHoverBorderless'>
 						<li>Storage Thingy</li>
 						<li>
@@ -750,6 +750,79 @@ $('#vboxSettingsDialog').one('show',function(){
 	
 });
 
+/* Respond to UP / Down arrow events */
+$('#vboxSettingsStorageTree').click(function(){$(this).focus();}).keydown(function(e){
+	
+	var keynum = 0;
+	
+	if(e.keyCode)
+		keynum = e.keyCode;
+	else if(e.which)
+		keynum = e.which;
+
+	switch(keynum) {
+	
+		// up
+		case 38:
+			
+			var cur = $(this).find('table.vboxListItemSelected').parent();
+			
+			// Try previous med attachment
+			if($(cur).prev('li.vboxSettingsMediumAttachment').children('table.vboxListItem').trigger('click')[0]) {
+				return;
+			}
+
+			// If we're a medium, click our parent controller
+			if($(cur).hasClass('vboxSettingsMediumAttachment')) {
+				$(cur).parent().parent('li.vboxSettingsController').children('table.vboxListItem').trigger('click');
+				return;
+			}
+
+			// Must be a controller, try previous controller's last medium attachment
+			if($(cur).prev().children('ul:not([class~="vboxHidden"])').find('table.vboxListItem:last').trigger('click')[0])
+				return;
+			
+			// No med attachment, try previous controller
+			$(cur).prev('li.vboxSettingsController').children('table.vboxListItem').trigger('click')
+			break;
+			
+		// right / expand
+		case 39:
+			var tbl = $(this).find('table.vboxListItemSelected');
+			var con = $(tbl).data('controller');
+			if(!con) return;
+			$(tbl).find('td.vboxSettingsController' + con.bus).click();
+			break;
+			
+		// left / contract
+		case 37:
+			var tbl = $(this).find('table.vboxListItemSelected');
+			var con = $(tbl).data('controller');
+			if(!con) return;
+			$(tbl).find('td.vboxSettingsController' + con.bus + 'Expanded').click();
+			break;
+			
+		// down
+		case 40:
+
+			var cur = $(this).find('table.vboxListItemSelected').parent();
+			
+			// Try next med attachment
+			if($(cur).next('li.vboxSettingsMediumAttachment').children('table.vboxListItem').trigger('click')[0]) {
+				return;
+			}
+
+			// Select first medium of current controller?
+			if($(cur).children('ul:not([class~="vboxHidden"])').find('table.vboxListItem:first').trigger('click')[0])
+				return;
+			
+			// Try next controller
+			$(cur).closest('li.vboxSettingsController').next('li.vboxSettingsController').children('table.vboxListItem').trigger('click')
+			
+			break;
+	}
+	
+}).css('outline','none');;
 
 /*
  * 
@@ -993,7 +1066,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 
 function vboxSettingsAddController(con,list) {
 	
-	var li = $('<li />').attr({'id':'vboxSettingsController' + con.bus,'name':con.bus});
+	var li = $('<li />').attr({'id':'vboxSettingsController' + con.bus,'name':con.bus,'class':'vboxSettingsController'});
 
     var tbl = $('<table />').attr({'class':'vboxListItem vboxSettingsController'}).hover(function(){
     	$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');
@@ -1016,13 +1089,13 @@ function vboxSettingsAddController(con,list) {
 
     $('<td />').attr({'class':'vboxSettingsStorageTypeIcon vboxSettingsController' + con.bus + 'Expanded','style':'width: 22px;'}).html(' ').toggle(
             function() {
-                var n = $(this).parents('li').first();
-                $(n).children('ul').css('display','none');
+                var n = $(this).closest('li');
+                $(n).children('ul').addClass('vboxHidden').css('display','none');
                 $(this).removeClass($(n).attr('id')+'Expanded').addClass($(n).attr('id'));
             },
             function() {
-                var n = $(this).parents('li').first();
-                $(n).children('ul').css('display','');
+                var n = $(this).closest('li');
+                $(n).children('ul').removeClass('vboxHidden').css('display','');
                 $(this).removeClass($(n).attr('id')).addClass($(n).attr('id')+'Expanded');                  
             }
             
@@ -1038,7 +1111,9 @@ function vboxSettingsAddController(con,list) {
 
 	
 	/* Attachments list holder */
-    $(li).append($('<ul />').attr({'id':'vboxSettingsController'+con.bus+'Attachments'})).appendTo(list);
+    $(li).append($('<ul />').attr({'id':'vboxSettingsController'+con.bus+'Attachments'})).dblclick(function(e){
+    	$(this).children('table.vboxSettingsController').find('td.vboxSettingsStorageTypeIcon').trigger('click',e);
+    }).disableSelection().appendTo(list);
     
     /* Generate Toolbars */
     var dtypes = vboxStorage[con.bus].driveTypes;
@@ -1126,7 +1201,7 @@ function vboxSettingsAddAttachment(d,bus) {
     // remove any 'last' classes
     $(con).children().removeClass('last');
     
-    var li = $('<li />').attr({'class':'last'});
+    var li = $('<li />').attr({'class':'last vboxSettingsMediumAttachment'});
         
 
 	var tbl = $('<table />').attr({'class':'vboxListItem vboxSettingsStorageAttachment','id':'vboxSettingsStorageAttachment-' + bus + '-' + d.port + '-' + d.device}).hover(function(e){

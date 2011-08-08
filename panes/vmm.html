@@ -47,7 +47,7 @@
 					</table>
 				</div>
 				<div class='vmmTableBody'>
-					<table class='vboxHorizontal vboxListTable vboxVMMList'>
+					<table class='vboxHorizontal vboxListTable vboxVMMList'  tabindex='1'>
 						<tbody id='vboxVMMHDList' class='vboxHover'>
 							<tr>
 								<td>Item 1</td>
@@ -113,7 +113,7 @@
 					</table>
 				</div>
 				<div class='vmmTableBody'>
-					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList' tabindex='1'>
 						<tbody id='vboxVMMCDList' class='vboxHover'>
 							<tr>
 								<td>Item 1</td>
@@ -166,7 +166,7 @@
 					</table>
 				</div>
 				<div class='vmmTableBody'>
-					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'>
+					<table width='100%' style='border-spacing: 0px; border: 0px;' class='vboxHorizontal vboxListTable vboxVMMList'  tabindex='1'>
 						<tbody id='vboxVMMFDList' class='vboxHover'>
 							<tr>
 								<td>Item 1</td>
@@ -203,6 +203,45 @@
  
 $("#vboxVMMTabs").find(".translate").html(function(i,h){return trans(h,'VBoxMediaManagerDlg');}).removeClass('translate');
 
+/*
+ * Keypress events
+ */
+$('div.vmmTableBody table').click(function(){$(this).focus();}).keydown(function(e){
+	
+	var keynum = 0;
+	
+	if(e.keyCode)
+		keynum = e.keyCode;
+	else if(e.which)
+		keynum = e.which;
+
+	switch(keynum) {
+	
+		// up
+		case 38:			
+			$(this).find('tr.vboxListItemSelected').prevAll('tr:not([class~="vboxHidden"]):first').children().first().click();
+			break;
+			
+		// right / expand
+		case 39:
+			$(this).find('tr.vboxListItemSelected.collapsed').find('input').click();
+			break;
+			
+		// left / contract
+		case 37:
+			$(this).find('tr.vboxListItemSelected:not(.collapsed)').find('input').click();
+			break;
+			
+		// down
+		case 40:
+			$(this).find('tr.vboxListItemSelected').nextAll('tr:not([class~="vboxHidden"]):first').children().first().click();
+			break;
+			
+	}
+		
+	return false;
+	
+}).css('outline','none');
 
 /*
  * Setup Tabs
@@ -674,7 +713,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 	var tr = $('<tr />').data({'medium':d.id,'mediumname':d.name,'mediumsize':d.size,'mediumlogicalSize':d.logicalSize}).attr({'id':'vboxVMMMedium'+(d.id),'class':'vboxListItem collapsed','title':d.id}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).addClass('vboxVMMTopLevel'+(topLevelParent ? topLevelParent : '0')+' vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth);
 
 	if(d.children && d.children.length && !hideDiff) $(tr).addClass('vboxVMMParent');
-	if(d.parent) $(tr).attr('style','display: none');
+	if(d.parent) $(tr).addClass('vboxHidden').attr('style','display: none');
 
 	/* Expand / collapse button and/or spacers */
 	var td = $('<td />').addClass('vboxHoverFirst');
@@ -740,7 +779,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 
 		if($(this).hasClass('collapsed') || !$(this).hasClass('vboxVMMParent')) return;
 		
-		$(trTarget).siblings('tr.vboxVMMChildOf'+thisid).show().trigger('showChildren',false);
+		$(trTarget).siblings('tr.vboxVMMChildOf'+thisid).show().removeClass('vboxHidden').trigger('showChildren',false);
 
 		// Only set by original button click
 		if(first) { vboxColorRows($('#vboxVMMHDList')); vboxVMMTableHeaderSetup($('#vmmDisks')); }
@@ -749,7 +788,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 
 		if(!$(this).hasClass('vboxVMMParent')) return;
 	
-		$(this).siblings('tr.vboxVMMChildOf'+$(this).data('medium')).hide().trigger('hideChildren',false);
+		$(this).siblings('tr.vboxVMMChildOf'+$(this).data('medium')).hide().addClass('vboxHidden').trigger('hideChildren',false);
 
 		// Only set by original button click
 		if(first) { vboxColorRows($('#vboxVMMHDList')); vboxVMMTableHeaderSetup($('#vmmDisks'));}

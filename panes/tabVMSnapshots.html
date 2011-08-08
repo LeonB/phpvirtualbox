@@ -93,7 +93,7 @@ var vboxSnapshotButtons = [
   			var vm = $('#vboxTabVMSnapshots').data('machine');
   			return (item && $(item).data('state') == 'current' && vm.state != 'RestoringSnapshot' && vm.state != 'LiveSnapshotting' && vm.state != 'DeletingSnapshot');
   		},
-  		'click' : function () {
+  		'click' : function (callback) {
 
   			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
 
@@ -118,9 +118,11 @@ var vboxSnapshotButtons = [
 	  	  		l.add('snapshotTake',function(d){
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
+							
+							// callback passed to click()? else Refresh vm list
+							if(typeof callback == 'function') callback();
+							else $('#vboxIndex').trigger('vmlistrefresh');
 
-							// Refresh vm list
-							$('#vboxIndex').trigger('vmlistrefresh');							
 							
 						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot...','UIActionsPool'));
 					} else if(d && d.error) {
@@ -157,8 +159,8 @@ var vboxSnapshotButtons = [
   	  		
 			var buttons = {};
 			
-			// Check for saved state
-			if($('#vboxTabVMSnapshots').data('machine').state == 'Saved' && $('#vboxTabVMSnapshots').data('machine').currentStateModified) {
+			// Check if the current state is modified
+			if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 
 				var q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>','VBoxProblemReporter');
 				q += '<p><label><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state','VBoxProblemReporter') + '</label></p>';

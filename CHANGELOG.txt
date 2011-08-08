@@ -9,6 +9,9 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=348
 
 Added context menus to VM Storage settings.
 
+Added arrow key up / down / left / right functionality to VM
+Storage settings and Virtual Media Manager.
+
 -------------------------------------
 	4.1-1b	2011-8-1
 -------------------------------------

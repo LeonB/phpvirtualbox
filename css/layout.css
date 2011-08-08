@@ -41,12 +41,13 @@ input.vboxRadio, input.vboxCheckbox { padding: 0px; margin: 1px 1px 3px 2px; dis
 #vboxIndex a, div.vboxDialogContent a,
 	#vboxIndex a:visited, div.vboxDialogContent a:visited { text-decoration: none; }
 #vboxIndex hr, div.vboxDialogContent hr { padding: 1px; margin: 0px; border: 0px; }
-#vboxIndex .vboxSeperatorLine, div.vboxDialogContent .vboxSeperatorLine { background: #aaa; } 
+#vboxIndex .vboxSeperatorLine, div.vboxDialogContent .vboxSeperatorLine { background: #aaa; }
 
 /* jQuery UI Components */
 .ui-widget-content div.vboxDialogContent, div.ui-dialog div.ui-dialog-content, div.ui-dialog div.ui-dialog-buttonpane { background: #fff; }
 div.ui-dialog div.ui-dialog-buttonpane { padding: 4px; margin: 0px; text-align: center; }
 div.ui-dialog div.ui-dialog-titlebar { color: #fff; background: #369; }
+div.ui-dialog div.ui-dialog-titlebar img { height: 16px; width: 16px; }
 div.ui-dialog .ui-button { background: #e9e9e9; color: #000; }
 div.ui-dialog .disabled { color: #aaa; }
 div.ui-dialog div.ui-dialog-buttonpane button {
