@@ -60,24 +60,26 @@ function vboxTraverse(tree,prop,val,all,children) {
 function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
 	// Fatal error previously occurred
-	if($('#vboxIndex').data('vboxFatalError')) return;
+	if($('#vboxIndex').data('vboxFatalError')) {
+		callback({},xtra);
+		return;
+	}
 
 	// Keep run count for retries
 	if(!run)
 		run = 1;
 	
 	params['fn'] = fn;
-	
-	/* Reserved for future use */
-	//vboxAjaxPersist = ($('#vboxIndex').data('vboxAjaxPersist') ? $('#vboxIndex').data('vboxAjaxPersist') : []);
-	//for(var i in vboxAjaxPersist) params[i] = vboxAjaxPersist[i];
-	
+		
 	var rval = jQuery.post('lib/ajax.php', params,
 			
 		function(d) {
 
 			// Fatal error previously occurred
-			if($('#vboxIndex').data('vboxFatalError')) return;
+			if($('#vboxIndex').data('vboxFatalError')) {
+				callback({},xtra);
+				return;
+			}
 
 			if(d) {
 				
@@ -134,13 +136,10 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 					
 				} // </ if errors.length >
 				
-				/* Unused
-				 * $('#vboxIndex').data('vboxAjaxPersist',d.persist);
-				 */
 				
 			} else {
 				// Callback with no data.
-				callback(d,xtra);
+				callback({},xtra);
 			}
 		},
 		"json").error(function(d,etext,xlr) {
@@ -350,8 +349,8 @@ function vboxBytesConvert(bytes) {
 function vboxConvertMbytes(str) {
 	str = str.replace('  ',' ');
 	str = str.split(' ',2);
-	if(!str[1]) str[1] = trans('MB');
-	var ext = new Array(trans('B'),trans('KB'),trans('MB'),trans('GB'),trans('TB'));
+	if(!str[1]) str[1] = trans('MB','VBoxGlobal');
+	var ext = new Array(trans('B','VBoxGlobal'),trans('KB','VBoxGlobal'),trans('MB','VBoxGlobal'),trans('GB','VBoxGlobal'),trans('TB','VBoxGlobal'));
 	var index = jQuery.inArray(str[1],ext);
 	if(index == -1) index = 2;
 	switch(index) {
