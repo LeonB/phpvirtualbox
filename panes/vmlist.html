@@ -255,8 +255,11 @@ function vboxVMList(anchorid) {
 
 	self.vmHTML = function (vmn) {
 		
-		var tbl = $('<table />').attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(){
+		var tbl = $('<table />').attr({'id':'vboxVMListItem-'+self.anchorid+'-'+vmn.id,'class':"vboxVMListVM vboxListItem" + (self.vms[vmn.id].selected ? "Selected" : "")}).bind('click',function(e){
+			
 			if(vmn.id == 'host' && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
+			if(e.pageX !== undefined && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
+			
 			$('#vboxIndex').data({'selectedVM':vmn}).trigger('vmselect',[vmn]);
 		}).hover(function(){if(self.dragging)return;$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('vmid',vmn.id);
 
@@ -337,6 +340,12 @@ function vboxVMList(anchorid) {
 				}
 			},self.contextMenuObj.menuClickCallback);
 		}
+		
+		// Open settings on dblclick
+		$(tbl).dblclick(function(){
+			if(self.contextMenuItems[0].enabled($('#vboxIndex').data('selectedVM')))
+				self.contextMenuItems[0].click();
+		});
 		
 		return tbl;
 		

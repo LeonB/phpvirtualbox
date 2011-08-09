@@ -176,7 +176,7 @@ LPT support may or may not work for you.
  *
  */
 // Refresh VM cache when VM Settings window is loaded. Default is true. Set to false to disable.
-#var $vmConfigRefresh = true;
+var $vmConfigRefresh = true;
 
 // Path
 #var $cachePath = '/tmp';

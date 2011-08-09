@@ -177,6 +177,10 @@ var vboxSnapshotButtons = [
 									// Refresh vm list
 									$('#vboxIndex').trigger('vmlistrefresh');
 
+									// When restoring current snapshot, force refresh. It will not happen auto because snapshot name does not change
+									if($('#vboxTabVMSnapshots').data('machine').currentSnapshot && $('#vboxTabVMSnapshots').data('machine').currentSnapshot.id && $('#vboxTabVMSnapshots').data('machine').currentSnapshot.id == snapshot.id)
+										$('#vboxTabVMSnapshots').trigger('refresh');
+
 								},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot','VBoxSnapshotsWgt'));
 							} else if(d && d.error) {
 								vboxAlert(d.error);
@@ -213,6 +217,10 @@ var vboxSnapshotButtons = [
 
 								// Refresh vm list
 								$('#vboxIndex').trigger('vmlistrefresh');
+								
+								// When restoring current snapshot, force refresh. It will not happen auto because snapshot name does not change
+								if($('#vboxTabVMSnapshots').data('machine').currentSnapshot && $('#vboxTabVMSnapshots').data('machine').currentSnapshot.id && $('#vboxTabVMSnapshots').data('machine').currentSnapshot.id == snapshot.id)
+									$('#vboxTabVMSnapshots').trigger('refresh');
 								
 							},{},'progress_snapshot_restore_90px.png',trans('Restore Snapshot','VBoxSnapshotsWgt'));
 						} else if(d && d.error) {
@@ -303,6 +311,7 @@ var vboxSnapshotButtons = [
 				$('#vboxSnapshotDetailsName').val(d.name);
 				$('#vboxSnapshotDetailsTaken').html(sdate);
 				$('#vboxSnapshotDetailsDesc').val(d.description);
+				
 				if(d.online) {
 					$('#vboxSnapshotSS').html('<a href="screen.php?vm='+$('#vboxTabVMSnapshots').data('machine').id+'&snapshot='+d.id+'&full=1" target="_blank"><img src="screen.php?vm='+$('#vboxTabVMSnapshots').data('machine').id+'&snapshot='+d.id+'" /></a>').show();
 				} else {

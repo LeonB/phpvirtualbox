@@ -577,12 +577,10 @@ $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).bind('blur',fun
     }
     
     $(bus).data('controller').name = $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).val();
-	$(bus).find('span[class=vboxSettingsControllerTitle]').first().text($(bus).data('controller').name);
-	
-	$(bus).find('span.vboxSettingsControllerTitle').html($('<div />').html(this.value).text());
+	$(bus).find('span[class=vboxSettingsControllerTitle]').first().text(this.value);
 	
 }).keyup(function(){
-	$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().find('span.vboxSettingsControllerTitle').html($('<div />').html(this.value).text());
+	$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().find('span.vboxSettingsControllerTitle').text(this.value);
 })
 
 /* Change host cache value onClick of checkbox */
@@ -1377,7 +1375,12 @@ function vboxSettingsSelectAttachment(tbl) {
 }
 
 
-
+/*
+ * Focus storage controller list when showing this pane
+ */
+$('#vboxSettingsStorageTableWrapper').bind('show',function(){
+	$('#vboxSettingsStorageTree').focus();
+});
 
 /*
  * 

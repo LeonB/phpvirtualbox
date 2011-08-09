@@ -807,7 +807,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 		var con = data['storageControllers'][a];
 		
-		$(vboxDetailsTable).append(__vboxDetailRow(con.name + ((con.bus == 'SATA' && advancedView) ? ' (' + con.portCount + ')' : ''), ''));
+		$(vboxDetailsTable).append(__vboxDetailRow($('<div />').text(con.name).html() + ((con.bus == 'SATA' && advancedView) ? ' (' + con.portCount + ')' : ''), ''));
 		
 		data['storageControllers'][a]['mediumAttachments'].sort(function(a,b){
 			if(a.port == b.port) {
@@ -916,13 +916,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 					adp = trans('NAT','VBoxGlobal');
 					break;
 				case 'Internal':
-					adp = trans('Internal network, \'%1\'','VBoxGlobal').replace('%1', nic.internalNetwork);
+					adp = trans('Internal network, \'%1\'','VBoxGlobal').replace('%1', $('<div />').text(nic.internalNetwork).html());
 					break;
 				case 'Generic':
-					adp = trans('Generic driver, \'%1\'','UIDetailsPagePrivate').replace('%1', nic.genericDriver);
+					adp = trans('Generic driver, \'%1\'','UIDetailsPagePrivate').replace('%1', $('<div />').text(nic.genericDriver).html());
 					break;					
 				case 'VDE':
-					adp = trans('VDE network, \'%1\'','VBoxGlobal').replace('%1', nic.VDENetwork);
+					adp = trans('VDE network, \'%1\'','VBoxGlobal').replace('%1', $('<div />').text(nic.VDENetwork).html());
 					break;
 			}
 
@@ -975,7 +975,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		var mode = p.hostMode
 		xtra += ', ' + trans(vboxSerialMode(mode),'VBoxGlobal')
 		if(mode != 'Disconnected') {
-			xtra += ' (' + p.path + ')'
+			xtra += ' (' + $('<div />').text(p.path).html() + ')'
 		}
 		
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal',null,'details report (serial ports)').replace('%1',(i + 1)), xtra));
@@ -1020,7 +1020,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			
 			// compose extra info
 			var xtra = trans(vboxSP.getPortName(p.IRQ,p.IOBase));
-			xtra += ' (' + p.path + ')'
+			xtra += ' (' + $('<div />').text(p.path).html() + ')'
 			
 			$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal',null,'details report (parallel ports)').replace('%1',(i + 1)), xtra));
 			vboxDetailsTableSPorts++;
