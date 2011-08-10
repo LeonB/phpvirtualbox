@@ -48,4 +48,5 @@ echo('
 full address:s:'.@$_GET['host'].(@$_GET['port'] ? ':'.@$_GET['port'] : '').'
 compression:i:1
 displayconnectionbar:i:1
+protocol:i:4
 ');
