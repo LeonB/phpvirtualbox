@@ -9,6 +9,13 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=348
 
 Added context menus to VM Storage settings.
 
+Fixed bug that would cause network adapters to disconnect and
+reconnect when saving settings of a running VM.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=361
+
+Changing a VM name in the Appliance Import Wizard now
+automatically updates virtual disk image paths.
+
 -------------------------------------
 	4.1-1b	2011-8-1
 -------------------------------------

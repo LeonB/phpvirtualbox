@@ -405,13 +405,6 @@ function vboxImportAppliancePropEditOptions(elm,desc) {
 		
 		$(this).siblings('span.vboxImportAppProp').text(txt);
 
-		/*
-		if(desc.display) {
-			$(this).siblings('span.vboxImportAppProp').html(desc.display($(this).val()));
-		} else {
-			$(this).siblings('span.vboxImportAppProp').text($(this).val());
-		}
-		*/
 	});
 	var val = $(elm).data('descValue');
 	if(desc.option_offset) {
@@ -491,16 +484,53 @@ function vboxImportAppliancePropEditDialog(td) {
 function vboxImportAppliancePropEdit(elm,desc) {
 	$(elm).children().hide();
 	$('<input />').attr({'type':'text','class':'vboxText'}).css({'width':($(elm).innerWidth()-12)+'px','margin':'0px'}).val($(elm).data('descValue')).blur(function(){
-		var val = (desc.postEdit ? desc.postEdit($(this).val(),$(this).parent().data('descValue')) : $(this).val());
-		$(this).parent().data('descValue',val);
-		if(desc.display) {
-			$(this).siblings('span.vboxImportAppProp').html(desc.display(val));
-		} else {
-			$(this).siblings('span.vboxImportAppProp').text(val);
+		
+		var tbox = this;
+		
+		var val = (desc.postEdit ? desc.postEdit($(tbox).val(),$(tbox).parent().data('descValue')) : $(tbox).val());
+		if(val != $(tbox).parent().data('descValue')) {
+			var oldval = $(tbox).parent().data('descValue');
+			$(tbox).parent().data('descValue',val);
+			if(desc.display) {
+				$(tbox).siblings('span.vboxImportAppProp').html(desc.display(val));
+			} else {
+				$(tbox).siblings('span.vboxImportAppProp').text(val);
+			}
+			$(tbox).parent().data('edited', true);
+			
+			// Special case for name
+			if(desc.label == 'Name') {
+				
+				// Get ChildOf class
+				var r = /(vboxChildOf\d+)/;
+				var coClass = r.exec($(tbox).closest('tr').attr('class'));
+				coClass = coClass[1];
+
+				// Get unedited disk rows
+				var diskRows = new Array();
+				$.each($(tbox).parent().closest('tr').siblings('.'+coClass), function(i,e){
+					if(!$(e).data('edited') && $(e).data('descType') == 'HardDiskImage') {
+						diskRows[diskRows.length] = e;
+					}
+				});
+
+				if(diskRows.length) {
+					var mfd = new vboxLoader();
+					mfd.add('ComposedMachineFilename',function(d){
+						var mfolder = vboxDirname(d.file) + $("#vboxIndex").data('vboxConfig').DSEP;
+						for(var i = 0; i < diskRows.length; i++) {
+							var tdc = $(diskRows[i]).children().eq(1)
+							var dname = vboxBasename($(tdc).data('descValue'));
+							$(tdc).data({'descValue':mfolder + dname}).find('span.vboxImportAppProp').text(mfolder + dname);
+						}
+					},{'name':val});
+					mfd.run();
+				}
+			}
 		}
-		$(this).hide();
-		$(this).siblings().show();
-		$(this).remove();
+		$(tbox).hide();
+		$(tbox).siblings().show();
+		$(tbox).remove();
 	}).keydown(function(e){if(e.keyCode == 13) $(this).trigger('blur');}).appendTo(elm);
 	$(elm).children('input:text').first().focus();
 }
