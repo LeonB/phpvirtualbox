@@ -86,7 +86,7 @@ var vboxApplianceImportProps = {
 			});
 			
 		},'display':function(val){
-			return $('<span />').append('<img class="vboxApplianceOSIcon" src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px; float: left; margin-top: 2px; margin-right: 4px; " /> <span class="vboxApplianceOSTitle">' + val +'</span>').disableSelection().bind('selectstart',function(e){e.preventDefault();return false;});
+			return $('<span />').append('<img class="vboxApplianceOSIcon" src="images/vbox/'+vboxGuestOSTypeIcon(val)+'" style="height: 16px; width: 16px; float: left; margin-top: 2px; margin-right: 4px; " /> <span class="vboxApplianceOSTitle">' + vboxSettingsOSTypesObj[val].description +'</span>').disableSelection().bind('selectstart',function(e){e.preventDefault();return false;});
 		}},
 		'Name' : {'label':'Name','icon':'name','edit':'text'},
 		'Description' : {'label':'Description','icon':'description','edit':'textarea'},
@@ -297,7 +297,7 @@ function wizardImportApplianceParsed(d) {
 				$(this).parent().trigger('selectProp',this);
 			});
 			
-			$('<td />').css({'white-space':'nowrap','width':'1%'}).attr({'class':'vbox'+d.descriptions[vm][0][i]}).html('<img src="images/vbox/blank.gif" class="vboxSpacer" style="height:2px;"/><img src="images/vbox/'+desc.icon+'_16px.png" /> ' + trans(desc.label,'VBoxApplianceEditorWgt')).appendTo(tr);
+			$('<td />').css({'white-space':'nowrap','width':'1%'}).attr({'class':'vbox'+d.descriptions[vm][0][i]}).html('<img src="images/vbox/blank.gif" class="vboxSpacer" style="height:2px;"/><img src="images/vbox/'+desc.icon+'_16px.png" style="height: 16px; width: 16px;"/> ' + trans(desc.label,'VBoxApplianceEditorWgt')).appendTo(tr);
 
 			var td = $('<td />').attr({'class':'vboxHideOverflow'}).css({'padding-left':'10px'});			
 			if(desc.checkbox) {

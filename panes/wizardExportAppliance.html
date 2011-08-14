@@ -88,9 +88,15 @@ l.onLoad = function() {
 	if($('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'])
 		vmid = $('#vboxIndex').data('selectedVM')['id'];
 	for(var i in vms) {
-		var li = $('<li />').data({'vm':vms[i]}).addClass('vboxListItem').click(function(){$(this).toggleClass('vboxListItemSelected');}).html("<img style='width: 16px; height: 16px;' src='images/vbox/" + vboxGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name);
-		if(vms[i].id == vmid)
-			$(li).click();
+		var li = $('<li />').data({'vm':vms[i]});
+		if(vms[i].state == 'Running') {
+			$(li).addClass('vboxDisabled disabled');
+		} else {
+			$(li).click(function(){$(this).toggleClass('vboxListItemSelected');}).addClass('vboxListItem');
+			if(vms[i].id == vmid)
+				$(li).click();
+		}
+		$(li).html("<img style='width: 16px; height: 16px;' src='images/vbox/" + vboxGuestOSTypeIcon(vms[i].OSTypeId) + "' /> " + vms[i].name);
 		$(vmlist).append(li);
 	}
 	vboxColorRows(vmlist);
