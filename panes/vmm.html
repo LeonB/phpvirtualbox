@@ -505,11 +505,11 @@ var vmmButtons = new Array(
 			if(m.deviceType == 'HardDisk' && $('#vboxIndex').data('vboxConfig').deleteOnRemove && m.format != 'iSCSI') {
 
 				
-				var q = trans('<p>Do you want to delete the storage unit of the hard disk <nobr><b>%1</b></nobr>?</p><p>If you select <b>Delete</b> then the specified storage unit will be permanently deleted. This operation <b>cannot be undone</b>.</p><p>If you select <b>Keep</b> then the hard disk will be only removed from the list of known hard disks, but the storage unit will be left untouched which makes it possible to add this hard disk to the list later again.</p>','VBoxProblemReporter').replace('%1',m.location);
+				var q = trans('<p>Do you want to delete the storage unit of the hard disk <nobr><b>%1</b></nobr>?</p><p>If you select <b>Delete</b> then the specified storage unit will be permanently deleted. This operation <b>cannot be undone</b>.</p><p>If you select <b>Keep</b> then the hard disk will be only removed from the list of known hard disks, but the storage unit will be left untouched which makes it possible to add this hard disk to the list later again.</p>','UIMessageCenter').replace('%1',m.location);
 				
 
 				var buttons = {};
-				buttons[trans('Delete','VBoxProblemReporter')] = function(){
+				buttons[trans('Delete','UIMessageCenter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType,'delete':1},function(ret){
 						vboxProgress(ret.progress,function(){
 							var l = new vboxLoader();
@@ -521,7 +521,7 @@ var vmmButtons = new Array(
 					$(this).empty().remove();
 				};
 				
-				buttons[trans('Keep','VBoxProblemReporter')] = function(){
+				buttons[trans('Keep','UIMessageCenter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
 						var l = new vboxLoader();
 						l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
@@ -533,11 +533,11 @@ var vmmButtons = new Array(
 				
 			} else {
 				
-				var q = trans('<p>Are you sure you want to remove the %1 <nobr><b>%2</b></nobr> from the list of known media?</p>','VBoxProblemReporter').replace('%1',trans(mtype,'VBoxProblemReporter')).replace('%2',m.location);
-				q+= trans('<p>Note that the storage unit of this medium will not be deleted and that it will be possible to use it later again.</p>','VBoxProblemReporter');
+				var q = trans('<p>Are you sure you want to remove the %1 <nobr><b>%2</b></nobr> from the list of known media?</p>','UIMessageCenter').replace('%1',trans(mtype,'UIMessageCenter')).replace('%2',m.location);
+				q+= trans('<p>Note that the storage unit of this medium will not be deleted and that it will be possible to use it later again.</p>','UIMessageCenter');
 				
 				var buttons = {};
-				buttons[trans('Remove','VBoxProblemReporter')] = function(){
+				buttons[trans('Remove','UIMessageCenter')] = function(){
 					var b = this;
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
 						var l = new vboxLoader();
@@ -584,10 +584,10 @@ var vmmButtons = new Array(
 			
 			
 			var m = vboxMedia.getMediumById($(elm).find('tr.vboxListItemSelected').first().data('medium'));
-			var q = trans('<p>Are you sure you want to release the %1 <nobr><b>%2</b></nobr>?</p><p>This will detach it from the following virtual machine(s): <b>%3</b>.</p>','VBoxProblemReporter').replace('%1',trans(mtype,'VBoxProblemReporter')).replace('%2',m.location);
+			var q = trans('<p>Are you sure you want to release the %1 <nobr><b>%2</b></nobr>?</p><p>This will detach it from the following virtual machine(s): <b>%3</b>.</p>','UIMessageCenter').replace('%1',trans(mtype,'UIMessageCenter')).replace('%2',m.location);
 			
 			var buttons = {};
-			buttons[trans('Release','VBoxProblemReporter')] = function(){
+			buttons[trans('Release','UIMessageCenter')] = function(){
 				var b = this;
 				vboxAjaxRequest('mediumRelease',{'id':m.id,'type':m.deviceType},function(ret){
 					// Check if current VM is in list

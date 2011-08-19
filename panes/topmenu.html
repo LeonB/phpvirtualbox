@@ -113,7 +113,7 @@ if($('#vboxIndex').data('vboxSession').user) {
 		menu['menu'][menu['menu'].length] = {
 				'name' : 'fileLogout',
 				// Pre-translated title to append username
-				'label' : trans('Log out - %1').replace('%1',$('#vboxIndex').data('vboxSession').user),
+				'label' : trans('Log out - %1','VBoxSelectorWnd').replace('%1',$('#vboxIndex').data('vboxSession').user),
 				'icon' : 'exit',
 				'click': function() {
 					var l = new vboxLoader();

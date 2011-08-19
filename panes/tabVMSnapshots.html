@@ -162,10 +162,10 @@ var vboxSnapshotButtons = [
 			// Check if the current state is modified
 			if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 
-				var q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>','VBoxProblemReporter');
-				q += '<p><label><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state','VBoxProblemReporter') + '</label></p>';
+				var q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>','UIMessageCenter');
+				q += '<p><label><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state','UIMessageCenter') + '</label></p>';
 				
-				buttons[trans('Restore','VBoxProblemReporter')] = function() {
+				buttons[trans('Restore','UIMessageCenter')] = function() {
 
 					var snrestore = function(){
 			  	  		var l = new vboxLoader();
@@ -206,9 +206,9 @@ var vboxSnapshotButtons = [
 
 			} else {
 				
-				var q = trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>','VBoxProblemReporter');
+				var q = trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>','UIMessageCenter');
 				
-				buttons[trans('Restore','VBoxProblemReporter')] = function() {
+				buttons[trans('Restore','UIMessageCenter')] = function() {
 		  	  		var l = new vboxLoader();
 		  	  		l.mode = 'save';
 		  	  		l.add('snapshotRestore',function(d){
@@ -254,7 +254,7 @@ var vboxSnapshotButtons = [
   		'click' : function () {
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data();
 			var buttons = {};
-			buttons[trans('Delete','VBoxProblemReporter')] = function() {
+			buttons[trans('Delete','UIMessageCenter')] = function() {
 	  	  		var l = new vboxLoader();
 	  	  		l.mode = 'save';
 	  	  		l.add('snapshotDelete',function(d){
@@ -269,7 +269,7 @@ var vboxSnapshotButtons = [
 	  	  		$(this).empty().remove();
 				l.run();				
 			};
-			vboxConfirm(trans('<p>Deleting the snapshot will cause the state information saved in it to be lost, and disk data spread over several image files that VirtualBox has created together with the snapshot will be merged into one file. This can be a lengthy process, and the information in the snapshot cannot be recovered.</p></p>Are you sure you want to delete the selected snapshot <b>%1</b>?</p>','VBoxProblemReporter').replace('%1',$('<div />').text(snapshot.name).html()),buttons);  	  		
+			vboxConfirm(trans('<p>Deleting the snapshot will cause the state information saved in it to be lost, and disk data spread over several image files that VirtualBox has created together with the snapshot will be merged into one file. This can be a lengthy process, and the information in the snapshot cannot be recovered.</p></p>Are you sure you want to delete the selected snapshot <b>%1</b>?</p>','UIMessageCenter').replace('%1',$('<div />').text(snapshot.name).html()),buttons);  	  		
   	  	}
   	},
   	{

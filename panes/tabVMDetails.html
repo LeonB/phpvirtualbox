@@ -553,7 +553,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(targetdiv).html('<div style="width: 50%">'+trans('The selected virtual machine is <i>inaccessible</i>. Please inspect the error message shown below and press the <b>Refresh</b> button if you want to repeat the accessibility check:','UIDetailsPagePrivate')+'</div>');
 		
 		// Details Table
-		var vboxDetailsTable = $('<table />').attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("VirtualBox - Error",'VBoxProblemReporter'), data.accessError['text'])).append(__vboxDetailRow(trans('Result Code: ','VBoxProblemReporter'), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component: ",'VBoxProblemReporter'), data.accessError['component'])).appendTo(targetdiv);
+		var vboxDetailsTable = $('<table />').attr({'style':'width: 50%','class':'vboxDetailsTable vboxDetailsTableError'}).append(__vboxDetailRow(trans("VirtualBox - Error",'UIMessageCenter'), data.accessError['text'])).append(__vboxDetailRow(trans('Result Code: ','UIMessageCenter'), data.accessError['resultCode'])).append(__vboxDetailRow(trans("Component: ",'UIMessageCenter'), data.accessError['component'])).appendTo(targetdiv);
 		
 		var d = $('<div />').attr({'style':'width: 50%; padding: 4px;'});
 		

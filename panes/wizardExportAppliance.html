@@ -258,7 +258,7 @@ $('#wizardExportApplianceStep4').bind('show',function(e,wiz){
 			
 			var tr = $('<tr />').attr({'class':'vboxAppliance-'+vmid+' vboxChildOf' + i}).data({'vmprop':p});
 			
-			$('<td />').css({'padding-left':'18px','white-space':'nowrap','width':'1%'}).html('<img src="images/vbox/'+vboxApplianceProps[p].icon+'_16px.png" /> ' + trans(vboxApplianceProps[p].label,'VBoxApplianceEditorWgt')).appendTo(tr);
+			$('<td />').css({'padding-left':'18px','white-space':'nowrap','width':'1%'}).html('<img src="images/vbox/'+vboxApplianceProps[p].icon+'_16px.png" /> ' + trans(vboxApplianceProps[p].label,'UIApplianceEditorWidget')).appendTo(tr);
 
 			$('<td />').attr({'class':'vboxHideOverflow vboxAppProp'+p}).css({'width':'100%','padding-left':'10px','padding-right':'2px'}).html('<div>'+$('<div />').text(($(trparent).data('vm')[p]||'')).html()+'</div>').dblclick((vboxApplianceProps[p].textarea ? vboxExportAppliancePropEditArea : vboxExportAppliancePropEdit )).appendTo(tr);
 			

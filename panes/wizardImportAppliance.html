@@ -54,7 +54,7 @@ $('#wizImportAppMsg').html(trans('<p>This wizard will guide you through importin
 
 
 $('#wizardImportApplianceStep2').find('span.translateglob').html(function(i,h){
-	return trans(h,'VBoxApplianceEditorWgt');
+	return trans(h,'UIApplianceEditorWidget');
 });
 
 /*
@@ -278,7 +278,7 @@ function wizardImportApplianceParsed(d) {
 			$(this).css({'background-image':'url(images/downArrow.png)'});
 			$(this).parent().parent().parent().children('tr.vboxChildOf'+$(this).data('vboxOrder')).css('display','');
 		}).appendTo(td);
-		$(td).append(trans('Virtual System %1','VBoxApplianceEditorWgt').replace('%1',(vm+1))).appendTo(tr);
+		$(td).append(trans('Virtual System %1','UIApplianceEditorWidget').replace('%1',(vm+1))).appendTo(tr);
 		$(tbl).append(tr);
 
 		// Hard Disks are handled differently
@@ -297,7 +297,7 @@ function wizardImportApplianceParsed(d) {
 				$(this).parent().trigger('selectProp',this);
 			});
 			
-			$('<td />').css({'white-space':'nowrap','width':'1%'}).attr({'class':'vbox'+d.descriptions[vm][0][i]}).html('<img src="images/vbox/blank.gif" class="vboxSpacer" style="height:2px;"/><img src="images/vbox/'+desc.icon+'_16px.png" style="height: 16px; width: 16px;"/> ' + trans(desc.label,'VBoxApplianceEditorWgt')).appendTo(tr);
+			$('<td />').css({'white-space':'nowrap','width':'1%'}).attr({'class':'vbox'+d.descriptions[vm][0][i]}).html('<img src="images/vbox/blank.gif" class="vboxSpacer" style="height:2px;"/><img src="images/vbox/'+desc.icon+'_16px.png" style="height: 16px; width: 16px;"/> ' + trans(desc.label,'UIApplianceEditorWidget')).appendTo(tr);
 
 			var td = $('<td />').attr({'class':'vboxHideOverflow'}).css({'padding-left':'10px'});			
 			if(desc.checkbox) {
@@ -373,7 +373,7 @@ function wizardImportApplianceParsed(d) {
 	if(d.warnings && d.warnings.length) {
 
 		var div = $('<div />');
-		$(div).append(trans('Warnings:','VBoxApplianceEditorWgt'));
+		$(div).append(trans('Warnings:','UIApplianceEditorWidget'));
 		
 		var ul = $('<ul />');
 

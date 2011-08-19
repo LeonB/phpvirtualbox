@@ -77,7 +77,7 @@ function vboxWizardImportApplianceInit() {
 					}
 				}
 				if(lic) {
-					if(!vmname) vmname = trans('Virtual System %1','VBoxApplianceEditorWgt').replace('%1',a);
+					if(!vmname) vmname = trans('Virtual System %1','UIApplianceEditorWidget').replace('%1',a);
 					licenses[licenses.length] = {'name':vmname,'license':lic};
 				}
 			}
@@ -190,7 +190,7 @@ function vboxWizardExportApplianceInit() {
 					vboxExportApp(1);
 					$(this).remove();
 				}
-				vboxConfirm(trans('A file named <b>%1</b> already exists. Are you sure you want to replace it?<br /><br />Replacing it will overwrite its contents.','VBoxProblemReporter').replace('%1',vboxBasename(loc)),buttons,trans('No','QIMessageBox'));
+				vboxConfirm(trans('A file named <b>%1</b> already exists. Are you sure you want to replace it?<br /><br />Replacing it will overwrite its contents.','UIMessageCenter').replace('%1',vboxBasename(loc)),buttons,trans('No','QIMessageBox'));
 				return;
 			}
 			vboxExportApp(0);
@@ -222,7 +222,7 @@ function vboxPortForwardConfigInit(rules,callback) {
 			var rulesToPass = new Array();
 			for(var i = 0; i < rules.length; i++) {
 				if($(rules[i]).data('vboxRule')[3] == 0 || $(rules[i]).data('vboxRule')[5] == 0) {
-					vboxAlert(trans('The current port forwarding rules are not valid. None of the host or guest port values may be set to zero.','VBoxProblemReporter'));
+					vboxAlert(trans('The current port forwarding rules are not valid. None of the host or guest port values may be set to zero.','UIMessageCenter'));
 					return;
 				}
 				rulesToPass[i] = $(rules[i]).data('vboxRule');

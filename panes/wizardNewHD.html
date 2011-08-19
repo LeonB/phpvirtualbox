@@ -216,7 +216,7 @@ $('#wizardNewHDStep4').bind('show',function(e,wiz){
 	},{'file':loc});
 	l.onLoad = function() { 
 		if(fileExists) {
-			vboxAlert(trans('<p>The hard disk storage unit at location <b>%1</b> already exists. You cannot create a new virtual hard disk that uses this location because it can be already used by another virtual hard disk.</p><p>Please specify a different location.</p>','VBoxProblemReporter').replace('%1',loc));
+			vboxAlert(trans('<p>The hard disk storage unit at location <b>%1</b> already exists. You cannot create a new virtual hard disk that uses this location because it can be already used by another virtual hard disk.</p><p>Please specify a different location.</p>','UIMessageCenter').replace('%1',loc));
 			wiz.displayStep(3);
 		}
 	}

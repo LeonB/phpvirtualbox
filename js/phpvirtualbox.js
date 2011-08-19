@@ -131,7 +131,7 @@ var vboxVMActions = {
 		'click':function(){
 
 			var buttons = {};
-			buttons[trans('Delete all files','VBoxProblemReporter')] = function(){
+			buttons[trans('Delete all files','UIMessageCenter')] = function(){
 				$(this).empty().remove();
 				vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
 					// check for progress operation
@@ -142,7 +142,7 @@ var vboxVMActions = {
 					}
 				});
 			}
-			buttons[trans('Remove only','VBoxProblemReporter')] = function(){
+			buttons[trans('Remove only','UIMessageCenter')] = function(){
 				$(this).empty().remove();
 				vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
 					// check for progress operation
@@ -153,7 +153,7 @@ var vboxVMActions = {
 					}
 				});
 			}
-			var q = trans('<p>You are about to remove the virtual machine <b>%1</b> from the machine list.</p><p>Would you like to delete the files containing the virtual machine from your hard disk as well? Doing this will also remove the files containing the machine\'s virtual hard disks if they are not in use by another machine.</p>','VBoxProblemReporter').replace('%1',$('#vboxIndex').data('selectedVM').name);
+			var q = trans('<p>You are about to remove the virtual machine <b>%1</b> from the machine list.</p><p>Would you like to delete the files containing the virtual machine from your hard disk as well? Doing this will also remove the files containing the machine\'s virtual hard disks if they are not in use by another machine.</p>','UIMessageCenter').replace('%1',$('#vboxIndex').data('selectedVM').name);
 				
 			vboxConfirm(q,buttons);
 			
@@ -169,7 +169,7 @@ var vboxVMActions = {
 		'click':function(){
 			
 			var buttons = {};
-			buttons[trans('Discard','VBoxProblemReporter')] = function(){
+			buttons[trans('Discard','UIMessageCenter')] = function(){
 				$(this).empty().remove();
 				var l = new vboxLoader();
 				l.add('setStateVMdiscardSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
@@ -177,7 +177,7 @@ var vboxVMActions = {
 				l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
 				l.run();
 			}
-			vboxConfirm(trans('<p>Are you sure you want to discard the saved state of the virtual machine <b>%1</b>?</p><p>This operation is equivalent to resetting or powering off the machine without doing a proper shutdown of the guest OS.</p>','VBoxProblemReporter').replace('%1',$('#vboxIndex').data('selectedVM').name),buttons);
+			vboxConfirm(trans('<p>Are you sure you want to discard the saved state of the virtual machine <b>%1</b>?</p><p>This operation is equivalent to resetting or powering off the machine without doing a proper shutdown of the guest OS.</p>','UIMessageCenter').replace('%1',$('#vboxIndex').data('selectedVM').name),buttons);
 		},
 		'enabled':function(vm){ return (vm && vm.state == 'Saved'); }
     },
@@ -243,11 +243,11 @@ var vboxVMActions = {
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {
 			var buttons = {};
-			buttons[trans('Reset','VBoxProblemReporter')] = function() {
+			buttons[trans('Reset','UIMessageCenter')] = function() {
 				$(this).remove();
 				vboxVMActions.powerAction('reset');
 			}
-			vboxConfirm(trans('<p>Do you really want to reset the virtual machine?</p><p>This will cause any unsaved data in applications running inside it to be lost.</p>','VBoxProblemReporter'),buttons);
+			vboxConfirm(trans('<p>Do you really want to reset the virtual machine?</p><p>This will cause any unsaved data in applications running inside it to be lost.</p>','UIMessageCenter'),buttons);
 		}
 	},
 	

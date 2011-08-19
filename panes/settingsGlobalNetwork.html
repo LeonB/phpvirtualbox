@@ -168,7 +168,7 @@ var sButtons = new Array(
 				l.onLoad = function(){$(dialog).empty().remove();}
 				l.run();
 			}
-			vboxConfirm(trans('<p>Deleting this host-only network will remove the host-only interface this network is based on. Do you want to remove the (host-only network) interface <nobr><b>%1</b>?</nobr></p><p><b>Note:</b> this interface may be in use by one or more virtual network adapters belonging to one of your VMs. After it is removed, these adapters will no longer be usable until you correct their settings by either choosing a different interface name or a different adapter attachment type.</p>','VBoxProblemReporter').replace('%1',$(item).data('interface').name),buttons);	
+			vboxConfirm(trans('<p>Deleting this host-only network will remove the host-only interface this network is based on. Do you want to remove the (host-only network) interface <nobr><b>%1</b>?</nobr></p><p><b>Note:</b> this interface may be in use by one or more virtual network adapters belonging to one of your VMs. After it is removed, these adapters will no longer be usable until you correct their settings by either choosing a different interface name or a different adapter attachment type.</p>','UIMessageCenter').replace('%1',$(item).data('interface').name),buttons);	
 		}
 	},
 	{

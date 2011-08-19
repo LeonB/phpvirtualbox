@@ -972,7 +972,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 	// Hard Disk buttons
 	if (type == 'HardDisk') {
 		
-		buttons[trans('Create new disk','VBoxProblemReporter')] = function() {
+		buttons[trans('Create new disk','UIMessageCenter')] = function() {
 			vboxWizardNewHDInit(function(id){
 				if(!id) return;
 				mAttachToolbarHD.mediaMenu.menuUpdateRecent();
@@ -982,7 +982,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			$(this).remove();
 			
 		};
-		buttons[trans('Choose existing disk','VBoxProblemReporter')] = function() {
+		buttons[trans('Choose existing disk','UIMessageCenter')] = function() {
 			var dlg = $(this);
 			vboxMedia.actions.choose(null,'HardDisk',function(med){
 				if(med) {
@@ -994,12 +994,12 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			});
 		};
 		
-		msg = trans('<p>You are about to add a virtual hard disk to controller <b>%1</b>.</p><p>Would you like to create a new, empty file to hold the disk contents or select an existing one?</p>','VBoxProblemReporter').replace('%1',controller);
+		msg = trans('<p>You are about to add a virtual hard disk to controller <b>%1</b>.</p><p>Would you like to create a new, empty file to hold the disk contents or select an existing one?</p>','UIMessageCenter').replace('%1',controller);
 	
 	// Floppy buttons
 	} else if(type == 'Floppy') {
 
-		buttons[trans('Choose disk','VBoxProblemReporter')] = function() {
+		buttons[trans('Choose disk','UIMessageCenter')] = function() {
 			var dlg = $(this);
 			vboxMedia.actions.choose(null,'Floppy',function(med){
 				if(med) {
@@ -1012,18 +1012,18 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			
 		};
 
-		buttons[trans('Leave empty','VBoxProblemReporter')] = function() {
+		buttons[trans('Leave empty','UIMessageCenter')] = function() {
 			vboxSettingsAddAttachment({'controller':controller,'port':port,'device':device,'type':type,'medium':null},bus);
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 			$(this).remove();
 		}
 		
-		msg = trans('<p>You are about to add a new floppy drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual floppy disk to put in the drive or to leave it empty for now?</p>','VBoxProblemReporter').replace('%1',controller);
+		msg = trans('<p>You are about to add a new floppy drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual floppy disk to put in the drive or to leave it empty for now?</p>','UIMessageCenter').replace('%1',controller);
 		
 	// CD/DVD buttons
 	} else {
 
-		buttons[trans('Choose disk','VBoxProblemReporter')] = function() {
+		buttons[trans('Choose disk','UIMessageCenter')] = function() {
 			var dlg = $(this);
 			vboxMedia.actions.choose(null,'DVD',function(med){
 				if(med) {
@@ -1036,13 +1036,13 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			
 		};
 		
-		buttons[trans('Leave empty','VBoxProblemReporter')] = function() {
+		buttons[trans('Leave empty','UIMessageCenter')] = function() {
 			vboxSettingsAddAttachment({'controller':controller,'port':port,'device':device,'type':type,'medium':null},bus);
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 			$(this).remove();
 		}
 		
-		msg = trans('<p>You are about to add a new CD/DVD drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual CD/DVD disk to put in the drive or to leave it empty for now?</p>','VBoxProblemReporter').replace('%1',controller);
+		msg = trans('<p>You are about to add a new CD/DVD drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual CD/DVD disk to put in the drive or to leave it empty for now?</p>','UIMessageCenter').replace('%1',controller);
 		
 	}
 	

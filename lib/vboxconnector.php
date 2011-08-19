@@ -2184,7 +2184,7 @@ class vboxconnector {
 			$this->session->console->releaseRemote();
 			$this->session->unlockMachine();
 			$this->session = null;
-			throw new Exception(str_replace('%1',$vmname,trans('Failed to send the ACPI Power Button press event to the virtual machine <b>%1</b>.','VBoxProblemReporter')));
+			throw new Exception(str_replace('%1',$vmname,trans('Failed to send the ACPI Power Button press event to the virtual machine <b>%1</b>.','UIMessageCenter')));
 		}
 
 
@@ -4129,6 +4129,11 @@ class vboxconnector {
 			}
 		} catch (Exception $null) {}
 		$m->releaseRemote();
+		
+		// Attempt to UTF-8 encode string or json_encode may choke
+		// and return an empty string
+		if(function_exists('utf8_encode'))
+			$response['data']['log'] = utf8_encode($response['data']['log']);
 	}
 
 	/*
