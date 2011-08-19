@@ -636,6 +636,15 @@ function vboxWizard(name, title, img, bg, icon) {
 
 	}
 	
+	self.setLast = function() {
+		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextText+' >")').html($('<div />').text(self.finishText).html());
+		self.steps = self._curStep;
+	}
+
+	self.unsetLast = function(steps) {
+		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' >').html());
+	}
+	
 	self.displayPrev = function() {
 		if(self._curStep <= 1) return;
 		self.displayStep(self._curStep - 1);

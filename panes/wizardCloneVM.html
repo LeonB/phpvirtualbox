@@ -48,6 +48,30 @@
 
 </div>
 
+<!-- Step 3 -->
+<div id='wizardCloneVMStep3' title='Cloning Configuration' style='display: none'>
+
+	<p class='translate'>Please choose which parts of the virtual machine should be cloned.</p>
+	
+	<p><span class='translate'>If you select &lt;b&gt;Current machine state&lt;/b&gt;, only the current state of the virtual machine is cloned.</span>
+		<span class='translate' id='wizardCloneVMCurrentAll' style='display: none;'>If you select &lt;b&gt;Current machine and all child states&lt;/b&gt; the current state of the virtual machine and any states of child snapshots are cloned.</span>
+		<span class='translate'>If you select &lt;b&gt;All states&lt;/b&gt;, the current machine state and all snapshots are cloned.</span>
+		</p>
+	
+	<table>
+		<tr style='vertical-align: bottom;'>
+			<td><label><input type='radio' class='vboxRadio' checked='checked' name='vmState' value='MachineState' /> <span class='translate'>Current machine state</span></label></td>
+		</tr>
+		<tr style='vertical-align: bottom; display:none;' id='vboxCloneCurrentAll'>
+			<td><label><input type='radio' class='vboxRadio' name='vmState' value='MachineAndChildStates' /> <span class='translate'>Current machine and all child states</span></label></td>
+		</tr>		
+		<tr style='vertical-align: bottom;'>
+			<td><label><input type='radio' class='vboxRadio' name='vmState' value='AllStates' /> <span class='translate'>All states</span></label></td>
+		</tr>	
+	</table>
+
+</div>
+
 
 
 <script type='text/javascript'>
