@@ -29,7 +29,7 @@
 
 	<span class='translate'>&lt;p&gt;Please select the type of the clone.&lt;/p&gt;&lt;p&gt;If you choose &lt;b&gt;Full Clone&lt;/b&gt; an exact copy (including all virtual disk images) of the original VM will be created. If you select &lt;b&gt;Linked Clone&lt;/b&gt;, a new VM will be created, but the virtual disk images will point to the virtual disk images of original VM.&lt;/p&gt;</span>
 	
-	<span class='translate'>&lt;p&gt;Note that a new snapshot within the source VM is created in case you select &lt;b&gt;Linked Clone&lt;/b&gt;.&lt;/p&gt;</span>
+	<span class='translate' id='vboxCloneVMNewSnap'>&lt;p&gt;Note that a new snapshot within the source VM is created in case you select &lt;b&gt;Linked Clone&lt;/b&gt;.&lt;/p&gt;</span>
 	
 	<table>
 		<tr style='vertical-align: bottom;'>
@@ -82,6 +82,10 @@ $('#wizardCloneVMStep1').bind('show',function(e,wiz){
 	
 	// Hold wizard original steps
 	$('#wizardCloneVMStep1').data('wizSteps',wiz.steps);
+	
+	// Hide "new snapshot" message if we're cloning a snapshot
+	if(wiz.args && wiz.args.snapshot)
+		$('#vboxCloneVMNewSnap').hide();
 	
 	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
 	

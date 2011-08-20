@@ -664,9 +664,9 @@ function vboxGuestNetworkAdaptersDialogInit(vm,nic) {
 	l.onLoad = function(){
 		
 		var buttons = {};
-		buttons[trans('Close','VBoxVMInformationDlg')] = function() {$('#vboxGuestNetworkDialog').trigger('close').empty().remove();};
+		buttons[trans('Close','VBoxVMLogViewer')] = function() {$('#vboxGuestNetworkDialog').trigger('close').empty().remove();};
 		$('#vboxGuestNetworkDialog').dialog({'closeOnEscape':true,'width':500,'height':250,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/nw_16px.png" class="vboxDialogTitleIcon" /> ' + trans('Guest Network Adapters','VBoxGlobal')}).bind("dialogbeforeclose",function(){
-	    	$(this).parent().find('span:contains("'+trans('Close','VBoxVMInformationDlg')+'")').trigger('click');
+	    	$(this).parent().find('span:contains("'+trans('Close','VBoxVMLogViewer')+'")').trigger('click');
 	    });
 		
 		// defined in pane

@@ -60,10 +60,7 @@ function vboxTraverse(tree,prop,val,all,children) {
 function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
 	// Fatal error previously occurred
-	if($('#vboxIndex').data('vboxFatalError')) {
-		callback({},xtra);
-		return;
-	}
+	if($('#vboxIndex').data('vboxFatalError')) return;
 
 	// Keep run count for retries
 	if(!run)
@@ -76,10 +73,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 		function(d) {
 
 			// Fatal error previously occurred
-			if($('#vboxIndex').data('vboxFatalError')) {
-				callback({},xtra);
-				return;
-			}
+			if($('#vboxIndex').data('vboxFatalError')) return;
 
 			if(d) {
 				

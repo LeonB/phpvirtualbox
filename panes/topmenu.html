@@ -196,7 +196,7 @@ var menu = {
 	        	l.addFile('panes/about.html',function(f){$('#vboxAbout').append(f);});
 	        	l.onLoad = function() {
 		        	var buttons = {};
-		        	buttons[trans('OK','QIMessageBox')] = function() { $(this).empty().remove(); };
+		        	buttons[trans('Close','VBoxVMLogViewer')] = function() { $(this).empty().remove(); };
 		
 		            $('#vboxAbout').dialog({'closeOnEscape':false,'width':500,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/help_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});			        	
 	        	}

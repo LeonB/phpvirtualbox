@@ -206,6 +206,13 @@ function vmNewFillExistingDisks(sel) {
 	$(document.forms['frmwizardNewVM'].newVMDiskSelect).children().remove();
 	
 	var s = vboxMedia.mediaForAttachmentType('HardDisk');
+	
+	// no hard disks yet?
+	if(s.length == 0) {
+		document.forms['frmwizardNewVM'].newVMDisk[1].disabled = true;
+		return;
+	}
+	
 	// Sort media
 	s.sort(function(a,b){return strnatcasecmp(a.name,b.name);});
 	

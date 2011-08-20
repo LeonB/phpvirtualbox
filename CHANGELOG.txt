@@ -19,7 +19,7 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=362
 
 Minor translation fixes.
 
-Added "Linked Clone" support to match VirtualBox 4.1.2.
+Added Linked Clone support to match VirtualBox 4.1.2.
 
 -------------------------------------
 	4.1-1b	2011-8-1
