@@ -648,8 +648,12 @@ class vboxconnector {
 
 		$cm = new CloneMode(null,$args['vmState']);
 		$state = $cm->ValueMap[$args['vmState']];
+		
+		$opts = array();
+		if(!$args['reinitNetwork']) $opts[] = 'KeepAllMACs';
+		if($args['link']) $opts[] = 'Link';
 
-		$progress = $src->cloneTo($m->handle,$args['vmState'],array($args['reinitNetwork'] ? 'KeepNATMACs' : 'KeepAllMACs'));
+		$progress = $src->cloneTo($m->handle,$args['vmState'],$opts);
 
 		// Does an exception exist?
 		try {
@@ -660,7 +664,7 @@ class vboxconnector {
 			}
 		} catch (Exception $null) {}
 
-		$this->__storeProgress($progress);
+		$this->__storeProgress($progress,array('getMedia'));
 
 		$response['data'] = array('progress' => $progress->handle, 'settingsFilePath' => $m->settingsFilePath);
 

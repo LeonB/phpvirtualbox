@@ -304,7 +304,7 @@ function vboxWizardCloneVMInit(callback,args) {
 	l.onLoad = function() {
 		
 		var vbw = new vboxWizard('wizardCloneVM',trans('Clone a virtual machine','UICloneVMWizard'),'images/vbox/vmw_clone.png','images/vbox/vmw_clone_bg.png','vm_clone');		
-		vbw.steps = (args.vm.snapshotCount > 0 ? 2 : 1);
+		vbw.steps = (args.vm.snapshotCount > 0 ? 3 : 2);
 		vbw.args = args;
 		vbw.finishText = trans('Clone','UICloneVMWizard');
 		vbw.context = 'UICloneVMWizard';
@@ -319,10 +319,10 @@ function vboxWizardCloneVMInit(callback,args) {
 			var snapshot = vbw.args.snapshot;
 			var allNetcards = document.forms['frmwizardCloneVM'].elements.vboxCloneReinitNetwork.checked;
 			
-			// Only one step? We can assume that state has no child states.
+			// Only two steps? We can assume that state has no child states.
 			// Force current state only
 			var vmState = 'MachineState';
-			if(wiz.steps > 1) {
+			if(wiz.steps > 2) {
 				for(var a = 0; a < document.forms['frmwizardCloneVM'].elements.vmState.length; a++) {
 					if(document.forms['frmwizardCloneVM'].elements.vmState[a].checked) {
 						vmState = document.forms['frmwizardCloneVM'].elements.vmState[a].value;
@@ -330,31 +330,62 @@ function vboxWizardCloneVMInit(callback,args) {
 					}
 				}
 			}
-	
-			var l = new vboxLoader();
-			l.mode = 'save';
-			l.add('cloneVM',function(d,e){
-				var registerVM = null;
-				if(d && d.settingsFilePath) {
-					registerVM = d.settingsFilePath;
-				}
-				if(d && d.progress) {
-					vboxProgress(d.progress,function(ret) {
-						vboxAjaxRequest('addVM',{'file':registerVM},function(){
+			
+			// Full / linked clone
+			var cLink = 0;
+			if(document.forms['frmwizardCloneVM'].elements.vboxCloneType[1].checked) cLink = 1;			
+			
+			// wrap function
+			var vbClone = function(sn) {
+				var l = new vboxLoader();
+				l.mode = 'save';
+				l.add('cloneVM',function(d,e){
+					var registerVM = null;
+					if(d && d.settingsFilePath) {
+						registerVM = d.settingsFilePath;
+					}
+					if(d && d.progress) {
+						vboxProgress(d.progress,function(ret) {
+							vboxAjaxRequest('addVM',{'file':registerVM},function(){
+								var ml = new vboxLoader();
+								ml.add('Media',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
+								ml.onLoad = function() {
+									$('#vboxIndex').trigger('vmlistreload');
+									callback();
+								};
+								ml.run();
+							});
+						},d.id,'progress_clone_90px.png',trans('Clone a virtual machine','UICloneVMWizard'));
+					} else {
+						callback();
+					}
+				},{'name':name,'vmState':vmState,'src':src,'snapshot':sn,'reinitNetwork':allNetcards,'link':cLink});
+				l.run();				
+			}
+			
+			// Check for linked clone, but not a snapshot
+			if(cLink && !wiz.args.snapshot) {
+	  	  		var sl = new vboxLoader();
+	  	  		sl.mode = 'save';
+	  	  		sl.add('snapshotTake',function(d){
+					if(d && d.progress) {
+						vboxProgress(d.progress,function(){
 							var ml = new vboxLoader();
-							ml.add('Media',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
-							ml.onLoad = function() {
-								$('#vboxIndex').trigger('vmlistreload');
-								callback();
-							};
+							ml.add('VMDetails',function(md){
+								vbClone(md.currentSnapshot);
+							},{'vm':src});
 							ml.run();
-						});
-					},d.id,'progress_clone_90px.png',trans('Clone a virtual machine','UICloneVMWizard'));
-				} else {
-					callback();
-				}
-			},{'name':name,'vmState':vmState,'src':src,'snapshot':snapshot,'reinitNetwork':allNetcards});
-			l.run();
+						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot...','UIActionPool'));
+					} else if(d && d.error) {
+						vboxAlert(d.error);
+					}
+	 	  		},{'vm':src,'name':trans('Linked Base for %1 and %2','UICloneVMWizard').replace('%1',wiz.args.vm.name).replace('%2',name),'description':''});
+				sl.run();
+				
+			// Just clone
+			} else {
+				vbClone(snapshot);
+			}
 			
 			$(dialog).trigger('close').empty().remove();
 	

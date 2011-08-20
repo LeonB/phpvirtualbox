@@ -27,23 +27,17 @@
 <!-- Step 2 -->
 <div id='wizardCloneVMStep2' title='Cloning Configuration' style='display: none'>
 
-	<p class='translate'>Please choose which parts of the virtual machine should be cloned.</p>
+	<span class='translate'>&lt;p&gt;Please select the type of the clone.&lt;/p&gt;&lt;p&gt;If you choose &lt;b&gt;Full Clone&lt;/b&gt; an exact copy (including all virtual disk images) of the original VM will be created. If you select &lt;b&gt;Linked Clone&lt;/b&gt;, a new VM will be created, but the virtual disk images will point to the virtual disk images of original VM.&lt;/p&gt;</span>
 	
-	<p><span class='translate'>If you select &lt;b&gt;Current machine state&lt;/b&gt;, only the current state of the virtual machine is cloned.</span>
-		<span class='translate' id='wizardCloneVMCurrentAll' style='display: none;'>If you select &lt;b&gt;Current machine and all child states&lt;/b&gt; the current state of the virtual machine and any states of child snapshots are cloned.</span>
-		<span class='translate'>If you select &lt;b&gt;All states&lt;/b&gt;, the current machine state and all snapshots are cloned.</span>
-		</p>
+	<span class='translate'>&lt;p&gt;Note that a new snapshot within the source VM is created in case you select &lt;b&gt;Linked Clone&lt;/b&gt;.&lt;/p&gt;</span>
 	
 	<table>
 		<tr style='vertical-align: bottom;'>
-			<td><label><input type='radio' class='vboxRadio' checked='checked' name='vmState' value='MachineState' /> <span class='translate'>Current machine state</span></label></td>
+			<td><label><input type='radio' class='vboxRadio' checked='checked' name='vboxCloneType' value='Full' onclick='vboxCloneVMUpdateSteps(this.value)' /> <span class='translate'>Full Clone</span></label></td>
 		</tr>
-		<tr style='vertical-align: bottom; display:none;' id='vboxCloneCurrentAll'>
-			<td><label><input type='radio' class='vboxRadio' name='vmState' value='MachineAndChildStates' /> <span class='translate'>Current machine and all child states</span></label></td>
-		</tr>		
 		<tr style='vertical-align: bottom;'>
-			<td><label><input type='radio' class='vboxRadio' name='vmState' value='AllStates' /> <span class='translate'>All states</span></label></td>
-		</tr>	
+			<td><label><input type='radio' class='vboxRadio' name='vboxCloneType' value='Linked' onclick='vboxCloneVMUpdateSteps(this.value)' /> <span class='translate'>Linked Clone</span></label></td>
+		</tr>		
 	</table>
 
 </div>
@@ -83,12 +77,13 @@ $('#wizardCloneVMStep1').bind('show',function(e,wiz){
 	
 	$('#wizardCloneVMStep1').data('init',1);
 	
-	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
+	// Hold wizard
+	$('#wizardCloneVMStep1').data('wiz',wiz);
 	
-	// Unsupported by VirtualBox in 4.1.0
-	var vers = $('#vboxIndex').data('vboxConfig').version.string.split('.');
-	if(vers.length < 3) return;
-	if(vers[0] == '4' && vers[1] == '1' && parseInt(vers[2]) < 1) return;
+	// Hold wizard original steps
+	$('#wizardCloneVMStep1').data('wizSteps',wiz.steps);
+	
+	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
 	
 	if((wiz.args.snapshot && wiz.args.snapshot.children && wiz.args.snapshot.children.length)) {
 		$('#wizardCloneVMCurrentAll').show();
@@ -106,7 +101,18 @@ $('#wizardCloneVMStep2').bind('show',function(e,wiz){
 		// Go back
 		wiz.displayStep(1);
 	}
+	
+	
 
 });
+
+function vboxCloneVMUpdateSteps(cval) {
+	
+	if(cval == 'Linked') {
+		$('#wizardCloneVMStep1').data('wiz').setLast();
+	} else if($('#wizardCloneVMStep1').data('wizSteps') != $('#wizardCloneVMStep1').data('wiz').steps) {
+		$('#wizardCloneVMStep1').data('wiz').unsetLast();
+	}
+}
 
 </script>

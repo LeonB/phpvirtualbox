@@ -15,6 +15,11 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=361
 
 Changing a VM name in the Appliance Import Wizard now
 automatically updates virtual disk image paths.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=362
+
+Minor translation fixes.
+
+Added "Linked Clone" support to match VirtualBox 4.1.2.
 
 -------------------------------------
 	4.1-1b	2011-8-1

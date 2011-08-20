@@ -638,11 +638,13 @@ function vboxWizard(name, title, img, bg, icon) {
 	
 	self.setLast = function() {
 		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextText+' >")').html($('<div />').text(self.finishText).html());
+		self._origSteps = self.steps;
 		self.steps = self._curStep;
 	}
 
 	self.unsetLast = function(steps) {
 		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' >').html());
+		if(self._origSteps) self.steps = self._origSteps;
 	}
 	
 	self.displayPrev = function() {

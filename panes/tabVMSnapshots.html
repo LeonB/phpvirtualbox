@@ -87,7 +87,7 @@ var vboxSnapshotButtons = [
   	{
   		'name' : 'take_snapshot',
   		'label' : 'Take Snapshot...',
-  		'context' : 'UIActionsPool',
+  		'context' : 'UIActionPool',
   		'icon' : 'take_snapshot',
   		'enabled' : function(item) {
   			var vm = $('#vboxTabVMSnapshots').data('machine');
@@ -124,7 +124,7 @@ var vboxSnapshotButtons = [
 							else $('#vboxIndex').trigger('vmlistrefresh');
 
 							
-						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot...','UIActionsPool'));
+						},{},'progress_snapshot_create_90px.png',trans('Take Snapshot...','UIActionPool'));
 					} else if(d && d.error) {
 						vboxAlert(d.error);
 					}

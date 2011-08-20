@@ -1220,7 +1220,7 @@ function __vboxDisplayHostDetailsData(data) {
 	// CD/DVD Devices
 	if(data['DVDDrives'].length) {
 	
-		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("cd_16px.png",trans("CD/DVD Devices",'UIActionsPool'),null,null,true));
+		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("cd_16px.png",trans("CD/DVD Devices",'UIActionPool'),null,null,true));
 	
 		for(var i = 0; i < data['DVDDrives'].length; i++) {		
 			
@@ -1237,7 +1237,7 @@ function __vboxDisplayHostDetailsData(data) {
 	// Floppy Devices
 	if(data['floppyDrives'].length) {
 	
-		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("fd_16px.png",trans("Floppy Devices",'UIActionsPool'),null,null,true));
+		var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'}).append(__vboxDetailHeader("fd_16px.png",trans("Floppy Devices",'UIActionPool'),null,null,true));
 	
 		for(var i = 0; i < data['floppyDrives'].length; i++) {		
 			

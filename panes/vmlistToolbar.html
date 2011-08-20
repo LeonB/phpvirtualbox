@@ -84,7 +84,7 @@ for(var i in vboxVMListSettingsMenu) {
 	// add name
 	vboxVMListSettingsMenu[i].name = i;
 
-	var li = $('<li />').html("<a href='#" + vboxVMListSettingsMenu[i].name + "' style='background-image: url(images/vbox/" + vboxVMListSettingsMenu[i].icon +"_16px.png);' >"+(vboxVMListSettingsMenu[i].label ? trans(vboxVMListSettingsMenu[i].label,'UIActionsPool') : ' ')+"</a>");
+	var li = $('<li />').html("<a href='#" + vboxVMListSettingsMenu[i].name + "' style='background-image: url(images/vbox/" + vboxVMListSettingsMenu[i].icon +"_16px.png);' >"+(vboxVMListSettingsMenu[i].label ? trans(vboxVMListSettingsMenu[i].label,'UIActionPool') : ' ')+"</a>");
 	if(i == 'storage') { $(li).attr({'style':'display:none','id':'vboxVMSettingsToolbarStorageHolder'}); }
 	if(i == 'USB') {
 		/* 'USB' menu */
@@ -211,7 +211,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 		for(var i = 0; i < hostUSB.length; i++) {
 
 			if(!hostUSB[i].product) {
-				var dname = trans('Unknown device %1:%2','UIActionsPool').replace('%1',hostUSB[i].vendorId).replace('%2',hostUSB[i].productId);
+				var dname = trans('Unknown device %1:%2','UIActionPool').replace('%1',hostUSB[i].vendorId).replace('%2',hostUSB[i].productId);
 			} else {
 				var dname = hostUSB[i].manufacturer + ' ' + hostUSB[i].product;
 			}
@@ -336,7 +336,7 @@ function vboxUpdateSettingsMenu(vm) {
 			}
 		}
 		if(dvdDevices.length) {
-			var li = $('<li />').html("<a href='#dvdDevices' style='background-image:url(images/vbox/cd_16px.png);'>"+trans('CD/DVD Devices','UIActionsPool')+'</a>').addClass('vboxVMSettingsStorage');
+			var li = $('<li />').html("<a href='#dvdDevices' style='background-image:url(images/vbox/cd_16px.png);'>"+trans('CD/DVD Devices','UIActionPool')+'</a>').addClass('vboxVMSettingsStorage');
 			var ul = $('<ul />').addClass('vboxVMSettingsStorage');
 			for(var i = 0; i < dvdDevices.length; i++) {
 				$(ul).append(dvdDevices[i]);	
@@ -345,7 +345,7 @@ function vboxUpdateSettingsMenu(vm) {
 		}
 		
 		if(fdDevices.length) {
-			var li = $('<li />').html("<a href='#fdDevices' style='background-image:url(images/vbox/fd_16px.png);'>"+trans('Floppy Devices','UIActionsPool')+'</a>').addClass('vboxVMSettingsStorage');
+			var li = $('<li />').html("<a href='#fdDevices' style='background-image:url(images/vbox/fd_16px.png);'>"+trans('Floppy Devices','UIActionPool')+'</a>').addClass('vboxVMSettingsStorage');
 			var ul = $('<ul />').addClass('vboxVMSettingsStorage');
 			for(var i = 0; i < fdDevices.length; i++) {
 				$(ul).append(fdDevices[i]);	
@@ -378,7 +378,7 @@ for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
 	
 	var n = vboxVMActions.stop_actions[i];
 
-	$(ul).append($('<li />').html("<a href='#" + n + "' style='background-image: url(images/vbox/" + vboxVMActions[n].icon +"_16px.png);' >"+trans(vboxVMActions[n].label,'UIActionsPool')+"</a>"));
+	$(ul).append($('<li />').html("<a href='#" + n + "' style='background-image: url(images/vbox/" + vboxVMActions[n].icon +"_16px.png);' >"+trans(vboxVMActions[n].label,'UIActionPool')+"</a>"));
 		
 }
 
