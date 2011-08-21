@@ -133,6 +133,15 @@ for(var i = 0; i < vboxHostNetworking.networkInterfaces.length; i++) {
 	}
 }
 
+// Check for sub / virtual interfaces. These will not be reported by VirtualBox
+var vboxGuestNet = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters;
+for(var i = 0; i < vboxGuestNet.length; i++) {
+	if(!vboxGuestNet[i].bridgedInterface || vboxGuestNet[i].bridgedInterface == '') continue;
+	if(jQuery.inArray(vboxGuestNet[i].bridgedInterface,vboxSettingsNetAdaptersBridged) < 0) {
+		vboxSettingsNetAdaptersBridged[vboxSettingsNetAdaptersBridged.length] = vboxGuestNet[i].bridgedInterface;
+	}
+}
+
 
 var vboxSettingsNetTemplate = document.getElementById('vboxSettingsTabNetAdapter');
 var vboxSettingsNetContainer = $(vboxSettingsNetTemplate).parent();
@@ -214,6 +223,7 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 	switch($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].attachmentType) {
 		case 'Bridged':
 			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].bridgedInterface;
+			break;
 		case 'HostOnly':
 			netName = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].hostOnlyInterface;
 			break;
@@ -318,7 +328,7 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		$(nsel).prop('disabled',false);
 
 		// Special case for Internal and VDE network select
-		if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value=='Generic') {
+		if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value=='Generic' || sel.value=='Bridged') {
 			var isel = $(nsel).clone(false);
 			$(nsel).replaceWith(isel);
 			nsel = isel;
@@ -353,7 +363,7 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 	}
 
 	// Special case for Internal, Generic, and VDE network selects
-	if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value == 'Generic') {
+	if(sel.value == 'Internal' || sel.value == 'VDE' || sel.value == 'Generic' || sel.value == 'Bridged') {
 		$(nsel).jec();
 	}
 	

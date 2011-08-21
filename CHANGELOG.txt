@@ -21,6 +21,11 @@ Minor translation fixes.
 
 Added Linked Clone support to match VirtualBox 4.1.2.
 
+Fixed bug when the bridged adapter of a VM was assigned to a host
+sub-interface. This would not allow for selection of the interface
+in VM settings.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=371
+
 -------------------------------------
 	4.1-1b	2011-8-1
 -------------------------------------
