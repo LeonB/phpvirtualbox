@@ -1,5 +1,5 @@
 -------------------------------------
-	4.1-2
+	4.1-2	2011-8-21
 -------------------------------------
 Added Stop options to VM list context menu.
 
@@ -25,6 +25,9 @@ Fixed bug when the bridged adapter of a VM was assigned to a host
 sub-interface. This would not allow for selection of the interface
 in VM settings.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=371
+
+Fixed bug in VM log viewer that would not display log file
+contents when non-utf-8 characers are pressent.
 
 -------------------------------------
 	4.1-1b	2011-8-1
