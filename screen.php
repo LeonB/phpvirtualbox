@@ -27,8 +27,6 @@ $settings = new phpVBoxConfigClass();
 $vbox = new vboxconnector();
 $vbox->connect();
 
-@ini_set('memory_limit', '512M');
-
 // Set width. Else assume we want real time updates if VM is running below
 if($_REQUEST['width']) {
 	$force_width = $_REQUEST['width'];
