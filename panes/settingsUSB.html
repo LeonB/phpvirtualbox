@@ -270,6 +270,10 @@ function vboxSettingsAddUSBFilter(f,noColor) {
 	if(!noColor) vboxColorRows($('#vboxSettingsUSBFilterList'));
 }
 
+// set checkboxes for USB and EHCI
+document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabled);
+document.forms['frmVboxSettings'].vboxSettingsUSBEnabledEHCI.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabledEhci);
+
 // clear list
 var list = $('#vboxSettingsUSBFilterList');
 $(list).children().remove();
@@ -280,9 +284,6 @@ for(var i = 0; i < $('#vboxSettingsDialog').data('vboxMachineData').USBControlle
 }
 vboxColorRows($('#vboxSettingsUSBFilterList'));
 
-// set checkboxes for USB and EHCI
-document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabled);
-document.forms['frmVboxSettings'].vboxSettingsUSBEnabledEHCI.checked = ($('#vboxSettingsDialog').data('vboxMachineData').USBController.enabledEhci);
 
 if(!$('#vboxSettingsUSBFilterList').find('li.vboxListItem').first().trigger('click')) {
 	$('#vboxSettingsUSBFilterList').trigger('select',null);

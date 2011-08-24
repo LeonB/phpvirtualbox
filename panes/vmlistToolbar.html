@@ -218,7 +218,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 			dname += ' [' + hostUSB[i].revision + ']';
 			var capt = (hostUSB[i].state == 'Captured' && guestUSB[hostUSB[i].id]);
 			var avail = (capt || (hostUSB[i].state != 'NotSupported' && hostUSB[i].state != 'Unavailable' && hostUSB[i].state != 'Captured'));
-			var cbox = $('<input />').attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : ''),'disabled':(avail ? '' : 'disabled')}).bind('click',function(e){
+			var cbox = $('<input />').attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : '')}).prop('disabled',(avail ? false : true)).bind('click',function(e){
 				e.stopPropagation();
 				if($(this).prop('disabled')) return;
 				
