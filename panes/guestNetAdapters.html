@@ -24,7 +24,7 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 			<td><span title='/V6/Netmask'></span></td>
 		</tr>
 		<tr>
-			<th><span class='vboxGuestMac'>MAC Address</span>:</th>
+			<th><span class='vboxGuestMac'>MAC Address:</span></th>
 			<td><span title='/MAC'></span></td>
 		</tr>		
 	</table>
@@ -34,7 +34,7 @@ Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
 
 /* Translate */
 // Mac is special
-$('#vboxGuestNetAdapterTemplate').find('span.vboxGuestMac').html(trans('MAC Address','VBoxVMNetworkSettings'));
+$('#vboxGuestNetAdapterTemplate').find('span.vboxGuestMac').html(trans('Mac Address:','UIMachineSettingsNetwork'));
 
 $('#vboxGuestNetAdapterTemplate').find(".translate").html(function(i,h){return trans(h,'UIGlobalSettingsNetwork');}).removeClass('translate');
 
@@ -81,7 +81,7 @@ function vboxVMNetAdaptersDisplay(d) {
 	for(var i = 0; i < data['Count']; i++) {
 
 		// Tab link
-		$(ul).append($('<li />').html('<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter %1','UIGlobalSettingsNetwork').replace('%1',(i + 1)) + '</span></a>'));
+		$(ul).append($('<li />').html('<a href="#vboxGuestNetAdapter' + (i + 1) +'"><span>' + trans('Adapter %1','VBoxGlobal').replace('%1',(i + 1)) + '</span></a>'));
 
 		// Tab content
 		var tmpl = $("#vboxGuestNetAdapterTemplate").clone(true);
