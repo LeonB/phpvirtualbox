@@ -9,6 +9,9 @@ Fixed 4.1-0 regression bug that would not allow runtime attachment
 Fixed 4.1-1 regression bug that would not allow one to edit
 existing USB filters for a running VM. 
 
+Better handling of CD/DVD medium changes when 'Live CD/DVD' is not
+selected for a medium attachment.
+ 
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------

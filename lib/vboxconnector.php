@@ -2483,7 +2483,37 @@ class vboxconnector {
 				}
 			}
 
-
+			// Get removable media
+			if(!@$args['force_refresh']) {
+				
+				for($a = 0; $a < count($data['storageControllers']); $a++) {
+					if(!is_array($data['storageControllers'][$a]['mediumAttachments'])) continue;
+					$mas = null;
+					for($b = 0; $b < count(@$data['storageControllers'][$a]['mediumAttachments']); $b++) {
+						if($data['storageControllers'][$a]['mediumAttachments'][$b]['type'] != 'DVD') continue;
+						if($data['storageControllers'][$a]['mediumAttachments'][$b]['temporaryEject']) continue;
+						if(!$mas)
+							$mas = $machine->getMediumAttachmentsOfController($data['storageControllers'][$a]['name']);
+						// Find controller
+						foreach($mas as $ma) {
+							if($ma->port != $data['storageControllers'][$a]['mediumAttachments'][$b]['port'] || $ma->device != $data['storageControllers'][$a]['mediumAttachments'][$b]['device'])
+								continue;
+							$mid = ($ma->medium->handle ? $ma->medium->id : null);
+							if($mid != @$data['storageControllers'][$a]['mediumAttachments'][$b]['medium']['id'])
+								$data['refreshMedia'] = 1;
+								
+							$data['storageControllers'][$a]['mediumAttachments'][$b]['medium'] = ($mid ? array('id'=>$mid) : null);
+						}
+					}
+				}
+				
+				// Media changed
+				if($data['refreshMedia']) {
+					$this->cache->expire('getMedia');
+					$this->cache->expire('__getStorageControllers'.$args['vm']);
+				}
+				
+			}
 		}
 
 		$machine->releaseRemote();
