@@ -11,6 +11,10 @@ existing USB filters for a running VM.
 
 Better handling of CD/DVD medium changes when 'Live CD/DVD' is not
 selected for a medium attachment.
+
+Less context menu levels for removable media attachments in the
+Settings toolbar button menu of a running VM when the VM only has 1
+removable media attachment of the a given type (CD/DVD and Floppy). 
  
 -------------------------------------
 	4.1-2	2011-8-21
