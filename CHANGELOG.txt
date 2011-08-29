@@ -14,7 +14,11 @@ selected for a medium attachment.
 
 Less context menu levels for removable media attachments in the
 Settings toolbar button menu of a running VM when the VM only has 1
-removable media attachment of the a given type (CD/DVD and Floppy). 
+removable media attachment of the a given type (CD/DVD and Floppy).
+
+Better Guest Additions installation handling.
+
+Added test to check that PHP files are being parsed as PHP.
  
 -------------------------------------
 	4.1-2	2011-8-21

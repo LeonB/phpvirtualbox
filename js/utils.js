@@ -609,6 +609,7 @@ function vboxInstallGuestAdditions(vmid) {
 	var l = new vboxLoader();
 	l.mode = 'save';
 	l.add('installGuestAdditions',function(d){
+		
 		if(d && d.progress) {
 			vboxProgress(d.progress,function(){
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
@@ -622,9 +623,32 @@ function vboxInstallGuestAdditions(vmid) {
 			ml.onLoad = function() { $('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]); }
 			ml.run();
 			
-			//vboxAlert(trans('Guest Additions Mounted'));
+			if(d.errored)
+				vboxAlert(trans('Failed to update Guest Additions. The Guest Additions installation image will be mounted to provide a manual installation.','UIMessageCenter'));
+			
 		} else if(d && d.result && d.result == 'nocdrom') {
-			//vboxAlert(trans('Guest Additions No CDROM'));
+			
+			vboxAlert(trans('<p>Could not insert the VirtualBox Guest Additions installer CD image into the virtual machine <b>%1</b>, as the machine has no CD/DVD-ROM drives. Please add a drive using the storage page of the virtual machine settings dialog.</p>','UIMessageCenter').replace('%1',$('#vboxIndex').data('selectedVM').name));
+			
+		} else if (d && d.result && d.result == 'noadditions') {
+			
+			var s1 = '('+trans('None','VBoxGlobal')+')';
+			var s2 = s1;
+			
+			if(d.sources && d.sources.length) {
+				if(d.sources[0]) s1 = d.sources[0];
+				if(d.sources[1]) s2 = d.sources[1];
+			}
+			var q = trans('<p>Could not find the VirtualBox Guest Additions CD image file <nobr><b>%1</b></nobr> or <nobr><b>%2</b>.</nobr></p><p>Do you wish to download this CD image from the Internet?</p>','UIMessageCenter').replace('%1',s1).replace('%2',s2);
+			var b = {};
+			b[trans('Yes','QIMessageBox')] = function() {
+				var url = 'http://download.virtualbox.org/virtualbox/%1/VBoxGuestAdditions_%2.iso';
+				url = url.replace('%1',$('#vboxIndex').data('vboxConfig').version.string.replace('_OSE',''));
+				url = url.replace('%2',$('#vboxIndex').data('vboxConfig').version.string.replace('_OSE',''));
+				$(this).remove();
+				var newwin = window.open(url);
+			}
+			vboxConfirm(q,b,trans('No','QIMessageBox'));
 		}
 	},{'vm':vmid});
 	l.run();

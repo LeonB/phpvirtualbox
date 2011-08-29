@@ -384,6 +384,9 @@ class vboxconnector {
 		$this->__vboxwebsrvConnect();
 
 		$response['data'] = array();
+		$response['data']['errored'] = 0;
+		
+				
 		$gem = null;
 		foreach($this->vbox->DVDImages as $m) {
 			if(strtolower($m->name) == 'vboxguestadditions.iso') {
@@ -402,7 +405,7 @@ class vboxconnector {
 				'windows' => 'C:\\Program Files\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso',
 				'windowsx86' => 'C:\\Program Files (x86)\\Oracle\\VirtualBox\\VBoxGuestAdditions.iso' // Does this exist?
 			);
-			$hostos = $vbox->vbox->host->operatingSystem;
+			$hostos = $this->vbox->host->operatingSystem;
 			if(stripos($hostos,'windows') !== false) {
 				$checks = array($checks['windows'],$checks['windowsx86']);
 			} elseif(stripos($hostos,'solaris') !== false || stripos($hostos,'sunos') !== false) {
@@ -422,18 +425,20 @@ class vboxconnector {
 			// Try to register medium.
 			foreach($checks as $iso) {
 				try {
-					$gem = $this->vbox->openMedium($iso,'DVD','ReadWrite');
+					$gem = $this->vbox->openMedium($iso,'DVD','ReadOnly');
 					$this->cache->expire('getMedia');
 					break;
 				} catch (Exception $e) {
 					// Ignore
 				}
 			}
+			$response['data']['sources'] = $checks;
 		}
 
 		// No guest additions found
 		if(!$gem) {
-			throw new Exception("Could not find VirtualBox guest additions ISO image.");
+			$response['data']['result'] = 'noadditions';
+			return;
 		}
 
 		// create session and lock machine
@@ -450,9 +455,14 @@ class vboxconnector {
 					$response['data']['result'] = $this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))];
 					$response['data']['reason'] = $progress->errorInfo->text;
 					$progress->releaseRemote();
+					if($response['data']['result'] != 'VBOX_E_NOT_SUPPORTED')
+						$response['data']['errored'] = 1;
 				}
 			} catch (Exception $null) {
-				// No error info. Save progress.
+			}
+						
+			// No error info. Save progress.
+			if(!$response['data']['result']) {
 				$gem->releaseRemote();
 				$this->__storeProgress($progress);
 				$response['data']['progress'] = $progress->handle;
@@ -460,11 +470,12 @@ class vboxconnector {
 				$this->cache->expire('getMedia');
 				return true;
 			}
-
+			
 		} catch (Exception $e) {
-			// Error. Assume updateGuestAdditions is not supported.
+			// Try to mount medium
+			$response['data']['errored'] = 1;
 		}
-
+		
 		// updateGuestAdditions is not supported. Just try to mount image.
 		$response['data']['result'] = 'nocdrom';
 		$mounted = false;
@@ -483,11 +494,6 @@ class vboxconnector {
 			if($mounted) break;
 		}
 
-		/* Probably should not save Guest Additions cd mount */
-		/*
-		if($mounted && strtolower($this->session->machine->getExtraData('GUI/SaveMountedAtRuntime')) == 'yes')
-			$this->session->machine->saveSettings();
-		*/
 
 		$this->session->unlockMachine();
 		$this->session->releaseRemote();

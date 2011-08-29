@@ -289,7 +289,6 @@ var vboxVMActions = {
 		});		
 		
 	}
-    
 }
 	
 /*

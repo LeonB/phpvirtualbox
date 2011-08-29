@@ -45,6 +45,7 @@
    	<script type="text/javascript" src="js/phpvirtualbox.js"></script>
     <script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/dialogs.js"></script>
+	<script type="text/javascript" src="js/phptest.php"></script>
 
 
 	<!-- Main Setup -->
@@ -63,6 +64,15 @@
 						break;
 					}
 				}
+			}
+			
+			// Check that PHP is being parsed.
+			if(__vboxPHP === false) {
+				vboxAlert("PHP is not being parsed by your web server. Make sure that \
+						  PHP is installed.<p>Unable to continue.</p><i>Note: you may also see this \
+						  message if you have opened index.html in your web browser directly rather than \
+						  accessing it through your web server.</i>",{'width':'auto'});
+				return;
 			}
 			
 			// If everything loaded correctly, trans() should be defined in
