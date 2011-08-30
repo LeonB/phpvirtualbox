@@ -546,7 +546,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 					break;
 				}
 			}
-			var fsplit = (document.forms['frmwizardNewHD'].newHardDiskSplit.checked && format == 'vmdk');
+			var fsplit = document.forms['frmwizardNewHD'].newHardDiskSplit.checked;
 
 			$(dialog).trigger('close').empty().remove();
 

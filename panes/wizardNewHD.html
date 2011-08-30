@@ -39,22 +39,22 @@
 
 	<p class='translate'>Please choose whether the new virtual disk file should be allocated as it is used or if it should be created fully allocated.</p>
 	
-	<span class='translate'>&lt;p&gt;A &lt;b&gt;dynamically allocated&lt;/b&gt; virtual disk file will only use space on your physical hard disk as it fills up, although it will not shrink again automatically when space on it is freed.&lt;/p&gt;</span>
+	<span class='translate vboxCreateDynamic'>&lt;p&gt;A &lt;b&gt;dynamically allocated&lt;/b&gt; virtual disk file will only use space on your physical hard disk as it fills up, although it will not shrink again automatically when space on it is freed.&lt;/p&gt;</span>
 	
-	<span class='translate'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
+	<span class='translate vboxCreateFixed'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
 	
-	<span class='translate' id='vboxHDSplitOptionLabel'>&lt;p&gt;You can also choose to &lt;b&gt;split&lt;/b&gt; the virtual disk into several files of up to two gigabytes each. This is mainly useful if you wish to store the virtual machine on removable USB devices or old systems, some of which cannot handle very large files.</span>
+	<span class='translate vboxCreateSplit2G'>&lt;p&gt;You can also choose to &lt;b&gt;split&lt;/b&gt; the virtual disk into several files of up to two gigabytes each. This is mainly useful if you wish to store the virtual machine on removable USB devices or old systems, some of which cannot handle very large files.</span>
 	
 	<span class='vboxTableLabel translatevar'>Storage details</span>
 	<div class='vboxBordered'>
 		<table class='vboxOptions'>
-			<tr style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxCreateDynamic'>
 				<td><label><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /> <span class='translate'>Dynamically allocated</span></label></td>
 			</tr>
-			<tr style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxCreateFixed'>
 				<td><label><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /> <span class='translate'>Fixed size</span></label></td>
 			</tr>
-			<tr id='vboxHDSplitOption' style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxCreateSplit2G'>
 				<td><label><input type='checkbox' class='vboxCheckbox' name='newHardDiskSplit' /> <span class='translate'>Split into files of less than 2GB</span></label></td>
 			</tr>					
 		</table>
@@ -138,6 +138,20 @@
 
 <script type='text/javascript'>
 
+//Fill HD type options
+var vboxHDTypesTbl = $('#wizardNewHDStep1').find('table.vboxOptions').first();
+vboxHDTypesTbl.children().remove();
+var vboxHDTypes = $('#vboxIndex').data('vboxSystemProperties').mediumFormats;
+for(var i = 0; i < vboxHDTypes.length; i++) {
+	if(jQuery.inArray('CreateFixed',vboxHDTypes[i].capabilities) < 0 && jQuery.inArray('CreateDynamic',vboxHDTypes[i].capabilities) < 0) continue;
+	if(jQuery.inArray('HardDisk',vboxHDTypes[i].deviceTypes) > -1) {
+		vboxHDTypesTbl.append("<tr style='vertical-align: top;'><td><label><input type='radio' class='vboxRadio' name='newHardDiskFileType' value='"+vboxHDTypes[i].id+"' /> "+vboxMedia.getFormat({'format':vboxHDTypes[i].name})+"</label></td></tr>");
+		vboxHDTypesTbl.find('tr').last().data('vboxFormat', vboxHDTypes[i]);
+	}
+}
+// Select default HD format and place it at the top
+vboxHDTypesTbl.find('input[value='+$('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFormat+']').prop('checked',true).closest('tr').detach().prependTo(vboxHDTypesTbl);
+
 /*
  * Translations
  */
@@ -150,17 +164,11 @@ function wizardHDBrowseLocation() {
 	// Get current location
 	var loc = $('<div />').html(document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value).text();
 	var os = null;
-	if(loc.indexOf(':') > 0) {
-		// windows
-		loc = loc.replace(/.*\\/,'');
-		os = 'win';
-	} else if(loc.indexOf('/') != -1) {
-		// *nix
-		loc = loc.replace(/.*\//,'');
-		os = 'unix';
-	} else {
+	if(!loc) {
 		// no path set
 		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder;
+	} else {
+		loc = vboxDirname(loc);
 	}
 		
 	vboxFileBrowser(loc,function(f){
@@ -175,28 +183,54 @@ function wizardHDBrowseLocation() {
 /* WHen showing step 2, show / hide split option */
 $('#wizardNewHDStep2').bind('show',function(e,wiz){
 	
-	if((document.forms['frmwizardNewHD'].newHardDiskFileType[0].checked)) {
-		$('#vboxHDSplitOptionLabel').hide();
-		$('#vboxHDSplitOption').hide();
-		ext = 'vdi';
-	} else if(document.forms['frmwizardNewHD'].newHardDiskFileType[1].checked) {
-		$('#vboxHDSplitOptionLabel').show();
-		$('#vboxHDSplitOption').show();
-		ext = 'vmdk';
-	} else {
-		$('#vboxHDSplitOptionLabel').hide();
-		$('#vboxHDSplitOption').hide();
-		ext = 'vhd';
+	var caps = 0;
+	for(var i = 0; i < document.forms['frmwizardNewHD'].newHardDiskFileType.length; i++) {
+		if(document.forms['frmwizardNewHD'].newHardDiskFileType[i].checked) {
+			caps = $(document.forms['frmwizardNewHD'].newHardDiskFileType[i]).closest('tr').data('vboxFormat').capabilities;
+			break;
+		}
 	}
 	
+	var capOpts = ['CreateFixed','CreateDynamic','CreateSplit2G'];
+	for(var i = 0; i < capOpts.length; i++) {
+		if(jQuery.inArray(capOpts[i],caps) < 0) {
+			$('#wizardNewHDStep2').find('.vbox'+capOpts[i]).hide();
+		} else {
+			$('#wizardNewHDStep2').find('.vbox'+capOpts[i]).show();
+		}
+	}
+	
+	// Select first visible option
+	$('#wizardNewHDStep2').find('tr:visible').first().find('input').prop('checked',true);
+	
+	
 	if(!(wiz && wiz.suggested && wiz.suggested.name))
-		vboxWizardNewHDElectName(ext);
+		vboxWizardNewHDElectName();
 	
 });
 /* When showing summary */
 $('#wizardNewHDStep4').bind('show',function(e,wiz){
 		
-	$('#wizardNewHDTypeLabel').html((document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? trans('Fixed size storage','VBoxGlobal') : trans('Dynamically allocated storage','VBoxGlobal')));
+	var format = document.forms['frmwizardNewHD'].elements['newHardDiskFileType'];
+	var formatOpts = {};
+	for(var i = 0; i < format.length; i++) {
+		if(format[i].checked) {
+			formatOpts = $(format[i]).closest('tr').data('vboxFormat');
+			format=format[i].value;
+			break;
+		}
+	}
+	
+	// uncheck vboxHDSplitOption if not supported
+	if(jQuery.inArray('CreateSplit2G',formatOpts.capabilities) < 0)
+		document.forms['frmwizardNewHD'].newHardDiskSplit.checked = false;
+
+	// Type (Format) label
+	$('#wizardNewHDFileTypeLabel').html(vboxMedia.getFormat({'format':format}));
+
+	var split = document.forms['frmwizardNewHD'].newHardDiskSplit.checked;
+	$('#wizardNewHDTypeLabel').html(vboxMedia.getHardDiskVariant({'fixed':document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked,'split':split}));
+
 
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 	if(loc.search(/[\/|\\]/) < 0) {
@@ -205,6 +239,12 @@ $('#wizardNewHDStep4').bind('show',function(e,wiz){
 		else
 			loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + loc;
 	}
+	
+	// append ext?
+	if(jQuery.inArray(loc.substring(loc.lastIndexOf('.')).toLowerCase(),formatOpts.extensions) < 0) {
+		loc += '.'+formatOpts.extensions[0];
+	}
+	
 	$('#wizardNewHDLocationLabel').html(loc);
 	
 	/* Check to see if file exists */
@@ -222,23 +262,6 @@ $('#wizardNewHDStep4').bind('show',function(e,wiz){
 	}
 	l.run();
 
-	// File type
-	var t = 'VDI (VirtualBox Disk Image)';
-	var ext = '.vdi';
-	if(document.forms['frmwizardNewHD'].newHardDiskFileType[1].checked) {
-		t = 'VMDK (Virtual Machine Disk)';
-		if(document.forms['frmwizardNewHD'].newHardDiskSplit.checked) {
-			$('#wizardNewHDTypeLabel').html((document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked ? trans('Fixed size storage split into files of less than 2GB','VBoxGlobal') : trans('Dynamically allocated storage split into files of less than 2GB','VBoxGlobal')));
-		}
-		ext = '.vmdk';
-	} else if(document.forms['frmwizardNewHD'].newHardDiskFileType[2].checked) {
-		t = 'VHD (Virtual Hard Disk)';
-		ext = '.vhd';
-	}
-	$('#wizardNewHDFileTypeLabel').html(trans(t,'UINewHDWizard'));
-	
-	// Add extension?
-	if(loc.search(/\.[a-zA-Z]+$/) < 0) $('#wizardNewHDLocationLabel').html(loc+ext);
 
 	// Fix size if we need to
 	var mbytes = vboxConvertMbytes(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value);
@@ -246,16 +269,20 @@ $('#wizardNewHDStep4').bind('show',function(e,wiz){
 	$('#wizardNewHDSizeLabel').html(document.forms['frmwizardNewHD'].elements.wizardNewHDSizeValue.value + ' ('+mbytes+' '+trans('MB','VBoxGlobal')+')');
 });
 
-function vboxWizardNewHDElectName(ext) {
-	
-	if(!ext) ext = 'vdi';
+
+/*
+ * 
+ * Elect a filename for use
+ *
+ */
+function vboxWizardNewHDElectName() {
 	
 	/* Go through list of media and pick new hd name */
 	var HDname = 'NewHardDisk99';
 	for(var a = 1; a < 99; a++) {
 		var found = 0;
 		for(var i = 0; i < $('#vboxIndex').data('vboxMedia').length; i++) {
-			if($('#vboxIndex').data('vboxMedia')[i].name == 'NewHardDisk'+a+'.'+ext) {
+			if($('#vboxIndex').data('vboxMedia')[i].name.toLowerCase().substring(0,$('#vboxIndex').data('vboxMedia')[i].name.lastIndexOf('.')) == 'newharddisk'+a) {
 				i = $('#vboxIndex').data('vboxMedia').length;
 				var found = 1;
 			}

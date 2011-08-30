@@ -57,22 +57,22 @@
 
 	<p class='translate'>Please choose whether the new virtual disk file should be allocated as it is used or if it should be created fully allocated.</p>
 	
-	<span class='translate'>&lt;p&gt;A &lt;b&gt;dynamically allocated&lt;/b&gt; virtual disk file will only use space on your physical hard disk as it fills up, although it will not shrink again automatically when space on it is freed.&lt;/p&gt;</span>
+	<span class='translate vboxCreateDynamic'>&lt;p&gt;A &lt;b&gt;dynamically allocated&lt;/b&gt; virtual disk file will only use space on your physical hard disk as it fills up, although it will not shrink again automatically when space on it is freed.&lt;/p&gt;</span>
 	
-	<span class='translate'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
+	<span class='translate vboxCreateFixed'>&lt;p&gt;A &lt;b&gt;fixed size&lt;/b&gt; virtual disk file may take longer to create on some systems but is often faster to use.&lt;/p&gt;</span>
 	
-	<span class='translate' id='vboxHDSplitOptionLabel'>&lt;p&gt;You can also choose to &lt;b&gt;split&lt;/b&gt; the virtual disk into several files of up to two gigabytes each. This is mainly useful if you wish to store the virtual machine on removable USB devices or old systems, some of which cannot handle very large files.</span>
+	<span class='translate vboxCreateSplit2G'>&lt;p&gt;You can also choose to &lt;b&gt;split&lt;/b&gt; the virtual disk into several files of up to two gigabytes each. This is mainly useful if you wish to store the virtual machine on removable USB devices or old systems, some of which cannot handle very large files.</span>
 	
 	<span class='vboxTableLabel translatevar'>Storage details</span>
 	<div class='vboxBordered'>
 		<table class='vboxOptions'>
-			<tr style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxCreateDynamic'>
 				<td><label><input type='radio' class='vboxRadio' checked='checked' name='newHardDiskType' value='dynamic' /> <span class='translate'>Dynamically allocated</span></label></td>
 			</tr>
-			<tr style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxCreateFixed'>
 				<td><label><input type='radio' class='vboxRadio' name='newHardDiskType' value='fixed' /> <span class='translate'>Fixed size</span></label></td>
 			</tr>
-			<tr id='vboxHDSplitOption' style='vertical-align: top;'>
+			<tr style='vertical-align: top;' class='vboxCreateSplit2G'>
 				<td><label><input type='checkbox' class='vboxCheckbox' name='newHardDiskSplit' /> <span class='translate'>Split into files of less than 2GB</span></label></td>
 			</tr>								
 		</table>
@@ -143,8 +143,8 @@ for(var i = 0; i < vboxHDTypes.length; i++) {
 		vboxHDTypesTbl.find('tr').last().data('vboxFormat', vboxHDTypes[i]);
 	}
 }
-// Select VDI and place it at the top
-vboxHDTypesTbl.find('input[value=VDI]').prop('checked',true).closest('tr').detach().prependTo(vboxHDTypesTbl);
+// Select default HD format and place it at the top
+vboxHDTypesTbl.find('input[value='+$('#vboxIndex').data('vboxSystemProperties').defaultHardDiskFormat+']').prop('checked',true).closest('tr').detach().prependTo(vboxHDTypesTbl);
 
 $('#wizardCopyHDStep1').find('span.translatepre').html(function(i,h){return trans(h,'UINewHDWizardPageWelcome');});
 $('#wizardCopyHDStep3').find('span.translatevar').html(function(i,h){return trans(h,'UINewHDWizardPageVariant');});
@@ -249,13 +249,25 @@ $('#wizardCopyHDStep1').bind('show',function(e,wiz){
 /* WHen showing step 3, show / hide split option */
 $('#wizardCopyHDStep3').bind('show',function(e,wiz){
 	
-	if(document.forms['frmwizardCopyHD'].copyHDFileType[1].checked) {
-		$('#vboxHDSplitOptionLabel').show();
-		$('#vboxHDSplitOption').show();
-	} else {
-		$('#vboxHDSplitOptionLabel').hide();
-		$('#vboxHDSplitOption').hide();
+	var caps = new Array();
+	for(var i = 0; i < document.forms['frmwizardCopyHD'].copyHDFileType.length; i++) {
+		if(document.forms['frmwizardCopyHD'].copyHDFileType[i].checked) {
+			caps = $(document.forms['frmwizardCopyHD'].copyHDFileType[i]).closest('tr').data('vboxFormat').capabilities;
+			break;
+		}
 	}
+	
+	var capOpts = ['CreateFixed','CreateDynamic','CreateSplit2G'];
+	for(var i = 0; i < capOpts.length; i++) {
+		if(jQuery.inArray(capOpts[i],caps) < 0) {
+			$('#wizardCopyHDStep3').find('.vbox'+capOpts[i]).hide();
+		} else {
+			$('#wizardCopyHDStep3').find('.vbox'+capOpts[i]).show();
+		}
+	}
+	
+	// Select first visible option
+	$('#wizardCopyHDStep3').find('tr:visible').first().find('input').prop('checked',true);
 
 });
 
@@ -263,16 +275,20 @@ $('#wizardCopyHDStep3').bind('show',function(e,wiz){
 $('#wizardCopyHDStep5').bind('show',function(e,wiz){
 
 	var format = document.forms['frmwizardCopyHD'].elements['copyHDFileType'];
+	var formatOpts = {};
 	for(var i = 0; i < format.length; i++) {
 		if(format[i].checked) {
+			formatOpts = $(format[i]).closest('tr').data('vboxFormat');
 			format=format[i].value;
 			break;
 		}
 	}
 	// Type (Format) label
 	$('#wizardCopyHDTypeLabel').html(vboxMedia.getFormat({'format':format}));
-	// uncheck vboxHDSplitOption if we're not using VMDK
-	if(format != 'vmdk') document.forms['frmwizardCopyHD'].newHardDiskSplit.checked = false;
+	
+	// uncheck vboxHDSplitOption if not supported
+	if(jQuery.inArray('CreateSplit2G',formatOpts.capabilities) < 0)
+		document.forms['frmwizardCopyHD'].newHardDiskSplit.checked = false;
 
 	// Details label
 	var split = document.forms['frmwizardCopyHD'].newHardDiskSplit.checked;
@@ -286,8 +302,11 @@ $('#wizardCopyHDStep5').bind('show',function(e,wiz){
 			loc = vboxDirname(vboxMedia.getMediumById($(document.forms['frmwizardCopyHD'].copyHDDiskSelect).val()).location) + $('#vboxIndex').data('vboxConfig').DSEP + loc;
 		}
 	}
-	
-	if(loc.substring(loc.length-format.length-1).toLowerCase() != '.' + format) loc += '.' + format;
+
+	// append ext?
+	if(jQuery.inArray(loc.substring(loc.lastIndexOf('.')).toLowerCase(),formatOpts.extensions) < 0) {
+		loc += '.'+formatOpts.extensions[0];
+	}
 	
 	$('#wizardCopyHDLocationLabel').html($('<div />').text(loc).html());
 	

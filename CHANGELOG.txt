@@ -19,6 +19,10 @@ removable media attachment of the a given type (CD/DVD and Floppy).
 Better Guest Additions installation handling.
 
 Added test to check that PHP files are being parsed as PHP.
+
+Added Parallels hard disk image format creation support. Available
+hard disk formats and their capabilities are now programmatically
+obtained through the VirtualBox API.
  
 -------------------------------------
 	4.1-2	2011-8-21

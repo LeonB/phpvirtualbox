@@ -3576,7 +3576,7 @@ class vboxconnector {
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
 		$mv = new MediumVariant();
 		$type = $mv->ValueMap[$type];
-		if($args['split'] && $format == 'VMDK') $type += $mv->ValueMap['VmdkSplit2G'];
+		if($args['split']) $type += $mv->ValueMap['VmdkSplit2G'];
 
 		$progress = $src->cloneTo($target->handle,$type,null);
 
@@ -3710,11 +3710,10 @@ class vboxconnector {
 		}
 
 		$format = strtoupper($args['format']);
-		if($format != 'VDI' && $format != 'VMDK' && $format != 'VHDI') $format = 'VDI';
 		$type = ($args['type'] == 'fixed' ? 'Fixed' : 'Standard');
 		$mv = new MediumVariant();
 		$type = $mv->ValueMap[$type];
-		if($args['split'] && $format == 'VMDK') $type += $mv->ValueMap['VmdkSplit2G'];
+		if($args['split']) $type += $mv->ValueMap['VmdkSplit2G'];
 
 		$hd = $this->vbox->createHardDisk($format,$args['file']);
 		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$type);
@@ -4119,7 +4118,7 @@ class vboxconnector {
 			foreach($mfCap->NameMap as $k=>$v) {
 				if ($k & $mf->capabilities)	 $caps[] = $v;
 			}
-			$mediumFormats[] = array('id'=>$mf->id,'name'=>$mf->name,'extensions'=>$exts[0],'deviceTypes'=>$dtypes,'capabilities'=>$caps);
+			$mediumFormats[] = array('id'=>$mf->id,'name'=>$mf->name,'extensions'=>array_map('strtolower',$exts[0]),'deviceTypes'=>$dtypes,'capabilities'=>$caps);
 		}
 		
 		$response['data'] = array(
