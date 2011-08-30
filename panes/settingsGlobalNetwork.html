@@ -280,15 +280,13 @@ function vboxSettingsGlobalNetEditDialog() {
 	// Set Form Values
 	$('#vboxSettingsGlobalNetIPv4').val(nic.IPAddress);
 	$('#vboxSettingsGlobalNetIPv4Mask').val(nic.networkMask);
-	$('#vboxSettingsGlobalNetIPv6').val(nic.IPV6Address);
-	$('#vboxSettingsGlobalNetIPv6Mask').val(nic.IPV6NetworkMaskPrefixLength);
 
 	if(nic.IPV6Supported) {
-		$('#vboxSettingsGlobalNetIPv6').prop('disabled',false);
-		$('#vboxSettingsGlobalNetIPv6Mask').prop('disabled',false);
+		$('#vboxSettingsGlobalNetIPv6').prop('disabled',false).val(nic.IPV6Address).closest('tr').find('span').removeClass('vboxDisabled');
+		$('#vboxSettingsGlobalNetIPv6Mask').prop('disabled',false).val(nic.IPV6NetworkMaskPrefixLength).closest('tr').find('span').removeClass('vboxDisabled');
 	} else {
-		$('#vboxSettingsGlobalNetIPv6').prop('disabled',true);
-		$('#vboxSettingsGlobalNetIPv6Mask').prop('disabled',true);		
+		$('#vboxSettingsGlobalNetIPv6').prop('disabled',true).val('').closest('tr').find('span').addClass('vboxDisabled');
+		$('#vboxSettingsGlobalNetIPv6Mask').prop('disabled',true).val('').closest('tr').find('span').addClass('vboxDisabled');
 	}
 
 	if(nic.dhcpServer && nic.dhcpServer.networkName) {

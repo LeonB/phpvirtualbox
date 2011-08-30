@@ -24,6 +24,8 @@ Added Parallels hard disk image format creation support. Available
 hard disk formats and their capabilities are now programmatically
 obtained through the VirtualBox API.
  
+Minor translation fixes.
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------

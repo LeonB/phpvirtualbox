@@ -173,10 +173,12 @@ topMenu.addMenu(menu);
 var menu = {
 	'name':'vboxTopHelp',
 	'label':'Help',
+	'context':'UIHelpButton',
 	'menu':[
         {
 			'name':'helpvbox',
 			'label':'VirtualBox User Manual',
+			'context':'VBoxSelectorWnd',
 			'icon':'images/vbox/site_16px.png',
 			'icon_absolute':true,
 			'click':function(){
@@ -187,6 +189,7 @@ var menu = {
         {
 			'name':'helpAbout',
 			'label':'About',
+			'context':'VBoxSelectorWnd',
 			'icon':'help',
 			'click':function(){
         	

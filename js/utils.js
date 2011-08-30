@@ -621,6 +621,7 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 	l.mode = 'save';
 	l.add('installGuestAdditions',function(d){
 		
+		// Progress operation returned. Guest Additions are being updated.
 		if(d && d.progress) {
 			vboxProgress(d.progress,function(d){
 				
@@ -635,6 +636,7 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 			},{},'progress_install_guest_additions_90px.png',trans('Install Guest Additions...','UIActionPool').replace(/\./g,''),true);
 			
+		// Media was mounted
 		} else if(d && d.result && d.result == 'mounted') {
 
 			// Media and VM data must be refreshed
@@ -646,10 +648,12 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 			if(d.errored)
 				vboxAlert(trans('Failed to update Guest Additions. The Guest Additions installation image will be mounted to provide a manual installation.','UIMessageCenter'));
 			
+		// There's no CDROM drive
 		} else if(d && d.result && d.result == 'nocdrom') {
 			
 			vboxAlert(trans('<p>Could not insert the VirtualBox Guest Additions installer CD image into the virtual machine <b>%1</b>, as the machine has no CD/DVD-ROM drives. Please add a drive using the storage page of the virtual machine settings dialog.</p>','UIMessageCenter').replace('%1',$('#vboxIndex').data('selectedVM').name));
 			
+		// Can't find guest additions
 		} else if (d && d.result && d.result == 'noadditions') {
 			
 			var s1 = '('+trans('None','VBoxGlobal')+')';
