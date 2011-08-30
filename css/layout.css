@@ -263,8 +263,8 @@ div.vboxLoaderDialog div.ui-dialog-buttonpane, div.vboxLoaderDialog div.ui-dialo
 
 
 /* VM Logs and Ajax error text boxes*/
-div.vboxVMLog form, div.vboxAjaxErrorDetails form { height: 100%; margin: 0px; padding: 0px; border: 0px; display: block; }
-div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
+div.vboxVMLog form, div.vboxAlert form { height: 100%; margin: 0px; padding: 0px; border: 0px; display: block; }
+div.vboxVMLog form textarea, div.vboxAlert form textarea {
 	font-family: courier, monospace;
 	font-size: 12px;
 	background: #fff;
@@ -273,7 +273,7 @@ div.vboxVMLog form textarea, div.vboxAjaxErrorDetails form textarea {
 	display: block;
 }
 
-div.vboxAjaxErrorDetails form textarea { height: 100%; }
+div.vboxAlert form textarea { height: 100%; }
 
 /* main toolbar */
 .vboxToolbarGrad {

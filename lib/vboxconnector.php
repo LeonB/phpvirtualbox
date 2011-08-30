@@ -421,7 +421,6 @@ class vboxconnector {
 				$checks = array($this->settings['vboxGuestAdditionsISO']);
 
 			// Unknown os and no config setting leaves all checks in place.
-
 			// Try to register medium.
 			foreach($checks as $iso) {
 				try {
@@ -447,35 +446,24 @@ class vboxconnector {
 		$machine->lockMachine($this->session->handle, 'Shared');
 
 		// Try update from guest if it is supported
-		try {
-			$progress = $this->session->console->guest->updateGuestAdditions($gem->location);
-			// Does an exception exist?
+		if(!@$args['mount_only']) {
 			try {
-				if($progress->errorInfo->handle) {
-					$response['data']['result'] = $this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))];
-					$response['data']['reason'] = $progress->errorInfo->text;
-					$progress->releaseRemote();
-					if($response['data']['result'] != 'VBOX_E_NOT_SUPPORTED')
-						$response['data']['errored'] = 1;
-				}
-			} catch (Exception $null) {
-			}
-						
-			// No error info. Save progress.
-			if(!$response['data']['result']) {
+				$progress = $this->session->console->guest->updateGuestAdditions($gem->location,'WaitForUpdateStartOnly');
+
+				// No error info. Save progress.
 				$gem->releaseRemote();
 				$this->__storeProgress($progress);
 				$response['data']['progress'] = $progress->handle;
 				$this->cache->expire('__getStorageControllers'.$args['vm']);
 				$this->cache->expire('getMedia');
 				return true;
+				
+			} catch (Exception $e) {
+				// Try to mount medium
+				$response['data']['errored'] = 1;
 			}
-			
-		} catch (Exception $e) {
-			// Try to mount medium
-			$response['data']['errored'] = 1;
 		}
-		
+				
 		// updateGuestAdditions is not supported. Just try to mount image.
 		$response['data']['result'] = 'nocdrom';
 		$mounted = false;
@@ -1424,6 +1412,10 @@ class vboxconnector {
 			throw new Exception('Could not find progress operation: '.$args['progress']);
 		}
 
+		// progress operation result
+		$result = 1;
+		$error = 0;
+		
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
@@ -1439,6 +1431,7 @@ class vboxconnector {
 			} catch (Exception $e) {
 				$this->errors[] = $e;
 				throw new Exception('Could not obtain progress operation: '.$args['progress']);
+				$result = 0;
 			}
 
 
@@ -1460,8 +1453,7 @@ class vboxconnector {
 
 				try {
 					if(!$response['data']['info']['canceled'] && $progress->errorInfo->handle) {
-						$err = $progress->errorInfo->text;
-						$this->errors[] = new Exception($err);
+						$error = array('message'=>$progress->errorInfo->text,'err'=>$this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))]);
 					}
 				} catch (Exception $null) {}
 
@@ -1482,17 +1474,26 @@ class vboxconnector {
 			// Does an exception exist?
 			try {
 				if($progress->errorInfo->handle) {
-					$this->errors[] = new Exception($progress->errorInfo->text);
+					$error = array('message'=>$progress->errorInfo->text,'err'=>$this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))]);
 				}
 			} catch (Exception $null) {}
 
 			// Some progress operations seem to go away after completion
 			// probably the result of automatic session closure
-			if(!($session->handle && $session->state->__toString() == 'Unlocked'))
+			if(!($session->handle && $session->state->__toString() == 'Unlocked')) {
 				$this->errors[] = $e;
+				$result = 0;
+			}
 
 		}
 
+		if($error) {
+			$result = 0;
+			if(@$args['catcherrs']) $response['data']['error'] = $error;
+			else $this->errors[] = new Exception($error['message']);
+			
+		}
+		$response['data']['result'] = $result;
 		$this->__destroyProgress($args['progress'],$response);
 
 
@@ -4106,6 +4107,21 @@ class vboxconnector {
 		// Connect to vboxwebsrv
 		$this->__vboxwebsrvConnect();
 
+		$mediumFormats = array();
+		
+		// capabilities
+		$mfCap = new MediumFormatCapabilities(null,'');
+		foreach($this->vbox->systemProperties->mediumFormats as $mf) {
+			$exts = $mf->describeFileExtensions();
+			$dtypes = array();
+			foreach($exts[1] as $t) $dtypes[] = $t->__toString();
+			$caps = array();
+			foreach($mfCap->NameMap as $k=>$v) {
+				if ($k & $mf->capabilities)	 $caps[] = $v;
+			}
+			$mediumFormats[] = array('id'=>$mf->id,'name'=>$mf->name,'extensions'=>$exts[0],'deviceTypes'=>$dtypes,'capabilities'=>$caps);
+		}
+		
 		$response['data'] = array(
 			'minGuestRAM' => (string)$this->vbox->systemProperties->minGuestRAM,
 			'maxGuestRAM' => (string)$this->vbox->systemProperties->maxGuestRAM,
@@ -4124,7 +4140,8 @@ class vboxconnector {
 			'maxGuestMonitors' => $this->vbox->systemProperties->maxGuestMonitors,
 			'defaultVRDEExtPack' => $this->vbox->systemProperties->defaultVRDEExtPack,
 			'serialPortCount' => $this->vbox->systemProperties->serialPortCount,
-			'parallelPortCount' => $this->vbox->systemProperties->parallelPortCount
+			'parallelPortCount' => $this->vbox->systemProperties->parallelPortCount,
+			'mediumFormats' => $mediumFormats
 		);
 		return true;
 	}

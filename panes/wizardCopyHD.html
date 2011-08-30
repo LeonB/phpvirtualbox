@@ -131,10 +131,24 @@
 
 <script type='text/javascript'>
 
+
+// Fill HD type options
+var vboxHDTypesTbl = $('#wizardCopyHDStep2').find('table.vboxOptions').first();
+vboxHDTypesTbl.children().remove();
+var vboxHDTypes = $('#vboxIndex').data('vboxSystemProperties').mediumFormats;
+for(var i = 0; i < vboxHDTypes.length; i++) {
+	if(jQuery.inArray('CreateFixed',vboxHDTypes[i].capabilities) < 0 && jQuery.inArray('CreateDynamic',vboxHDTypes[i].capabilities) < 0) continue;
+	if(jQuery.inArray('HardDisk',vboxHDTypes[i].deviceTypes) > -1) {
+		vboxHDTypesTbl.append("<tr style='vertical-align: top;'><td><label><input type='radio' class='vboxRadio' name='copyHDFileType' value='"+vboxHDTypes[i].id+"' /> "+vboxMedia.getFormat({'format':vboxHDTypes[i].name})+"</label></td></tr>");
+		vboxHDTypesTbl.find('tr').last().data('vboxFormat', vboxHDTypes[i]);
+	}
+}
+// Select VDI and place it at the top
+vboxHDTypesTbl.find('input[value=VDI]').prop('checked',true).closest('tr').detach().prependTo(vboxHDTypesTbl);
+
 $('#wizardCopyHDStep1').find('span.translatepre').html(function(i,h){return trans(h,'UINewHDWizardPageWelcome');});
 $('#wizardCopyHDStep3').find('span.translatevar').html(function(i,h){return trans(h,'UINewHDWizardPageVariant');});
 $('#vboxWizCpHDFin').html(trans('If the above settings are correct, press the <b>%1</b> button. Once you press it the new virtual disk file will be created.','UINewHDWizard').replace('%1',trans('Copy','UINewHDWizard')));
-
 
 var sButtons = new Array(
 		{

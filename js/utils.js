@@ -102,7 +102,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 									s = '<div style="display: block">'+trans('Server List','phpVirtualBox')+': '+servers.join(', ')+'</div>';
 								}
 								if(s) vboxAlert(s);
-								vboxAjaxError(d.errors[i]);
+								vboxAlert(d.errors[i],{'width':'400px'});
 								vboxAlert('<p>'+trans('An error occurred communicating with your vboxwebsrv. No more requests will be sent by phpVirtualBox until the error is corrected and this page is refreshed. The details of this connection error should be displayed in a subsequent dialog box.','phpVirtualBox')+'</p>'+s,{'width':'50%'});
 								
 								
@@ -116,14 +116,14 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 									$('#vboxIndex').css({'display':'none'});
 								}
 
-								vboxAjaxError(d.errors[i]);
+								vboxAlert(d.errors[i],{'width':'400px'});
 								
 							}
 							
 						} else {
 							
 							// Error from normal request
-							vboxAjaxError(d.errors[i]);
+							vboxAlert(d.errors[i],{'width':'400px'});
 						}
 						
 					} // </ foreach error >
@@ -153,7 +153,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 						$('#vboxIndex').data('vboxFatalError',1);
 					}
 					
-					vboxAjaxError({'error':'Ajax error: ' + etext,'details':d.responseText});
+					vboxAlert({'error':'Ajax error: ' + etext,'details':d.responseText},{'width':'400px'});
 					//alert('ajax error: ' + + " " + d.responseText);
 				}
 				callback({},xtra);
@@ -368,50 +368,61 @@ function vboxConvertMbytes(str) {
 
 
 /*
- * 
- * Error message dialog from ajax request
- * 
+ * Alert Dialog
  */
-function vboxAjaxError(e) {
+function vboxAlert(e,xtraOpts) {
 
-	var div = $('<div />').attr({'class':'vboxDialogContent vboxAjaxError'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" /><p>'+e.error+'</p>');
+	var msg = '';
 	
-	var p = $('<p />').attr({'style':'text-align: center'});
+	if(typeof e == 'object') msg = e.error
+	else msg = e;
 	
-	if(e.details) {
+	// Convert to <p>
+	if(msg[0] != '<') msg = '<p>'+msg+'</p>';
+	
+	var div = $('<div />').attr({'class':'vboxDialogContent vboxAlert'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" />'+msg);
+	
+	
+	if(typeof e == 'object' && e.details) {
+		
+		var p = $('<p />').attr({'style':'text-align: center'});
 		$('<a />').attr({'href':'#'}).html(trans('Details','QIMessageBox')).click(function(){
 			$(this).parent().parent().dialog('option',{'height':400,'position':'center'});
-			$(this).parent().siblings(".vboxAjaxErrorDetails").css({"display":""});
+			$(this).parent().siblings(".vboxAlert").css({"display":""});
 			$(this).parent().css({'padding':'0px','margin':'0px'});
-			$(this).parent().siblings(".vboxAjaxErrorDetails").siblings().empty().remove();
+			$(this).parent().siblings(".vboxAlert").siblings().empty().remove();
 			return false;
 		}).appendTo(p);
+
+		$(div).append(p);
+		
+		var ddet = $('<div />').attr({'style':'display: none; height: 100%; width: auto;','class':'vboxAlert'});	
+		$('<textarea />').attr({'spellcheck':'false','wrap':'off','readonly':'true'}).val(e.details).appendTo($('<form />').appendTo(ddet));	
+		$(div).append(ddet);
 	}
 	
-	$(div).append(p);
 	
-	var ddet = $('<div />').attr({'style':'display: none; height: 100%; width: auto;','class':'vboxAjaxErrorDetails'});
-	
-	$('<textarea />').attr({'spellcheck':'false','wrap':'off','readonly':'true'}).val(e.details).appendTo($('<form />').appendTo(ddet));
-	
-	$(div).append(ddet);
 	
 	var buttons = { };
 	buttons[trans('OK','QIMessageBox')] = function(f) {vboxNotifyBrowser();$(this).trigger('close').empty().remove();};
 
-    $(div).dialog({'closeOnEscape':false,'width':400,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});
+	var dialogOpts = {'closeOnEscape':false,'width':600,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'};
+
+	if(typeof xtraOpts == "object") {
+		for(var i in xtraOpts) {
+			dialogOpts[i] = xtraOpts[i];
+		}
+	}
+
+	$(div).dialog(dialogOpts);
+	
     
     // Notify browser of alert
     vboxNotifyBrowser(1);
-    
 	
-}
-/*
- * Alert Dialog
- */
-function vboxAlert(msg,xtraOpts) {
 
-
+    return;
+    
 	var buttons = { };
 	buttons[trans('OK','QIMessageBox')] = function(f) {vboxNotifyBrowser();$(this).trigger('close').empty().remove();};
 	
@@ -604,16 +615,25 @@ function vboxDivOverflowHidden(p) {
 /*
  * Install Guest Additions
  */
-function vboxInstallGuestAdditions(vmid) {
+function vboxInstallGuestAdditions(vmid,mount_only) {
 
 	var l = new vboxLoader();
 	l.mode = 'save';
 	l.add('installGuestAdditions',function(d){
 		
 		if(d && d.progress) {
-			vboxProgress(d.progress,function(){
+			vboxProgress(d.progress,function(d){
+				
+				// Error updating guest additions
+				if(!d.result && d.error && d.error.err) {
+					if(d.error.err != 'VBOX_E_NOT_SUPPORTED') {
+						vboxAlert({'error':trans('Failed to update Guest Additions. The Guest Additions installation image will be mounted to provide a manual installation.','UIMessageCenter'),'details':d.error.err+"\n"+d.error.message});
+					}
+					vboxInstallGuestAdditions(vmid,true);
+					return;
+				}
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
-			},{},'progress_install_guest_additions_90px.png',trans('Install Guest Additions...','VBoxConsoleWnd').replace(/\./g,''));
+			},{},'progress_install_guest_additions_90px.png',trans('Install Guest Additions...','UIActionPool').replace(/\./g,''),true);
 			
 		} else if(d && d.result && d.result == 'mounted') {
 
@@ -650,7 +670,7 @@ function vboxInstallGuestAdditions(vmid) {
 			}
 			vboxConfirm(q,b,trans('No','QIMessageBox'));
 		}
-	},{'vm':vmid});
+	},{'vm':vmid,'mount_only':(mount_only ? 1 : 0)});
 	l.run();
 }
 
@@ -659,7 +679,11 @@ function vboxInstallGuestAdditions(vmid) {
  * Progress dialog and supporting functions
  * 
  */
-function vboxProgress(pid,callback,args,icon,title) {
+function vboxProgress(pid,callback,args,icon,title,catcherrs) {
+	
+	// don't want undefined here
+	if(!catcherrs) catcherrs = 0;
+	else catcherrs = 1;
 	
 	var div = $('<div />').attr({'id':'vboxProgressDialog','title':(title ? title : 'phpVirtualBox'),'style':'text-align: center'});
 	
@@ -692,7 +716,7 @@ function vboxProgress(pid,callback,args,icon,title) {
 	// Don't unload while progress operation is .. in progress
 	window.onbeforeunload = vboxOpInProgress;
 	
-	vboxAjaxRequest('getProgress',{'progress':pid},vboxProgressUpdate,{'pid':pid});
+	vboxAjaxRequest('getProgress',{'progress':pid,'catcherrs':catcherrs},vboxProgressUpdate,{'pid':pid,'catcherrs':catcherrs});
 	
 }
 // OnUnload warning
@@ -719,7 +743,7 @@ function vboxProgressUpdate(d,e) {
 		$('#vboxProgressCancel').show();
 	}
 	
-	window.setTimeout("vboxAjaxRequest('getProgress',{'progress':'"+e.pid+"'},vboxProgressUpdate,{'pid':'"+e.pid+"'})", 3000);
+	window.setTimeout("vboxAjaxRequest('getProgress',{'progress':'"+e.pid+"'},vboxProgressUpdate,{'pid':'"+e.pid+"','catcherrs':'"+e.catcherrs+"'})", 3000);
 	
 }
 
