@@ -27,7 +27,7 @@ vboxVMList.interval = ($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $
 // VM List Context menu for each VM
 var sChildren = [];
 for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
-	sChildren[sChildren.length] = $.extend({},vboxVMActions[vboxVMActions.stop_actions[i]],{'name':vboxVMActions.stop_actions[i],'iconStringDisabled':'_disabled','context':'UIActionPool'});
+	sChildren[sChildren.length] = $.extend({},vboxVMActions[vboxVMActions.stop_actions[i]],{'name':vboxVMActions.stop_actions[i],'iconStringDisabled':'_disabled','context':(vboxVMActions[vboxVMActions.stop_actions[i]].context ? vboxVMActions[vboxVMActions.stop_actions[i]].context : 'UIActionPool')});
 }
 vboxVMList.contextMenuItems = [
 	$.extend({},vboxVMActions['settings'],{'name':'settings'}),

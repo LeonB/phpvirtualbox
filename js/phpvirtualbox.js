@@ -195,8 +195,9 @@ var vboxVMActions = {
 
     /* Save VM State */
 	'savestate' : {
-		'label' : 'Save State',
+		'label' : 'Save the machine state',
 		'icon' : 'fd',
+		'context' : 'UIVMCloseDialog',
 		'stop_action' : true,
 		'enabled' : function(vm){ return (vm && vm.state == 'Running'); },
 		'click' : function() {vboxVMActions.powerAction('savestate');}
@@ -229,9 +230,10 @@ var vboxVMActions = {
 	},
 	/* Power Off VM */
 	'powerdown' : {
-		'label' : 'Power Off',
+		'label' : 'Power off the machine',
 		'icon' : 'poweroff',
 		'stop_action' : true,
+		'context' : 'UIVMCloseDialog',
 		'enabled' : function(vm) { return (vm && jQuery.inArray(vm.state,['Running','Paused','Stuck']) > -1); },
 		'click' : function() {vboxVMActions.powerAction('powerdown'); }
 	},

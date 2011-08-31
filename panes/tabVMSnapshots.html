@@ -90,11 +90,27 @@ var vboxSnapshotButtons = [
   		'context' : 'UIActionPool',
   		'icon' : 'take_snapshot',
   		'enabled' : function(item) {
-  			var vm = $('#vboxTabVMSnapshots').data('machine');
-  			return (item && $(item).data('state') == 'current' && vm.state != 'RestoringSnapshot' && vm.state != 'LiveSnapshotting' && vm.state != 'DeletingSnapshot');
+  			
+  			if(typeof item == 'string') state = item;
+  			else if(item) state = $(item).data('state')
+  			else return false;
+  			
+  			var vm = $('#vboxIndex').data('selectedVM');
+  			return (item && state == 'current' && vm.state != 'RestoringSnapshot' && vm.state != 'LiveSnapshotting' && vm.state != 'DeletingSnapshot');
   		},
   		'click' : function (callback) {
 
+  			// Circumvent VirtualBox bug
+  			if($('#vboxIndex').data('selectedVM').state == 'Running') {
+  				
+	  			var vboxVer = $('#vboxIndex').data('vboxConfig').version.string.replace('_OSE','').split('.');
+	  			
+	  			if(vboxVer[1]=='1' && parseInt(vboxVer[2]) <= 2) {
+	  				vboxAlert("VirtualBox has a bug with taking snapshots of a running VM. Please pause the VM and try again. See <a href='http://www.virtualbox.org/ticket/9255' target=_blank>http://www.virtualbox.org/ticket/9255</a> for more information.");
+		  			return;
+	  			}
+  			}
+  			
   			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));
 
   			var snRegEx = new RegExp('^' + trans('Snapshot %1','VBoxSnapshotsWgt').replace('%1','([0-9]+)') + '$');

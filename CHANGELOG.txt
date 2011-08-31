@@ -4,7 +4,7 @@
 Added Polish translation.
 
 Fixed 4.1-0 regression bug that would not allow runtime attachment
- of USB devices from the Settings menu in the toolbar.
+of USB devices from the Settings menu in the toolbar.
 
 Fixed 4.1-1 regression bug that would not allow one to edit
 existing USB filters for a running VM. 
@@ -16,9 +16,10 @@ Less context menu levels for removable media attachments in the
 Settings toolbar button menu of a running VM when the VM only has 1
 removable media attachment of the a given type (CD/DVD and Floppy).
 
-Better Guest Additions installation handling.
+Improved Guest Additions installation handling.
 
-Added test to check that PHP files are being parsed as PHP.
+Added test to check that PHP files are being parsed as PHP and
+associated error message if not.
 
 Added Parallels hard disk image format creation support. Available
 hard disk formats and their capabilities are now programmatically
@@ -33,9 +34,12 @@ Login form on console tab is now hidden if remote console
 authentication is set to None.
 
 Improved session handling. This should resolve some timeout issues
-and speed up response time.
+and speed up response time in phpVirtualBox.
 
 Added context menus to the Virtual Media Manager.
+
+Added workaround for http://www.virtualbox.org/ticket/9255. Taking
+a snapshot of a running VM now prompts to pause the VM.
 
 -------------------------------------
 	4.1-2	2011-8-21

@@ -386,7 +386,7 @@ for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
 	
 	var n = vboxVMActions.stop_actions[i];
 
-	$(ul).append($('<li />').html("<a href='#" + n + "' style='background-image: url(images/vbox/" + vboxVMActions[n].icon +"_16px.png);' >"+trans(vboxVMActions[n].label,'UIActionPool')+"</a>"));
+	$(ul).append($('<li />').html("<a href='#" + n + "' style='background-image: url(images/vbox/" + vboxVMActions[n].icon +"_16px.png);' >"+trans(vboxVMActions[n].label,(vboxVMActions[n].context ? vboxVMActions[n].context : 'UIActionPool'))+"</a>"));
 		
 }
 
