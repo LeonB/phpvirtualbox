@@ -10,7 +10,7 @@
 <ul>
 	<li><a href="#vboxSettingsTabSystemMotherboard"><span class='translate'>Motherboard</span></a></li>
 	<li><a href="#vboxSettingsTabSystemProcessor"><span class='translate'>Processor</span></a></li>
-	<li id='settingsTabSystemAccelerationLink'><a href="#settingsTabSystemAcceleration"><span class='translate'>Acceleration</span></a></li>
+	<li><a href="#vboxSettingsTabSystemAcceleration"><span class='translate'>Acceleration</span></a></li>
 </ul>
 
 <!-- Motherboard Tab -->
@@ -160,11 +160,11 @@
 </div>
 
 <!-- Acceleration Tab -->
-<div id='settingsTabSystemAcceleration' title='Acceleration'>
+<div id='vboxSettingsTabSystemAcceleration' title='Acceleration'>
 <table>
 	<tr>
 		<th style='text-align:right'><span class='translate'>Hardware Virtualization:</span></th>
-		<td><label><input type='checkbox' name='settingsSystemVT' /> <span class='translate'>Enable VT-x/AMD-V</span></label></td>
+		<td style='width:100%'><label><input type='checkbox' name='settingsSystemVT' /> <span class='translate'>Enable VT-x/AMD-V</span></label></td>
 	</tr>
 	<tr>
 		<th></th>
@@ -227,6 +227,7 @@ if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 /* Else, remove advanced settings */
 } else {
 	$('#vboxSettingsTabSystemMotherboard').find('tr.vboxSettingsSystemAdvancedOnly').css('display','none');
+	$('#vboxSettingsTabSystemAcceleration').find('tr.vboxSettingsSystemAdvancedOnly').css('display','none');
 }
 
 /* Disable PAE if it is unsupported */

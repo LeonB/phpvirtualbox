@@ -26,6 +26,9 @@ obtained through the VirtualBox API.
  
 Minor translation fixes.
 
+Advanced acceleration options are now correctly hidden when
+enableAdvancedConfig is not set.
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------
@@ -55,7 +58,7 @@ in VM settings.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=371
 
 Fixed bug in VM log viewer that would not display log file
-contents when non-utf-8 characers are pressent.
+contents when non-utf-8 characers are present.
 
 -------------------------------------
 	4.1-1b	2011-8-1
