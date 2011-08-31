@@ -11,18 +11,25 @@
   <div id='vboxRDPFormContainer'  style='padding-top: 8px; display: none'>
 	<form name="vboxRDPForm" onsubmit="return false">
 		<div class='vboxInvisible' id='vboxRDPConnParams'>
-			<span class='translate'>User name</span>: <input class='vboxRDPSet' type=text size=20 name=logonUsername value="">
-			<span class='translate'>Password</span>: <input class='vboxRDPSet' type=password size=20 name=logonPassword value="">
+		
+			<span id='vboxConsoleLoginInfo'>
+				<span class='translate'>User name</span>: <input class='vboxRDPSet' type=text size=20 name=logonUsername value="">
+				<span class='translate'>Password</span>: <input class='vboxRDPSet' type=password size=20 name=logonPassword value="">
+			</span>
+			
 			<span class='translate'>Requested desktop size</span>:
 			<select id='vboxRDPSize' name='vboxRDPSizeSelect'>
 				<option value='800x600'>800x600</option>
 				<option value='1024x768'>1024x768</option>
 				<option value='1280x1024'>1280x1024</option>
 			</select>
+			
 		</div>
 	  	<p>
-	  		<input type='text' id='vboxConsoleAddr' name='serverAddress' class='vboxRDPSet' value='' />
 	  		<input name=connectionButton type=button value="Connect" onclick="vboxRDPConnect()" />
+	  		<input type='text' id='vboxConsoleAddr' name='serverAddress' class='vboxRDPSet' value='' />
+	  		<!-- and hardcore web dev guys accross the world frown ... //-->
+	  		&nbsp; &nbsp; &nbsp;
 	 		<input name=cadButton type=button value="Ctrl-Alt-Del" onClick="return vboxRDPsendCAD()" />
 	 		<input id='vboxVRDPDetachBtn' style='display: none' name='detach' type='button' value='Detach' onClick="vboxRDPDetach();" />
 		   <span id='vboxRDPStatus'></span>
@@ -75,6 +82,13 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 		$('#FlashRDPContainer').css({'visibility':'hidden'});
 		$('#vboxTabVMUnavailable').css({'display':''});
 		return;
+	}
+	
+	// Hide login form if authtype is not set
+	if(vm.VRDEServer.authType == 'Null') {
+		$('#vboxConsoleLoginInfo').hide();
+	} else {
+		$('#vboxConsoleLoginInfo').show();
 	}
 
 	$('#vboxTabVMUnavailable').css({'display':'none'});
