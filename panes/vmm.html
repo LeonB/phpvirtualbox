@@ -662,6 +662,22 @@ vmmMenu.addMenu({
 });
 vmmMenu.addMenuBar('vboxMMMenu');
 
+/* Context menu for media */
+vmmCMButtons = vmmButtons;
+
+// Check for advanced config. We don't want these in our context menu
+if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+	vmmCMButtons.shift();
+	vmmCMButtons.shift();
+	vmmCMButtons.shift();
+}
+vmmButtons.pop();
+var vmmCMenu = new vboxMenu('vboxSnapshotContextMenu');
+vmmCMenu.context = 'VBoxMediaManagerDlg';
+vmmCMenu.iconStringDisabled = '_disabled';
+vmmCMenu.addMenu(vmmCMButtons);
+
+
 /* Display selected media info */
 function vboxVMMMediaInfo(e,m) {
 	
@@ -703,6 +719,7 @@ $('#vboxVirtualMediaManager').bind('mediumselect',function(e,m){
 	vmmToolbar.update(e,m);
 	vboxVMMMediaInfo(e,m);
 	vmmMenu.update(e,m);
+	vmmCMenu.update(m);
 });
 
 /*
@@ -710,7 +727,17 @@ $('#vboxVirtualMediaManager').bind('mediumselect',function(e,m){
  */
 function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 	
-	var tr = $('<tr />').data({'medium':d.id,'mediumname':d.name,'mediumsize':d.size,'mediumlogicalSize':d.logicalSize}).attr({'id':'vboxVMMMedium'+(d.id),'class':'vboxListItem collapsed','title':d.id}).hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).addClass('vboxVMMTopLevel'+(topLevelParent ? topLevelParent : '0')+' vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth);
+	var tr = $('<tr />').data({'medium':d.id,'mediumname':d.name,'mediumsize':d.size,'mediumlogicalSize':d.logicalSize})
+		.attr({'id':'vboxVMMMedium'+(d.id),'class':'vboxListItem collapsed','title':d.id})
+		.hover(function(){$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');})
+		.addClass('vboxVMMTopLevel'+(topLevelParent ? topLevelParent : '0')+' vboxVMMChildOf'+(d.parent ? d.parent : '0') +' vboxVMMChildDepth'+depth)
+		.contextMenu({
+				menu: vmmCMenu.menuId(),
+				menusetup : function(el) {
+					if(!$(el).hasClass('vboxListItemSelected')) $(el).children().first().trigger('click');
+				}
+		},vmmCMenu.menuClickCallback)
+
 
 	if(d.children && d.children.length && !hideDiff) $(tr).addClass('vboxVMMParent');
 	if(d.parent) $(tr).addClass('vboxHidden').attr('style','display: none');

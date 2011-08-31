@@ -11,7 +11,7 @@
  * Initialize session
  */
 require_once(dirname(__FILE__).'/config.php');
-function session_init() {
+function session_init($readonly = false) {
 	
 	$settings = new phpVBoxConfigClass();
 
@@ -37,6 +37,9 @@ function session_init() {
 
 	session_name((isset($settings->session_name) ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'].$_SERVER['HTTP_USER_AGENT'])));
 	session_start();
+	
+	// We just wanted to populate $_SESSION
+	if($readonly && function_exists('session_write_close')) @session_write_close();
 }
 
 /*

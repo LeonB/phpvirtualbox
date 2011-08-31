@@ -28,7 +28,7 @@ if(preg_match('/[^\d]/',@$_GET['port'])) {
 	require_once(dirname(__FILE__).'/lib/vboxconnector.php');
 
 	global $_SESSION;
-	session_init();
+	session_init(true);
 
 	$vbox = new vboxconnector();
 	$vbox->connect();
@@ -38,6 +38,7 @@ if(preg_match('/[^\d]/',@$_GET['port'])) {
 	$vbox->getVMDetails($args,$response);
 
 	$_GET['port'] = @$response['data']['consoleInfo']['consolePort'];
+	
 }
 
 header("Content-type: application/x-rdp",true);

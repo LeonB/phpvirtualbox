@@ -227,7 +227,7 @@ if($vbox && $vbox->errors) {
 		);
 	}
 }
-if(function_exists('session_write_close')) session_write_close();
+if(function_exists('session_write_close')) @session_write_close();
 
 if(isset($vboxRequest['printr'])) print_r($response);
 else echo(json_encode($response));

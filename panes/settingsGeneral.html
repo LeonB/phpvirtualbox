@@ -36,7 +36,7 @@
 	<tr id='vboxSettingsRowVMIcon' style='display:none'>
 		<th><span class='translate'>Icon URL:</span></th>
 		<td><input name='vboxSettingsGeneralIcon' type='text' class='vboxText' /></td>
-		<td><img src='about:blank' id='vboxSettingsGeneralIconImg' height='32' width='32' /></td>
+		<td><img src='images/vbox/blank.gif' id='vboxSettingsGeneralIconImg' height='32' width='32' /></td>
 	</tr>
 </table>
 </div>
@@ -120,7 +120,7 @@ if($('#vboxIndex').data('vboxConfig').enableCustomIcons) {
 	}
 	
 	$(document.forms['frmVboxSettings'].vboxSettingsGeneralIcon).blur(function(){
-		$('#vboxSettingsGeneralIconImg').attr('src',(this.value ? this.value : 'about:blank'));
+		$('#vboxSettingsGeneralIconImg').attr('src',(this.value ? this.value : 'images/vbox/blank.gif'));
 	});
 }
 

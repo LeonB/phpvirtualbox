@@ -32,6 +32,11 @@ enableAdvancedConfig is not set.
 Login form on console tab is now hidden if remote console
 authentication is set to None.
 
+Improved session handling. This should resolve some timeout issues
+and speed up response time.
+
+Added context menus to the Virtual Media Manager.
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------
