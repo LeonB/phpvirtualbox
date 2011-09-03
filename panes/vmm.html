@@ -663,15 +663,14 @@ vmmMenu.addMenu({
 vmmMenu.addMenuBar('vboxMMMenu');
 
 /* Context menu for media */
-vmmCMButtons = vmmButtons;
+var vmmCMButtons;
 
 // Check for advanced config. We don't want these in our context menu
 if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-	vmmCMButtons.shift();
-	vmmCMButtons.shift();
-	vmmCMButtons.shift();
+	vmmCMButtons = vmmButtons.slice(3,-1)
+} else {
+	vmmCMButtons = vmmButtons.slice(0,-1)	
 }
-vmmButtons.pop();
 var vmmCMenu = new vboxMenu('vboxVMMMediaContextMenu');
 vmmCMenu.context = 'VBoxMediaManagerDlg';
 vmmCMenu.iconStringDisabled = '_disabled';

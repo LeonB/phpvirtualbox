@@ -41,7 +41,7 @@ var vboxVMActions = {
 				}
 				l.run();
 				
-			},false,trans('Add an existing virtual machine','VBoxSelectorWnd'),'images/vbox/machine_16px.png');
+			},false,trans('Add an existing virtual machine','VBoxSelectorWnd'),'images/vbox/machine_16px.png',true);
 		}
 	},
 

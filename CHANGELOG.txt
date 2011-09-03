@@ -28,10 +28,10 @@ obtained through the VirtualBox API.
 Minor translation fixes.
 
 Advanced acceleration options are now correctly hidden when
-enableAdvancedConfig is not set.
+enableAdvancedConfig is not enabled in config.php.
 
 Login form on console tab is now hidden if remote console
-authentication is set to None.
+authentication is set to None. This should avoid some confusion.
 
 Improved session handling. This should resolve some timeout issues
 and speed up response time in phpVirtualBox.

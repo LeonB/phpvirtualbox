@@ -306,10 +306,16 @@ function vboxMachineStateIcon(state)
 }
 
 /* File or Folder browser */
-function vboxFileBrowser(root,fn,foldersonly,title,icon) {
+function vboxFileBrowser(root,fn,foldersonly,title,icon,strictFiles) {
 
 	var buttons = { };
 	buttons[trans('OK','QIMessageBox')] = function(f) {
+		
+		if(strictFiles && $('#vboxBrowseFolderList').find('.vboxListItemSelected').first().parent().hasClass('directory')) {
+			$('#vboxBrowseFolderList').find('.vboxListItemSelected').first().trigger('dblclick');
+			return;
+		}
+		
 		if(typeof f != 'string') {
 			f = $('#vboxBrowseFolderList').find('.vboxListItemSelected').first().attr('name');
 		}
