@@ -158,6 +158,10 @@ if(jQuery)( function() {
 						
 					
 					}
+					
+					// shift left if submenu
+					if($(menu).data('level')) x-=3;
+					
 					//adjust to ensure menu is inside viewable screen
 					var right = x + $(menu).outerWidth();
 					var bottom = y + $(menu).outerHeight();
