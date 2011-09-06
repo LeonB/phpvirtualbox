@@ -42,6 +42,9 @@ Added workaround for http://www.virtualbox.org/ticket/9255. Taking
 a snapshot of a running VM now prompts to pause the VM if
 VirtualBox <= 4.1.2 is detected.
 
+Fixed VM cloning bug.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=380
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------

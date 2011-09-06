@@ -133,25 +133,32 @@ var vboxVMActions = {
 			var buttons = {};
 			buttons[trans('Delete all files','UIMessageCenter')] = function(){
 				$(this).empty().remove();
-				vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1},function(d){
+				var l = new vboxLoader();
+				l.mode='save';
+				l.add('removeVM',function(d){
 					// check for progress operation
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
 					} else {
 						$('#vboxIndex').trigger('vmlistreload');
-					}
-				});
+					}					
+				},{'vm':$('#vboxIndex').data('selectedVM').id,'delete':1});
+				l.run();
 			}
 			buttons[trans('Remove only','UIMessageCenter')] = function(){
 				$(this).empty().remove();
-				vboxAjaxRequest('removeVM',{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1},function(d){
+				var l = new vboxLoader();
+				l.mode='save';
+				l.add('removeVM',function(d){
 					// check for progress operation
 					if(d && d.progress) {
-						vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');});
+						vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
 					} else {
 						$('#vboxIndex').trigger('vmlistreload');
-					}
-				});
+					}					
+				},{'vm':$('#vboxIndex').data('selectedVM').id,'keep':1});
+				l.run();
+				
 			}
 			var q = trans('<p>You are about to remove the virtual machine <b>%1</b> from the machine list.</p><p>Would you like to delete the files containing the virtual machine from your hard disk as well? Doing this will also remove the files containing the machine\'s virtual hard disks if they are not in use by another machine.</p>','UIMessageCenter').replace('%1',$('#vboxIndex').data('selectedVM').name);
 				
@@ -707,6 +714,11 @@ function vboxToolbar(buttons) {
 		$('#vboxToolbarButton-'+self.id+'-'+b.name).addClass('vboxDisabled').removeClass('vboxEnabled').children('img.vboxToolbarImg').attr('src','images/vbox/'+b.icon+'_disabled_'+self.size+'px.png');
 	}
 
+	// Set button label
+	self.setButtonLabel = function(bname,l) {
+		$('#vboxToolbarButton-'+self.id+'-'+bname).find('span.vboxToolbarButtonLabel').html(l);
+	}
+	
 	// Generate HTML element for button
 	self.buttonElement = function(b) {
 
@@ -720,7 +732,7 @@ function vboxToolbar(buttons) {
 		var td = $('<td />').attr({'id':'vboxToolbarButton-' + self.id + '-' + b.name,
 			'class':'vboxToolbarButton ui-corner-all vboxEnabled vboxToolbarButton'+self.size,
 			'style':self.buttonStyle+'; min-width: '+(self.size+12)+'px;'
-		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" style="height:'+self.size+'px;width:'+self.size+'px;"/><br />' + $('<div />').html(trans(b.label,(b.context ? b.context : (self.context ? self.context : null))).replace(/\./g,'')).text()).bind('click',function(){
+		}).html('<img src="images/vbox/'+b.icon+'_'+self.size+'px.png" class="vboxToolbarImg" style="height:'+self.size+'px;width:'+self.size+'px;"/><br /><span class="vboxToolbarButtonLabel">' + trans(b.label,(b.context ? b.context : (self.context ? self.context : null))).replace(/\./g,'')+'</span>').bind('click',function(){
 			if($(this).hasClass('vboxDisabled')) return;
 			$(this).data('toolbar').click($(this).data('name'));
 		// store data

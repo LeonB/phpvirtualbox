@@ -639,6 +639,7 @@ class vboxconnector {
 			$src = $nsrc->machine;
 		}
 		$m = $this->vbox->createMachine($this->vbox->composeMachineFilename($args['name'],$this->vbox->systemProperties->defaultMachineFolder),$args['name'],null,null,false);
+		$sfpath = $m->settingsFilePath;
 
 		$cm = new CloneMode(null,$args['vmState']);
 		$state = $cm->ValueMap[$args['vmState']];
@@ -657,11 +658,12 @@ class vboxconnector {
 				return false;
 			}
 		} catch (Exception $null) {}
-
+		
 		$this->__storeProgress($progress,array('getMedia'));
 
-		$response['data'] = array('progress' => $progress->handle, 'settingsFilePath' => $m->settingsFilePath);
-
+		$response['data'] = array('progress' => $progress->handle, 'settingsFilePath' => $sfpath);
+		
+		
 		return true;
 	}
 
@@ -1422,12 +1424,14 @@ class vboxconnector {
 		try {
 
 			try {
+				
 				// Keep session from timing out
 				$vbox = new IVirtualBox($this->client, $pop['session']);
 				$session = $this->websessionManager->getSessionObject($vbox->handle);
 				// Force web call
 				if($session->state->__toString()) {}
 				$progress = new IProgress($this->client,$args['progress']);
+				
 			} catch (Exception $e) {
 				$this->errors[] = $e;
 				throw new Exception('Could not obtain progress operation: '.$args['progress']);
@@ -1467,7 +1471,7 @@ class vboxconnector {
 
 
 		} catch (Exception $e) {
-
+			
 			// Force progress dialog closure
 			$response['data']['info'] = array('completed'=>1);
 
@@ -1493,6 +1497,7 @@ class vboxconnector {
 			else $this->errors[] = new Exception($error['message']);
 			
 		}
+				
 		$response['data']['result'] = $result;
 		$this->__destroyProgress($args['progress'],$response);
 

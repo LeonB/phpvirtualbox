@@ -337,6 +337,7 @@ function vboxWizardCloneVMInit(callback,args) {
 			
 			// wrap function
 			var vbClone = function(sn) {
+				
 				var l = new vboxLoader();
 				l.mode = 'save';
 				l.add('cloneVM',function(d,e){
@@ -357,6 +358,7 @@ function vboxWizardCloneVMInit(callback,args) {
 							});
 						},d.id,'progress_clone_90px.png',trans('Clone a virtual machine','UICloneVMWizard'));
 					} else {
+						$('#vboxIndex').trigger('vmlistreload');
 						callback();
 					}
 				},{'name':name,'vmState':vmState,'src':src,'snapshot':sn,'reinitNetwork':allNetcards,'link':cLink});
@@ -546,7 +548,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 					break;
 				}
 			}
-			var fsplit = document.forms['frmwizardNewHD'].newHardDiskSplit.checked;
+			var fsplit = (document.forms['frmwizardNewHD'].newHardDiskSplit.checked ? 1 : 0);
 
 			$(dialog).trigger('close').empty().remove();
 
@@ -612,7 +614,7 @@ function vboxWizardCopyHDInit(callback,suggested) {
 					break;
 				}
 			}
-			var fsplit = (document.forms['frmwizardCopyHD'].newHardDiskSplit.checked && format == 'vmdk');
+			var fsplit = (document.forms['frmwizardCopyHD'].newHardDiskSplit.checked && format == 'vmdk' ? 1 : 0);
 			var location = $('#wizardCopyHDLocationLabel').text();
 						
 			$(dialog).trigger('close').empty().remove();

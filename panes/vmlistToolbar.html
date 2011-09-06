@@ -27,16 +27,16 @@ var tButtons = [
 ];
 
 /* Append Top Toolbar */
-toolbarTop = new vboxToolbar(tButtons);
-toolbarTop.size = 32;
-toolbarTop.context = 'VBoxSelectorWnd';
-toolbarTop.addButtons('vboxPaneToolbar');
+vboxVMListToolbarTop = new vboxToolbar(tButtons);
+vboxVMListToolbarTop.size = 32;
+vboxVMListToolbarTop.context = 'VBoxSelectorWnd';
+vboxVMListToolbarTop.addButtons('vboxPaneToolbar');
 
 
 $('#vboxIndex').bind('vmloading',function(){
-	toolbarTop.update();
+	vboxVMListToolbarTop.update();
 }).bind('vmloaded',function(e,vm){
-	toolbarTop.update(vm);
+	vboxVMListToolbarTop.update(vm);
 });
 
 
@@ -403,7 +403,7 @@ $("#vboxToolbarButton-vboxPaneToolbar-stop").contextMenu({
 	},
 	function(a, el, pos) {
 		vboxVMActions[a].click();		
-		if(a != 'reset' && a != 'powerbutton' && a != 'sleep') toolbarTop.disableButton(toolbarTop.getButtonByName('stop'));
+		if(a != 'reset' && a != 'powerbutton' && a != 'sleep') vboxVMListToolbarTop.disableButton(vboxVMListToolbarTop.getButtonByName('stop'));
 	}
 );
 

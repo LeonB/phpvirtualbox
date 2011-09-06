@@ -143,7 +143,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
 			// Opera sometimes fails for seemingly no reason.
 			// No idea why. This takes care of it though.
-			if((!etext || !etext.length || etext == 'error') && run < 4) {
+			if((!etext || !etext.length || etext == 'error') && run < 4 && fn.indexOf('get') == 0) {
 				vboxAjaxRequest(fn,params,callback,xtra,(run+1));
 			} else {
 				if(etext != 'error') {
