@@ -32,7 +32,7 @@ require_once(dirname(__FILE__).'/vboxconnector.php');
 
 error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
-session_init(true);
+session_init();
 if(!$_SESSION['valid']) return;
 
 /*

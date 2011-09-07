@@ -11,7 +11,7 @@
  * Initialize session
  */
 require_once(dirname(__FILE__).'/config.php');
-function session_init($readonly = false) {
+function session_init($keepopen = false) {
 	
 	$settings = new phpVBoxConfigClass();
 
@@ -25,21 +25,23 @@ function session_init($readonly = false) {
 	}
 	
 	// Session is auto-started by PHP?
-	if(ini_get('session.auto_start')) return;
+	if(!ini_get('session.auto_start')) {
 	
-	ini_set('session.use_trans_sid', 0);
-	ini_set('session.use_only_cookies', 1);
+		ini_set('session.use_trans_sid', 0);
+		ini_set('session.use_only_cookies', 1);
+		
+		// Session path
+		if(isset($settings->sessionSavePath)) {
+			session_save_path($settings->sessionSavePath);
+		}
 	
-	// Session path
-	if(isset($settings->sessionSavePath)) {
-		session_save_path($settings->sessionSavePath);
+		session_name((isset($settings->session_name) ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'].$_SERVER['HTTP_USER_AGENT'])));
+		session_start();
+	
 	}
-
-	session_name((isset($settings->session_name) ? $settings->session_name : md5('phpvbx'.$_SERVER['DOCUMENT_ROOT'].$_SERVER['HTTP_USER_AGENT'])));
-	session_start();
 	
-	// We just wanted to populate $_SESSION
-	if($readonly && function_exists('session_write_close')) @session_write_close();
+	if(!$keepopen) session_write_close();
+	
 }
 
 /*

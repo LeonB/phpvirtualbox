@@ -76,7 +76,7 @@ class phpvbAuthBuiltin {
 			$_SESSION['admin'] = intval($vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/admin'));
 			$_SESSION['authCheckHeartbeat'] = time();
 		}
-		
+				
 		if(!@$_SESSION['valid'])
 			throw new Exception(trans('Not logged in.','UIUsers'), vboxconnector::PHPVB_ERRNO_FATAL);
 	}

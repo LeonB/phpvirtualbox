@@ -28,7 +28,7 @@ if(preg_match('/[^\d]/',@$_GET['port'])) {
 	require_once(dirname(__FILE__).'/lib/vboxconnector.php');
 
 	global $_SESSION;
-	session_init(true);
+	session_init();
 
 	$vbox = new vboxconnector();
 	$vbox->connect();

@@ -25,7 +25,6 @@ require_once(dirname(__FILE__).'/vboxconnector.php');
 
 // Init session
 global $_SESSION;
-session_init();
 
 /*
  * Clean request
@@ -54,11 +53,13 @@ try {
 		/* Return config vars */
 		case 'getConfig':
 			
-			
 			$settings = new phpVBoxConfigClass();
 			$response['data'] = get_object_vars($settings);
 			$response['data']['host'] = parse_url($response['data']['location']);
 			$response['data']['host'] = $response['data']['host']['host'];
+			
+			// Session
+			session_init();
 			
 			// Hide credentials
 			unset($response['data']['username']);
@@ -103,12 +104,18 @@ try {
 			if(!$vboxRequest['u'] || !$vboxRequest['p']) {
 				break;	
 			}
+
+			// Session
+			session_init();
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->login($vboxRequest['u'], $vboxRequest['p']);
 		
 		/* Get Session Data */
 		case 'getSession':
+			
+			// Session
+			session_init();
 			
 			$settings = new phpVBoxConfigClass();
 			if(method_exists($settings->auth,'autoLoginHook'))
@@ -122,6 +129,9 @@ try {
 			
 		/* Logout */
 		case 'logout':
+
+			// Session
+			session_init();
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->logout($response);
@@ -130,6 +140,9 @@ try {
 		
 		/* Password Change */
 		case 'changePassword':
+
+			// Session
+			session_init();
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->changePassword($vboxRequest['old'], $vboxRequest['new'], $response);
@@ -138,6 +151,9 @@ try {
 		
 		/* Get a list of users */
 		case 'getUsers':
+
+			// Session
+			session_init();
 			
 			// Must be an admin
 			if(!$_SESSION['admin']) break;
@@ -149,6 +165,9 @@ try {
 	
 		/* remove a user */
 		case 'delUser':
+
+			// Session
+			session_init();
 			
 			// Must be an admin
 			if(!$_SESSION['admin']) break;
@@ -161,14 +180,21 @@ try {
 			
 		/* edit a User */
 		case 'editUser':
+
 			$skipExistCheck = true;
 			// Fall to addUser
 	
 		/* Add a User */
 		case 'addUser':
 	
+			// Session
+			session_init();
+
+			// Must be an admin
+			if(!$_SESSION['admin']) break;
+			
 			$settings = new phpVBoxConfigClass();
-			$settings->auth->updateUser($vboxRequest, $skipExistCheck);
+			$settings->auth->updateUser($vboxRequest, @$skipExistCheck);
 						
 			$response['data']['result'] = 1;
 			break;
@@ -177,15 +203,20 @@ try {
 		default:
 	
 			$vbox = new vboxconnector();
-
+			
+			// Session
+			session_init(true);
+			
 			/*
 			 * Every 1 minute we'll check that the account has not
 			 * been deleted since login, and update admin credentials.
 			 */
-			 
 			if($_SESSION['user'] && ((intval($_SESSION['authCheckHeartbeat'])+60) < time())) {
 				$vbox->settings['auth']->heartbeat($vbox);
 			}
+			
+			// We're done writing to session
+			if(function_exists('session_write_close')) @session_write_close();
 			
 			# fix for allow_call_time_pass_reference = Off setting
 			if(method_exists($vbox,$vboxRequest['fn'])) {
@@ -227,7 +258,6 @@ if($vbox && $vbox->errors) {
 		);
 	}
 }
-if(function_exists('session_write_close')) @session_write_close();
 
 if(isset($vboxRequest['printr'])) print_r($response);
 else echo(json_encode($response));
