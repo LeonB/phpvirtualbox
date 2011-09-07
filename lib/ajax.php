@@ -136,13 +136,10 @@ try {
 		case 'logout':
 
 			// Session
-			session_init();
+			session_init(true);
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->logout($response);
-
-			// We're done writing to session
-			if(function_exists('session_write_close')) @session_write_close();
 			
 			break;
 		
