@@ -106,10 +106,15 @@ try {
 			}
 
 			// Session
-			session_init();
+			session_init(true);
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->login($vboxRequest['u'], $vboxRequest['p']);
+			
+			// We're done writing to session
+			if(function_exists('session_write_close')) @session_write_close();
+			
+			
 		
 		/* Get Session Data */
 		case 'getSession':
@@ -135,6 +140,9 @@ try {
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->logout($response);
+
+			// We're done writing to session
+			if(function_exists('session_write_close')) @session_write_close();
 			
 			break;
 		
@@ -146,6 +154,9 @@ try {
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->changePassword($vboxRequest['old'], $vboxRequest['new'], $response);
+
+			// We're done writing to session
+			if(function_exists('session_write_close')) @session_write_close();
 			
 			break;
 		

@@ -45,6 +45,9 @@ VirtualBox <= 4.1.2 is detected.
 Fixed VM cloning bug.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=380
 
+Fixed some display issues for GTK based web browsers when a dark
+GTK theme is applied.
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------
