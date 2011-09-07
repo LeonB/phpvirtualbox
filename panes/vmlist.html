@@ -543,11 +543,11 @@ function vboxVMList(anchorid) {
 	
 	self.stop = function() {
 		if(!self._running) return;
+		self._running = null;
 		self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 		self.vms = self.selected = null;
 		window.clearInterval(self._running);
 		$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
-		self._running = null;
 	}
 	
 	self.refresh = function() {

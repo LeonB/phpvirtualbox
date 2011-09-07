@@ -2788,6 +2788,8 @@ class vboxconnector {
 			$this->errors[] = $e;
 			return false;
 		}
+		
+		$this->cache->expire('getVMs');
 
 		return ($response['data']['result'] = 1);
 
