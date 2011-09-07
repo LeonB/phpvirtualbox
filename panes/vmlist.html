@@ -392,10 +392,17 @@ function vboxVMList(anchorid) {
 
 		// Subscribe to selected VM changes and refreshes
 		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistreload',function() {
-			$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
-			self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
-			self.vms = self.selected = null;
-			self.refresh();
+
+			// Stop vmlist from refreshing..
+			self.stop();
+
+			// ask for new one
+			vboxAjaxRequest('getVMs',{},function(d){
+				self.start();
+				self.updateList(d);
+			});
+			
+			
 		}).bind('vmlistrefresh',function(){
 			self.refresh();
 		}).bind('hostChange',function(){
@@ -532,15 +539,14 @@ function vboxVMList(anchorid) {
 		
 		self.refresh();
 		
-		// Run every X seconds?
-		self._running = window.setInterval(self.refresh,self.interval*1000);		
 	}
 	
 	self.stop = function() {
 		if(!self._running) return;
 		self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
-		self.vms = self.selected = null;		
+		self.vms = self.selected = null;
 		window.clearInterval(self._running);
+		$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 		self._running = null;
 	}
 	

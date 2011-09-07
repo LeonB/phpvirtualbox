@@ -33,8 +33,8 @@ enableAdvancedConfig is not enabled in config.php.
 Login form on console tab is now hidden if remote console
 authentication is set to None. This should avoid some confusion.
 
-Improved session handling. This should resolve some timeout issues
-and speed up response time in phpVirtualBox.
+Improved PHP session handling. This should resolve some timeout
+issues and speed up response time in phpVirtualBox.
 
 Added context menus to the Virtual Media Manager.
 

@@ -511,12 +511,14 @@ var vmmButtons = new Array(
 				var buttons = {};
 				buttons[trans('Delete','UIMessageCenter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType,'delete':1},function(ret){
-						vboxProgress(ret.progress,function(){
-							var l = new vboxLoader();
-							l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
-							l.onLoad = vboxVMMFillMedia;
-							l.run();
-						},{},'progress_media_delete_90px.png');
+						if(ret && ret.progress) {
+							vboxProgress(ret.progress,function(){
+								var l = new vboxLoader();
+								l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
+								l.onLoad = vboxVMMFillMedia;
+								l.run();
+							},{},'progress_media_delete_90px.png');
+						}
 					});
 					$(this).empty().remove();
 				};
