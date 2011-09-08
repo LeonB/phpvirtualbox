@@ -3410,7 +3410,7 @@ class vboxconnector {
 				}
 			} catch (Exception $null) {}
 
-			$this->__storeProgress($progress,array('__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
+			$this->__storeProgress($progress,array('getVMs','__getMachine'.$args['vm'],'getMedia','__getStorageControllers'.$args['vm']));
 
 
 		} catch (Exception $e) {

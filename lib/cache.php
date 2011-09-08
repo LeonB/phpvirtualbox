@@ -136,6 +136,10 @@ class cache {
 	 *  Expire (unlink) cached item
 	 */
 	function expire($key) {
+		if(is_array($key)) {
+			foreach($key as $k) $this->expire($k);
+			return;	
+		}
 		if($this->locked[$key]) $this->unlock($key);
 		clearstatcache();
 		if(!file_exists($this->_fname($key))) return;

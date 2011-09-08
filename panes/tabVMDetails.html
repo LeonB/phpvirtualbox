@@ -826,6 +826,28 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			// Medium / host device info
 			var medium = (data['storageControllers'][a]['mediumAttachments'][b].medium && data['storageControllers'][a]['mediumAttachments'][b].medium.id ? vboxMedia.getMediumById(data['storageControllers'][a]['mediumAttachments'][b].medium.id) : null);
 			
+			// Do we need to reload media?
+			if(data['storageControllers'][a]['mediumAttachments'][b].medium && data['storageControllers'][a]['mediumAttachments'][b].medium.id && medium === null) {
+				
+				// Already tried to reload media, don't get caught in a loop
+				if(!$(vboxDetailsTable).data('vboxMediaReload')) {
+					
+					$(vboxDetailsTable).data('vboxMediaReload', 1);
+					
+					$('#vboxIndex').trigger('vmloading');
+					
+					var l = new vboxLoader();
+					l.add('VMDetails',function(d){return;},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
+					l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
+					l.onLoad = function() {
+						$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
+					}
+					l.run();
+					return;
+				}
+			}
+			
+			
 			// Get base medium (snapshot -> virtual disk file)
 			var it = false;
 			if(medium && medium.base && (medium.base != medium.id)) {
@@ -841,6 +863,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 		
 	}
+	$(vboxDetailsTable).data('vboxMediaReload', 0);
 
 
 	// Audio

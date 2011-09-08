@@ -393,6 +393,9 @@ function vboxVMList(anchorid) {
 		// Subscribe to selected VM changes and refreshes
 		$('#vboxIndex').bind('vmselect',self.selectVM).bind('vmlistreload',function() {
 
+			// Get selected vm
+			var svm = self.selected;
+			
 			// Stop vmlist from refreshing..
 			self.stop();
 
@@ -400,6 +403,7 @@ function vboxVMList(anchorid) {
 			vboxAjaxRequest('getVMs',{},function(d){
 				self.start();
 				self.updateList(d);
+				if(svm) $('#vboxVMListItem-'+self.anchorid+'-'+svm).trigger('click');
 			});
 			
 			
