@@ -48,6 +48,14 @@ http://code.google.com/p/phpvirtualbox/issues/detail?id=380
 Fixed some display issues for GTK based web browsers when a dark
 GTK theme is applied.
 
+Added check to see that get_magic_quotes_gpc() function exists
+before calling it. This fix problems for people running newer
+(unsupported) versions of PHP.
+
+Fixed bug where phpVirtualBox would try to pre-load images that do
+not exist - causing 404 errors in web server logs.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=396
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------

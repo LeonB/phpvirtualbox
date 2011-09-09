@@ -229,6 +229,7 @@ var sButtons = new Array(
 
 userToolbar = new vboxToolbarSmall(sButtons);
 userToolbar.context = 'UIUsers';
+userToolbar.disabledString = 'dis';
 userToolbar.addButtons('vboxSettingsGlobalUsersToolbar');
 $('#vboxSettingsUserList').bind('select',userToolbar.update);
 

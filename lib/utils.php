@@ -50,7 +50,7 @@ function session_init($keepopen = false) {
 function __vbx_stripslash(&$a) { $a = stripslashes($a); }
 function clean_request() {
 	$r = array_merge($_GET,$_POST);
-	if(get_magic_quotes_gpc()) {array_walk_recursive($r,'__vbx_stripslash');}
+	if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {array_walk_recursive($r,'__vbx_stripslash');}
 	return $r;
 }
 

@@ -861,7 +861,7 @@ function vboxToolbarSmall(buttons) {
 	self.buttonElement = function(b) {
 
 		// Pre-load disabled version of icon if enabled function exists
-		if(b.enabled) {
+		if(b.enabled && !b.noDisabledIcon) {
 			var a = new Image();
 			a.src = "images/vbox/" + (b.icon_exact ? b.icon_disabled : b.icon + '_'+self.disabledString+'_'+self.size)+'px.png'
 		}
