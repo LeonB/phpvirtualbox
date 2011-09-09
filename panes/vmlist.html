@@ -7,7 +7,9 @@
 
  -->
 <div id='vboxVMList'>
-	<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>
+	<div id='vboxVMListSpinner' style='text-align: center'>
+		<img src='images/spinner.gif' alt="" />
+	</div>
 </div>
 <script type='text/javascript'>
 
@@ -100,9 +102,7 @@ function vboxVMList(anchorid) {
 		
 		if(!d || !d.vmlist) {
 			
-			// Don't show this error if this was the first time run
-			if(self.vms !== null)
-				vboxAlert(trans('There was an error obtaining the list of registered virtual machines from VirtualBox. Make sure vboxwebsrv is running and that the settings in config.php are correct.<p>The list of virtual machines will not begin auto-refreshing again until this page is reloaded.</p>','phpVirtualBox'));
+			vboxAlert(trans('There was an error obtaining the list of registered virtual machines from VirtualBox. Make sure vboxwebsrv is running and that the settings in config.php are correct.<p>The list of virtual machines will not begin auto-refreshing again until this page is reloaded.</p>','phpVirtualBox'));
 			
 			self.stop();
 			self.anchor.children().remove();

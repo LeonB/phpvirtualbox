@@ -26,10 +26,13 @@ UL.jqueryFileTree A {
 .jqueryFileTree LI.expanded { background: url(../images/jqueryFileTree/folder_open.png) left top no-repeat; }
 .jqueryFileTree LI.file { background: url(../images/jqueryFileTree/file.png) left top no-repeat; }
 .jqueryFileTree LI.wait { background: url(../images/jqueryFileTree/spinner.gif) left top no-repeat; }
-.jqueryFileTree LI.file_vmdk,.jqueryFileTree LI.file_vdi, .jqueryFileTree LI.file_vhd, .jqueryFileTree LI.file_hdd { background: url(../images/vbox/hd_16px.png) 0px 1px no-repeat; }
-.jqueryFileTree LI.file_ovf, .jqueryFileTree LI.file_ova { background: url(../images/vbox/os_type_16px.png) 0px 1px no-repeat; }
-.jqueryFileTree LI.file_iso, .jqueryFileTree LI.file_cdr { background: url(../images/vbox/cd_16px.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_vmdk { background: url(../images/vbox/virtualbox-vmdk.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_vdi  { background: url(../images/vbox/virtualbox-vdi.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_vhd  { background: url(../images/vbox/virtualbox-vhd.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_hdd { background: url(../images/vbox/virtualbox-hdd.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_ovf { background: url(../images/vbox/virtualbox-ovf.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_ova { background: url(../images/vbox/virtualbox-ova.png) 0px 1px no-repeat; }
 .jqueryFileTree LI.file_iso, .jqueryFileTree LI.file_cdr, .jqueryFileTree LI.file_dmg { background: url(../images/vbox/cd_16px.png) 0px 1px no-repeat; }
 .jqueryFileTree LI.file_img, .jqueryFileTree LI.file_ima, .jqueryFileTree LI.file_dsk, .jqueryFileTree LI.file_vfd { background: url(../images/vbox/fd_16px.png) 0px 1px no-repeat; }
-.jqueryFileTree LI.file_vbox, .jqueryFileTree LI.file_xml { background: url(../images/vbox/machine_16px.png) 0px 1px no-repeat; }
+.jqueryFileTree LI.file_vbox, .jqueryFileTree LI.file_xml { background: url(../images/vbox/virtualbox-vbox.png) 0px 1px no-repeat; }
 
