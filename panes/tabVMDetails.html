@@ -616,7 +616,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 	
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Base Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize'])));
-	
+		
 	if(parseInt(data['CPUCount']) > 1)
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Processors",'UIDetailsPagePrivate'), data['CPUCount']));
 	
@@ -1188,7 +1188,9 @@ function __vboxDisplayHostDetailsData(data) {
 	// General
 	$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png",trans("General"),null,null,true));
 	if($('#vboxIndex').data('vboxConfig').servers.length) $(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
-	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')')).append(__vboxDetailRow(trans("Base Memory"), trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize']))).append(__vboxDetailRow(trans("Processors",'UIDetailsPagePrivate'), data['cpus'][0] + ' (' + data['cpus'].length +')'));
+	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')'))
+		.append(__vboxDetailRow(trans("Base Memory"), '<span id="vboxHostMemUsed"></span>'))
+		.append(__vboxDetailRow(trans("Processors",'UIDetailsPagePrivate'), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 	
 	// Processor features?
 	if(data.cpuFeatures) {
@@ -1274,8 +1276,44 @@ function __vboxDisplayHostDetailsData(data) {
 		$('#vboxHostDetails').append(vboxDetailsTable);
 	}	
 	
-	// Append Table
+	// Append memory used indicator
+	$('#vboxHostMemUsed').append('<div style="background-color:#555;width:200px;height:14px;overflow:hidden;margin:0px;padding:0px;display:inline-block;height:14px;"><div style="background-color:#3a3;margin:0px;padding:0px;width:1px;top:0px;left:0px;z-index:1;height:14px;" id="vboxHostMemUsedPct"></div><div style="background-color:transparent;margin:0px;padding:0px;width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;height:14px;color:#ffffff;" id="vboxHostMemUsedLbl">&nbsp;</div></div>&nbsp;&nbsp;');
+
+	// Memory used function
+	var vboxHostShowMemInfo = function(avail) {
+
+		var mUsed = data['memorySize'] - avail;
+		var mInfo = trans('<nobr>%1%</nobr>').replace('%1',parseInt((mUsed / data['memorySize']) * 100)) + ' ('+trans('<nobr>%1 MB</nobr>').replace('%1',mUsed)+' / '+ trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize']) +')';
+		var mUsed = parseInt((mUsed / data['memorySize']) * 100) * 2;
+		
+		$('#vboxHostMemUsedPct').css({'width':mUsed+'px'});
+		$('#vboxHostMemUsedLbl').html(mInfo);
+	}
+	
+
+	// Refresh button
+	$('#vboxHostMemUsed').append(
+			$('<img />').attr({'id':'vboxHostMemUsedBtn','src':'images/vbox/refresh_16px.png','style':'width: 14px; height: 14px; vertical-align:top; display: inline; margin:0px;padding:px;'})
+			.mousedown(function(){
+				$(this).css({'margin-left':'1px','margin-top':'1px'});
+			}).mouseup(function(){
+				$(this).css({'margin':'0px'});
+			}).click(function(){
+				if($(this).hasClass('vboxDisabled')) return;
+				$(this).addClass('vboxDisabled');
+				$('#vboxHostMemUsedLbl').html('...');
+				var btn = this;
+				vboxAjaxRequest('getHostMeminfo',{},function(d){
+					vboxHostShowMemInfo(d.memoryAvailable);
+					$(btn).removeClass('vboxDisabled');
+				});
+			}).trigger('click')
+	);
+	
+	// Show Table
 	$('#vboxHostDetails').show();
+	
+
 }
 
 

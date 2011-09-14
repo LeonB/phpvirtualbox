@@ -38,6 +38,11 @@ div.vboxMenuBar { padding-left: 4px; }
 input.vboxRadio, input.vboxCheckbox { padding: 0px; margin: 1px 1px 3px 2px; display: inline }
 #vboxIndex th, div.vboxDialogContent th { white-space: nowrap; }
 #vboxIndex .vboxDisabled, div.vboxDialogContent .vboxDisabled { color: #999; cursor: default; }
+#vboxIndex img.vboxDisabled {
+	opacity: .5;
+	filter:alpha(opacity=50);
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+}	
 #vboxIndex a, div.vboxDialogContent a,
 	#vboxIndex a:visited, div.vboxDialogContent a:visited { text-decoration: none; }
 #vboxIndex hr, div.vboxDialogContent hr { padding: 1px; margin: 0px; border: 0px; }

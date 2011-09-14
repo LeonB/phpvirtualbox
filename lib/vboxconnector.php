@@ -2255,6 +2255,21 @@ class vboxconnector {
 	}
 
 	/*
+	 * Host memory usage info
+	 */
+	public function getHostMeminfo($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->__vboxwebsrvConnect();
+
+		$response['data'] = array(
+			'memoryAvailable' => $this->vbox->host->memoryAvailable
+		);
+		
+		return true;
+	}
+	
+	/*
 	 *  Array containing details about the VirtualBox host.
 	 */
 	private function getHostDetailsCached($args,&$response) {
