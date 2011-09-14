@@ -77,6 +77,7 @@ function vboxVMList(anchorid) {
 	this.contextMenuItems = null;
 	this.contextMenuObj = null;
 	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
+	this.minimal = $('#vboxIndex').data('vboxConfig').vmListMinimal;
 	this.tip = trans('<nobr>%1<br></nobr><nobr>%2 since %3</nobr><br><nobr>Session %4</nobr>','UIVMListView');
 
 	
@@ -265,6 +266,7 @@ function vboxVMList(anchorid) {
 			if(e.pageX !== undefined && $('#vboxIndex').data('selectedVM') && $('#vboxIndex').data('selectedVM')['id'] == vmn.id) return;
 			
 			$('#vboxIndex').data({'selectedVM':vmn}).trigger('vmselect',[vmn]);
+			
 		}).hover(function(){if(self.dragging)return;$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');}).data('vmid',vmn.id);
 
 		var tr = $('<tr />');
@@ -282,6 +284,7 @@ function vboxVMList(anchorid) {
 		
 		// Host can have HTML in name
 		if(vmn.id == 'host') {
+			
 			// Check for multiple server config
 			if($('#vboxIndex').data('vboxConfig').servers.length) {
 				var span = $('<span />').attr({'class':'vboxServerLink'}).text('('+$('#vboxIndex').data('vboxConfig').name+')').contextMenu({
@@ -334,6 +337,22 @@ function vboxVMList(anchorid) {
 		}
 		
 		$(tr).append(td).appendTo(tbl);
+		
+		// Special case for minimal vms in VM list
+		if(self.minimal && vmn.id != 'host') {
+			
+			// This just contains the os img
+			var cld = $(tbl).find('td').first().remove().children().first();
+			
+			// title
+			var ttl = $(tbl).find('td.vboxVMTitle').first().remove().html();
+			
+			// State icon
+			var si = $(tbl).find('img').first();
+			
+			$(tbl).empty().addClass('vboxVMListMinimal').append($('<tr />').append($('<td />').append(cld).append(si).append(ttl)));
+			
+		}
 		
 		// Context menu?
 		if(self.contextMenuObj) {
@@ -418,7 +437,14 @@ function vboxVMList(anchorid) {
 			$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 			self.stop();
 			
-		}).bind('hostChanged',function(){self.start();});
+		}).bind('hostChanged',function(){
+
+			// These may change based on host configuration
+			self.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
+			self.minimal = $('#vboxIndex').data('vboxConfig').vmListMinimal;
+
+			self.start();
+		});
 		
 		// Sort functions
 		switch($('#vboxIndex').data('vboxConfig').vmListSort) {
@@ -547,7 +573,7 @@ function vboxVMList(anchorid) {
 	/*
 	 * Start VM list update
 	 */ 
-	self.start = function() {
+	self.start = function(noinit) {
 		
 		// already started
 		if(self._running) return;
@@ -557,7 +583,11 @@ function vboxVMList(anchorid) {
 				self.updateList(d);
 			});			
 		}
-		cb();
+		
+		// noinit is passed by refresh() since it just
+		// updated the list we don't need to immediately
+		// refresh it again
+		if(!noinit) cb();
 		
 		self._running = window.setInterval(cb,self.interval*1000);
 		
@@ -583,13 +613,18 @@ function vboxVMList(anchorid) {
 	 */
 	self.refresh = function() {
 		
+		// Stop refresh interval
 		if(self._running)
 			window.clearInterval(self._running);
 		
+		// If we happen to get data in the background,
+		// ignore it because the update we're about to
+		// perform will be more authoritative. See updateList()
+		self._running = null;
+		
 		dataMediator.get('VMs',null,function(d) {
+			self.start(true);
 			self.updateList(d);
-			self._running = null;
-			self.start();
 		});
 		
 	}

@@ -57,17 +57,51 @@ var vboxVMActions = {
 			// Disable toolbar button that triggered this action?
 			if(btn && btn.toolbar) btn.toolbar.disableButton(btn);
 			
-			vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
-				// check for progress operation
-				if(d && d.progress) {
-					var icon = null;
-					if($('#vboxIndex').data('selectedVM').state == 'Saved') icon = 'progress_state_restore_90px.png';
-					else icon = 'progress_start_90px.png';
-					vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
-					return;
+			var startVM = function () {
+				
+				vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+					// check for progress operation
+					if(d && d.progress) {
+						var icon = null;
+						if($('#vboxIndex').data('selectedVM').state == 'Saved') icon = 'progress_state_restore_90px.png';
+						else icon = 'progress_start_90px.png';
+						vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistrefresh');},{},icon);
+						return;
+					}
+					$('#vboxIndex').trigger('vmlistrefresh');
+				});
+			}
+			
+			// Check for memory limit
+			// Paused VMs are already using all their memory
+			if($('#vboxIndex').data('vboxConfig').vmMemoryStartLimitWarn && $('#vboxIndex').data('selectedVM').state != 'Paused') {
+				
+				var freeMem = 0;
+				var baseMem = 0;
+				
+				var l = new vboxLoader();
+				l.add('HostMeminfo',function(d){freeMem = d.memoryAvailable;});
+				l.add('VMDetails',function(d){baseMem = d.memorySize + d.VRAMSize;},{'vm':$('#vboxIndex').data('selectedVM').id});
+				l.onLoad = function() {
+					if($('#vboxIndex').data('vboxConfig').vmMemoryOffset) freeMem -= $('#vboxIndex').data('vboxConfig').vmMemoryOffset;
+					if(baseMem >= freeMem) {
+						var buttons = {};
+						buttons[trans('Yes','QIMessageBox')] = function(){
+							$(this).remove();
+							startVM();
+						}
+						freeMem = Math.max(0,freeMem);
+						vboxConfirm('The selected virtual machine (<b>'+$('#vboxIndex').data('selectedVM').name+'</b>) requires ' + baseMem +'MB of memory, but your VirtualBox host only has ' + freeMem + 'MB '+($('#vboxIndex').data('vboxConfig').vmMemoryOffset ? ' (-'+$('#vboxIndex').data('vboxConfig').vmMemoryOffset+'MB)': '') + ' free. Are you sure you want to start the virtual machine?',buttons,trans('No','QIMessageBox'));
+					} else {
+						startVM();
+					}
 				}
-				$('#vboxIndex').trigger('vmlistrefresh');
-			});
+				l.run();
+				
+			} else {
+				startVM();
+			}
+			
 			
 		},
 		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Paused','Saved','Aborted','Teleported']) > -1));}	

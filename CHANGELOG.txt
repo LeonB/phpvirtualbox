@@ -61,6 +61,14 @@ selected in the VM list. See associated hostMemInfoRefreshInterval
 option in config.php-example.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=402
 
+Added $vmListMinimal config option and associated code. See
+config.php-example.
+
+Added $vmMemoryStartLimitWarn and associated logic to emit a
+warning when starting a virtual machine would use more memory
+than the host has free.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=291
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------

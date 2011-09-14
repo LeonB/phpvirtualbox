@@ -443,6 +443,9 @@ ul.vboxMenuBar li {
 #vboxPaneVMList img.vboxHostIcon { border: 1px solid #999; }
 #vboxPaneVMList img.vboxVMIcon { height: 32px; width: 32px; margin: 4px; margin-left: 6px; }
 
+/* Minimal sizes */
+#vboxVMList table.vboxVMListMinimal img { height: 16px; width: 16px; padding: 0px; margin: 2px; margin-left: 2px; }
+
 /* Toolbar above vm list */
 #vboxPaneToolbar { float: left; }
 #vboxPaneToolbar table td { margin-right: 10px; }
@@ -525,6 +528,9 @@ div.vboxPreviewSaved img {
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";
 	
 }
+
+/* Host mem used */
+#vboxHostMemUsed span { padding-left: 2px; padding-right: 2px; padding-top: 0px; padding-bottom: 0px; margin: 0px; }
 
 /* Description tab */
 #vboxTabVMDescription input { margin: 8px; }
