@@ -16,8 +16,8 @@
  */
 
 // Top menu
-var topMenu = new vboxMenuBar('vboxTop');
-topMenu.context = 'VBoxSelectorWnd';
+var vboxTopMenuBar = new vboxMenuBar('vboxTop');
+vboxTopMenuBar.context = 'VBoxSelectorWnd';
 
 var menu = {
 	'name':'vboxTopFile',
@@ -151,7 +151,7 @@ if($('#vboxIndex').data('vboxSession').user) {
 	
 }
 	
-topMenu.addMenu(menu);
+vboxTopMenuBar.addMenu(menu);
 
 var menu = {
 	'name':'vboxTopMachine',
@@ -168,7 +168,7 @@ var menu = {
 	]
 };
 	
-topMenu.addMenu(menu);
+vboxTopMenuBar.addMenu(menu);
 
 var menu = {
 	'name':'vboxTopHelp',
@@ -209,10 +209,10 @@ var menu = {
         
     ]
 };
-topMenu.addMenu(menu);
+vboxTopMenuBar.addMenu(menu);
 
-topMenu.addMenuBar('vboxMenu');
-$('#vboxIndex').bind('vmselect',topMenu.update);
+vboxTopMenuBar.addMenuBar('vboxMenu');
+$('#vboxIndex').bind('vmselect',vboxTopMenuBar.update);
 
 
 </script>

@@ -161,6 +161,34 @@
 				l.run();
 			});
 			
+			
+			// VM list context menu
+			var vboxVMListPaneMenu = new vboxMenu('vboxVMListPaneMenu');
+			vboxVMListPaneMenu.context = 'VBoxSelectorWnd';
+			vboxVMListPaneMenu.addMenu([
+				$.extend({},vboxVMActions['new'],{'name':'new'}),
+			    $.extend({},vboxVMActions['add'],{'name':'add'}),
+                {
+        			'name':'fileImport',
+        			'label':'Import Appliance...',
+        			'icon':'import',
+        			'click':function(){vboxWizardImportApplianceInit();},
+        			'separator': true
+                },
+                {
+        			'name':'fileExport',
+        			'label':'Export Appliance...',
+        			'icon':'export',
+        			'click':function(){vboxWizardExportApplianceInit();}
+                }
+			 ]);
+
+			$("#vboxPaneVMList").contextMenu({
+			  		menu: vboxVMListPaneMenu.menuId()
+			  	},
+			  	vboxVMListPaneMenu.menuClickCallback
+			);
+
 			// Load panes and data after login
 			///////////////////////////////////
 			$('#vboxIndex').bind('login', function() {

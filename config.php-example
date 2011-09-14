@@ -109,8 +109,9 @@ var $hostMemInfoRefreshInterval = 5;
  * 
  * If $vmMemoryStartLimitWarn is enabled, each time a VM is started through
  * phpVirtualBox, it will check that the available host memory is greater than
- * the base and video memory of the VM. If it is not, a confirmation dialog
- * will be presented to confirm that you want to start the VM.
+ * the base and video memory of the VM + 50MB (a little bit of overhead). If it
+ * is not, a confirmation dialog will be presented to confirm that you want to
+ * start the VM.
  *
  * If $vmMemoryOffset is set (and $vmMemoryStartLimitWarn), $vmMemoryOffset
  * megabytes is subtracted from the available host memory before the check is

@@ -69,6 +69,8 @@ warning when starting a virtual machine would use more memory
 than the host has free.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=291
 
+Added context menu to VM list.
+
 -------------------------------------
 	4.1-2	2011-8-21
 -------------------------------------

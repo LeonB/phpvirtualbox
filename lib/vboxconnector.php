@@ -1334,7 +1334,7 @@ class vboxconnector {
 
 		$m->releaseRemote();
 
-		$this->cache->expire(array('getVMs','getMedia'));
+		$this->cache->expire(array('getVMs','getMedia','getHostNetworking'));
 
 		return ($response['data']['result'] = 1);
 
@@ -1656,7 +1656,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->__storeProgress($progress,array('getMedia','getVMs'));
+		$this->__storeProgress($progress,array('getMedia','getVMs','getHostNetworking'));
 
 		$response['data']['progress'] = $progress->handle;
 
@@ -2551,24 +2551,6 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 *
-	 * Register a VM from its settings file
-	 *
-	 */
-	public function registerVM($args,&$response) {
-
-		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
-
-		$vm = $this->vbox->openMachine($args['file']);
-		$this->vbox->registerMachine($vm->handle);
-
-		$vm->releaseRemote();
-
-		return ($response['data']['result'] = 1);
-
-	}
 
 	/*
 	 *
@@ -2583,21 +2565,13 @@ class vboxconnector {
 		$machine = $this->vbox->findMachine($args['vm']);
 
 		$cache = array('__consoleInfo'.$args['vm'],'__getMachine'.$args['vm'],'__getNetworkAdapters'.$args['vm'],'__getStorageControllers'.$args['vm'], 'getVMs',
-			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMedia','__getSerialPorts'.$args['vm'],'__getParallelPorts'.$args['vm']);
+			'__getSharedFolders'.$args['vm'],'__getUSBController'.$args['vm'],'getMedia','__getSerialPorts'.$args['vm'],'__getParallelPorts'.$args['vm'],'getHostNetworking');
 
 		// Only unregister or delete?
 		if(!$args['delete']) {
 
 			$machine->unregister('Full');
-
-			// Clear caches
-			foreach($cache as $ex) {
-				$this->cache->expire($ex);
-			}
-
 			$machine->releaseRemote();
-
-			return ($response['data']['result'] = 1);
 
 		} else {
 
@@ -2625,13 +2599,19 @@ class vboxconnector {
 				$this->__storeProgress($progress,$cache);
 
 				$response['data']['progress'] = $progress->handle;
+				
+				// return here. we got a progress operation
+				return true;
 
 			}
 
-			return ($response['data']['result'] = 1);
 
 		}
 
+		// expire cache items
+		$this->cache->expire($cache);
+		
+		return ($response['data']['result'] = 1);
 
 
 	}

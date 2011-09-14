@@ -1194,7 +1194,8 @@ function __vboxDisplayHostDetailsData(data) {
 	$(vboxDetailsTable).append(__vboxDetailHeader("machine_16px.png",trans("General"),null,null,true));
 	if($('#vboxIndex').data('vboxConfig').servers.length) $(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), $('#vboxIndex').data('vboxConfig').name));	
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("OS Type"), data['operatingSystem'] + ' (' + data['OSVersion'] +')')).append(__vboxDetailRow("VirtualBox", $('#vboxIndex').data('vboxConfig').version.string+' ('+$('#vboxIndex').data('vboxConfig').version.revision+')'))
-		.append(__vboxDetailRow(trans("Base Memory"), '<span id="vboxHostMemUsed"></span>'))
+		.append(__vboxDetailRow(trans("Base Memory"),trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize'])))
+		.append(__vboxDetailRow('', '<span id="vboxHostMemUsed"></span>'))
 		.append(__vboxDetailRow(trans("Processors",'UIDetailsPagePrivate'), data['cpus'][0] + ' (' + data['cpus'].length +')'));
 	
 	// Processor features?
@@ -1282,7 +1283,7 @@ function __vboxDisplayHostDetailsData(data) {
 	}	
 	
 	// Append memory used indicator
-	$('#vboxHostMemUsed').append('<div style="background-color:#3a3;width:200px;height:14px;overflow:hidden;margin:0px;padding:0px;display:inline-block;height:14px;"><div style="background-color:#a33;margin:0px;padding:0px;width:1px;top:0px;left:0px;z-index:1;height:14px;" id="vboxHostMemUsedPct"></div><div style="background-color:transparent;margin:0px;padding:0px;width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;height:14px;color:#ffffff;"><span id="vboxHostMemUsedLblPct" style="float:left" /><span id="vboxHostMemUsedLblPctD" /><span id="vboxHostMemFreeLbl" style="float:right" /></div></div>&nbsp;&nbsp;');
+	$('#vboxHostMemUsed').append('<div style="border: 1px solid #aaaaaa;border-radius: 4px;-moz-border-radius: 4px;background-color:#3a3;width:200px;height:14px;overflow:hidden;margin:0px;padding:0px;display:inline-block;height:14px;"><div style="background-color:#a33;margin:0px;padding:0px;width:1px;top:0px;left:0px;z-index:1;height:14px;" id="vboxHostMemUsedPct"></div><div style="background-color:transparent;margin:0px;padding:0px;width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;height:14px;color:#ffffff;"><span id="vboxHostMemUsedLblPct" style="float:left" /><span id="vboxHostMemUsedLblPctD" /><span id="vboxHostMemFreeLbl" style="float:right" /></div></div>&nbsp;&nbsp;');
 
 	// Memory used function
 	var vboxHostShowMemInfo = function(avail) {

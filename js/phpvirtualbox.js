@@ -84,6 +84,8 @@ var vboxVMActions = {
 				l.add('VMDetails',function(d){baseMem = d.memorySize + d.VRAMSize;},{'vm':$('#vboxIndex').data('selectedVM').id});
 				l.onLoad = function() {
 					if($('#vboxIndex').data('vboxConfig').vmMemoryOffset) freeMem -= $('#vboxIndex').data('vboxConfig').vmMemoryOffset;
+					// A little bit of overhead
+					baseMem += 50;
 					if(baseMem >= freeMem) {
 						var buttons = {};
 						buttons[trans('Yes','QIMessageBox')] = function(){
@@ -91,7 +93,7 @@ var vboxVMActions = {
 							startVM();
 						}
 						freeMem = Math.max(0,freeMem);
-						vboxConfirm('The selected virtual machine (<b>'+$('#vboxIndex').data('selectedVM').name+'</b>) requires ' + baseMem +'MB of memory, but your VirtualBox host only has ' + freeMem + 'MB '+($('#vboxIndex').data('vboxConfig').vmMemoryOffset ? ' (-'+$('#vboxIndex').data('vboxConfig').vmMemoryOffset+'MB)': '') + ' free. Are you sure you want to start the virtual machine?',buttons,trans('No','QIMessageBox'));
+						vboxConfirm('<p>The selected virtual machine (<b>'+$('#vboxIndex').data('selectedVM').name+'</b>) requires <b><i>approximately</b></i> ' + baseMem +'MB of memory, but your VirtualBox host only has ' + freeMem + 'MB '+($('#vboxIndex').data('vboxConfig').vmMemoryOffset ? ' (-'+$('#vboxIndex').data('vboxConfig').vmMemoryOffset+'MB)': '') + ' free.</p><p>Are you sure you want to start the virtual machine?</p>',buttons,trans('No','QIMessageBox'));
 					} else {
 						startVM();
 					}
