@@ -2985,45 +2985,6 @@ class vboxconnector {
 			)
 		);
 
-		$vals = $n->getProperties(array(
-			'adapterType',
-			'slot',
-			'cableConnected',
-			'enabled',
-			'MACAddress',
-			'attachmentType',
-			'genericDriver',
-			'hostOnlyInterface',
-			'bridgedInterface',
-			'internalNetwork',
-			'NATNetwork',
-			'promiscModePolicy',
-			'VDENetwork',
-			'natDriver'
-		));
-		$return = array();
-		for($i = 0; $i < count($vals[1]); $i++) {
-			$return[$vals[1][$i]] = $vals[0][$i];
-		}
-
-		/* cableConnected property is incorrect from getProperties */
-		$return['cableConnected'] = $n->cableConnected;
-
-		/* NAT "stuff" */
-		if($return['attachmentType'] == 'NAT') {
-			$nd = $n->natDriver;
-			$return['natDriver'] = array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver), 'hostIP' => $nd->hostIP);
-			$return['redirects'] = $nd->getRedirects();
-		} else {
-			$return['natDriver'] = array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0, 'hostIP' => '');
-			$return['redirects'] = array();
-		}
-
-		$return['enabled'] = intval($return['enabled']);
-		$return['cableConnected'] = intval($return['cableConnected']);
-
-
-		return $return;
 
 	}
 	/*

@@ -157,6 +157,8 @@ var $authLib = 'Builtin';
 
 
 // Allow VDE network configuration. This must be supported by the underlying VirtualBox installation!
+// If you do not know what VDE networking is - you do not need it, it is probably not supported by your
+// VirtualBox installation and will cause errors if enabled.
 #var $enableVDE = true; 
 
 // Disable setting SATA controllers port count to the max port number found when saving VMs.
