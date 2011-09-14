@@ -1282,7 +1282,7 @@ function __vboxDisplayHostDetailsData(data) {
 	}	
 	
 	// Append memory used indicator
-	$('#vboxHostMemUsed').append('<div style="background-color:#3a3;width:200px;height:14px;overflow:hidden;margin:0px;padding:0px;display:inline-block;height:14px;"><div style="background-color:#a33;margin:0px;padding:0px;width:1px;top:0px;left:0px;z-index:1;height:14px;" id="vboxHostMemUsedPct"></div><div style="background-color:transparent;margin:0px;padding:0px;width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;height:14px;color:#ffffff;"><span id="vboxHostMemUsedLbl" style="float:left" /><span id="vboxHostMemUsedLblPct" /><span id="vboxHostMemFreeLbl" style="float:right" /></div></div>&nbsp;&nbsp;');
+	$('#vboxHostMemUsed').append('<div style="background-color:#3a3;width:200px;height:14px;overflow:hidden;margin:0px;padding:0px;display:inline-block;height:14px;"><div style="background-color:#a33;margin:0px;padding:0px;width:1px;top:0px;left:0px;z-index:1;height:14px;" id="vboxHostMemUsedPct"></div><div style="background-color:transparent;margin:0px;padding:0px;width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;height:14px;color:#ffffff;"><span id="vboxHostMemUsedLblPct" style="float:left" /><span id="vboxHostMemUsedLblPctD" /><span id="vboxHostMemFreeLbl" style="float:right" /></div></div>&nbsp;&nbsp;');
 
 	// Memory used function
 	var vboxHostShowMemInfo = function(avail) {
@@ -1293,9 +1293,7 @@ function __vboxDisplayHostDetailsData(data) {
 		
 		// Width
 		$('#vboxHostMemUsedPct').css({'width':(mUsedPct*2)+'px'});
-		
-		$('#vboxHostMemUsedLbl').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed));
-		$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1%</nobr>').replace('%1',mUsedPct));
+		$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed) + ' ('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+')');
 		$('#vboxHostMemFreeLbl').html(trans('<nobr>%1 MB</nobr>').replace('%1',avail));
 	}
 	
