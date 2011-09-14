@@ -97,6 +97,12 @@ var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.h
 /*
  * Misc
  */
+ 
+/*
+ * Auto-refresh interval in seconds for VirtualBox host memory usage information.
+ * Any value below 3 will be ignored.
+ */
+var $hostMemInfoRefreshInterval = 5;
 
 /* Enable Firefox's "App Tab" notification support by changing the browser's title
  * when something in phpVirtualBox's VM list changes or an alert is triggered.

@@ -387,7 +387,8 @@ function vboxVMList(anchorid) {
 
 	/*
 	 *
-	 * Main run() function
+	 * Main run() function. Should only be called once. Though
+	 * stop() and start() can be called many times.
 	 *
 	 */
 	self.run = function() {
@@ -537,31 +538,59 @@ function vboxVMList(anchorid) {
 		// Disable dragging selection
 		$('#'+self.anchorid).disableSelection();
 		
+		
 		self.start();
 
 	}
 	
+	
+	/*
+	 * Start VM list update
+	 */ 
 	self.start = function() {
 		
-		self.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
+		// already started
+		if(self._running) return;
 		
-		self.refresh();
+		var cb = function() {
+			dataMediator.get('VMs',null,function(d) {
+				self.updateList(d);
+			});			
+		}
+		cb();
+		
+		self._running = window.setInterval(cb,self.interval*1000);
+		
 		
 	}
 	
+	/*
+	 * Stop VM list updates and clear list
+	 */
 	self.stop = function() {
 		if(!self._running) return;
+		window.clearInterval(self._running);
 		self._running = null;
 		self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 		self.vms = self.selected = null;
-		window.clearInterval(self._running);
 		$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
 	}
 	
+	
+	/* Force an imediate background refresh. Called when a VM
+	 * attribute change is expected and we want it to show up
+	 * asap.
+	 */
 	self.refresh = function() {
-		window.clearInterval(self._running);
-		dataMediator.get('VMs',null,self.updateList);
-		self._running = window.setInterval(self.refresh,self.interval*1000);
+		
+		if(self._running)
+			window.clearInterval(self._running);
+		
+		dataMediator.get('VMs',null,function(d) {
+			self.updateList(d);
+			self._running = null;
+			self.start();
+		});
 		
 	}
 

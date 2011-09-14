@@ -244,10 +244,15 @@ $('#vboxDetailsLoading').find('span.translate').html(trans('Loading ...','UIVMDe
 /////////////////////////////
 $('#vboxIndex').bind('vmloading',function(){
 
-	// Clear timer if it is set
+	// Clear timers if  set
 	if($('#vboxVMDetails').data('vboxPreviewTimer')) {
 		window.clearTimeout($('#vboxVMDetails').data('vboxPreviewTimer'));
 		$('#vboxVMDetails').data('vboxPreviewTimer', null);
+	}
+	
+	if($('#vboxVMDetails').data('vboxHostMemInfoTimer')) {
+		window.clearTimeout($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
+		$('#vboxVMDetails').data('vboxHostMemInfoTimer', null);		
 	}
 
 	// Hide any menus that may be showing on this pane
@@ -1290,25 +1295,22 @@ function __vboxDisplayHostDetailsData(data) {
 		$('#vboxHostMemUsedLbl').html(mInfo);
 	}
 	
+	// Refresh at configured intervals
+	try {
+		var interval = Math.max(3,parseInt($('#vboxIndex').data('vboxConfig').hostMemInfoRefreshInterval));
+	} catch (e) {
+		var interval = 5;
+	}
+	
+	var vboxHostUpdateMeminfo = function() {
+		vboxAjaxRequest('getHostMeminfo',{},function(d){
+			vboxHostShowMemInfo(d.memoryAvailable);		
+		});
+	}
+	vboxHostUpdateMeminfo();
+	
+	$('#vboxVMDetails').data('vboxHostMemInfoTimer',window.setInterval(vboxHostUpdateMeminfo,interval*1000));
 
-	// Refresh button
-	$('#vboxHostMemUsed').append(
-			$('<img />').attr({'id':'vboxHostMemUsedBtn','src':'images/vbox/refresh_16px.png','style':'width: 14px; height: 14px; vertical-align:top; display: inline; margin:0px;padding:px;'})
-			.mousedown(function(){
-				$(this).css({'margin-left':'1px','margin-top':'1px'});
-			}).mouseup(function(){
-				$(this).css({'margin':'0px'});
-			}).click(function(){
-				if($(this).hasClass('vboxDisabled')) return;
-				$(this).addClass('vboxDisabled');
-				$('#vboxHostMemUsedLbl').html('...');
-				var btn = this;
-				vboxAjaxRequest('getHostMeminfo',{},function(d){
-					vboxHostShowMemInfo(d.memoryAvailable);
-					$(btn).removeClass('vboxDisabled');
-				});
-			}).trigger('click')
-	);
 	
 	// Show Table
 	$('#vboxHostDetails').show();

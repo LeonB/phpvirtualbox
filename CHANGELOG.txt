@@ -57,7 +57,8 @@ not exist - causing 404 errors in web server logs.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=396
 
 Added host memory usage information when the VirtualBox host is
-selected in the VM list.
+selected in the VM list. See associated hostMemInfoRefreshInterval
+option in config.php-example.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=402
 
 -------------------------------------
