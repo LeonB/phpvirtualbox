@@ -24,7 +24,8 @@
 // Create VM list
 vboxVMList = new vboxVMList('vboxVMList');
 vboxVMList.interval = ($('#vboxIndex').data('vboxConfig').listUpdateInterval ? $('#vboxIndex').data('vboxConfig').listUpdateInterval : 5);
-
+// Failsafe
+if(isNaN(vboxVMList.interval)) vboxVMList.interval = 5;
 
 // VM List Context menu for each VM
 var sChildren = [];

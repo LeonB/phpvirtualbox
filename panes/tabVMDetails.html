@@ -277,6 +277,12 @@ $('#vboxIndex').bind('vmloading',function(){
 	// Hide all tab children first
 	$('#vboxTabVMDetails').children().hide();
 	
+	if($('#vboxVMDetails').data('vboxHostMemInfoTimer')) {
+		window.clearTimeout($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
+		$('#vboxVMDetails').data('vboxHostMemInfoTimer', null);		
+	}
+	
+	
 	// vboxTabVMDetails
 	if(vm && vm.id) {
 		
@@ -1187,6 +1193,11 @@ function __vboxDisplayHostDetailsData(data) {
 	// clear progress bar or existing data
 	$('#vboxHostDetails').html('');
 	
+	if($('#vboxVMDetails').data('vboxHostMemInfoTimer')) {
+		window.clearTimeout($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
+		$('#vboxVMDetails').data('vboxHostMemInfoTimer',null);
+	}
+	
 	// Details Table
 	var vboxDetailsTable = $('<table />').attr({'class':'vboxDetailsTable vboxDetailsTableBox ui-corner-all'});
 
@@ -1311,6 +1322,9 @@ function __vboxDisplayHostDetailsData(data) {
 		});
 	}
 	vboxHostUpdateMeminfo();
+	
+	// Failsafe
+	if(isNaN(interval) || interval < 3) interval = 5;
 	
 	$('#vboxVMDetails').data('vboxHostMemInfoTimer',window.setInterval(vboxHostUpdateMeminfo,interval*1000));
 
