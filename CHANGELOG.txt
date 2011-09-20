@@ -1,5 +1,5 @@
 -------------------------------------
-	4.1-3	
+	4.1-3	2011-9-20
 -------------------------------------
 Added Polish translation.
 
@@ -70,6 +70,11 @@ than the host has available.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=291
 
 Added context menu to VM list.
+
+A list of drives is now displayed when browsing for a file or
+folder when Windows is detected. This can be turned off if desired
+using the $noWindowsDriveList configuration option in config.php.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=388
 
 -------------------------------------
 	4.1-2	2011-8-21

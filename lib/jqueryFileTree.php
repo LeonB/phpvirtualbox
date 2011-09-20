@@ -44,21 +44,49 @@ $settings = new phpVBoxConfigClass();
 $vbox = new vboxconnector();
 $vbox->connect();
 
-
-$allowed = $settings->browserRestrictFiles;
-if(is_array($allowed) && $allowed[0]) $allowed = array_combine($allowed,$allowed);
-else $allowed = array();
-
-$folders = $settings->browserRestrictFolders;
-if(is_array($folders) && $folders[0]) $folders = array_combine($folders,$folders);
-else $folders = array();
-
-
 /*
  * Clean request
  */
 global $vboxRequest;
 $vboxRequest = clean_request();
+
+$allowed = $settings->browserRestrictFiles;
+if(is_array($allowed) && count($allowed) > 0) $allowed = array_combine($allowed,$allowed);
+else $allowed = array();
+
+
+/* Get list of "allowed" folders from wmic? */
+$folders = $settings->browserRestrictFolders;
+if($vboxRequest['fullpath'] && !$settings->forceWindowsAllDriveList && !$settings->noWindowsDriveList && (!$folders || !is_array($folders) || !count($folders)) && stripos(PHP_OS,'win') === 0 &&  stripos($vbox->vbox->host->operatingSystem,'win') === 0) {
+
+    exec("wmic logicaldisk get caption", $out);
+    if(is_array($out) && count($out) > 2) {
+    	
+    	$folders = array();
+    	
+	    // Shift off header
+	    array_shift($out);
+	    
+	    // Shift off footer
+	    array_pop($out);
+	    
+	    // These are now restricted folders
+	    foreach ($out as $val) {
+	        $folders[] = $val . '\\';
+	    }
+    }
+
+/* Just show all letters if vboxhost is windows and our web server is not... */
+} else if($vboxRequest['fullpath'] && ($settings->forceWindowsAllDriveList || (!$settings->noWindowsDriveList && (!$folders || !is_array($folders) || !count($folders)) && stripos(PHP_OS,'win') === false && stripos($vbox->vbox->host->operatingSystem,'win') === 0))) {
+	$folders = array();
+    for($i = 67; $i < 91; $i++) {
+    	$folders[] = chr($i) .':\\';
+    }
+}
+if(is_array($folders) && count($folders) > 0) $folders = array_combine($folders,$folders);
+else $folders = array();
+
+
 
 $localbrowser = @$settings->browserLocal;
 
@@ -96,6 +124,9 @@ if($vboxRequest['dir'] == DSEP && count($folders)) {
 	foreach($folders as $f) folder_folder($f,true);
 	folder_end();
 	return;
+} else {
+	// Eliminate duplicate DSEPs
+	$vboxRequest['dir'] = str_replace(DSEP.DSEP,DSEP,$vboxRequest['dir']);
 }
 
 /* Full, expanded path to $dir */
@@ -106,8 +137,7 @@ if($vboxRequest['fullpath']) {
 		foreach($folders as $f) {
 			if((strtoupper($dir) != strtoupper($f)) && strpos(strtoupper($dir),strtoupper($f)) === 0) {
 				folder_folder($f,true,true);
-				$path = substr($dir,strlen($f)+1);
-				$path = preg_split('/'.preg_quote(DSEP,'/').'/',$path);
+				$path = explode(DSEP,substr($dir,strlen($f)));
 				printdir($f,$path);
 			} else {
 				folder_folder($f,true);
@@ -116,7 +146,7 @@ if($vboxRequest['fullpath']) {
 		folder_end();
 	} else {
 
-		$dir = preg_split('/'.preg_quote(DSEP,'/').'/',$dir);
+		$dir = explode(DSEP,$dir);
 		$root = array_shift($dir).DSEP;
 		folder_folder($root,true,true);
 		printdir($root,$dir);

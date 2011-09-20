@@ -94,6 +94,13 @@ var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.h
 // Disable file / folder browser.
 #var $browserDisable = true;
 
+// Disable Windows drive detection
+#var $noWindowsDriveList = true;
+
+// Just list all drives from C:\ - Z:\ without checking if they exist or not.
+// This may be required on older Windows systems with more than one drive.
+#var $forceWindowsAllDriveList = true;
+
 /*
  * Misc
  */

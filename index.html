@@ -68,6 +68,19 @@
 			
 			// Check that PHP is being parsed.
 			if(__vboxPHP === false) {
+				
+				// Check for file: prefix
+				try {
+					if(window.location.toString().search('file:') == 0) {
+						vboxAlert("You are accessing phpVirtualBox from your local filesystem.\
+								phpVirtualBox must be accessed through your web browser. E.g. \
+								http://localhost/phpVirtualBox (its actual URL may vary).");
+						return;
+					}
+				} catch(err) {
+					// noop
+				}			
+				
 				vboxAlert("PHP is not being parsed by your web server. Make sure that \
 						  PHP is installed.<p>Unable to continue.</p><i>Note: you may also see this \
 						  message if you have opened index.html in your web browser directly rather than \
