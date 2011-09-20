@@ -1305,8 +1305,16 @@ function __vboxDisplayHostDetailsData(data) {
 		
 		// Width
 		$('#vboxHostMemUsedPct').css({'width':(mUsedPct*2)+'px'});
-		$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed) + ' ('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+')');
-		$('#vboxHostMemFreeLbl').html(trans('<nobr>%1 MB</nobr>').replace('%1',avail));
+		
+		// Labels
+		if(!$('#vboxIndex').data('vboxConfig').hostMemInfoShowFreePct) {
+			$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed) + ' ('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+')');
+			$('#vboxHostMemFreeLbl').html(trans('<nobr>%1 MB</nobr>').replace('%1',avail));			
+		} else {
+			mUsedPct = 100-mUsedPct;
+			$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed));
+			$('#vboxHostMemFreeLbl').html('('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+') ' + trans('<nobr>%1 MB</nobr>').replace('%1',avail));
+		}
 	}
 	
 	// Refresh at configured intervals

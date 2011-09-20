@@ -104,6 +104,9 @@ var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.h
  */
 var $hostMemInfoRefreshInterval = 5;
 
+/* Show % of free host memory instead of % used */
+#var $hostMemInfoShowFreePct = true;
+
 /*
  * VM Memory warnings.
  * 
