@@ -1,12 +1,17 @@
 <?php
-/*
+/**
  *
- * All methods are handled in the vboxconnector() __call method.
- * This script simply catches errors and returns json data. This
- * depends on methods' public / private attributes being set correctly.
- *
- * $Id$
- * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * Main ajax interface between JavaScript ajax calls and PHP functions.
+ * Accepts JSON or simple GET requests, and returns JSON data.
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @see vboxconnector
+ * @see vboxAjaxRequest
+ * 
+ * @global array $GLOBALS['response'] resopnse data sent back via json 
+ * @name $response
 */
 
 # Turn off PHP errors
@@ -31,7 +36,6 @@ global $_SESSION;
  */
 $vboxRequest = clean_request();
 
-
 global $response;
 $response = array('data'=>array(),'errors'=>array(),'persist'=>array());
 
@@ -41,6 +45,10 @@ $response = array('data'=>array(),'errors'=>array(),'persist'=>array());
  */
 $vbox = null; // May be set during request handling
 
+/**
+ * Main try / catch. Logic dictated by incoming 'fn' request
+ * parameter.
+ */
 try {
 	
 	/* Check for password recovery file */
@@ -50,7 +58,9 @@ try {
 	
 	switch($vboxRequest['fn']) {
 	
-		/* Return config vars */
+		/**
+		 * Return phpVirtualBox's configuration data
+		 */
 		case 'getConfig':
 			
 			$settings = new phpVBoxConfigClass();
@@ -97,7 +107,9 @@ try {
 		 * USER FUNCTIONS
 		 */
 			
-		/* Login */
+		/**
+		 * Pass login to authentication module.
+		 */
 		case 'login':
 			
 			// NOTE: Do not break. Fall through to 'getSession
@@ -116,7 +128,9 @@ try {
 			
 			
 		
-		/* Get Session Data */
+		/**
+		 * Return $_SESSION data
+		 */
 		case 'getSession':
 			
 			// Session
@@ -132,7 +146,10 @@ try {
 			$response['data']['result'] = 1;
 			break;
 			
-		/* Logout */
+		/**
+		 * Log out of phpVirtualBox. Passed to auth module's
+		 * logout method.
+		 */
 		case 'logout':
 
 			// Session
@@ -142,8 +159,11 @@ try {
 			$settings->auth->logout($response);
 			
 			break;
-		
-		/* Password Change */
+			
+		/**
+		 * Change phpVirtualBox password. Passed to auth module's
+		 * changePassword method.
+		 */
 		case 'changePassword':
 
 			// Session
@@ -157,7 +177,10 @@ try {
 			
 			break;
 		
-		/* Get a list of users */
+		/**
+		 * Get a list of phpVirtualBox users. Passed to auth module's
+		 * getUsers method.
+		 */
 		case 'getUsers':
 
 			// Session
@@ -170,8 +193,11 @@ try {
 			$response['data'] = $settings->auth->listUsers();
 			
 			break;
-	
-		/* remove a user */
+			
+		/**
+		 * Remove a phpVirtualBox user. Passed to auth module's
+		 * deleteUser method.
+		 */
 		case 'delUser':
 
 			// Session
@@ -186,13 +212,19 @@ try {
 			$response['data']['result'] = 1;
 			break;
 			
-		/* edit a User */
+		/**
+		 * Edit a phpVirtualBox user. Passed to auth module's
+		 * updateUser method.
+		 */
 		case 'editUser':
 
 			$skipExistCheck = true;
 			// Fall to addUser
-	
-		/* Add a User */
+
+		/**
+		 * Add a user to phpVirtualBox. Passed to auth module's
+		 * updateUser method.
+		 */
 		case 'addUser':
 	
 			// Session
@@ -207,7 +239,10 @@ try {
 			$response['data']['result'] = 1;
 			break;
 						
-		/* VirtualBox Requests */
+		/**
+		 * If the above cases did not match, assume it is a request
+		 * that should be passed to vboxconnector.
+		 */
 		default:
 	
 			$vbox = new vboxconnector();
@@ -234,7 +269,11 @@ try {
 			}
 			
 	} // </switch()>
-	
+
+/**
+ * Catch all exceptions and populate errors in the
+ * JSON response data.
+ */
 } catch (Exception $e) {
 
 	// Just append to $vbox->errors and let it get
@@ -267,6 +306,10 @@ if($vbox && $vbox->errors) {
 	}
 }
 
+/**
+ * Return response as JSON encoded data or use PHP's
+ * print_r to dump data to browser.
+ */
 if(isset($vboxRequest['printr'])) print_r($response);
 else echo(json_encode($response));
 

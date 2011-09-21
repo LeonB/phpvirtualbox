@@ -530,7 +530,22 @@ div.vboxPreviewSaved img {
 }
 
 /* Host mem used */
-#vboxHostMemUsed span { padding-left: 2px; padding-right: 2px; padding-top: 0px; padding-bottom: 0px; margin: 0px; }
+#vboxHostMemUsed {
+	border: 1px solid #aaaaaa;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	background-color:#3a3;
+	width:200px;
+	height:14px;
+	overflow:hidden;
+	margin:0px;
+	padding:0px;
+	display:inline-block;
+	height:14px;
+}
+#vboxHostMemUsed span { background-color:transparent; padding-left: 2px; padding-right: 2px; padding-top: 0px; padding-bottom: 0px; margin: 0px; color: #ffffff; white-space: nowrap;}
+#vboxHostMemUsed div { padding:0px; margin: 0px; height: 14px; width: 1px; }
+
 
 /* Description tab */
 #vboxTabVMDescription input { margin: 8px; }

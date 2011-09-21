@@ -1,19 +1,21 @@
 <?php
-/*
- * Returns PHP language class
- *
- * The decision to use PHP for language files instead of JS
- * was made in case the PHP back-end needs to inject translated
- * messages into the interface.
- *
- * $Id$
- *
+/**
+ * __vbox_language class and trans() function
+ * 
  */
-
-
-/*
- * Load language file
- */
+/**
+ *
+ * Language class. Parses language file and stores translations in
+ * an array.
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @package __vbox_language
+ * 
+ * @global __vbox_language $GLOBALS['_vbox_language'] global __vbox_language instance
+ * @name $_vbox_language
+*/
 
 global $_vbox_language;
 
@@ -26,6 +28,10 @@ class __vbox_language {
 	
 	var $langdata = array();
 	
+	/**
+	 * 
+	 * Constructor parses language file and stores translations.
+	 */
 	function __vbox_language() {
 		
 		$settings = new phpVBoxConfigClass();
@@ -75,10 +81,23 @@ class __vbox_language {
 		$this->langdata = array_merge_recursive($this->langdata, $lang);
 	}
 	
+	/**
+	 * Translate text.
+	 * @param string $item message to translate
+	 * @param string $context context in which the translation should be performed
+	 */
 	function trans($item,$context='phpVirtualBox') {
 		$t = @$this->langdata['contexts'][$context]['messages'][$item]['translation'];
 		return ($t ? $t : $item);
 	}
+	
+	/**
+	 * 
+	 * Converts objects into array. Called from class constructor.
+	 * @param array|object $arrObjData object or array to convert to array
+	 * @param array $arrSkipIndices array of indices to skip
+	 * @return array 
+	 */
 	function objectsIntoArray($arrObjData, $arrSkipIndices = array())
 	{
 	    $arrData = array();
@@ -104,7 +123,16 @@ class __vbox_language {
 	
 }
 
-function trans($a,$context='phpVirtualBox') {
+/**
+ * 
+ * Translate text. If $GLOBALS['_vbox_language'] is not set, create a new
+ * instance and pass params to its trans() method
+ * @param string $msg message to translate
+ * @param string $context context in which the translation should be performed
+ * @uses $_vbox_language
+ * @return string
+ */
+function trans($msg,$context='phpVirtualBox') {
 	if(!is_object($GLOBALS['_vbox_language'])) $GLOBALS['_vbox_language'] = new __vbox_language();
-	return $GLOBALS['_vbox_language']->trans($a,$context);
+	return $GLOBALS['_vbox_language']->trans($msg,$context);
 }

@@ -1294,26 +1294,42 @@ function __vboxDisplayHostDetailsData(data) {
 	}	
 	
 	// Append memory used indicator
-	$('#vboxHostMemUsed').append('<div style="border: 1px solid #aaaaaa;border-radius: 4px;-moz-border-radius: 4px;background-color:#3a3;width:200px;height:14px;overflow:hidden;margin:0px;padding:0px;display:inline-block;height:14px;"><div style="background-color:#a33;margin:0px;padding:0px;width:1px;top:0px;left:0px;z-index:1;height:14px;" id="vboxHostMemUsedPct"></div><div style="background-color:transparent;margin:0px;padding:0px;width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;height:14px;color:#ffffff;"><span id="vboxHostMemUsedLblPct" style="float:left" /><span id="vboxHostMemUsedLblPctD" /><span id="vboxHostMemFreeLbl" style="float:right" /></div></div>&nbsp;&nbsp;');
+	$('#vboxHostMemUsed').append('<div style="background-color:#a33" id="vboxHostMemUsedPct"><div style="background-color:#a93;float:right;" id="vboxHostMemResPct"></div></div><div style="width:100%;position:relative;top:-14px;left:0px;z-index:2;text-align:center;"><span id="vboxHostMemUsedLblPct" style="float:left" /><span id="vboxHostMemFreeLbl" style="float:right" /></div>');
 
+	var showFree = $('#vboxIndex').data('vboxConfig').hostMemInfoShowFreePct;
+	var memRes = $('#vboxIndex').data('vboxConfig').vmMemoryOffset;
+	if(!memRes || parseInt(memRes) < 1) memRes = 0;
+	
 	// Memory used function
 	var vboxHostShowMemInfo = function(avail) {
 
-		var mUsed = data['memorySize'] - avail;
-		var mInfo = trans('<nobr>%1%</nobr>').replace('%1',parseInt((mUsed / data['memorySize']) * 100)) + ' ('+trans('<nobr>%1 MB</nobr>').replace('%1',avail)+' / '+ trans('<nobr>%1 MB</nobr>').replace('%1',data['memorySize']) +')';
-		var mUsedPct = parseInt((mUsed / data['memorySize']) * 100);
+		// Subtract reserved memory?
+		avail -= memRes;
+		avail = Math.max(0,avail);
 		
-		// Width
-		$('#vboxHostMemUsedPct').css({'width':(mUsedPct*2)+'px'});
+		var mUsed = data['memorySize'] - (avail + memRes);
+		var mUsedPct = Math.round(parseInt((mUsed / data['memorySize']) * 100));
+		if(memRes > 0) {
+			var memResPct = Math.round(parseInt((memRes / data['memorySize']) * 100));
+		} else {
+			var memResPct = 0;
+		}
 		
+		// Width(s)
+		$('#vboxHostMemUsedPct').css({'width':((mUsedPct+memResPct)*2)+'px'});
+		if(memRes > 0) {
+			$('#vboxHostMemResPct').css({'width':''+(memResPct*2)+'px'});
+		} else {
+			$('#vboxHostMemResPct').hide();
+		}
+
 		// Labels
-		if(!$('#vboxIndex').data('vboxConfig').hostMemInfoShowFreePct) {
-			$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed) + ' ('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+')');
+		if(!showFree) {
+			$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',(mUsed)) + ' ('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+')');
 			$('#vboxHostMemFreeLbl').html(trans('<nobr>%1 MB</nobr>').replace('%1',avail));			
 		} else {
-			mUsedPct = 100-mUsedPct;
 			$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed));
-			$('#vboxHostMemFreeLbl').html('('+trans('<nobr>%1%</nobr>').replace('%1',mUsedPct)+') ' + trans('<nobr>%1 MB</nobr>').replace('%1',avail));
+			$('#vboxHostMemFreeLbl').html('('+trans('<nobr>%1%</nobr>').replace('%1',Math.round(parseInt((avail / data['memorySize']) * 100)))+') ' + trans('<nobr>%1 MB</nobr>').replace('%1',avail));
 		}
 	}
 	

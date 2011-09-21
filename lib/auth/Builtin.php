@@ -1,17 +1,41 @@
 <?php
-/*
- * Built-in authentication. Uses vbox->get / set ExtraData
- * $Id$
+/**
+ * 
+ * Built-in authentication module. Uses VirtualBox's set/getExtraData capability
+ * to store / retrieve user credentials. Called from ajax.php when authentication
+ * functions are requested.
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @package phpvbAuthBuiltin
+ * @see vboxconnector
+ * @see ajax.php
  * 
  */
 class phpvbAuthBuiltin {
 	
+	/**
+	 * 
+	 * A list of capabilities describing this authentication module.
+	 * @var array capability values:
+	 * 		@var boolean canChangePassword
+	 * 		@var boolean canModifyUsers
+	 * 		@var boolean canLogout
+	 * 		
+	 */
 	var $capabilities = array(
 			'canChangePassword' => true,
 			'canModifyUsers' => true,
 			'canLogout' => true
 		);
 	
+	/**
+	 * 
+	 * Log in function. Populates $_SESSION
+	 * @param string $username user name
+	 * @param string $password password
+	 */
 	function login($username, $password)
 	{
 		global $_SESSION;
@@ -38,6 +62,13 @@ class phpvbAuthBuiltin {
 		}
 	}
 	
+	/**
+	 * 
+	 * Change password function.
+	 * @param string $old old password
+	 * @param string $new new password
+	 * @param string $response response passed byref by ajax.php and populated within function
+	 */
 	function changePassword($old, $new, &$response)
 	{
 		global $_SESSION;
@@ -55,6 +86,11 @@ class phpvbAuthBuiltin {
 		}
 	}
 	
+	/**
+	 * 
+	 * Revalidate login info and set authCheckHeartbeat session variable.
+	 * @param vboxconnector $vbox vboxconnector object instance
+	 */
 	function heartbeat($vbox)
 	{
 		global $_SESSION;
@@ -70,7 +106,7 @@ class phpvbAuthBuiltin {
 		$vbcheck->connect();
 		$p = $vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/pass');
 		if(!@$p || @$_SESSION['uHash'] != $p) {
-			session_destroy();
+			if(function_exists('session_destroy')) session_destroy();
 			unset($_SESSION['valid']);
 		} else {
 			$_SESSION['admin'] = intval($vbcheck->vbox->getExtraData('phpvb/users/'.$_SESSION['user'].'/admin'));
@@ -81,12 +117,24 @@ class phpvbAuthBuiltin {
 			throw new Exception(trans('Not logged in.','UIUsers'), vboxconnector::PHPVB_ERRNO_FATAL);
 	}
 	
+	/**
+	 * 
+	 * Log out user present in $_SESSION
+	 * @param string $response response passed byref by ajax.php and populated within function
+	 */
 	function logout(&$response)
 	{
-		session_destroy();
+		global $_SESSION;
+		if(function_exists('session_destroy')) session_destroy();
+		else unset($_SESSION['valid']);
 		$response['data']['result'] = 1;
 	}
 	
+	/**
+	 * 
+	 * Return a list of users
+	 * @return array list of users
+	 */
 	function listUsers()
 	{
 		$response = array();
@@ -107,6 +155,12 @@ class phpvbAuthBuiltin {
 		return $response;
 	}
 	
+	/**
+	 * 
+	 * Update user information such as password and admin status
+	 * @param array $vboxRequest request passed from ajax.php representing the ajax request. Contains user, password and administration level.
+	 * @param boolean $skipExistCheck Do not check that the user exists first. Essentially, if this is set and the user does not exist, it is added.
+	 */
 	function updateUser($vboxRequest, $skipExistCheck)
 	{
 		global $_SESSION;
@@ -128,6 +182,11 @@ class phpvbAuthBuiltin {
 		$vbox->vbox->setExtraData('phpvb/users/'.$vboxRequest['u'].'/admin', ($vboxRequest['a'] ? '1' : '0'));
 	}
 	
+	/**
+	 * 
+	 * Remove the user $user
+	 * @param string $user Username to remove
+	 */
 	function deleteUser($user)
 	{
 		// Use main / auth server

@@ -1,4 +1,11 @@
 -------------------------------------
+	4.1-4	
+-------------------------------------
+$vmMemoryOffset if configured, is now displayed in yellow(-ish) in
+the host memory usage graph.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=414
+
+-------------------------------------
 	4.1-3	2011-9-20
 -------------------------------------
 Added Polish translation.
@@ -75,6 +82,10 @@ A list of drives is now displayed when browsing for a file or
 folder when Windows is detected. This can be turned off if desired
 using the $noWindowsDriveList configuration option in config.php.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=388
+
+Fixed bug when creating or copying a new VMDK disk image where the
+disk would always be split into files < 2GB regardless of whether
+or not the "split" option was selected.
 
 -------------------------------------
 	4.1-2	2011-8-21

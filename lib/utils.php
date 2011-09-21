@@ -1,16 +1,25 @@
 <?php
-/*
- * Common PHP utils
+/**
  *
- * $Id$
- * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
- *
- */
+ * Common PHP utilities.
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @see config
+ * @package utils
+ * 
+*/
 
-/*
- * Initialize session
- */
 require_once(dirname(__FILE__).'/config.php');
+
+/**
+ * 
+ * Initialize session.
+ * @param boolean $keepopen keep session open? The default is
+ * 			to close the session after $_SESSION has been populated.
+ * @uses $_SESSION
+ */
 function session_init($keepopen = false) {
 	
 	$settings = new phpVBoxConfigClass();
@@ -44,21 +53,32 @@ function session_init($keepopen = false) {
 	
 }
 
-/*
- * Clean request
+/**
+ * 
+ * Strip slashes from string. Needed to pass to array_walk
+ * @param string $a string to strip slashes from
  */
 function __vbx_stripslash(&$a) { $a = stripslashes($a); }
+
+/**
+ * Clean (strip slashes from if applicable) $_GET and $_POST and return
+ * an array containing a merged array of both.
+ * @return array
+ */
 function clean_request() {
 	$r = array_merge($_GET,$_POST);
 	if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {array_walk_recursive($r,'__vbx_stripslash');}
 	return $r;
 }
 
-/*
- * Support for PHP compiled with --disable-hash
- */
 if(!function_exists('hash')) {
 // Lower security, but better than nothing
+/**
+ * 
+ * Return a hash of the passed string. Mimmics PHP's hash() params
+ * @param unused $type
+ * @param string $str string to hash
+ */
 function hash($type,$str='') {
 	return sha1(json_encode($str));
 }
@@ -67,7 +87,12 @@ function hash($type,$str='') {
  * Support for PHP compiled with --disable-json
  */
 if(!function_exists('json_encode')) {
-/* http://au.php.net/manual/en/function.json-encode.php#82904 */
+/**
+ * Mimmics PHP's json_encode
+ * @link http://au.php.net/manual/en/function.json-encode.php#82904
+ * @param mixed $a variable to JSON encode
+ * @param boolean $force_string force $a to be treated like a string.
+ */
 function json_encode($a=false,$force_string=false) {
     if (is_null($a)) return 'null';
     if ($a === false) return 'false';

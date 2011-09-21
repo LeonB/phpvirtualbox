@@ -725,6 +725,10 @@ function vboxPrefsInit() {
 		l.add('saveHostOnlyInterfaces',function(){},{'networkInterfaces':$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces});
 		l.add('saveSystemProperties',function(){},{'SystemProperties':$('#vboxSettingsDialog').data('vboxSystemProperties')});
 		l.run();
+		
+		// Update default machine folder
+		$('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder = $('#vboxSettingsDialog').data('vboxSystemProperties').defaultMachineFolder;
+		
 	},null,'global_settings','UISettingsDialogGlobal');
 }
 

@@ -437,7 +437,7 @@ var vboxMedia = {
 	    // Update recent path
 		if(!skipPathAdd) {
 			vboxAjaxRequest('updateRecentMediumPath',{'type':m.deviceType,'folder':vboxDirname(m.location)},function(){});
-			$('#vboxIndex').data('vboxRecentMediumPaths')[m.deviceType] = vboxDirname(m.location);
+			$('#vboxIndex').data('vboxRecentMediaPaths')[m.deviceType] = vboxDirname(m.location);
 		}
 		
 		// Update recent media
@@ -479,7 +479,7 @@ var vboxMedia = {
 		 */
 		choose : function(path,type,callback) {
 		
-			if(!path) path = $('#vboxIndex').data('vboxRecentMediumPaths')[type];
+			if(!path) path = $('#vboxIndex').data('vboxRecentMediaPaths')[type];
 
 			title = null;
 			icon = null;
@@ -1283,7 +1283,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 					var med = vboxMedia.getMediumById(id);
 					self.callback(med);
 					self.menuUpdateRecent(med);
-				},{'path':(self.mediumPath ? self.mediumPath : $('#vboxIndex').data('vboxRecentMediumPaths')[self.type])+$('#vboxIndex').data('vboxConfig').DSEP}); 				
+				},{'path':(self.mediumPath ? self.mediumPath : $('#vboxIndex').data('vboxRecentMediaPaths')[self.type])+$('#vboxIndex').data('vboxConfig').DSEP}); 				
 				break;
 			
 			// VMM
@@ -1294,7 +1294,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 						self.callback(vboxMedia.getMediumById(m));
 						self.menuUpdateRecent();
 					}
-				},self.type,true,{},(self.mediumPath ? self.mediumPath : $('#vboxIndex').data('vboxRecentMediumPaths')[self.type]));
+				},self.type,true,{},(self.mediumPath ? self.mediumPath : $('#vboxIndex').data('vboxRecentMediaPaths')[self.type]));
 				break;
 				
 			// Choose medium file

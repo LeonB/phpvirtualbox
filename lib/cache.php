@@ -1,24 +1,96 @@
 <?php
-/*
- * Simple data -> filesystem caching class
+/**
+ * 
+ * Simple data -> filesystem caching class used by vboxconnector.php
+ * to cache data returned by vboxwebsrv. Cache locking / unlocking
+ * uses flock().
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @package cache
+ * @see vboxconnector
+ * @see flock()
+ * 
+ * <code>
+ * <?php
+ * 
+ * cache = new cache();
+ * 
+ * $key = 'person_' . $_POST['pid'];
+ * 
+ * // Get cached person data that is no more than an hour old.
+ * $person = $cache->get($key, 3600);
+ * 
+ * if($person === false) {
+ * 
+ *    // No cached person :( it's time to obtain and store new data
+ *    
+ *    $person = new person($_POST['pid']);
+ *    $cache->lock($key);
+ *    $cache->store($key,$person);
+ *    
+ * }
  *
- * $Id$
- * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ *
+ * ?>
+ * </code>
+ *
  *
  */
 
 class cache {
 
+	/**
+	 *  Path to temporary folder to store cache files
+	 *  @var string
+	 */
 	var $path = '/tmp';
+
+	/**
+	 *  File extension appended to cache files
+	 *  @var string
+	 */	
 	var $ext = 'dat';
+	
+	/**
+	 *  Prefix string prepended to cache files
+	 *  @var string
+	 */	
 	var $prefix = 'pvbx';
+	
+	/**
+	 *  List of cache items that have been locked
+	 *  @access private
+	 *  @var array
+	 */	
 	var $locked = array();
+	
+	/**
+	 * If set, forces the refresh of cached items - it will appear
+	 * that a cache item for the requested data does not exist
+	 * @var boolean
+	 */
 	var $force_refresh = false;
-	var $expire_multiplier = 1; # 1 second
+	
+	/**
+	 * Holds list of open cache items
+	 * @access private
+	 * @var array
+	 */
 	var $open = array();
+	
+	/**
+	 * Logfile used for debugging. If not set, or set to empty string
+	 * no debugging will be performed.
+	 * @var string|null
+	 */
 	var $logfile = null;
 
-	/* set up temp path */
+	/**
+	 * 
+	 * Sets $path by checking various environment variables.
+	 */
 	function __construct() {
 		if(@$_ENV['TEMP'] && @is_writable($_ENV['TEMP'])) {
 			$this->path = $_ENV['TEMP'];
@@ -30,8 +102,10 @@ class cache {
 		}
 	}
 
-	/* Do our best to ensure all filehandles are closed
-	 * and flocks removed even in an unclean shutdown */
+	/**
+	 * Do our best to ensure all filehandles are closed
+	 * and flocks removed even in an unclean shutdown.
+	 */
 	function __destruct() {
 		$keys = array_keys($this->open);
 		foreach($keys as $k) {
@@ -40,7 +114,13 @@ class cache {
 		}
 	}
 
-	/* get cached item */
+	/**
+	 * 
+	 * Get cached data or return false if no cached data is found.
+	 * @param string $key key used to identify cached item
+	 * @param integer $expire maximum age (in seconds) of cached item before it is considered invalid
+	 * @return array|boolean
+	 */
 	function get($key,$expire=60) {
 		# Is file cached?
 		if(!$this->cached($key,$expire)) return false;
@@ -49,14 +129,17 @@ class cache {
 		return ($d === false ? $d : unserialize($d));
 	}
 
-	/* get date last modified for */
-	function getDLM($key,$expire=60) {
-		if(!$this->cached($key,$expire)) return time();
-		return @filemtime($this->_fname($key)) || time();
-	}
 
-	/*
-	 * Blocking lock on cache item
+	/**
+	 * 
+	 * Obtain an exclusive lock on cache item using flock(). Once an item is locked,
+	 * it is added to the $open and $locked arrays. If an item was written
+	 * to while waiting to be locked, return null - indicating that recent
+	 * data has already been written. This must be called before writing data
+	 * to a cache item. flock() will block until the cache file is available.
+	 * @see flock()
+	 * @param string $key key used to identify cached item
+	 * @return boolean|null
 	 */
 	function lock($key) {
 
@@ -98,8 +181,12 @@ class cache {
 		return true;
 	}
 
-	/*
-	 * Store locked cache item
+	/**
+	 * 
+	 * Store locked cache item, then unlock it.
+	 * @param string $key key used to identify cached item
+	 * @param array $data data to be cached
+	 * @return array
 	 */
 	function store($key,&$data) {
 
@@ -114,8 +201,10 @@ class cache {
 		return $data;
 	}
 
-	/*
-	 * Remove exclusive lock
+	/**
+	 * 
+	 * Remove exclusive lock obtained through lock()
+	 * @param string $key key used to identify cached item
 	 */
 	function unlock($key) {
 		flock($this->locked[$key],LOCK_UN);
@@ -124,16 +213,22 @@ class cache {
 		unset($this->locked[$key]);
 	}
 
-	/*
-	 * Determine if file is cached and has not expired
+	/**
+	 * 
+	 * Determine if cached item identified by $key is cached and has not expired
+	 * @param string $key key used to identify cached item
+	 * @param int $expire maximum age (in seconds) of cached item before it is considered invalid
+	 * @return boolean
 	 */
 	function cached($key,$expire=60) {
-		return (!$this->force_refresh && @file_exists($this->_fname($key)) && ($expire === false || (@filemtime($this->_fname($key)) > (time() - ($this->expire_multiplier * $expire)))));
+		return (!$this->force_refresh && @file_exists($this->_fname($key)) && ($expire === false || (@filemtime($this->_fname($key)) > (time() - ($expire)))));
 	}
 
 
-	/*
-	 *  Expire (unlink) cached item
+	/**
+	 * 
+	 * Expire (unlink) cached item(s)
+	 * @param string|array $key key or array of keys used to identify cached item
 	 */
 	function expire($key) {
 		if(is_array($key)) {
@@ -146,8 +241,10 @@ class cache {
 		for(;file_exists($this->_fname($key)) && !@unlink($this->_fname($key));) { sleep(1); clearstatcache(); }
 	}
 
-	/*
+	/**
+	 * 
 	 * Logging used for debugging
+	 * @param string $s message to log
 	 */
 	function _log($s) {
 		if(!$this->logfile) return;
@@ -158,6 +255,15 @@ class cache {
 
 	/*
 	 * Lock aware file read
+	 */
+	/**
+	 * 
+	 * Lock aware file read. Uses flock() to obtain a shared lock on
+	 * cache item. Returns false if file could not be opened or contanis no data,
+	 * else returns data.
+	 * @access private
+	 * @param string $key key used to identify cached item
+	 * @return array|boolean
 	 */
 	private function _getCachedData($key) {
 
@@ -187,7 +293,13 @@ class cache {
 		return $str;
 	}
 
-	/* Generate file name */
+	/**
+	 * 
+	 * Generates a filename for the cache file using $path, $prefix and $ext class vars
+	 * @access private
+	 * @param string $key key used to identify cached item
+	 * @return string
+	 */
 	private function _fname($key) { return $this->path.'/'.$this->prefix.md5($key).'.'.$this->ext; }
 
 }

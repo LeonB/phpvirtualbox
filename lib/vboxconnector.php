@@ -1,17 +1,34 @@
 <?php
-/*
- * $Id$
- * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+/**
+ * 
+ * Connects to vboxwebsrv, calls SOAP methods, and returns data.
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @package vboxconnector
+ * 
  */
 
 class vboxconnector {
 
-	// Fatal error number
+	/**
+	 * Error number describing a fatal error
+	 * @var integer
+	 */
 	const PHPVB_ERRNO_FATAL = 32;
-	// Connection error number
+
+	/**
+	 * Error number describing a connection error
+	 * @var integer
+	 */
 	const PHPVB_ERRNO_CONNECT = 64;
 
-	/* VBOX Constants */
+	/**
+	 * 
+	 * VirtualBox result codes
+	 * @var array
+	 */
 	var $resultcodes = array(
 		'0x80BB0001' => 'VBOX_E_OBJECT_NOT_FOUND',
 		'0x80BB0002' => 'VBOX_E_INVALID_VM_STATE',
@@ -29,12 +46,31 @@ class vboxconnector {
 	);
 
 
-	// Any exceptions generated
+	/**
+	 * 
+	 * Holds any errors that occur during processing. Errors are placed in here
+	 * when we want calling functions to be aware of the error, but do not want to 
+	 * halt processing
+	 * 
+	 * @var array
+	 */
 	var $errors = array();
 
-	// Is set to true when a progress operation is created
+
+	/**
+	 * 
+	 * true if a progress operation was creating during processing
+	 * @var boolean
+	 * @access private
+	 */
 	var $progressCreated = false;
 
+	/**
+	 * 
+	 * Obtain configuration settings and set object vars
+	 * @param boolean $useAuthMaster use the authentication master obtained from configuration class
+	 * @see config
+	 */
 	public function __construct ($useAuthMaster = false) {
 
 		require_once(dirname(__FILE__).'/cache.php');
@@ -71,12 +107,13 @@ class vboxconnector {
 
 	}
 
-	/*
-	 *
+	/**
 	 * Connect to vboxwebsrv
-	 *
+	 * @see SoapClient()
+	 * @see config
+	 * @return boolean true on success
 	 */
-	private function __vboxwebsrvConnect() {
+	public function connect() {
 
 		// Already connected?
 		if(@$this->connected) return true;
@@ -118,14 +155,15 @@ class vboxconnector {
 	}
 
 
-	/*
-	 * Return and / or set version
+	/**
+	 * Get VirtualBox version
+	 * @return array version information
 	 */
 	public function getVersion() {
 
 		if(!@$this->version) {
 
-			$this->__vboxwebsrvConnect();
+			$this->connect();
 
 			$this->version = explode('.',$this->vbox->version);
 			$this->version = array(
@@ -143,10 +181,12 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Always logout & close session
+	/**
+	 * 
+	 * Log out of vboxwebsrv unless a progress operation was created
+	 * @see $progressCreated
 	 */
-	public function __destruct () {
+	public function __destruct() {
 
 		// Do not logout if there is a progress operation associated
 		// with this vboxweb session
@@ -163,9 +203,16 @@ class vboxconnector {
 		unset($this->client);
 	}
 
-
-	/*
-	 * __call overloader. Handles caching
+	
+	/**
+	 * 
+	 * Call overloader. Handles caching of vboxwebsrv data for some incoming requests.
+	 * Returns cached data or result of method call.
+	 * 
+	 * @param string $fn method to call
+	 * @param array $args arguments for method
+	 * @throws Exception
+	 * @return array
 	 */
 	function __call($fn,$args) {
 
@@ -232,19 +279,16 @@ class vboxconnector {
 		return $response;
 	}
 
-	/*
-	 * Public access to connect
-	 */
-	public function connect() {
-		return $this->__vboxwebsrvConnect();
-	}
-
-	/*
-	 * Enumerate guest properties of vm
+	/**
+	 * 
+	 * Enumerate guest properties of a vm
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean
 	 */
 	public function enumerateGuestProperties($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$m = $this->vbox->findMachine($args['vm']);
 
@@ -255,12 +299,15 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * See if file exists
+	/**
+	 * Uses VirtualBox's vfsexplorer to check if a file exists
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean
 	 */
 	public function fileExists($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$dsep = $this->settings['DSEP'];
 
@@ -282,15 +329,20 @@ class vboxconnector {
 		$appl->releaseRemote();
 
 		$response['data']['exists'] = count($exists);
+		return true;
 	}
 
-	/*
-	 * Save Running VM shared folder settings
+	/**
+	 * Save a running vm's shared folder settings
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @param boolean $fromSaveVM set to true if called from saveVM method
 	 */
 	public function saveVMSharedFolders($args,&$response,$fromSaveVM=false) {
 
 		if(!$fromSaveVM) {
-			$this->__vboxwebsrvConnect();
+			$this->connect();
 
 			$machine = $this->vbox->findMachine($args['id']);
 			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
@@ -376,12 +428,15 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Install Guest Additions in VM
+	/**
+	 * Install guest additions
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function installGuestAdditions($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data'] = array();
 		$response['data']['errored'] = 0;
@@ -491,12 +546,15 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Attach USB devices to VM
+	/**
+	 * Attach USB device identified by $args['id'] to a running VM
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function usbAttachDevice($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// create session and lock machine
 		$machine = $this->vbox->findMachine($args['vm']);
@@ -513,12 +571,14 @@ class vboxconnector {
 		$response['data']['result'] = 1;
 	}
 
-	/*
-	 * Attach USB devices to VM
+	/**
+	 * Detach USB device identified by $args['id'] from a running VM
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function usbDetachDevice($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// create session and lock machine
 		$machine = $this->vbox->findMachine($args['vm']);
@@ -536,14 +596,17 @@ class vboxconnector {
 	}
 
 
-	/*
-	 * Save Running VM Network settings
+	/**
+	 * Save a running vm's network settings
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @param boolean $fromSaveVM set to true if called from saveVM method
 	 */
 	public function saveVMNetwork($args,&$response,$fromSaveVMRunning = false) {
 
 		if(!$fromSaveVMRunning) {
 
-			$this->__vboxwebsrvConnect();
+			$this->connect();
 
 			// create session and lock machine
 			$machine = $this->vbox->findMachine($args['id']);
@@ -622,13 +685,15 @@ class vboxconnector {
 		$machine->releaseRemote();
 	}
 
-	/*
-	 * Clone a VM
+	/**
+	 * Clone a virtual machine
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function cloneVM($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$src = $this->vbox->findMachine($args['src']);
 
@@ -668,12 +733,15 @@ class vboxconnector {
 	}
 
 
-	/*
-	 * Update VRDE server enabled status
+	/**
+	 * Turn VRDE on / off on a running VM
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function updateVRDE($args, &$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// create session and lock machine
 		$m = $this->vbox->findMachine($args['vm']);
@@ -691,10 +759,12 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Save all running VM settings
-	 *
-	 * called from saveVM() when VM is running
+	/**
+	 * Save running VM settings. Called from saveVM() method if the requested VM is running.
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function saveVMRunning($args,&$response) {
 
@@ -878,12 +948,14 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Save all VM settings
+	/**
+	 * Save virtual machine settings.
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function saveVM($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// create session and lock machine
 		$machine = $this->vbox->findMachine($args['id']);
@@ -1322,12 +1394,16 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Add a VM from settings file
+	/**
+	 * Add a virtual machine via its settings file.
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function addVM($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$m = $this->vbox->openMachine($args['file']);
 		$this->vbox->registerMachine($m->handle);
@@ -1340,8 +1416,15 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Return cached result from machine request
+	/**
+	 * Return cached VM configuration data. These are split into multiple cache files.
+	 * E.g. network adapters, storage controllers, etc.. 
+	 * 
+	 * @param string $fn function to call 
+	 * @param string $key key for cache item
+	 * @param object $item item to obtain data from if data is not cached
+	 * @param boolean $force_refresh force the refresh of cached data
+	 * @return array data returned from call
 	 */
 	private function __getCachedMachineData($fn,$key,&$item,$force_refresh=false) {
 
@@ -1384,27 +1467,12 @@ class vboxconnector {
 
 	}
 
-	/*
-	 *  Progress operations garbage collection (stub / unimplemented)
-	 */
-	private function __progressGC() {
-
-		return;
-
-		$pops = $this->cache->get('ProgressOperations',false);
-		$cpops = array();
-		$now = time();
-
-		foreach(array_keys($pops) as $p) {
-			if($now - $$pops[$p]['started'] > 300) {
-
-			}
-		}
-
-	}
-
-	/*
-	 * Get progress for operation.
+	/**
+	 * Get progress operation status. On completion, destory progress operation.
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * 
 	 */
 	public function getProgress($args,&$response) {
 
@@ -1419,7 +1487,7 @@ class vboxconnector {
 		$error = 0;
 		
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		try {
 
@@ -1499,13 +1567,17 @@ class vboxconnector {
 		}
 				
 		$response['data']['result'] = $result;
-		$this->__destroyProgress($args['progress'],$response);
+		$this->__destroyProgress($pop);
 
 
 	}
 
-	/*
-	 * Get progress for operation.
+	/**
+	 * Cancel a running progress operation
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function cancelProgress($args,&$response) {
 
@@ -1516,7 +1588,7 @@ class vboxconnector {
 		}
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		try {
 			$progress = new IProgress($this->client,$args['progress']);
@@ -1529,26 +1601,22 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 *
-	 * Destroy a progress reference
-	 *
+	/**
+	 * Destory a progress operation. Removing its cache and expiring any after-action
+	 * cache items that should be expired.
+	 * 
+	 * @param array $pop progress operation details
+	 * @return boolean true on success
 	 */
-	private function __destroyProgress($p,&$response) {
+	private function __destroyProgress($pop) {
 
-		$pops = $this->cache->get('ProgressOperations',false);
-
-		if(!($pop = @$pops[$p])) {
-			throw new Exception('Could not destroy progress operation: '.$p);
-		}
-
-		// Expire cache item?
+		// Expire cache item(s)?
 		if(is_array(@$pop['expire'])) foreach($pop['expire'] as $e) $this->cache->expire($e);
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
-		try {$progress = new IProgress($this->client,$p); $progress->releaseRemote();}
+		try {$progress = new IProgress($this->client,$pop['progress']); $progress->releaseRemote();}
 		catch (Exception $e) {}
 		try {
 
@@ -1576,14 +1644,20 @@ class vboxconnector {
 		$this->cache->lock('ProgressOperations');
 		$inprogress = $this->cache->get('ProgressOperations');
 		if(!is_array($inprogress)) $inprogress = array();
-		unset($inprogress[$p]);
+		unset($inprogress[$pop['progress']]);
 		$this->cache->store('ProgressOperations',$inprogress);
 
 		return true;
 	}
 
-	/*
-	 * Get enumeration maps
+	/**
+	 * Returns a key => value mapping of an enumeration class contained
+	 * in vboxServiceWrappers.php (classes that extend VBox_Enum).
+	 * 
+	 * @param string $class name of enumeration class
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
+	 * @see vboxServiceWrappers.php
 	 */
 	private function __getEnumerationMap($class, &$response) {
 		if(class_exists($class)) {
@@ -1591,13 +1665,18 @@ class vboxconnector {
 			$response['data'] = $c->NameMap;
 		}
 	}
-	/*
-	 * Save system properties
+	
+	/**
+	 * Save VirtualBox system properties
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function saveSystemProperties($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$this->vbox->systemProperties->defaultMachineFolder = $args['SystemProperties']['defaultMachineFolder'];
 		$this->vbox->systemProperties->VRDEAuthLibrary = $args['SystemProperties']['VRDEAuthLibrary'];
@@ -1608,13 +1687,17 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Import appliance
+	/**
+	 * Import a virtual appliance
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function applianceImport($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 
 		$app = $this->vbox->createAppliance();
@@ -1664,13 +1747,17 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Get list of VMs available for export
+	/**
+	 * Get a list of VMs that are available for export.
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getVMsExportable($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		//Get a list of registered machines
 		$machines = $this->vbox->machines;
@@ -1700,13 +1787,18 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Read and interpret appliance
+
+	/**
+	 * Read and interpret virtual appliance file
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function applianceReadInterpret($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$app = $this->vbox->createAppliance();
 		$progress = $app->read($args['file']);
@@ -1744,13 +1836,18 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Export an appliance
+
+	/**
+	 * Export VMs to a virtual appliance file
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function applianceExport($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$app = $this->vbox->createAppliance();
 
@@ -1833,13 +1930,18 @@ class vboxconnector {
 
 		return true;
 	}
-	/*
+	
+	/**
 	 * Get host networking info
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function getHostNetworkingCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		/*
 		 * Existing Networks
@@ -1893,14 +1995,17 @@ class vboxconnector {
 		return true;
 	}
 
-
-	/*
-	 * Get host-only networking info
+	/**
+	 * Get host-only interface information
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function getHostOnlyNetworkingCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		/*
 		 * NICs
@@ -1952,13 +2057,18 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Save Host-only interface configuration
+	
+	/**
+	 * Save host-only interface information
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function saveHostOnlyInterfaces($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$nics = $args['networkInterfaces'];
 
@@ -2003,7 +2113,7 @@ class vboxconnector {
 	public function createHostOnlyInterface($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		list($int,$progress) = $this->vbox->host->createHostOnlyNetworkInterface();
 		$int->releaseRemote();
@@ -2027,13 +2137,17 @@ class vboxconnector {
 	}
 
 
-	/*
-	 * Remove network interface
+	/**
+	 * Remove a host-only interface
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function removeHostOnlyInterface($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$progress = $this->vbox->host->removeHostOnlyNetworkInterface($args['id']);
 
@@ -2057,13 +2171,17 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Populate a list of Guest OS types
+	/**
+	 * Get a list of Guest OS Types supported by this VirtualBox installation
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function getGuestOSTypesCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$ts = $this->vbox->getGuestOSTypes();
 
@@ -2088,10 +2206,12 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Set VM state
-	 *
-	 *
+	/**
+	 * Set virtual machine state. Running, power off, save state, pause, etc..
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function __setVMState($vm, $state, &$response) {
 
@@ -2115,7 +2235,7 @@ class vboxconnector {
 		}
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// Machine state
 		$machine = $this->vbox->findMachine($vm);
@@ -2215,15 +2335,17 @@ class vboxconnector {
 
 	}
 
-	/*
-	 *
-	 * This starts a VM
-	 *
+	/**
+	 * Start a stopped virtual machine
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function __launchVMProcess(&$machine, &$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		# Try opening session for VM
 		try {
@@ -2254,13 +2376,17 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 * Host memory usage info
+	/**
+	 * Get VirtualBox host memory usage information
+	 * 
+	 * @param unused $args
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getHostMeminfo($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data'] = array(
 			'memoryAvailable' => $this->vbox->host->memoryAvailable
@@ -2269,13 +2395,17 @@ class vboxconnector {
 		return true;
 	}
 	
-	/*
-	 *  Array containing details about the VirtualBox host.
+	/**
+	 * Get VirtualBox host details
+	 * 
+	 * @param unsed $args
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function getHostDetailsCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		/*
 		 * Generic Host system details
@@ -2359,13 +2489,17 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Get a list of connected USB devices
+	/**
+	 * Get a list of USB devices attached to the VirtualBox host
+	 * 
+	 * @param unused $args
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getHostUSBDevices($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		foreach($this->vbox->host->USBDevices as $d) {
 			$response['data'][] = array(
@@ -2390,13 +2524,16 @@ class vboxconnector {
 	}
 
 
-	/*
-	 *
-	 *
-	 * Return an array containing details of the virtual
-	 * machine specified by vm
-	 *
-	 *
+	/**
+	 * Get virtual machine or virtualbox host details
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @param ISnapshot $snapshot snapshot instance to use if obtaining snapshot details.
+	 * @see getHostDetails()
+	 * @see getHostNetworking()
+	 * @see __getCachedMachineData()
+	 * @return boolean true on success
 	 */
 	public function getVMDetails($args, &$response, $snapshot=null) {
 
@@ -2413,7 +2550,7 @@ class vboxconnector {
 
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		//Get registered machine or snapshot machine
 		if($snapshot) {
@@ -2551,16 +2688,17 @@ class vboxconnector {
 		return true;
 	}
 
-
-	/*
-	 *
-	 * Remove a Virtual Machine
-	 *
+	/**
+	 * Remove a virtual machine
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function removeVM($args, &$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$machine = $this->vbox->findMachine($args['vm']);
 
@@ -2615,18 +2753,21 @@ class vboxconnector {
 
 
 	}
-
-	/*
-	 *
+	
+	
+	/**
 	 * Create a new Virtual Machine
-	 *
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function createVM($args, &$response) {
 
 		global $_SESSION;
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// quota enforcement
 		if ( isset($_SESSION['user']) )
@@ -2791,18 +2932,50 @@ class vboxconnector {
 	}
 
 
-	/*
-	 *
-	 * Return a list of guest attached network adapters
-	 *
+	/**
+	 * Return a list of network adapters attached to machine (or snapshot) $m
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array of network adapter information
 	 */
 	private function __getNetworkAdapters(&$m) {
 
 		$adapters = array();
 
 		for($i = 0; $i < $this->settings['nicMax']; $i++) {
+			
 			$n = $m->getNetworkAdapter($i);
-			$adapters[] = $this->__getNetworkAdapter($n);
+
+			// Avoid duplicate calls
+			$at = $n->attachmentType->__toString();
+			if($at == 'NAT') $nd = $n->natDriver;
+			else $nd = null;
+			
+			$adapters[] = array(
+				'adapterType' => $n->adapterType->__toString(),
+				'slot' => $n->slot,
+				'enabled' => $n->enabled,
+				'MACAddress' => $n->MACAddress,
+				'attachmentType' => $at,
+				'genericDriver' => $n->genericDriver,
+				'hostOnlyInterface' => $n->hostOnlyInterface,
+				'bridgedInterface' => $n->bridgedInterface,
+				'internalNetwork' => $n->internalNetwork,
+				'NATNetwork' => $n->NATNetwork,
+				'promiscModePolicy' => $n->promiscModePolicy->__toString(),
+				'VDENetwork' => ($this->settings['enableVDE'] ? $n->VDENetwork : ''),
+				'cableConnected' => $n->cableConnected,
+				'natDriver' => ($at == 'NAT' ?
+					array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver), 'hostIP' => $nd->hostIP)
+					: array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0, 'hostIP' => '')),
+				'lineSpeed' => $n->lineSpeed,
+				'redirects' => (
+					$at == 'NAT' ?
+					$nd->getRedirects()
+					: array()
+				)
+			);
+			
 			$n->releaseRemote();
 		}
 
@@ -2811,15 +2984,16 @@ class vboxconnector {
 	}
 
 
-	/*
-	 *
-	 * Set vm sort order
-	 *
+	/**
+	 * Set virtual machine sort order
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param unused $response
 	 */
 	public function setVMSortOrder($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		asort($args['sortOrder']);
 
@@ -2830,32 +3004,32 @@ class vboxconnector {
 		$this->cache->expire('getVMSortOrder');
 	}
 
-	/*
-	 *
-	 * Get VM sort order
-	 *
+	/**
+	 * Return virtual machine sort order
+	 * 
+	 * @param unused $args
+	 * @param unused $response
 	 */
 	public function getVMSortOrderCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data']['sortOrder'] = array_flip(array_filter(explode(',',$this->vbox->getExtraData("GUI/SelectorVMPositions"))));
 
 	}
 
-	/*
-	 *
-	 *
-	 * Return a list of VMs along with their
-	 *
-	 * states and basic info
-	 *
+	/**
+	 * Return a list of virtual machines along with their states and other basic info
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getVMsCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data']['vmlist'] = array();
 
@@ -2912,26 +3086,29 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Debug input array
-	 *
+	/**
+	 * Creates a new exception so that input can be debugged.
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function debugInput($args,&$response) {
 		$this->errors[] = new Exception('debug');
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 *
-	 *
-	 * Get all media registered with this vbox installation
-	 *
-	 *
+	/**
+	 * Get a list of media registered with VirtualBox
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function getMediaCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data'] = array();
 		$mds = array($this->vbox->hardDisks,$this->vbox->DVDImages,$this->vbox->floppyImages);
@@ -2944,48 +3121,11 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 *
-	 * Fill network adapter info
-	 *
-	 */
-	private function __getNetworkAdapter(&$n) {
-
-		// Avoid duplicate calls
-		$at = $n->attachmentType->__toString();
-		if($at == 'NAT') $nd = $n->natDriver;
-		else $nd = null;
-		return array(
-			'adapterType' => $n->adapterType->__toString(),
-			'slot' => $n->slot,
-			'enabled' => $n->enabled,
-			'MACAddress' => $n->MACAddress,
-			'attachmentType' => $at,
-			'genericDriver' => $n->genericDriver,
-			'hostOnlyInterface' => $n->hostOnlyInterface,
-			'bridgedInterface' => $n->bridgedInterface,
-			'internalNetwork' => $n->internalNetwork,
-			'NATNetwork' => $n->NATNetwork,
-			'promiscModePolicy' => $n->promiscModePolicy->__toString(),
-			'VDENetwork' => ($this->settings['enableVDE'] ? $n->VDENetwork : ''),
-			'cableConnected' => $n->cableConnected,
-			'natDriver' => ($at == 'NAT' ?
-				array('aliasMode' => intval($nd->aliasMode),'dnsPassDomain' => intval($nd->dnsPassDomain), 'dnsProxy' => intval($nd->dnsProxy), 'dnsUseHostResolver' => intval($nd->dnsUseHostResolver), 'hostIP' => $nd->hostIP)
-				: array('aliasMode' => 0,'dnsPassDomain' => 0, 'dnsProxy' => 0, 'dnsUseHostResolver' => 0, 'hostIP' => '')),
-			'lineSpeed' => $n->lineSpeed,
-			'redirects' => (
-				$at == 'NAT' ?
-				$nd->getRedirects()
-				: array()
-			)
-		);
-
-
-	}
-	/*
-	 *
-	 * Fill USB Controller data
-	 *
+	/**
+	 * Get USB controller information
+	 * 
+	 * @param IUSBController $m USB controller instance
+	 * @return array USB controller info
 	 */
 	private function __getUSBController(&$m) {
 
@@ -3015,11 +3155,11 @@ class vboxconnector {
 		return $r;
 	}
 
-	/*
-	 *
-	 *
-	 * Fill Machine data
-	 *
+	/**
+	 * Return top-level virtual machine or snapshot information
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array vm or snapshot data
 	 */
 	private function __getMachine(&$m) {
 
@@ -3083,10 +3223,11 @@ class vboxconnector {
 
 	}
 
-	/*
-	 *
-	 * Fill boot order
-	 *
+	/**
+	 * Get virtual machine or snapshot boot order
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array boot order
 	 */
 	private function __getBootOrder(&$m) {
 		$return = array();
@@ -3098,10 +3239,11 @@ class vboxconnector {
 		return $return;
 	}
 
-	/*
-	 *
-	 * Fill Serial ports
-	 *
+	/**
+	 * Get serial port configuration for a virtual machine or snapshot
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array serial port info
 	 */
 	private function __getSerialPorts(&$m) {
 		$ports = array();
@@ -3126,10 +3268,11 @@ class vboxconnector {
 		return $ports;
 	}
 
-	/*
-	 *
-	 * Fill LPT ports
-	 *
+	/**
+	 * Get parallel port configuration for a virtual machine or snapshot
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array parallel port info
 	 */
 	private function __getParallelPorts(&$m) {
 		if(!@$this->settings['enableLPTConfig']) return array();
@@ -3153,10 +3296,11 @@ class vboxconnector {
 		return $ports;
 	}
 
-	/*
-	 *
-	 * Fill shared folders
-	 *
+	/**
+	 * Get shared folder configuration for a virtual machine or snapshot
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array shared folder info
 	 */
 	private function __getSharedFolders(&$m) {
 		$sfs = &$m->sharedFolders;
@@ -3176,14 +3320,16 @@ class vboxconnector {
 	}
 
 
-	/*
-	 *
-	 * Fill transient shared folders
-	 *
+	/**
+	 * Get a list of transient (temporary) shared folders
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getVMTransientSharedFolders($args,&$response) {
 
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data'] = array();
 
@@ -3213,10 +3359,11 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 *
-	 * Fill medium attachments
-	 *
+	/**
+	 * Get medium attachment information for all medium attachments in $mas
+	 * 
+	 * @param array $mas list of IMediumAttachment instances
+	 * @return array medium attachment info
 	 */
 	private function __getMediumAttachments(&$mas) {
 
@@ -3238,13 +3385,17 @@ class vboxconnector {
 		return $return;
 	}
 
-	/*
-	 * Save snapshot name and description
+	/**
+	 * Save snapshot details ( description or name)
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function saveSnapshot($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$vm = $this->vbox->findMachine($args['vm']);
 
@@ -3259,13 +3410,17 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 * Return full snapshot details
+	/**
+	 * Get snapshot details
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getSnapshotDetails($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$vm = $this->vbox->findMachine($args['vm']);
 		$snapshot = $vm->findSnapshot($args['snapshot']);
@@ -3283,13 +3438,17 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Restore snapshot of machine
+	/**
+	 * Restore a snapshot
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function snapshotRestore($args, &$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$progress = $this->session = null;
 
@@ -3335,13 +3494,17 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Delete snapshot of machine
+	/**
+	 * Delete a snapshot
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function snapshotDelete($args, &$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$progress = $this->session = null;
 
@@ -3385,13 +3548,17 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 * Take snapshot of machine
+	/**
+	 * Take a snapshot
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function snapshotTake($args, &$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$machine = $this->vbox->findMachine($args['vm']);
 
@@ -3437,13 +3604,17 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 * Return a list of Snapshots for machine
+	/**
+	 * Get a list of snapshots for a machine
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getSnapshots($args, &$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$machine = $this->vbox->findMachine($args['vm']);
 
@@ -3463,10 +3634,12 @@ class vboxconnector {
 	}
 
 
-	/*
-	 *
-	 * Fill snapshot info
-	 *
+	/**
+	 * Return details about snapshot $s
+	 * 
+	 * @param ISnapshot $s snapshot instance
+	 * @param boolean $sninfo traverse child snapshots and include machine id
+	 * @return array snapshot info
 	 */
 	private function __getSnapshot(&$s,$sninfo=false) {
 
@@ -3494,10 +3667,11 @@ class vboxconnector {
 		);
 	}
 
-	/*
-	 *
-	 * Fill Storage Controllers
-	 *
+	/**
+	 * Return details about storage controllers for machine $m 
+	 * 
+	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
+	 * @return array storage controllers' details
 	 */
 	private function __getStorageControllers(&$m) {
 
@@ -3522,13 +3696,17 @@ class vboxconnector {
 		return $sc;
 	}
 
-	/*
+	/**
 	 * Clone a medium
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumCloneTo($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$format = strtoupper($args['format']);
 		$target = $this->vbox->createHardDisk($format,$args['location']);
@@ -3562,13 +3740,17 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 * Make a medium immutable
+	/**
+	 * Set medium to a specific type
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumSetType($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$m = $this->vbox->findMedium($args['id'],'HardDisk');
 		$m->type = $args['type'];
@@ -3581,13 +3763,17 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
+	/**
 	 * Add iSCSI medium
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumAddISCSI($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// {'server':server,'port':port,'intnet':intnet,'target':target,'lun':lun,'enclun':enclun,'targetUser':user,'targetPass':pass}
 
@@ -3621,13 +3807,17 @@ class vboxconnector {
 		$hd->releaseRemote();
 	}
 
-	/*
-	 * Add existing medium
+	/**
+	 * Add existing medium by file location
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumAdd($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$m = $this->vbox->openMedium($args['path'],$args['type'],'ReadWrite',false);
 
@@ -3636,13 +3826,17 @@ class vboxconnector {
 		$m->releaseRemote();
 	}
 
-	/*
-	 * Compose a filename for VM
+	/**
+	 * Get VirtualBox generated machine configuration file name
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getComposedMachineFilename($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data']['file'] = $this->vbox->composeMachineFilename($args['name'],$this->vbox->systemProperties->defaultMachineFolder);
 
@@ -3650,13 +3844,17 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Create base storage medium
+	/**
+	 * Create base storage medium (virtual hard disk)
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumCreateBaseStorage($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		if (@$this->settings['enforceVMOwnership'] )
 		{
@@ -3698,13 +3896,17 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
+	/**
 	 * Release medium from all attachments
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumRelease($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$m = $this->vbox->findMedium($args['id'],$args['type']);
 
@@ -3776,13 +3978,17 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 * Remove medium
+	/**
+	 * Remove a medium
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function mediumRemove($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		if(!$args['type']) $args['type'] = 'HardDisk';
 		$m = $this->vbox->findMedium($args['id'],$args['type']);
@@ -3814,13 +4020,17 @@ class vboxconnector {
 		return($reponse['data']['result'] = 1);
 	}
 
-	/*
-	 * get Recent Media
+	/**
+	 * Get a list of recent media
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getRecentMedia($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		foreach(array(
 			array('type'=>'HardDisk','key'=>'GUI/RecentListHD'),
@@ -3832,13 +4042,17 @@ class vboxconnector {
 		return $response;
 	}
 
-	/*
-	 * get Medium Paths
+	/**
+	 * Get a list of recent media paths
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
-	public function getRecentMediumPaths($args,&$response) {
+	public function getRecentMediaPaths($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		foreach(array(
 			array('type'=>'HardDisk','key'=>'GUI/RecentFolderHD'),
@@ -3850,13 +4064,17 @@ class vboxconnector {
 	}
 
 
-	/*
-	 * update Medium Paths
+	/**
+	 * Update recent medium path list
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function updateRecentMediumPath($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$types = array(
 			'HardDisk'=>'GUI/RecentFolderHD',
@@ -3869,11 +4087,17 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/* Update recent media */
+	/**
+	 * Update recent media list
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
+	 */
 	public function mediumRecentUpdate($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$types = array(
 			'HardDisk'=>'GUI/RecentListHD',
@@ -3887,13 +4111,18 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Mount a medium on a given medium attachment (port/device)
+	/**
+	 * Mount a medium on the VM
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @param boolean $save save the VM's configuration after mounting
+	 * @return boolean true on success
 	 */
 	public function mediumMount($args,&$response,$save=false) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		// Find medium attachment
 		$machine = $this->vbox->findMachine($args['vm']);
@@ -3954,10 +4183,11 @@ class vboxconnector {
 		return ($response['data']['result'] = 1);
 	}
 
-	/*
-	 *
-	 *  Fill medium data
-	 *
+	/**
+	 * Get medium details
+	 * 
+	 * @param IMedium $m medium instance
+	 * @return array medium details
 	 */
 	private function __getMedium(&$m) {
 
@@ -4028,8 +4258,13 @@ class vboxconnector {
 
 	}
 
-	/*
-	 * Store a progress operation for later use
+	/**
+	 * Store a progress operation so that we can periodically get its status
+	 * via getProgress()
+	 * 
+	 * @param IProgress $progress progress operation instance
+	 * @param array $expire cache items to expire when progress operation completes
+	 * @return string progress operation handle / id
 	 */
 	private function __storeProgress(&$progress,$expire=null) {
 
@@ -4059,15 +4294,16 @@ class vboxconnector {
 		return $progress->handle;
 	}
 
-	/*
-	 *
-	 * Get information about this vbox installation
-	 *
+	/**
+	 * Get VirtualBox system properties
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	private function getSystemPropertiesCached($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$mediumFormats = array();
 		
@@ -4108,15 +4344,16 @@ class vboxconnector {
 		return true;
 	}
 
-	/*
-	 *
-	 * Return vm log names
-	 *
+	/**
+	 * Get a list of VM log file names
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function getVMLogFilesInfo($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$m = $this->vbox->findMachine($args['vm']);
 		$logs = array();
@@ -4127,15 +4364,16 @@ class vboxconnector {
 		$m->releaseRemote();
 	}
 
-	/*
-	 *
-	 * Return vm log contents
-	 *
+	/**
+	 * Get VM log file contents
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
 	 */
 	public function getVMLogFile($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data']['log'] = '';
 
@@ -4155,15 +4393,17 @@ class vboxconnector {
 			$response['data']['log'] = utf8_encode($response['data']['log']);
 	}
 
-	/*
-	 *
-	 * List of attached USB devices
-	 *
+	/**
+	 * Get a list of USB devices attached to a given VM
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function getVMUSBDevices($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$machine = $this->vbox->findMachine($args['vm']);
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
@@ -4183,24 +4423,27 @@ class vboxconnector {
 
 	}
 
-	/*
-	 *
-	 * Generate MAC address
-	 *
+	/**
+	 * Get a newly generated MAC address from VirtualBox
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
 	 */
 	public function genMACAddress($args,&$response) {
 
 		// Connect to vboxwebsrv
-		$this->__vboxwebsrvConnect();
+		$this->connect();
 
 		$response['data']['mac'] = $this->vbox->host->generateMACAddress();
 
 	}
 
-	/*
-	 *
-	 * Format a time
-	 *
+	/**
+	 * Format a time span in seconds into days / hours / minutes / seconds
+	 * 
+	 * @param integer $t number of seconds
+	 * @return array containing number of days / hours / minutes / seconds
 	 */
 	private function __splitTime($t) {
 
