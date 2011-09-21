@@ -11,7 +11,7 @@
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
- * @package __vbox_language
+ * @package phpVirtualBox
  * 
  * @global __vbox_language $GLOBALS['_vbox_language'] global __vbox_language instance
  * @name $_vbox_language

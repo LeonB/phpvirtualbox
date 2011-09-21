@@ -8,7 +8,7 @@
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
- * @package cache
+ * @package phpVirtualBox
  * @see vboxconnector
  * @see flock()
  * 

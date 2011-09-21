@@ -7,7 +7,7 @@
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @see config
- * @package utils
+ * @package phpVirtualBox
  * 
 */
 
