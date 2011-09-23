@@ -46,7 +46,7 @@ if(jQuery) (function($){
 			if( o.expandEasing == undefined ) o.expandEasing = null;
 			if( o.collapseEasing == undefined ) o.collapseEasing = null;
 			if( o.multiFolder == undefined ) o.multiFolder = true;
-			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
+			if( o.loadMessage == undefined ) o.loadMessage = trans('Loading ...','UIVMDesktop');
 			if( o.scrollTo == undefined ) o.scrollTo = null;
 			if( o.dirsOnly == undefined) o.dirsOnly = false;
 			

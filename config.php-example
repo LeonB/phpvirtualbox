@@ -1,6 +1,7 @@
 <?php
-/*
- * phpVirtualBox example configuration. $Id$
+/**
+ * phpVirtualBox example configuration. 
+ * @version $Id$
  *
  * rename to config.php and edit as needed.
  *
@@ -22,7 +23,7 @@ var $language = 'en';
 
 /*
  *
- * Not-so-common options / tweeking
+ * Not-so-common options / tweaking
  *
  */
 
@@ -70,10 +71,10 @@ var $servers = array(
 #var $enableCustomIcons = true;
 
 /*
-Allow to prompt deletion harddisk files on removal from Virtual Media Manager.
+Allow to prompt deletion hard disk files on removal from Virtual Media Manager.
 If this is not set, files are always kept. If this is set, you will be PROMPTED
-to decide whether or not you would like to delete the harddisk file(s) when you
-remove a harddisk from virtual media manager. You may still choose not to delete
+to decide whether or not you would like to delete the hard disk file(s) when you
+remove a hard disk from virtual media manager. You may still choose not to delete
 the file when prompted.
 */
 var $deleteOnRemove = true;
@@ -88,7 +89,7 @@ var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.h
 // Restrict locations / folders
 #var $browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like array('/home/vbox','/var/ISOs')
 
-// Force use of local, webserver based file browser instead of going through vboxwebsrv
+// Force use of local, web server based file browser instead of going through vboxwebsrv
 #var $browserLocal = true;
 
 // Disable file / folder browser.
@@ -157,7 +158,7 @@ var $consoleKeyboardLayout = 'EN';
 var $nicMax = 4;
 
 /* Enable advanced configuration items (normally hidden in the VirtualBox GUI)
- * Note that some of these items may not be translated to languages other than english. 
+ * Note that some of these items may not be translated to languages other than English. 
  */
 #var $enableAdvancedConfig = true;
 
@@ -214,7 +215,7 @@ LPT support may or may not work for you.
 
 
 /*
- * Cache tweeking.
+ * Cache tweaking.
  *
  */
 // Refresh VM cache when VM Settings window is loaded. Default is true. Set to false to disable.

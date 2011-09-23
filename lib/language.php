@@ -3,8 +3,14 @@
  * __vbox_language class and trans() function
  * 
  */
+
+global $_vbox_language;
+
+// Settings contains language
+require_once(dirname(__FILE__).'/config.php');
+require_once(dirname(__FILE__).'/utils.php');
+
 /**
- *
  * Language class. Parses language file and stores translations in
  * an array.
  * 
@@ -16,14 +22,6 @@
  * @global __vbox_language $GLOBALS['_vbox_language'] global __vbox_language instance
  * @name $_vbox_language
 */
-
-global $_vbox_language;
-
-
-// Settings contains language
-require_once(dirname(__FILE__).'/config.php');
-require_once(dirname(__FILE__).'/utils.php');
-
 class __vbox_language {
 	
 	var $langdata = array();
@@ -124,7 +122,6 @@ class __vbox_language {
 }
 
 /**
- * 
  * Translate text. If $GLOBALS['_vbox_language'] is not set, create a new
  * instance and pass params to its trans() method
  * @param string $msg message to translate

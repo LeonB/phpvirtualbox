@@ -1,6 +1,12 @@
 <?php
-/*
- * $Id$
+/**
+ * Virtual machine PNG screenshot generation
+ * 
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @package phpVirtualBox
+ * 
  */
 
 # Turn off PHP notices

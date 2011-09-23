@@ -89,7 +89,7 @@ l.onLoad = function() {
 		vmid = $('#vboxIndex').data('selectedVM')['id'];
 	for(var i in vms) {
 		var li = $('<li />').data({'vm':vms[i]});
-		if(vms[i].state == 'Running') {
+		if(vms[i].state == 'Running' || vms[i].state == 'Paused') {
 			$(li).addClass('vboxDisabled disabled');
 		} else {
 			$(li).click(function(){$(this).toggleClass('vboxListItemSelected');}).addClass('vboxListItem');
@@ -203,11 +203,10 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 
 	if(vmSel.length > 1) {
 		var name = 'Appliance';
-		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.checked = false;
-		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.disabled = 'disabled';
+		$(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy).prop({'checked':false,'disabled':true}).siblings().addClass('vboxDisabled');
 	} else {
 		var name = jQuery.trim($(vmSel[0]).text());
-		document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy.disabled = false;
+		$(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy).prop({'disabled':false}).siblings().removeClass('vboxDisabled');
 	}
 	if($(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val()) return;
 	name = $('#vboxIndex').data('vboxConfig').version.settingsFilePath.substring(0,$('#vboxIndex').data('vboxConfig').version.settingsFilePath.length - 27) + $('#vboxIndex').data('vboxConfig').DSEP + name + '.ova';

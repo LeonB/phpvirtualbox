@@ -866,7 +866,7 @@ function vboxSetCookie(k,v) {
 	var exp = new Date(2020,12,24);
 	document.cookie = k+"="+v+"; expires="+exp.toGMTString()+"; path=/";
 	if($('#vboxIndex').data('vboxCookiesParsed'))
-			$('#vboxIndex').data('vboxCookies').k = v;
+			$('#vboxIndex').data('vboxCookies')[k] = v;
 }
 
 /* Strip file name from path */

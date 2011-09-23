@@ -1,9 +1,11 @@
 <?php
-/*
+/**
  * Simple RDP connection file generator
  *
- * $Id$
- * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @package phpVirtualBox
  *
  */
 

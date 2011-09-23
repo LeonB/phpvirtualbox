@@ -1,6 +1,5 @@
 <?php
 /**
- * 
  * Simple data -> filesystem caching class used by vboxconnector.php
  * to cache data returned by vboxwebsrv. Cache locking / unlocking
  * uses flock().
@@ -54,7 +53,8 @@ class cache {
 	var $ext = 'dat';
 	
 	/**
-	 *  Prefix string prepended to cache files
+	 *  Prefix string prepended to cache files to provide some level
+	 *  of namespace separation.
 	 *  @var string
 	 */	
 	var $prefix = 'pvbx';
@@ -88,7 +88,6 @@ class cache {
 	var $logfile = null;
 
 	/**
-	 * 
 	 * Sets $path by checking various environment variables.
 	 */
 	function __construct() {
@@ -115,7 +114,6 @@ class cache {
 	}
 
 	/**
-	 * 
 	 * Get cached data or return false if no cached data is found.
 	 * @param string $key key used to identify cached item
 	 * @param integer $expire maximum age (in seconds) of cached item before it is considered invalid
@@ -131,12 +129,12 @@ class cache {
 
 
 	/**
-	 * 
 	 * Obtain an exclusive lock on cache item using flock(). Once an item is locked,
 	 * it is added to the $open and $locked arrays. If an item was written
 	 * to while waiting to be locked, return null - indicating that recent
 	 * data has already been written. This must be called before writing data
 	 * to a cache item. flock() will block until the cache file is available.
+	 * 
 	 * @see flock()
 	 * @param string $key key used to identify cached item
 	 * @return boolean|null
@@ -182,7 +180,6 @@ class cache {
 	}
 
 	/**
-	 * 
 	 * Store locked cache item, then unlock it.
 	 * @param string $key key used to identify cached item
 	 * @param array $data data to be cached
@@ -202,7 +199,6 @@ class cache {
 	}
 
 	/**
-	 * 
 	 * Remove exclusive lock obtained through lock()
 	 * @param string $key key used to identify cached item
 	 */
@@ -214,7 +210,6 @@ class cache {
 	}
 
 	/**
-	 * 
 	 * Determine if cached item identified by $key is cached and has not expired
 	 * @param string $key key used to identify cached item
 	 * @param int $expire maximum age (in seconds) of cached item before it is considered invalid
@@ -226,7 +221,6 @@ class cache {
 
 
 	/**
-	 * 
 	 * Expire (unlink) cached item(s)
 	 * @param string|array $key key or array of keys used to identify cached item
 	 */
@@ -242,7 +236,6 @@ class cache {
 	}
 
 	/**
-	 * 
 	 * Logging used for debugging
 	 * @param string $s message to log
 	 */
@@ -253,11 +246,7 @@ class cache {
 		fclose(f);
 	}
 
-	/*
-	 * Lock aware file read
-	 */
 	/**
-	 * 
 	 * Lock aware file read. Uses flock() to obtain a shared lock on
 	 * cache item. Returns false if file could not be opened or contanis no data,
 	 * else returns data.
@@ -294,7 +283,6 @@ class cache {
 	}
 
 	/**
-	 * 
 	 * Generates a filename for the cache file using $path, $prefix and $ext class vars
 	 * @access private
 	 * @param string $key key used to identify cached item

@@ -26,11 +26,11 @@
 			
 		</div>
 	  	<p>
-	  		<input name=connectionButton type=button value="Connect" onclick="vboxRDPConnect()" />
+	  		<input name=connectionButton type=button value="Connect" onclick="vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleSize',$('#vboxRDPSize').val()); vboxRDPConnect();" />
 	  		<input type='text' id='vboxConsoleAddr' name='serverAddress' class='vboxRDPSet' value='' />
 	  		<!-- and hardcore web dev guys accross the world frown ... //-->
 	  		&nbsp; &nbsp; &nbsp;
-	 		<input name=cadButton type=button value="Ctrl-Alt-Del" onClick="return vboxRDPsendCAD()" />
+	 		<input name=cadButton id='vboxConsoleCADButton' style='display: none' type=button value="Ctrl-Alt-Del" onClick="return vboxRDPsendCAD()" />
 	 		<input id='vboxVRDPDetachBtn' style='display: none' name='detach' type='button' value='Detach' onClick="vboxRDPDetach();" />
 		   <span id='vboxRDPStatus'></span>
 	  	</p>
@@ -90,6 +90,7 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	} else {
 		$('#vboxConsoleLoginInfo').show();
 	}
+	$('#vboxConsoleLoginInfo').data('vboxVRDPauthType',vm.VRDEServer.authType);
 
 	$('#vboxTabVMUnavailable').css({'display':'none'});
 	
@@ -101,6 +102,14 @@ $('#vboxTabVMConsole').bind('show',function(e,vm){
 	chost+=':'+vm.consoleInfo.consolePort;
 	$(document.vboxRDPForm.serverAddress).val(chost);
 
+	// Set default console size for this VM?
+	if($('#vboxIndex').data('vboxCookiesParsed')) {
+		var cs = $('#vboxIndex').data('vboxCookies')['vbox'+vm.id+'ConsoleSize'];
+		if(cs) {
+			$(document.vboxRDPForm.vboxRDPSizeSelect).children('[value='+cs+']').first().prop('selected',true);	
+		}
+	}
+	
 	// for detached console <title>
 	$('#vboxTabVMConsole').data('vmname',vm.name);
 
@@ -193,11 +202,14 @@ function RDPWebEventLoaded(flashid) {
 	    vboxConsoleDetached = true;
 	    vboxRDPConnect();
 	} else {
+		
 		$('#vboxRDPConnParams').css({'visibility':'visible'});
 		$('#vboxRDPFormContainer').css('display','');
-	    $(window).bind('resize',function(){
-	    	setTimeout("vboxRDPConnect()",1000);
-	    });		
+		
+		// Did not explicitly disconnect from this VM and has no auth settings so reconnect
+    	if($('#vboxIndex').data('vboxCookies')['vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected'] == 'true' && $('#vboxConsoleLoginInfo').data('vboxVRDPauthType') == 'Null') {
+    		document.vboxRDPForm.connectionButton.click();    		
+    	}
 	}
 }
    
@@ -205,6 +217,7 @@ function RDPWebEventConnected(flashId) {
 	$("#vboxRDPStatus").data('vmConnected',true);
 	$("#vboxRDPStatus").html(trans("Connected to %1",'VBoxConsoleWgt').replace('%1',$(document.vboxRDPForm.serverAddress).val()));
 	if(vboxConsoleDetached) window.status = $("#vboxRDPStatus").text();
+	$('#vboxConsoleCADButton').show();
 	$('#vboxVRDPDetachBtn').show();
 }
 
@@ -227,8 +240,13 @@ function RDPWebEventDisconnected(flashId) {
     	window.close();
     }
     document.vboxRDPForm.connectionButton.value = trans("Connect",'VBoxConsoleWgt');
-    document.vboxRDPForm.connectionButton.onclick=function() {return vboxRDPConnect();}
+    document.vboxRDPForm.connectionButton.onclick=function() {
+    	vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleSize',$('#vboxRDPSize').val());
+    	vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected','true');
+    	return vboxRDPConnect();
+    }
     $('#vboxConsoleAddr').css('display','');
+    $('#vboxConsoleCADButton').hide();
     
     $('#vboxRDPFormContainer').css({'display':''});
 }
@@ -244,7 +262,10 @@ function vboxRDPConnect() {
     $('#vboxRDPConnParams').css({'visibility':'hidden'});
 
     document.vboxRDPForm.connectionButton.value = trans("Disconnect",'VBoxConsoleWgt');
-    document.vboxRDPForm.connectionButton.onclick=function(){return vboxRDPDisconnect();}
+    document.vboxRDPForm.connectionButton.onclick=function(){
+    	vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected','false');
+    	return vboxRDPDisconnect();
+    }
     
     $('#vboxConsoleAddr').css('display','none');
 	$('#FlashRDPContainer').css({'visibility':'visible'});
@@ -279,7 +300,12 @@ function vboxRDPDisconnect() {
 	if (flash) try { flash.disconnect(); } catch (err) {};
 	/* Restore the "Connect" form.  And resize flash*/
 	document.vboxRDPForm.connectionButton.value = trans("Connect",'VBoxConsoleWgt');
-	document.vboxRDPForm.connectionButton.onclick=function() {vboxRDPConnect();this.blur();}
+	document.vboxRDPForm.connectionButton.onclick=function() {
+		vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected','true');
+		vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleSize',$('#vboxRDPSize').val())
+		vboxRDPConnect();this.blur();
+	}
+	$('#vboxConsoleCADButton').hide();
 	$(flash).css({'height':'100px','width':'100px'});
 	$('#vboxConsoleAddr').css('display','');
           

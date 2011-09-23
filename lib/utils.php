@@ -1,12 +1,11 @@
 <?php
 /**
- *
  * Common PHP utilities.
  * 
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
- * @see config
+ * @see phpVBoxConfigClass
  * @package phpVirtualBox
  * 
 */
@@ -14,7 +13,6 @@
 require_once(dirname(__FILE__).'/config.php');
 
 /**
- * 
  * Initialize session.
  * @param boolean $keepopen keep session open? The default is
  * 			to close the session after $_SESSION has been populated.
@@ -54,7 +52,6 @@ function session_init($keepopen = false) {
 }
 
 /**
- * 
  * Strip slashes from string. Needed to pass to array_walk
  * @param string $a string to strip slashes from
  */
@@ -74,7 +71,6 @@ function clean_request() {
 if(!function_exists('hash')) {
 // Lower security, but better than nothing
 /**
- * 
  * Return a hash of the passed string. Mimmics PHP's hash() params
  * @param unused $type
  * @param string $str string to hash

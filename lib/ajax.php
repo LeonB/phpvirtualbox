@@ -1,6 +1,5 @@
 <?php
 /**
- *
  * Main ajax interface between JavaScript ajax calls and PHP functions.
  * Accepts JSON or simple GET requests, and returns JSON data.
  * 
@@ -59,7 +58,7 @@ try {
 	
 	switch($vboxRequest['fn']) {
 	
-		/**
+		/*
 		 * Return phpVirtualBox's configuration data
 		 */
 		case 'getConfig':
@@ -85,7 +84,7 @@ try {
 			$response['data']['previewUpdateInterval'] = max(3,intval(@$response['data']['previewUpdateInterval']));
 			
 			// Are default settings being used?
-			if(isset($settings->warnDefault)) {
+			if(@$settings->warnDefault) {
 				throw new Exception("No configuration found. Rename the file <b>config.php-example</b> in phpVirtualBox's folder to <b>config.php</b> and edit as needed.<p>For more detailed instructions, please see the installation wiki on phpVirtualBox's web site. <p><a href='http://code.google.com/p/phpvirtualbox/w/list' target=_blank>http://code.google.com/p/phpvirtualbox/w/list</a>.</p>",vboxconnector::PHPVB_ERRNO_FATAL);
 			}
 			
@@ -105,10 +104,12 @@ try {
 			break;
 	
 		/*
-		 * USER FUNCTIONS
+		 * 
+		 * USER FUNCTIONS FOLLOW
+		 * 
 		 */
 			
-		/**
+		/*
 		 * Pass login to authentication module.
 		 */
 		case 'login':
@@ -129,7 +130,7 @@ try {
 			
 			
 		
-		/**
+		/*
 		 * Return $_SESSION data
 		 */
 		case 'getSession':
@@ -147,7 +148,7 @@ try {
 			$response['data']['result'] = 1;
 			break;
 			
-		/**
+		/*
 		 * Log out of phpVirtualBox. Passed to auth module's
 		 * logout method.
 		 */
@@ -161,7 +162,7 @@ try {
 			
 			break;
 			
-		/**
+		/*
 		 * Change phpVirtualBox password. Passed to auth module's
 		 * changePassword method.
 		 */
@@ -178,7 +179,7 @@ try {
 			
 			break;
 		
-		/**
+		/*
 		 * Get a list of phpVirtualBox users. Passed to auth module's
 		 * getUsers method.
 		 */
@@ -195,7 +196,7 @@ try {
 			
 			break;
 			
-		/**
+		/*
 		 * Remove a phpVirtualBox user. Passed to auth module's
 		 * deleteUser method.
 		 */
@@ -213,7 +214,7 @@ try {
 			$response['data']['result'] = 1;
 			break;
 			
-		/**
+		/*
 		 * Edit a phpVirtualBox user. Passed to auth module's
 		 * updateUser method.
 		 */
@@ -222,7 +223,7 @@ try {
 			$skipExistCheck = true;
 			// Fall to addUser
 
-		/**
+		/*
 		 * Add a user to phpVirtualBox. Passed to auth module's
 		 * updateUser method.
 		 */
@@ -240,7 +241,7 @@ try {
 			$response['data']['result'] = 1;
 			break;
 						
-		/**
+		/*
 		 * If the above cases did not match, assume it is a request
 		 * that should be passed to vboxconnector.
 		 */
@@ -271,7 +272,7 @@ try {
 			
 	} // </switch()>
 
-/**
+/*
  * Catch all exceptions and populate errors in the
  * JSON response data.
  */
@@ -307,7 +308,7 @@ if($vbox && $vbox->errors) {
 	}
 }
 
-/**
+/*
  * Return response as JSON encoded data or use PHP's
  * print_r to dump data to browser.
  */

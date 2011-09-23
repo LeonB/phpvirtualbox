@@ -1,6 +1,5 @@
 <?php
 /**
- *
  * phpVirtualBox configuration class. Parses user configuration, applies
  * defaults, and sanitizes user values.
  * 
@@ -8,6 +7,7 @@
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @package phpVirtualBox
+ * @see config.php-example
  * 
 */
 class phpVBoxConfigClass {
@@ -15,70 +15,60 @@ class phpVBoxConfigClass {
 	/* DEFAULTS */
 	
 	/**
-	 * 
 	 * Default language
 	 * @var string
 	 */
 	var $language = 'en_us';
 
 	/**
-	 * 
 	 * Preview screen width
 	 * @var integer
 	 */	
 	var $previewWidth = 180;
 	
 	/**
-	 * 
 	 * Aspect ratio of preview screen
 	 * @var float
 	 */
 	var $previewAspectRatio = 1.6;
 
 	/**
-	 * 
 	 * Allow users to delete media when it is removed
 	 * @var boolean
 	 */
 	var $deleteOnRemove = true;
 
 	/**
-	 * 
 	 * Restrict file / folder browsers to files ending in extensions found in this array
 	 * @var array
 	 */
 	var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 	/**
-	 * 
 	 * List of console resolutions available on console tab
 	 * @var array
 	 */
 	var $consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
 	
 	/**
-	 * 
 	 * Maximum number of NICs displayed per VM
 	 * @var integer
 	 */
 	var $nicMax = 4;
 
 	/**
-	 * 
 	 * Refresh VM cache when opening a VM settings dialog
 	 * @var boolean
 	 */
 	var $vmConfigRefresh = true;
 
 	/**
-	 * 
 	 * VM list sort order
 	 * @var string
 	 */
 	var $vmListSort = 'name';
 
 	/**
-	 * 
 	 * Cache tweaking settings
 	 * @var array
 	 * @see vboxconnector
@@ -101,7 +91,12 @@ class phpVBoxConfigClass {
 	);
 
 	/**
-	 * 
+	 * true if there is no user supplied config.php found.
+	 * @var boolean
+	 */
+	var $warnDefault = false;
+	
+	/**
 	 * Read user configuration, apply defaults, and do some sanity checking
 	 * @see ajax
 	 * @see vboxconnector
@@ -178,7 +173,6 @@ class phpVBoxConfigClass {
 	}
 	
 	/**
-	 * 
 	 * Set VirtualBox server to use
 	 * @param string $server server from config.php $servers array
 	 */
@@ -192,9 +186,8 @@ class phpVBoxConfigClass {
 	}
 	
 	/**
-	 * 
 	 * Return the server configuration array marked as the authentication master
-	 * @return array server
+	 * @return array server configuration of server marked as authMaster
 	 */
 	function getServerAuthMaster() {
 		foreach($this->servers as $s) {
