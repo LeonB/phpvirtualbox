@@ -1,13 +1,13 @@
 <?php
 /**
- * 
+ *
  * Connects to vboxwebsrv, calls SOAP methods, and returns data.
- * 
+ *
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @package phpVirtualBox
- * 
+ *
  */
 
 class vboxconnector {
@@ -47,9 +47,9 @@ class vboxconnector {
 
 	/**
 	 * Holds any errors that occur during processing. Errors are placed in here
-	 * when we want calling functions to be aware of the error, but do not want to 
+	 * when we want calling functions to be aware of the error, but do not want to
 	 * halt processing
-	 * 
+	 *
 	 * @var array
 	 */
 	var $errors = array();
@@ -57,73 +57,73 @@ class vboxconnector {
 
 	/**
 	 * true if a progress operation was creating during processing
-	 * 
+	 *
 	 * @var boolean
 	 * @access private
 	 * @see __destruct()
 	 */
 	var $progressCreated = false;
-	
+
 	/**
 	 * Array of settings from phpVirtualBox's phpVBoxConfigClass
 	 * @var array
 	 * @see phpVBoxConfigClass
 	 */
 	var $settings = array();
-	
+
 	/**
 	 * true if connected to vboxwebsrv
 	 * @var boolean
 	 */
 	var $connected = false;
-	
+
 	/**
 	 * Instance of cache object
 	 * @see cache
 	 * @var cache
 	 */
 	var $cache;
-	
+
 	/**
 	 * IVirtualBox instance
 	 * @var IVirtualBox
 	 */
 	var $vbox = null;
-	
+
 	/**
 	 * VirtualBox web session manager
 	 * @var IWebsessionManager
 	 */
 	var $websessionManager = null;
-	
+
 	/**
-	 * Holds IWebsessionManager session object if created 
+	 * Holds IWebsessionManager session object if created
 	 * during processing so that it can be properly shutdown
 	 * in __destruct
 	 * @var ISession
 	 * @see __destruct()
 	 */
 	var $session = null;
-	
+
 	/**
 	 * Holds VirtualBox version information
 	 * @var array
 	 */
 	var $version = null;
-	
+
 	/**
 	 * If true, vboxconnector will not verify that there is a valid
 	 * (PHP) session before connecting.
 	 * @var boolean
 	 */
 	var $skipSessionCheck = false;
-	
+
 	/**
 	 * Obtain configuration settings and set object vars
 	 * @param boolean $useAuthMaster use the authentication master obtained from configuration class
 	 * @see phpVBoxConfigClass
 	 */
-	public function __construct ($useAuthMaster = false) {
+	public function __construct($useAuthMaster = false) {
 
 		require_once(dirname(__FILE__).'/cache.php');
 		require_once(dirname(__FILE__).'/language.php');
@@ -203,7 +203,7 @@ class vboxconnector {
 		}
 
 		return ($this->connected = true);
-		
+
 	}
 
 
@@ -234,7 +234,7 @@ class vboxconnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * Log out of vboxwebsrv unless a progress operation was created
 	 * @see $progressCreated
 	 */
@@ -251,15 +251,15 @@ class vboxconnector {
 
 			$this->websessionManager->logoff($this->vbox->handle);
 		}
-		
+
 		unset($this->client);
 	}
 
-	
+
 	/**
 	 * Call overloader. Handles caching of vboxwebsrv data for some incoming requests.
 	 * Returns cached data or result of method call.
-	 * 
+	 *
 	 * @param string $fn method to call
 	 * @param array $args arguments for method
 	 * @throws Exception
@@ -332,7 +332,7 @@ class vboxconnector {
 	}
 
 	/**
-	 * 
+	 *
 	 * Enumerate guest properties of a vm
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
@@ -372,29 +372,29 @@ class vboxconnector {
 
 		/* @var $appl IAppliance */
 		$appl = $this->vbox->createAppliance();
-		
-		
+
+
 		/* @var $vfs IVFSExplorer */
 		$vfs = $appl->createVFSExplorer('file://'.$dir);
-		
+
 		/* @var $progress IProgress */
 		$progress = $vfs->update();
 		$progress->waitForCompletion(-1);
 		$progress->releaseRemote();
-		
+
 		$exists = $vfs->exists(array($file));
 
 		$vfs->releaseRemote();
 		$appl->releaseRemote();
-		
+
 
 		$response['data']['exists'] = count($exists);
 		return true;
 	}
 
 	/**
-	 * Save a running vm's shared folder settings
-	 * 
+	 * Save a vm's shared folder settings
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @param boolean $fromSaveVM set to true if called from saveVM method
@@ -491,7 +491,7 @@ class vboxconnector {
 
 	/**
 	 * Install guest additions
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
@@ -501,7 +501,7 @@ class vboxconnector {
 
 		$response['data'] = array();
 		$response['data']['errored'] = 0;
-		
+
 		/* @var $gem IMedium|null */
 		$gem = null;
 		foreach($this->vbox->DVDImages as $m) { /* @var $m IMedium */
@@ -565,7 +565,7 @@ class vboxconnector {
 		// Try update from guest if it is supported
 		if(!@$args['mount_only']) {
 			try {
-				
+
 				/* @var $progress IProgress */
 				$progress = $this->session->console->guest->updateGuestAdditions($gem->location,'WaitForUpdateStartOnly');
 
@@ -576,13 +576,13 @@ class vboxconnector {
 				$this->cache->expire('__getStorageControllers'.$args['vm']);
 				$this->cache->expire('getMedia');
 				return true;
-				
+
 			} catch (Exception $e) {
 				// Try to mount medium
 				$response['data']['errored'] = 1;
 			}
 		}
-				
+
 		// updateGuestAdditions is not supported. Just try to mount image.
 		$response['data']['result'] = 'nocdrom';
 		$mounted = false;
@@ -612,7 +612,7 @@ class vboxconnector {
 
 	/**
 	 * Attach USB device identified by $args['id'] to a running VM
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
@@ -663,7 +663,7 @@ class vboxconnector {
 
 
 	/**
-	 * Save a running vm's network settings
+	 * Save a vm's network adapter settings
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @param boolean $fromSaveVM set to true if called from saveVM method
@@ -780,7 +780,7 @@ class vboxconnector {
 		/* @var $cm CloneMode */
 		$cm = new CloneMode(null,$args['vmState']);
 		$state = $cm->ValueMap[$args['vmState']];
-		
+
 		$opts = array();
 		if(!$args['reinitNetwork']) $opts[] = 'KeepAllMACs';
 		if($args['link']) $opts[] = 'Link';
@@ -796,19 +796,19 @@ class vboxconnector {
 				return false;
 			}
 		} catch (Exception $null) {}
-		
+
 		$this->__storeProgress($progress,array('getMedia'));
 
 		$response['data'] = array('progress' => $progress->handle, 'settingsFilePath' => $sfpath);
-		
-		
+
+
 		return true;
 	}
 
 
 	/**
 	 * Turn VRDE on / off on a running VM
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
@@ -835,7 +835,7 @@ class vboxconnector {
 
 	/**
 	 * Save running VM settings. Called from saveVM() method if the requested VM is running.
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1157,9 +1157,9 @@ class vboxconnector {
 		$scs = $m->storageControllers;
 		$attachedEx = $attachedNew = array();
 		foreach($scs as $sc) { /* @var $sc IStorageController */
-			
+
 			$mas = $m->getMediumAttachmentsOfController($sc->name);
-			
+
 			foreach($mas as $ma) { /* @var $ma IMediumAttachment */
 
 				$attachedEx[$sc->name.$ma->port.$ma->device] = (($ma->medium->handle && $ma->medium->id) ? $ma->medium->id : null);
@@ -1324,10 +1324,10 @@ class vboxconnector {
 		// Serial Ports
 		$spChanged = false;
 		for($i = 0; $i < count($args['serialPorts']); $i++) {
-			
+
 			/* @var $p ISerialPort */
 			$p = $m->getSerialPort($i);
-			
+
 			if(!($p->enabled || intval($args['serialPorts'][$i]['enabled']))) continue;
 			$spChanged = true;
 			try {
@@ -1352,12 +1352,12 @@ class vboxconnector {
 		// LPT Ports
 		if(@$this->settings['enableLPTConfig']) {
 			$lptChanged = false;
-			
+
 			for($i = 0; $i < count($args['parallelPorts']); $i++) {
-				
+
 				/* @var $p IParallelPort */
 				$p = $m->getParallelPort($i);
-				
+
 				if(!($p->enabled || intval($args['parallelPorts'][$i]['enabled']))) continue;
 				$lptChanged = true;
 				try {
@@ -1483,7 +1483,7 @@ class vboxconnector {
 
 	/**
 	 * Add a virtual machine via its settings file.
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1506,9 +1506,9 @@ class vboxconnector {
 
 	/**
 	 * Return cached VM configuration data. These are split into multiple cache files.
-	 * E.g. network adapters, storage controllers, etc.. 
-	 * 
-	 * @param string $fn function to call 
+	 * E.g. network adapters, storage controllers, etc..
+	 *
+	 * @param string $fn function to call
 	 * @param string $key key for cache item
 	 * @param object $item item to obtain data from if data is not cached
 	 * @param boolean $force_refresh force the refresh of cached data
@@ -1557,10 +1557,10 @@ class vboxconnector {
 
 	/**
 	 * Get progress operation status. On completion, destory progress operation.
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
-	 * 
+	 *
 	 */
 	public function getProgress($args,&$response) {
 
@@ -1573,24 +1573,24 @@ class vboxconnector {
 		// progress operation result
 		$result = 1;
 		$error = 0;
-		
+
 		// Connect to vboxwebsrv
 		$this->connect();
 
 		try {
 
 			try {
-				
+
 				// Keep session from timing out
 				$vbox = new IVirtualBox($this->client, $pop['session']);
 				$session = $this->websessionManager->getSessionObject($vbox->handle);
-				
+
 				// Force web call
 				if($session->state->__toString()) {}
-				
+
 				/* @var $progress IProgress */
 				$progress = new IProgress($this->client,$args['progress']);
-				
+
 			} catch (Exception $e) {
 				$this->errors[] = $e;
 				throw new Exception('Could not obtain progress operation: '.$args['progress']);
@@ -1630,7 +1630,7 @@ class vboxconnector {
 
 
 		} catch (Exception $e) {
-			
+
 			// Force progress dialog closure
 			$response['data']['info'] = array('completed'=>1);
 
@@ -1654,9 +1654,9 @@ class vboxconnector {
 			$result = 0;
 			if(@$args['catcherrs']) $response['data']['error'] = $error;
 			else $this->errors[] = new Exception($error['message']);
-			
+
 		}
-				
+
 		$response['data']['result'] = $result;
 		$this->__destroyProgress($pop);
 
@@ -1665,7 +1665,7 @@ class vboxconnector {
 
 	/**
 	 * Cancel a running progress operation
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1696,7 +1696,7 @@ class vboxconnector {
 	/**
 	 * Destory a progress operation. Removing its cache and expiring any after-action
 	 * cache items that should be expired.
-	 * 
+	 *
 	 * @param array $pop progress operation details
 	 * @return boolean true on success
 	 */
@@ -1747,7 +1747,7 @@ class vboxconnector {
 	/**
 	 * Returns a key => value mapping of an enumeration class contained
 	 * in vboxServiceWrappers.php (classes that extend VBox_Enum).
-	 * 
+	 *
 	 * @param string $class name of enumeration class
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1759,10 +1759,10 @@ class vboxconnector {
 			$response['data'] = $c->NameMap;
 		}
 	}
-	
+
 	/**
 	 * Save VirtualBox system properties
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1783,7 +1783,7 @@ class vboxconnector {
 
 	/**
 	 * Import a virtual appliance
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1795,7 +1795,7 @@ class vboxconnector {
 
 		/* @var $app IAppliance */
 		$app = $this->vbox->createAppliance();
-		
+
 		/* @var $progress IProgress */
 		$progress = $app->read($args['file']);
 
@@ -1846,7 +1846,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of VMs that are available for export.
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1887,7 +1887,7 @@ class vboxconnector {
 
 	/**
 	 * Read and interpret virtual appliance file
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1899,7 +1899,7 @@ class vboxconnector {
 
 		/* @var $app IAppliance */
 		$app = $this->vbox->createAppliance();
-		
+
 		/* @var $progress IProgress */
 		$progress = $app->read($args['file']);
 
@@ -1939,7 +1939,7 @@ class vboxconnector {
 
 	/**
 	 * Export VMs to a virtual appliance file
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -1965,7 +1965,7 @@ class vboxconnector {
 
 			/* @var $vfs IVFSExplorer */
 			$vfs = $app->createVFSExplorer('file://'.$dir);
-			
+
 			/* @var $progress IProgress */
 			$progress = $vfs->remove(array($file));
 			$progress->waitForCompletion(-1);
@@ -1986,7 +1986,7 @@ class vboxconnector {
 
 
 		foreach($args['vms'] as $vm) {
-			
+
 			/* @var $m IMachine */
 			$m = $this->vbox->findMachine($vm['id']);
 			if (@$this->settings['enforceVMOwnership'] && ($owner = $m->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
@@ -2037,10 +2037,10 @@ class vboxconnector {
 
 		return true;
 	}
-	
+
 	/**
 	 * Get host networking info
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2105,7 +2105,7 @@ class vboxconnector {
 
 	/**
 	 * Get host-only interface information
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2166,10 +2166,10 @@ class vboxconnector {
 		return true;
 	}
 
-	
+
 	/**
 	 * Save host-only interface information
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2250,7 +2250,7 @@ class vboxconnector {
 
 	/**
 	 * Remove a host-only interface
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2285,7 +2285,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of Guest OS Types supported by this VirtualBox installation
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2320,8 +2320,9 @@ class vboxconnector {
 
 	/**
 	 * Set virtual machine state. Running, power off, save state, pause, etc..
-	 * 
-	 * @param array $args array of arguments. See function body for details.
+	 *
+	 * @param string $vm virtual machine name or UUID
+	 * $param string $state state to set the virtual machine to
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
 	 */
@@ -2451,7 +2452,7 @@ class vboxconnector {
 
 	/**
 	 * Start a stopped virtual machine
-	 * 
+	 *
 	 * @param IMachine $machine Virtual machine instance to start
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2493,7 +2494,7 @@ class vboxconnector {
 
 	/**
 	 * Get VirtualBox host memory usage information
-	 * 
+	 *
 	 * @param unused $args
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2506,13 +2507,13 @@ class vboxconnector {
 		$response['data'] = array(
 			'memoryAvailable' => $this->vbox->host->memoryAvailable
 		);
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Get VirtualBox host details
-	 * 
+	 *
 	 * @param unsed $args
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2605,7 +2606,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of USB devices attached to the VirtualBox host
-	 * 
+	 *
 	 * @param unused $args
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2616,7 +2617,7 @@ class vboxconnector {
 		$this->connect();
 
 		foreach($this->vbox->host->USBDevices as $d) { /* @var $d IUSBDevice */
-			
+
 			$response['data'][] = array(
 				'id' => $d->id,
 				'vendorId' => sprintf('%04s',dechex($d->vendorId)),
@@ -2641,7 +2642,7 @@ class vboxconnector {
 
 	/**
 	 * Get virtual machine or virtualbox host details
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @param ISnapshot $snapshot snapshot instance to use if obtaining snapshot details.
@@ -2654,16 +2655,16 @@ class vboxconnector {
 
 		// Host instead of vm info
 		if($args['vm'] == 'host') {
-			
+
 			$response['data'] = array();
 			$tmpstore = array('data'=>array());
-			
+
 			$this->getHostDetails($args, array(&$tmpstore));
 			$response['data'] = array_merge($response['data'],$tmpstore['data']);
-			
+
 			$this->getHostNetworking($args, array(&$tmpstore));
 			$response['data'] = array_merge($response['data'],$tmpstore['data']);
-			
+
 			return true;
 		}
 
@@ -2770,7 +2771,7 @@ class vboxconnector {
 
 			// Get removable media
 			if(!@$args['force_refresh']) {
-				
+
 				for($a = 0; $a < count($data['storageControllers']); $a++) {
 					if(!is_array($data['storageControllers'][$a]['mediumAttachments'])) continue;
 					$mas = null;
@@ -2779,7 +2780,7 @@ class vboxconnector {
 						if($data['storageControllers'][$a]['mediumAttachments'][$b]['temporaryEject']) continue;
 						if(!$mas)
 							$mas = $machine->getMediumAttachmentsOfController($data['storageControllers'][$a]['name']);
-						
+
 						// Find controller
 						foreach($mas as $ma) {
 							if($ma->port != $data['storageControllers'][$a]['mediumAttachments'][$b]['port'] || $ma->device != $data['storageControllers'][$a]['mediumAttachments'][$b]['device'])
@@ -2787,18 +2788,18 @@ class vboxconnector {
 							$mid = ($ma->medium->handle ? $ma->medium->id : null);
 							if($mid != @$data['storageControllers'][$a]['mediumAttachments'][$b]['medium']['id'])
 								$data['refreshMedia'] = 1;
-								
+
 							$data['storageControllers'][$a]['mediumAttachments'][$b]['medium'] = ($mid ? array('id'=>$mid) : null);
 						}
 					}
 				}
-				
+
 				// Media changed
 				if($data['refreshMedia']) {
 					$this->cache->expire('getMedia');
 					$this->cache->expire('__getStorageControllers'.$args['vm']);
 				}
-				
+
 			}
 		}
 
@@ -2812,7 +2813,7 @@ class vboxconnector {
 
 	/**
 	 * Remove a virtual machine
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -2861,7 +2862,7 @@ class vboxconnector {
 				$this->__storeProgress($progress,$cache);
 
 				$response['data']['progress'] = $progress->handle;
-				
+
 				// return here. we got a progress operation
 				return true;
 
@@ -2872,16 +2873,16 @@ class vboxconnector {
 
 		// expire cache items
 		$this->cache->expire($cache);
-		
+
 		return ($response['data']['result'] = 1);
 
 
 	}
-	
-	
+
+
 	/**
 	 * Create a new Virtual Machine
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3050,7 +3051,7 @@ class vboxconnector {
 			$this->errors[] = $e;
 			return false;
 		}
-		
+
 		$this->cache->expire('getVMs');
 
 		return ($response['data']['result'] = 1);
@@ -3060,7 +3061,7 @@ class vboxconnector {
 
 	/**
 	 * Return a list of network adapters attached to machine (or snapshot) $m
-	 * 
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array of network adapter information
 	 */
@@ -3069,7 +3070,7 @@ class vboxconnector {
 		$adapters = array();
 
 		for($i = 0; $i < $this->settings['nicMax']; $i++) {
-			
+
 			/* @var $n INetworkAdapter */
 			$n = $m->getNetworkAdapter($i);
 
@@ -3077,7 +3078,7 @@ class vboxconnector {
 			$at = $n->attachmentType->__toString();
 			if($at == 'NAT') $nd = $n->natDriver; /* @var $nd INATEngine */
 			else $nd = null;
-			
+
 			$adapters[] = array(
 				'adapterType' => $n->adapterType->__toString(),
 				'slot' => $n->slot,
@@ -3102,7 +3103,7 @@ class vboxconnector {
 					: array()
 				)
 			);
-			
+
 			$n->releaseRemote();
 		}
 
@@ -3113,7 +3114,7 @@ class vboxconnector {
 
 	/**
 	 * Set virtual machine sort order
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param unused $response
 	 */
@@ -3133,7 +3134,7 @@ class vboxconnector {
 
 	/**
 	 * Return virtual machine sort order
-	 * 
+	 *
 	 * @param unused $args
 	 * @param unused $response
 	 */
@@ -3148,7 +3149,7 @@ class vboxconnector {
 
 	/**
 	 * Return a list of virtual machines along with their states and other basic info
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3168,9 +3169,9 @@ class vboxconnector {
 		//Get a list of registered machines
 		$machines = $this->vbox->machines;
 
-		
+
 		foreach ($machines as $machine) { /* @var $machine IMachine */
-			
+
 
 			try {
 				$response['data']['vmlist'][] = array(
@@ -3217,7 +3218,7 @@ class vboxconnector {
 
 	/**
 	 * Creates a new exception so that input can be debugged.
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3229,7 +3230,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of media registered with VirtualBox
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3253,7 +3254,7 @@ class vboxconnector {
 
 	/**
 	 * Get USB controller information
-	 * 
+	 *
 	 * @param IMachine $m virtual machine instance
 	 * @return array USB controller info
 	 */
@@ -3264,7 +3265,7 @@ class vboxconnector {
 
 		$deviceFilters = array();
 		foreach($u->deviceFilters as $df) { /* @var $df IUSBDeviceFilter */
-			
+
 			$deviceFilters[] = array(
 				'name' => $df->name,
 				'active' => intval($df->active),
@@ -3289,7 +3290,7 @@ class vboxconnector {
 
 	/**
 	 * Return top-level virtual machine or snapshot information
-	 * 
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array vm or snapshot data
 	 */
@@ -3357,7 +3358,7 @@ class vboxconnector {
 
 	/**
 	 * Get virtual machine or snapshot boot order
-	 * 
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array boot order
 	 */
@@ -3373,7 +3374,7 @@ class vboxconnector {
 
 	/**
 	 * Get serial port configuration for a virtual machine or snapshot
-	 * 
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array serial port info
 	 */
@@ -3403,7 +3404,7 @@ class vboxconnector {
 
 	/**
 	 * Get parallel port configuration for a virtual machine or snapshot
-	 * 
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array parallel port info
 	 */
@@ -3432,7 +3433,7 @@ class vboxconnector {
 
 	/**
 	 * Get shared folder configuration for a virtual machine or snapshot
-	 * 
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array shared folder info
 	 */
@@ -3456,7 +3457,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of transient (temporary) shared folders
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3469,20 +3470,20 @@ class vboxconnector {
 
 		/* @var $machine IMachine */
 		$machine = $this->vbox->findMachine($args['vm']);
-		
+
 		// No need to continue if machine is not running
 		if($machine->state->__toString() != 'Running') {
 			$machine->releaseRemote();
 			return true;
 		}
-		
+
 		$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 		$machine->lockMachine($this->session->handle,'Shared');
 
 		$sfs = $this->session->console->sharedFolders;
 
 		foreach($sfs as $sf) { /* @var $sf ISharedFolder */
-			
+
 			$response['data'][] = array(
 				'name' => $sf->name,
 				'hostPath' => $sf->hostPath,
@@ -3504,7 +3505,7 @@ class vboxconnector {
 
 	/**
 	 * Get medium attachment information for all medium attachments in $mas
-	 * 
+	 *
 	 * @param array $mas list of IMediumAttachment instances
 	 * @return array medium attachment info
 	 */
@@ -3530,7 +3531,7 @@ class vboxconnector {
 
 	/**
 	 * Save snapshot details ( description or name)
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3557,7 +3558,7 @@ class vboxconnector {
 
 	/**
 	 * Get snapshot details
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3569,10 +3570,10 @@ class vboxconnector {
 
 		/* @var $vm IMachine */
 		$vm = $this->vbox->findMachine($args['vm']);
-		
+
 		/* @var $snapshot ISnapshot */
 		$snapshot = $vm->findSnapshot($args['snapshot']);
-		
+
 		$machine = array();
 		$this->getVMDetails(array(),$machine,$snapshot->machine);
 
@@ -3589,7 +3590,7 @@ class vboxconnector {
 
 	/**
 	 * Restore a snapshot
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3648,7 +3649,7 @@ class vboxconnector {
 
 	/**
 	 * Delete a snapshot
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3704,7 +3705,7 @@ class vboxconnector {
 
 	/**
 	 * Take a snapshot
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3762,7 +3763,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of snapshots for a machine
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3794,7 +3795,7 @@ class vboxconnector {
 
 	/**
 	 * Return details about snapshot $s
-	 * 
+	 *
 	 * @param ISnapshot $s snapshot instance
 	 * @param boolean $sninfo traverse child snapshots and include machine id
 	 * @return array snapshot info
@@ -3826,8 +3827,8 @@ class vboxconnector {
 	}
 
 	/**
-	 * Return details about storage controllers for machine $m 
-	 * 
+	 * Return details about storage controllers for machine $m
+	 *
 	 * @param IMachine|ISnapshot $m virtual machine or snapshot instance
 	 * @return array storage controllers' details
 	 */
@@ -3856,7 +3857,7 @@ class vboxconnector {
 
 	/**
 	 * Clone a medium
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3903,7 +3904,7 @@ class vboxconnector {
 
 	/**
 	 * Set medium to a specific type
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3927,7 +3928,7 @@ class vboxconnector {
 
 	/**
 	 * Add iSCSI medium
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3972,7 +3973,7 @@ class vboxconnector {
 
 	/**
 	 * Add existing medium by file location
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -3992,7 +3993,7 @@ class vboxconnector {
 
 	/**
 	 * Get VirtualBox generated machine configuration file name
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4010,7 +4011,7 @@ class vboxconnector {
 
 	/**
 	 * Create base storage medium (virtual hard disk)
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4042,7 +4043,7 @@ class vboxconnector {
 
 		/* @var $hd IMedium */
 		$hd = $this->vbox->createHardDisk($format,$args['file']);
-		
+
 		/* @var $progress IProgress */
 		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$type);
 
@@ -4065,7 +4066,7 @@ class vboxconnector {
 
 	/**
 	 * Release medium from all attachments
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4149,7 +4150,7 @@ class vboxconnector {
 
 	/**
 	 * Remove a medium
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4160,7 +4161,7 @@ class vboxconnector {
 		$this->connect();
 
 		if(!$args['type']) $args['type'] = 'HardDisk';
-		
+
 		/* @var $m IMedium */
 		$m = $this->vbox->findMedium($args['id'],$args['type']);
 
@@ -4194,7 +4195,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of recent media
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4216,7 +4217,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of recent media paths
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4238,7 +4239,7 @@ class vboxconnector {
 
 	/**
 	 * Update recent medium path list
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4261,7 +4262,7 @@ class vboxconnector {
 
 	/**
 	 * Update recent media list
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4285,7 +4286,7 @@ class vboxconnector {
 
 	/**
 	 * Mount a medium on the VM
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @param boolean $save save the VM's configuration after mounting
@@ -4360,7 +4361,7 @@ class vboxconnector {
 
 	/**
 	 * Get medium details
-	 * 
+	 *
 	 * @param IMedium $m medium instance
 	 * @return array medium details
 	 */
@@ -4437,7 +4438,7 @@ class vboxconnector {
 
 	/**
 	 * Store a progress operation so that its status can be polled via getProgress()
-	 * 
+	 *
 	 * @param IProgress $progress progress operation instance
 	 * @param array $expire cache items to expire when progress operation completes
 	 * @return string progress operation handle / id
@@ -4482,7 +4483,7 @@ class vboxconnector {
 		$this->connect();
 
 		$mediumFormats = array();
-		
+
 		// capabilities
 		$mfCap = new MediumFormatCapabilities(null,'');
 		foreach($this->vbox->systemProperties->mediumFormats as $mf) { /* @var $mf IMediumFormat */
@@ -4495,7 +4496,7 @@ class vboxconnector {
 			}
 			$mediumFormats[] = array('id'=>$mf->id,'name'=>$mf->name,'extensions'=>array_map('strtolower',$exts[0]),'deviceTypes'=>$dtypes,'capabilities'=>$caps);
 		}
-		
+
 		$response['data'] = array(
 			'minGuestRAM' => (string)$this->vbox->systemProperties->minGuestRAM,
 			'maxGuestRAM' => (string)$this->vbox->systemProperties->maxGuestRAM,
@@ -4522,7 +4523,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of VM log file names
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
@@ -4533,12 +4534,12 @@ class vboxconnector {
 
 		/* @var $m IMachine */
 		$m = $this->vbox->findMachine($args['vm']);
-		
+
 		$logs = array();
-		
+
 		try { $i = 0; while($l = $m->queryLogFilename($i++)) $logs[] = $l;
 		} catch (Exception $null) {}
-		
+
 		$response['data']['path'] = $m->logFolder;
 		$response['data']['logs'] = $logs;
 		$m->releaseRemote();
@@ -4546,7 +4547,7 @@ class vboxconnector {
 
 	/**
 	 * Get VM log file contents
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
@@ -4567,7 +4568,7 @@ class vboxconnector {
 			}
 		} catch (Exception $null) {}
 		$m->releaseRemote();
-		
+
 		// Attempt to UTF-8 encode string or json_encode may choke
 		// and return an empty string
 		if(function_exists('utf8_encode'))
@@ -4576,7 +4577,7 @@ class vboxconnector {
 
 	/**
 	 * Get a list of USB devices attached to a given VM
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4607,7 +4608,7 @@ class vboxconnector {
 
 	/**
 	 * Get a newly generated MAC address from VirtualBox
-	 * 
+	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
@@ -4623,7 +4624,7 @@ class vboxconnector {
 
 	/**
 	 * Format a time span in seconds into days / hours / minutes / seconds
-	 * 
+	 *
 	 * @param integer $t number of seconds
 	 * @return array containing number of days / hours / minutes / seconds
 	 */
