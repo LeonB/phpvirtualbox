@@ -344,7 +344,9 @@ $('#vboxVMDetails').find('tr.vboxDetailsHead').each(function(){
 	}).hover(function(){
 		$(this).addClass('hover');},
 		function(){$(this).removeClass('hover');}
-	).disableSelection();
+	).disableSelection().find('span.vboxDetailsUpDnImgSpan').click(function(){
+		$(this).closest('th').dblclick();
+	});
 	
 }).disableSelection().find('.translate').html(function(i,h){return trans(h,'UIDetailsPagePrivate',0,$(this).attr('trcomment'));}).removeClass('translate');
 
