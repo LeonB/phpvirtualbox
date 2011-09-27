@@ -1,4 +1,4 @@
-/*
+/**
  * $Id$
  * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  */
@@ -203,7 +203,7 @@ function vboxWizardExportApplianceInit() {
  */
 function vboxPortForwardConfigInit(rules,callback) {
 	var l = new vboxLoader();
-	l.addFile("panes/settingsPortForwarding.html",function(f){$('#vboxIndex').append(f);});
+	l.addFileToDOM("panes/settingsPortForwarding.html");
 	l.onLoad = function(){
 		vboxSettingsPortForwardingInit(rules);
 		var buttons = {};
@@ -388,7 +388,7 @@ function vboxShowLogsDialogInit(vm) {
 	l.add('getVMLogFilesInfo',function(r){
 		$('#vboxVMLogsDialog').data({'logs':r.logs,'logpath':r.path});
 	},{'vm':vm});
-	l.addFile('panes/vmlogs.html',function(f){$('#vboxVMLogsDialog').append(f);});
+	l.addFileToDOM('panes/vmlogs.html',$('#vboxVMLogsDialog'));
 	l.onLoad = function(){
 		var buttons = {};
 		buttons[trans('Refresh','VBoxVMLogViewer')] = function() {
@@ -423,7 +423,7 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 	l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});
 	l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
 	l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
-	l.addFile('panes/vmm.html',function(f){$('#vboxVMMDialog').append(f);});
+	l.addFileToDOM('panes/vmm.html',$('#vboxVMMDialog'));
 	l.onLoad = function() {
 		var buttons = {};
 		if(callback) {
@@ -624,7 +624,7 @@ function vboxGuestNetworkAdaptersDialogInit(vm,nic) {
 	 * Loader
 	 */
 	var l = new vboxLoader();
-	l.addFile('panes/guestNetAdapters.html',function(f){$('#vboxGuestNetworkDialog').append(f);});
+	l.addFileToDOM('panes/guestNetAdapters.html',$('#vboxGuestNetworkDialog'));
 	l.onLoad = function(){
 		
 		var buttons = {};
@@ -869,9 +869,7 @@ function vboxSettingsDialog(title,panes,data,onsave,pane,icon,langContext) {
 		// Settings pane
 		$('#vboxSettingsList').append($('<div />').attr({'id':'vboxSettingsPane-'+panes[i].name,'style':'display: none;','class':'vboxSettingsPaneSection ui-corner-all ' + (panes[i].tabbed ? 'vboxTabbed' : 'vboxNonTabbed')}));
 		
-		loader.addFile('panes/settings'+panes[i].name+'.html',function(f,i){
-			$('#vboxSettingsPane-'+i.setting).append(f);
-		},{'setting':panes[i].name});
+		loader.addFileToDOM('panes/settings'+panes[i].name+'.html',$('#vboxSettingsPane-'+panes[i].name));
 		
 	}
 

@@ -626,7 +626,7 @@ function vboxVMList(anchorid) {
 		if(self._running) return;
 		
 		var cb = function() {
-			vboxDataMediator.get('VMs',null,function(d) {
+			vboxAjaxRequest('getVMs',{},function(d) {
 				self.updateList(d);
 			});			
 		};
@@ -669,10 +669,10 @@ function vboxVMList(anchorid) {
 		// perform will be more authoritative. See updateList()
 		self._running = null;
 		
-		vboxDataMediator.get('VMs',null,function(d) {
+		vboxAjaxRequest('getVMs',{},function(d) {
 			self.start(true);
 			self.updateList(d);
-		});
+		});			
 		
 	};
 

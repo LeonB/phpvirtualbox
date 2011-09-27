@@ -124,7 +124,7 @@
 
 
 			/*
-			 * Resizable panes
+			 * Resizable panes functionality
 			 */
 			$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
 				
@@ -200,12 +200,13 @@
 			
 			
 			/*
-			 * Load panes and data after login
+			 * Load panes all and data after valid login
 			 */
 			$('#vboxIndex').bind('login', function() {
 			
 				var l = new vboxLoader();
 				
+				// Get data and store it using data()
 				l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});
 				l.add('getGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
 				l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
@@ -214,10 +215,11 @@
 				l.add('getRecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
 				l.add('getRecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
 	
-				l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
-				l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{});
-				l.addFile('panes/vmlistToolbar.html',function(f){$('#vboxIndex').append(f);},{});
-				l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
+				// Load HTML panes and append them to their respective locations
+				l.addFileToDOM('panes/topmenu.html');
+				l.addFileToDOM('panes/vmlistToolbar.html');
+				l.addFileToDOM('panes/tabs.html',$('#vboxPaneTabContent'));
+				l.addFileToDOM('panes/vmlist.html',$('#vboxPaneVMList'));
 	
 				l.onLoad = function() {
 	
@@ -228,6 +230,8 @@
 					}
 					
 				};
+				
+				// Trigger resize event to size panes
 				l.onShow = function() { $(window).trigger('resize'); };
 	
 				l.hideRoot = true;
@@ -242,17 +246,19 @@
 				
 				// check session info
 				if($('#vboxIndex').data('vboxSession') && $('#vboxIndex').data('vboxSession').valid) {
+					
+					// Session is valid, trigger login
 					$('#vboxIndex').trigger('login');
 					return;
 				}
 				
-				// Was there an error?
+				// Was there an error? Assume it was displayed and just return from function
 				if($('#vboxIndex').data('vboxSession') && !$('#vboxIndex').data('vboxSession').result) {
 					return;
 				}
 				
 
-				// No valid session. Load login pane
+				// No valid session. Show login pane
 				$('#vboxLogin').find('input[name=password]').val('');
 				$('#vboxLogin').dialog('open');
 				
@@ -266,15 +272,19 @@
 			/** Load login form */
 			var login = new vboxLoader();
 			login.add('getSession',function(d){$('#vboxIndex').data('vboxSession',d);});
-			login.addFile('panes/login.html',function(f){$('#vboxIndex').append(f);});
+			login.addFileToDOM('panes/login.html');
 			login.onLoad = function() {
 
 				var buttons = {};
 				buttons[trans('Log in','UIUsers')] = function() {
+					
+					// Login button triggers login attempt
 					var u = $('#vboxLogin').find('input[name=username]').val();
 					var p = $('#vboxLogin').find('input[name=password]').val();
 					if(!(u&&p)) return;
 					$('#vboxLogin').dialog('close');
+					
+					// A valid login should create a valid session
 					var trylogin = new vboxLoader();
 					trylogin.add('login',function(d){$('#vboxIndex').data('vboxSession',d);},{'u':u,'p':p});
 					trylogin.onLoad = function() { vboxCheckSession(true);};
@@ -289,6 +299,8 @@
 				
 				// Trick loader into not showing root pane again
 				this.hideRoot = false;
+				
+				// Login form is loaded, run check for valid session
 				vboxCheckSession();
 				
 				

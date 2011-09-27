@@ -374,11 +374,13 @@ function vboxFileBrowser(root,fn,foldersonly,title,icon,strictFiles) {
 /**
  * Convert megabytes to human readable string
  * @param mb {Integer} megabytes
+ * @return {String} human readable size representation (e.g. 2 GB, 500 MB, etc..)
  */
 function vboxMbytesConvert(mb) {return vboxBytesConvert(parseFloat(mb) * 1024 * 1024);}
 /**
  * Convert bytes to human readable string
  * @param bytes {Integer} bytes
+ * @return {String} human readable size representation (e.g. 2 GB, 500 MB, etc..)
  */
 function vboxBytesConvert(bytes) {
 	var ext = new Array('B','KB','MB','GB','TB');
@@ -390,6 +392,7 @@ function vboxBytesConvert(bytes) {
 /**
  * Parse str param into megabytes
  * @param str {String} size string (2 TB, 500 MB, etc..) to parse
+ * @return {Integer} megabytes
  */
 function vboxConvertMbytes(str) {
 	str = str.replace('  ',' ');
@@ -420,7 +423,7 @@ function vboxConvertMbytes(str) {
 
 /**
  * Display alert Dialog
- * @param e {String} message to display
+ * @param e {String|Object} message to display
  * @param xtraOpts {Object} extra options to apply to alert jquery dialog (optional)
  * @see jQuery.dialog()
  */
@@ -434,7 +437,7 @@ function vboxAlert(e,xtraOpts) {
 	// Convert to <p>
 	if(msg[0] != '<') msg = '<p>'+msg+'</p>';
 	
-	var div = $('<div />').attr({'class':'vboxDialogContent vboxAlert'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" />'+msg);
+	var div = $('<div />').attr({'class':'vboxDialogContent vboxAlert'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px; height: 50px; width: 50px;" />'+msg);
 	
 	
 	if(typeof e == 'object' && e.details) {
@@ -652,6 +655,7 @@ function vboxColorRows(elm,startOdd,headerClass) {
 /**
  * Return an HTML div node sized to parent with overflow hidden
  * @param p {HTML Node} node to add dive to
+ * @return {HTML Node}
  */
 function vboxDivOverflowHidden(p) {
 	var w = $(p).innerWidth();
@@ -884,6 +888,7 @@ function vboxPositionToWindow(elm) {
 /**
  * Return true if k param is a number
  * @param k {Integer} keycode
+ * @return {Boolean}
  */
 function vboxValidateNum(k) {
 	return ((k >= 96 && k <= 105)||(k >= 48 && k <= 57));
@@ -891,6 +896,7 @@ function vboxValidateNum(k) {
 /**
  * Return true if k param is a number or '.'
  * @param k {Integer} keycode
+ * @return {Boolean}
  */
 function vboxValidateIP(k) {
 	return (vboxValidateNum(k) || k == 190); 
@@ -898,6 +904,7 @@ function vboxValidateIP(k) {
 /**
  * Return true if k param is a valid control code (shift, backspace, etc..)
  * @param k {Integer} keycode
+ * @return {Boolean}
  */
 function vboxValidateCtrl(k) {
 	switch(k) {
@@ -973,6 +980,7 @@ __vboxNotifyBrowserChanges = 0;
 __vboxNotifyBrowserTitle = document.title;
 /**
  * Update browser title to notify of change (firefox apptab support)
+ * @param add {Boolean} set to true to add a notification, else notification is removed
  */
 function vboxNotifyBrowser(add) {
 

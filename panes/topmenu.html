@@ -61,7 +61,7 @@ if($('#vboxIndex').data('vboxSession').user) {
 			'context' : 'UIUsers',
 			'click': function() {
 				var l = new vboxLoader();
-				l.addFile('panes/userEdit.html',function(f){$('#vboxIndex').append(f);});
+				l.addFileToDOM('panes/userEdit.html');
 				l.onLoad = function(){
 					
 					// Set mode
@@ -194,7 +194,7 @@ var menu = {
 	        	$('#vboxIndex').append($('<div />').attr({'id':'vboxAbout','class':'vboxDialogContent','style':'display: none; width: 500px;'}));
 	
 	        	var l = new vboxLoader();
-	        	l.addFile('panes/about.html',function(f){$('#vboxAbout').append(f);});
+	        	l.addFileToDOM('panes/about.html',$('#vboxAbout'));
 	        	l.onLoad = function() {
 		        	var buttons = {};
 		        	buttons[trans('Close','VBoxVMLogViewer')] = function() { $(this).empty().remove(); };

@@ -37,7 +37,7 @@ for(var i = 0; i < tabs.length; i++) {
 	// Tab link
 	$('<li />').attr({'class':'ui-corner-all','id':'tabsMain-'+tabs[i].name}).html('<a href="#'+tabs[i].name+'"><span><img style="vertical-align: middle" src="images/vbox/'+tabs[i].icon+'_16px.png" border="0" /> <span id="'+tabs[i].name+'Title">'+trans(tabs[i].label,'UIVMDesktop')+'</span></span></a>').appendTo('#tablistMain');
 	
-	tabLoader.addFile('panes/'+tabs[i].content+'.html',function(f,tname){$('#tabMainContent').append(f);},tabs[i].name);
+	tabLoader.addFileToDOM('panes/'+tabs[i].content+'.html',$('#tabMainContent'));
 	
 }
 
@@ -127,7 +127,7 @@ function vboxTabs(id) {
 		
 		this.selected = vm.id;
 				
-		vboxDataMediator.get('VMDetails', vm.id, this.updateTabs);
+		vboxVMDataMediator.get(vm.id, this.updateTabs);
 		
 	};
 	

@@ -334,7 +334,7 @@ var vboxMedia = {
 
 	/** Return a printable string for medium m */
 	mediumPrint : function(m,nosize,usehtml) {
-		name = vboxMedia.getName(m);
+		var name = vboxMedia.getName(m);
 		if(nosize || !m || m.hostDrive) return name;
 		return name + ' (' + (m.deviceType == 'HardDisk' ? (usehtml ? '<i>' : '') + trans(m.type,'VBoxGlobal') + (usehtml ? '</i>' : '') + ', ' : '') + vboxMbytesConvert(m.logicalSize) + ')';
 	},
@@ -578,9 +578,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		
 		// load panes
 		var l = new vboxLoader();
-		l.addFile('panes/'+self.name+'.html',function(f,name){
-			$('#'+name+'Content').append(f);
-			},self.name);
+		l.addFileToDOM('panes/'+self.name+'.html',$('#'+self.name+'Content'));
 		
 		l.onLoad = function(){
 		
@@ -715,6 +713,7 @@ function vboxToolbar(buttons) {
 	self.lastItem = null;
 	self.id = null;
 	self.buttonStyle = '';
+	self.enabled = true;
 
 	/** Update buttons to be enabled / disabled */
 	self.update = function(target,item) {
@@ -733,11 +732,13 @@ function vboxToolbar(buttons) {
 
 	/** Enable entire toolbar. Calls self.update() */ 
 	self.enable = function() {
+		self.enabled = true;
 		self.update(self.lastItem);
 	};
 
 	/** Disable entire toolbar */
 	self.disable = function() {
+		self.enabled = false;
 		for(var i = 0; i < self.buttons.length; i++) {
 			self.disableButton(self.buttons[i]);
 		}		
@@ -850,6 +851,8 @@ function vboxToolbar(buttons) {
 function vboxToolbarSmall(buttons) {
 
 	var self = this;
+	this.parentClass = vboxToolbar;
+	this.parentClass();
 	this.selected = null;
 	this.buttons = buttons;
 	this.lastItem = null;
@@ -858,36 +861,6 @@ function vboxToolbarSmall(buttons) {
 	this.size = 16;
 	this.disabledString = 'disabled';
 
-	/** Called on item selection change */
-	self.update = function(target,item) {
-		
-		if(!self.enabled) return;
-		
-		self.lastItem = (item||target);
-		
-		for(var i = 0; i < self.buttons.length; i++) {
-			if(self.buttons[i].enabled && !self.buttons[i].enabled(self.lastItem)) {
-				self.disableButton(self.buttons[i]);
-			} else {
-				self.enableButton(self.buttons[i]);
-			}
-		}		
-	};
-
-	/** Enable toolbar and update buttons */
-	self.enable = function() {
-		self.enabled = true;
-		self.update(self.lastItem);
-	};
-
-	/** Disable toolbar and all buttons */
-	self.disable = function() {
-		self.enabled = false;
-		for(var i = 0; i < self.buttons.length; i++) {
-			self.disableButton(self.buttons[i]);
-		}		
-	};
-	
 	/** Enable a single button */
 	self.enableButton = function(b) {
 		if(b.noDisabledIcon)
@@ -954,15 +927,6 @@ function vboxToolbarSmall(buttons) {
 		
 	};
 	
-	/** Trigger click on button where name = param btn */
-	self.click = function(btn) {
-		for(var i = 0; i < self.buttons.length; i++) {
-			if(self.buttons[i].name == btn)
-				return self.buttons[i].click();
-		}
-		return false;
-	};
-		
 }
 
 /**
@@ -982,7 +946,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 	/** vboxMediaMenu to display when button is clicked */
 	self.mediaMenu = new vboxMediaMenu(type,callback,mediumPath);
 	
-	// Buttons
+	/* Static button type list */
 	self.buttons = {
 			
 		HardDisk : {
@@ -1351,76 +1315,55 @@ function vboxMediaMenu(type,callback,mediumPath) {
  * multiple server requests while an existing request is still in progress.
  * 
  */
-var vboxDataMediator = {
+var vboxVMDataMediator = {
 	
 	_data : {},
 	
 	_inProgress : {},
 	
-	/* Get data */
-	get : function(type,id,callback) {
+	/** Get VM data */
+	get : function(id,callback) {
 		
-		
-		// Data exists
-		if(id == null && vboxDataMediator._data[type]) {
-			callback(vboxDataMediator._data[type]);
-			return;
-		} else if(id != null && vboxDataMediator._data[type] && vboxDataMediator._data[type][id]) {
-			callback(vboxDataMediator._data[type][id]);
+		// Data exists - should rarely happen - if ever
+		if(vboxVMDataMediator._data[id]) {
+			callback(vboxVMDataMediator._data[id]);
 			return;
 		}
 		
-		// Data does not exist. Request in progress?
-		
-		// UUID was not passed
-		if(id == null) {
-			// In progress. Add callback to list
-			if(vboxDataMediator._inProgress[type]) {
-				vboxDataMediator._inProgress[type][vboxDataMediator._inProgress[type].length] = callback;
-				vboxDataMediator._inProgress[type] = $.unique(vboxDataMediator._inProgress[type]);
-			// Not in progress, create list && get data
-			} else {
-				vboxDataMediator._inProgress[type] = [callback];
-				vboxAjaxRequest('get' + type, {}, vboxDataMediator._ajaxhandler,{'type':type});
-			}
-		// UUID was passed
+		// In progress. Add callback to list
+		if(vboxVMDataMediator._inProgress[id]) {
+			
+			vboxVMDataMediator._inProgress[id][vboxVMDataMediator._inProgress[id].length] = callback;
+			vboxVMDataMediator._inProgress[id] = $.unique(vboxVMDataMediator._inProgress[id]);
+			
+		// Not in progress, create list && get data
 		} else {
-			// In progress. Add callback to list
-			if(vboxDataMediator._inProgress[type] && vboxDataMediator._inProgress[type][id]) {
-				vboxDataMediator._inProgress[type][id][vboxDataMediator._inProgress[type][id].length] = callback;
-				vboxDataMediator._inProgress[type][id] = $.unique(vboxDataMediator._inProgress[type][id]);
-			// Not in progress, create list && get data
-			} else {
-				if(!vboxDataMediator._inProgress[type]) vboxDataMediator._inProgress[type] = new Array();
-				vboxDataMediator._inProgress[type][id] = [callback];
-				vboxAjaxRequest('get' + type, {'vm':id}, vboxDataMediator._ajaxhandler,{'type':type,'id':id});
-			}
+			
+			vboxVMDataMediator._inProgress[id] = [callback];
+			vboxAjaxRequest('getVMDetails', {'vm':id}, vboxVMDataMediator._ajaxhandler,{'id':id});
+			
 		}
 	},
 	
-	// Handle returned ajax data
+	/** Handle returned ajax data */
 	_ajaxhandler : function(data, keys) {
 		
-		// First set data and release queued callbacks
-		if(keys['id']) {
-			if(!vboxDataMediator._data[keys['type']]) vboxDataMediator._data[keys['type']] = new Array();
-			vboxDataMediator._data[keys['type']][keys['id']] = data;
-			callbacks = vboxDataMediator._inProgress[keys['type']][keys['id']];
-			delete vboxDataMediator._inProgress[keys['type']][keys['id']];
-		} else {
-			vboxDataMediator._data[keys['type']] = data;
-			callbacks = vboxDataMediator._inProgress[keys['type']];
-			delete vboxDataMediator._inProgress[keys['type']];
+		// First set data
+		vboxVMDataMediator._data[keys['id']] = data;
+		
+		// Grab callbacks in temp var and delete callbacks queued in ._inProgress
+		callbacks = vboxVMDataMediator._inProgress[keys['id']];
+		delete vboxVMDataMediator._inProgress[keys['id']];
+		
+		if(callbacks && callbacks.length) {
+			for(var i = 0; i < callbacks.length; i++)
+				callbacks[i](data);
 		}
 		
-		for(var i = 0; i < callbacks.length; i++)
-			vboxDataMediator.get(keys['type'],keys['id'],callbacks[i]);
-		
-		if(keys['id']) { delete vboxDataMediator._data[keys['type']][keys['id']]; }
-		else { delete vboxDataMediator._data[keys['type']]; }
+		delete vboxVMDataMediator._data[keys['id']];
 		
 	}
-}
+};
 
 
 
@@ -1689,6 +1632,13 @@ function vboxLoader() {
 				'params' : params
 			};		
 	};
+
+	/* Add file to list of items to load. Append resulting file to element. */
+	self.addFileToDOM = function(file,elm) {
+		if(elm === undefined) elm = $('body').children('div').first();
+		var callback = function(f){elm.append(f);};
+		self.addFile(file,callback,{});
+	};
 	
 	/* Add a script to the list of items to load */
 	self.addScript = function(file,callback,params) {
@@ -1879,7 +1829,7 @@ function vboxParallelPorts() {
 
 
 /**
- * 	Common storage / controller object
+ * 	Common VM storage / controller object
  */
 var vboxStorage = {
 
