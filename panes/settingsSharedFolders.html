@@ -89,7 +89,6 @@ var sButtons = new Array(
 
 			var dialog = vboxSettingsSFEditDialog();
 			
-			// TODO
 			var def = $('#vboxSettingsSharedFoldersList').find('tr.vboxListItemSelected').first();
 			$('#vboxSettingsSFPath').val(($(def).data('hostPath')||''));
 			$('#vboxSettingsSFName').val(($(def).data('name')||''));
@@ -111,7 +110,7 @@ var sButtons = new Array(
 				}
 				$(dialog).empty().remove();
 			};
-			buttons[trans('Cancel','QIMessageBox')] = function() { $(dialog).empty().remove() };
+			buttons[trans('Cancel','QIMessageBox')] = function() { $(dialog).empty().remove(); };
 			$(dialog).dialog({'buttons':buttons}).dialog('open');
 		
 		}		
@@ -123,7 +122,6 @@ var sButtons = new Array(
 		'icon' : 'remove_shared_folder',
 		'enabled' : function (item) { return $(item).hasClass('vboxListItemSelected'); },
 		'click' : function () {
-			// TODO
 			var item = $('#vboxSettingsSharedFoldersList').find('.vboxListItemSelected').first();
 			var target = $(item).next();
 			if(!$(target).hasClass('vboxListItemSelected')) target = $(item).prev();
@@ -276,7 +274,7 @@ function vboxSFBrowseFolder(btn) {
 			f = f.replace(/.*\\/,'');
 			if(f) $('#vboxSettingsSFName').val(f);
 		}		
-	},true,trans('Folder Path:','UIMachineSettingsSFDetails').replace(':',''))
+	},true,trans('Folder Path:','UIMachineSettingsSFDetails').replace(':',''));
 }
 /* 
  * 

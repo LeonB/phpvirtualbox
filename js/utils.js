@@ -1,17 +1,17 @@
-/*
+/**
  * $Id$
  * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
  * 		except function strnatcasecmp
  */
 
-/*
+/**
  * 
  * Prevent ESC key from stopping background AJAX requests
  * 
  */
 $(document).ready(function(){
         $(window).keydown(function(i){if(i.keyCode&&i.keyCode===27){
-                i.preventDefault()
+                i.preventDefault();
                 try {
                         var flash = RDPWebClient.getFlashById("FlashRDP");
                         flash.keyboardSendScancodes('01');
@@ -20,7 +20,7 @@ $(document).ready(function(){
                 }
         }});
         $(document).keydown(function(i){if(i.keyCode&&i.keyCode===27){
-                i.preventDefault()
+                i.preventDefault();
                 try {
                         var flash = RDPWebClient.getFlashById("FlashRDP");
                         flash.keyboardSendScancodes('01');
@@ -30,8 +30,15 @@ $(document).ready(function(){
         }});
 });
 
-/*
- * Traverse a tree and return matching nodes
+/**
+ * Traverse a tree and return matching nodes. Used to find
+ * media in the $('#vboxIndex').data('vboxMedia') object.
+ * @param tree {Object} tree to traverse
+ * @param prop {String} node property to match
+ * @param val {Mixed} value that node property must match
+ * @param all {Boolean} return all results rather than stopping at first matching node (optional)
+ * @param children {Boolean} search node children (optional)
+ * @return all matched nodes | first matched node | null
  */
 function vboxTraverse(tree,prop,val,all,children) {
 	var leafs = new Array();
@@ -50,12 +57,16 @@ function vboxTraverse(tree,prop,val,all,children) {
 	}
 	return (all ? leafs : null);
 }
-/*
- * jquery.post/json wrapper
- * 
- * Performs ajax request, alert()'s returned errors,
+
+/**
+ * Performs AJAX request, alert()'s returned errors,
  * and stores any data that should persist for this
- * browser session 
+ * browser session.
+ * @param fn {String} AJAX function to call
+ * @param params {Object} params to pass to AJAX call
+ * @param callback {Function} callback function to perform when AJAX data is returned
+ * @param xtra {Object} extra data to be passed to callback function (optional)
+ * @param run {Boolean} number of requests previously attempted for this function. Do not pass this value!! Only used internally
  */
 function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
@@ -162,14 +173,29 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
 	
 }
+/**
+ * Load a script file
+ * @param file {String} URL to script file
+ * @param callback {Function} function to call when script is loaded
+ * @param cparams {any} extra parameter passed to callback function (optional)
+ */
 function vboxGetScript(file,callback,cparams) {
 	return jQuery.getScript(file,function(f){callback(f,cparams);});
 }
-
+/**
+ * Load an HTML file
+ * @param file {String} URL to file
+ * @param callback {Function} function to call when file is loaded
+ * @param cparams {any} extra parameter passed to callback function (optional)
+ */
 function vboxGetFile(file,callback,cparams) {
 	return jQuery.get(file,function(f){callback(f,cparams);});
 }
-
+/**
+ * Return VRDE address (host) of VM
+ * @param vm {Object} virtual machine object
+ * @return {String} VRDE host for VM
+ */
 function vboxGetVRDEAddress(vm) {
 	var chost = ($('#vboxIndex').data('vboxConfig').consoleHost ? $('#vboxIndex').data('vboxConfig').consoleHost : (vm && vm.VRDEServer && vm.VRDEServer.netAddress ? vm.VRDEServer.netAddress : null));
 	if(!chost) {
@@ -182,130 +208,140 @@ function vboxGetVRDEAddress(vm) {
 	return chost;
 }
 
-/*
- * The below 2 functions have been taken from vboxweb
-(http://code.google.com/p/vboxweb/), distributed
- * under the MIT License. See the vboxweb website
- * actual for copyright date and holders.
- * 
+/**
+ * Return the correct icon string relative to images/vbox/ for the guest OS type.
+ * @param osTypeId {String} guest OS type id
+ * @return {String} icon
  */
-	function vboxGuestOSTypeIcon(osTypeId)
+function vboxGuestOSTypeIcon(osTypeId) {
+	
+    var strIcon = "os_other.png";
+    switch (osTypeId)
     {
-        var strIcon = "os_other.png";
-        switch (osTypeId)
-        {
-            case "Other":           strIcon = "os_other.png"; break;
-            case "DOS":             strIcon = "os_dos.png"; break;
-            case "Netware":         strIcon = "os_netware.png"; break;
-            case "L4":              strIcon = "os_l4.png"; break;
-            case "Windows31":       strIcon = "os_win31.png"; break;
-            case "Windows95":       strIcon = "os_win95.png"; break;
-            case "Windows98":       strIcon = "os_win98.png"; break;
-            case "WindowsMe":       strIcon = "os_winme.png"; break;
-            case "WindowsNT4":      strIcon = "os_winnt4.png"; break;
-            case "Windows2000":     strIcon = "os_win2k.png"; break;
-            case "WindowsXP":       strIcon = "os_winxp.png"; break;
-            case "WindowsXP_64":    strIcon = "os_winxp_64.png"; break;
-            case "Windows2003":     strIcon = "os_win2k3.png"; break;
-            case "Windows2003_64":  strIcon = "os_win2k3_64.png"; break;
-            case "WindowsVista":    strIcon = "os_winvista.png"; break;
-            case "WindowsVista_64": strIcon = "os_winvista_64.png"; break;
-            case "Windows2008":     strIcon = "os_win2k8.png"; break;
-            case "Windows2008_64":  strIcon = "os_win2k8_64.png"; break;
-            case "Windows7":        strIcon = "os_win7.png"; break;
-            case "Windows7_64":     strIcon = "os_win7_64.png"; break;
-            case "WindowsNT":       strIcon = "os_win_other.png"; break;
-            case "OS2Warp3":        strIcon = "os_os2warp3.png"; break;
-            case "OS2Warp4":        strIcon = "os_os2warp4.png"; break;
-            case "OS2Warp45":       strIcon = "os_os2warp45.png"; break;
-            case "OS2eCS":          strIcon = "os_os2ecs.png"; break;
-            case "OS2":             strIcon = "os_os2_other.png"; break;
-            case "Linux22":         strIcon = "os_linux22.png"; break;
-            case "Linux24":         strIcon = "os_linux24.png"; break;
-            case "Linux24_64":      strIcon = "os_linux24_64.png"; break;
-            case "Linux26":         strIcon = "os_linux26.png"; break;
-            case "Linux26_64":      strIcon = "os_linux26_64.png"; break;
-            case "ArchLinux":       strIcon = "os_archlinux.png"; break;
-            case "ArchLinux_64":    strIcon = "os_archlinux_64.png"; break;
-            case "Debian":          strIcon = "os_debian.png"; break;
-            case "Debian_64":       strIcon = "os_debian_64.png"; break;
-            case "OpenSUSE":        strIcon = "os_opensuse.png"; break;
-            case "OpenSUSE_64":     strIcon = "os_opensuse_64.png"; break;
-            case "Fedora":          strIcon = "os_fedora.png"; break;
-            case "Fedora_64":       strIcon = "os_fedora_64.png"; break;
-            case "Gentoo":          strIcon = "os_gentoo.png"; break;
-            case "Gentoo_64":       strIcon = "os_gentoo_64.png"; break;
-            case "Mandriva":        strIcon = "os_mandriva.png"; break;
-            case "Mandriva_64":     strIcon = "os_mandriva_64.png"; break;
-            case "RedHat":          strIcon = "os_redhat.png"; break;
-            case "RedHat_64":       strIcon = "os_redhat_64.png"; break;
-            case "Turbolinux":      strIcon = "os_turbolinux.png"; break;
-            case "Ubuntu":          strIcon = "os_ubuntu.png"; break;
-            case "Ubuntu_64":       strIcon = "os_ubuntu_64.png"; break;
-            case "Xandros":         strIcon = "os_xandros.png"; break;
-            case "Xandros_64":      strIcon = "os_xandros_64.png"; break;
-            case "Linux":           strIcon = "os_linux_other.png"; break;
-            case "FreeBSD":         strIcon = "os_freebsd.png"; break;
-            case "FreeBSD_64":      strIcon = "os_freebsd_64.png"; break;
-            case "OpenBSD":         strIcon = "os_openbsd.png"; break;
-            case "OpenBSD_64":      strIcon = "os_openbsd_64.png"; break;
-            case "NetBSD":          strIcon = "os_netbsd.png"; break;
-            case "NetBSD_64":       strIcon = "os_netbsd_64.png"; break;
-            case "Solaris":         strIcon = "os_solaris.png"; break;
-            case "Solaris_64":      strIcon = "os_solaris_64.png"; break;
-            case "OpenSolaris":     strIcon = "os_oraclesolaris.png"; break;
-            case "OpenSolaris_64":  strIcon = "os_oraclesolaris_64.png"; break;
-            case "QNX":             strIcon = "os_qnx.png"; break;
-            case 'MacOS':			strIcon = "os_macosx.png"; break;
-            case 'MacOS_64':			strIcon = "os_macosx_64.png"; break;
-            case 'Oracle':			strIcon = "os_oracle.png"; break;
-            case 'Oracle_64':			strIcon = "os_oracle_64.png"; break;
-            case 'JRockitVE':		strIcon = 'os_jrockitve.png'; break;
-            case "VirtualBox_Host":	strIcon = "os_virtualbox.png"; break;
+        case "Other":           strIcon = "os_other.png"; break;
+        case "DOS":             strIcon = "os_dos.png"; break;
+        case "Netware":         strIcon = "os_netware.png"; break;
+        case "L4":              strIcon = "os_l4.png"; break;
+        case "Windows31":       strIcon = "os_win31.png"; break;
+        case "Windows95":       strIcon = "os_win95.png"; break;
+        case "Windows98":       strIcon = "os_win98.png"; break;
+        case "WindowsMe":       strIcon = "os_winme.png"; break;
+        case "WindowsNT4":      strIcon = "os_winnt4.png"; break;
+        case "Windows2000":     strIcon = "os_win2k.png"; break;
+        case "WindowsXP":       strIcon = "os_winxp.png"; break;
+        case "WindowsXP_64":    strIcon = "os_winxp_64.png"; break;
+        case "Windows2003":     strIcon = "os_win2k3.png"; break;
+        case "Windows2003_64":  strIcon = "os_win2k3_64.png"; break;
+        case "WindowsVista":    strIcon = "os_winvista.png"; break;
+        case "WindowsVista_64": strIcon = "os_winvista_64.png"; break;
+        case "Windows2008":     strIcon = "os_win2k8.png"; break;
+        case "Windows2008_64":  strIcon = "os_win2k8_64.png"; break;
+        case "Windows7":        strIcon = "os_win7.png"; break;
+        case "Windows7_64":     strIcon = "os_win7_64.png"; break;
+        case "WindowsNT":       strIcon = "os_win_other.png"; break;
+        case "OS2Warp3":        strIcon = "os_os2warp3.png"; break;
+        case "OS2Warp4":        strIcon = "os_os2warp4.png"; break;
+        case "OS2Warp45":       strIcon = "os_os2warp45.png"; break;
+        case "OS2eCS":          strIcon = "os_os2ecs.png"; break;
+        case "OS2":             strIcon = "os_os2_other.png"; break;
+        case "Linux22":         strIcon = "os_linux22.png"; break;
+        case "Linux24":         strIcon = "os_linux24.png"; break;
+        case "Linux24_64":      strIcon = "os_linux24_64.png"; break;
+        case "Linux26":         strIcon = "os_linux26.png"; break;
+        case "Linux26_64":      strIcon = "os_linux26_64.png"; break;
+        case "ArchLinux":       strIcon = "os_archlinux.png"; break;
+        case "ArchLinux_64":    strIcon = "os_archlinux_64.png"; break;
+        case "Debian":          strIcon = "os_debian.png"; break;
+        case "Debian_64":       strIcon = "os_debian_64.png"; break;
+        case "OpenSUSE":        strIcon = "os_opensuse.png"; break;
+        case "OpenSUSE_64":     strIcon = "os_opensuse_64.png"; break;
+        case "Fedora":          strIcon = "os_fedora.png"; break;
+        case "Fedora_64":       strIcon = "os_fedora_64.png"; break;
+        case "Gentoo":          strIcon = "os_gentoo.png"; break;
+        case "Gentoo_64":       strIcon = "os_gentoo_64.png"; break;
+        case "Mandriva":        strIcon = "os_mandriva.png"; break;
+        case "Mandriva_64":     strIcon = "os_mandriva_64.png"; break;
+        case "RedHat":          strIcon = "os_redhat.png"; break;
+        case "RedHat_64":       strIcon = "os_redhat_64.png"; break;
+        case "Turbolinux":      strIcon = "os_turbolinux.png"; break;
+        case "Ubuntu":          strIcon = "os_ubuntu.png"; break;
+        case "Ubuntu_64":       strIcon = "os_ubuntu_64.png"; break;
+        case "Xandros":         strIcon = "os_xandros.png"; break;
+        case "Xandros_64":      strIcon = "os_xandros_64.png"; break;
+        case "Linux":           strIcon = "os_linux_other.png"; break;
+        case "FreeBSD":         strIcon = "os_freebsd.png"; break;
+        case "FreeBSD_64":      strIcon = "os_freebsd_64.png"; break;
+        case "OpenBSD":         strIcon = "os_openbsd.png"; break;
+        case "OpenBSD_64":      strIcon = "os_openbsd_64.png"; break;
+        case "NetBSD":          strIcon = "os_netbsd.png"; break;
+        case "NetBSD_64":       strIcon = "os_netbsd_64.png"; break;
+        case "Solaris":         strIcon = "os_solaris.png"; break;
+        case "Solaris_64":      strIcon = "os_solaris_64.png"; break;
+        case "OpenSolaris":     strIcon = "os_oraclesolaris.png"; break;
+        case "OpenSolaris_64":  strIcon = "os_oraclesolaris_64.png"; break;
+        case "QNX":             strIcon = "os_qnx.png"; break;
+        case 'MacOS':			strIcon = "os_macosx.png"; break;
+        case 'MacOS_64':			strIcon = "os_macosx_64.png"; break;
+        case 'Oracle':			strIcon = "os_oracle.png"; break;
+        case 'Oracle_64':			strIcon = "os_oracle_64.png"; break;
+        case 'JRockitVE':		strIcon = 'os_jrockitve.png'; break;
+        case "VirtualBox_Host":	strIcon = "os_virtualbox.png"; break;
 
-            default:
-                break;
-        }
-        return strIcon;
+        default:
+            break;
+    }
+    return strIcon;
 }
 
-    
+/**
+ * Return the correct icon relative to images/vbox/ for the VM state.
+ * @param state {String} virtual machine state
+ * @return {String} icon
+ */
 function vboxMachineStateIcon(state)
-   {
-        var strIcon = "state_powered_off_16px.png";
-        var strNoIcon = "state_running_16px.png";
+{
+	var strIcon = "state_powered_off_16px.png";
+    var strNoIcon = "state_running_16px.png";
 
-        switch (state)
-        {
-            case "PoweredOff": strIcon = "state_powered_off_16px.png"; break;
-            case "Saved": strIcon = "state_saved_16px.png"; break;
-            case "Teleported": strIcon = strNoIcon; break;
-            case "LiveSnapshotting": strIcon = "online_snapshot_16px.png"; break;
-            case "Aborted": strIcon = "state_aborted_16px.png"; break;
-            case "Running": strIcon = "state_running_16px.png"; break;
-            case "Paused": strIcon = "state_paused_16px.png"; break;
-            case "Stuck": strIcon = "state_stuck_16px.png"; break;
-            case "Teleporting": strIcon = strNoIcon; break;
-            case "Starting": strIcon = strNoIcon; break;
-            case "Stopping": strIcon = strNoIcon; break;
-            case "Saving": strIcon = "state_discarding_16px.png"; break;
-            case "Restoring": strIcon = "settings_16px.png"; break;
-            case "TeleportingPausedVM": strIcon = strNoIcon; break;
-            case "TeleportingIn": strIcon = strNoIcon; break;
-            case "RestoringSnapshot": strIcon = "discard_cur_state_16px.png"; break;
-            case "DeletingSnapshot": strIcon = "state_discarding_16px.png"; break;
-            case "SettingUp": strIcon = strNoIcon; break;
-            case "Hosting" : strIcon = "settings_16px.png"; break;
-            case "Inaccessible": strIcon = "state_aborted_16px.png"; break;
-            default:
-                break;
-        }
-        
-        return strIcon;
+    switch (state)
+    {
+        case "PoweredOff": strIcon = "state_powered_off_16px.png"; break;
+        case "Saved": strIcon = "state_saved_16px.png"; break;
+        case "Teleported": strIcon = strNoIcon; break;
+        case "LiveSnapshotting": strIcon = "online_snapshot_16px.png"; break;
+        case "Aborted": strIcon = "state_aborted_16px.png"; break;
+        case "Running": strIcon = "state_running_16px.png"; break;
+        case "Paused": strIcon = "state_paused_16px.png"; break;
+        case "Stuck": strIcon = "state_stuck_16px.png"; break;
+        case "Teleporting": strIcon = strNoIcon; break;
+        case "Starting": strIcon = strNoIcon; break;
+        case "Stopping": strIcon = strNoIcon; break;
+        case "Saving": strIcon = "state_discarding_16px.png"; break;
+        case "Restoring": strIcon = "settings_16px.png"; break;
+        case "TeleportingPausedVM": strIcon = strNoIcon; break;
+        case "TeleportingIn": strIcon = strNoIcon; break;
+        case "RestoringSnapshot": strIcon = "discard_cur_state_16px.png"; break;
+        case "DeletingSnapshot": strIcon = "state_discarding_16px.png"; break;
+        case "SettingUp": strIcon = strNoIcon; break;
+        case "Hosting" : strIcon = "settings_16px.png"; break;
+        case "Inaccessible": strIcon = "state_aborted_16px.png"; break;
+        default:
+            break;
+    }
+    
+    return strIcon;
 
 }
 
-/* File or Folder browser */
+/**
+ * File or Folder browser dialog
+ * @param root {String} path to initial folder or file
+ * @param fn {Function} callback function to run when OK is clicked on dialog
+ * @param foldersonly {Boolean} only display / allow selection of folders (optional)
+ * @param title {String} title of dialog (optional)
+ * @param icon {String} URL to icon (optional) 
+ * @param strictFiles {Boolean} only allow the OK button to be clicked when a file is selected (optional)
+ */
 function vboxFileBrowser(root,fn,foldersonly,title,icon,strictFiles) {
 
 	var buttons = { };
@@ -335,9 +371,15 @@ function vboxFileBrowser(root,fn,foldersonly,title,icon,strictFiles) {
     });			
 
 }
-
-/* Byte / MByte -> Human readable conversion */
+/**
+ * Convert megabytes to human readable string
+ * @param mb {Integer} megabytes
+ */
 function vboxMbytesConvert(mb) {return vboxBytesConvert(parseFloat(mb) * 1024 * 1024);}
+/**
+ * Convert bytes to human readable string
+ * @param bytes {Integer} bytes
+ */
 function vboxBytesConvert(bytes) {
 	var ext = new Array('B','KB','MB','GB','TB');
 	var unitCount;
@@ -345,7 +387,10 @@ function vboxBytesConvert(bytes) {
 	
 	return Math.round(parseFloat(bytes)*Math.pow(10,2))/Math.pow(10,2) + " " + trans(ext[unitCount], 'VBoxGlobal');
 }
-
+/**
+ * Parse str param into megabytes
+ * @param str {String} size string (2 TB, 500 MB, etc..) to parse
+ */
 function vboxConvertMbytes(str) {
 	str = str.replace('  ',' ');
 	str = str.split(' ',2);
@@ -373,14 +418,17 @@ function vboxConvertMbytes(str) {
 }
 
 
-/*
- * Alert Dialog
+/**
+ * Display alert Dialog
+ * @param e {String} message to display
+ * @param xtraOpts {Object} extra options to apply to alert jquery dialog (optional)
+ * @see jQuery.dialog()
  */
 function vboxAlert(e,xtraOpts) {
 
 	var msg = '';
 	
-	if(typeof e == 'object') msg = e.error
+	if(typeof e == 'object') msg = e.error;
 	else msg = e;
 	
 	// Convert to <p>
@@ -427,29 +475,14 @@ function vboxAlert(e,xtraOpts) {
     vboxNotifyBrowser(1);
 	
 
-    return;
-    
-	var buttons = { };
-	buttons[trans('OK','QIMessageBox')] = function(f) {vboxNotifyBrowser();$(this).trigger('close').empty().remove();};
-	
-	var dialogOpts = {'closeOnEscape':false,'width':'50%','height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/OSE/about_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'};
-
-	if(typeof xtraOpts == "object") {
-		for(var i in xtraOpts) {
-			if(typeof i != "string") continue;
-			dialogOpts[i] = xtraOpts[i];
-		}
-	}
-	$('<div />').attr({'class':'vboxDialogContent'}).html('<img src="images/50px-Warning_icon.svg.png" style="float: left; padding: 10px;" />').append(msg).dialog(dialogOpts);
-
-    // Notify browser of alert
-    vboxNotifyBrowser(1);
-
 }
-/*
+/**
  * Confirmation dialog
+ * @param q {String} question to confirm
+ * @param buttons {Object} buttons to display on confirmation dialog
+ * @param cancelText {String} string displayed on Cancel button. Defaults to 'Cancel'
+ * @see jQuery.dialog()
  */
-// question, button text, callback function
 function vboxConfirm(q,buttons,cancelText) {
 
 	var div = $('<div />').attr({'class':'vboxDialogContent','style':'display: none; width: 500px;'}).html('<img src="images/50px-Question_icon.svg.png" style="height: 50px; width: 50px; float: left; padding: 10px;" />'+q);
@@ -463,8 +496,11 @@ function vboxConfirm(q,buttons,cancelText) {
     return $(div);
 }
 
-/*
- * Common UI setup functions
+/**
+ * Initialize common UI items
+ * @param root {String|Node} root HTML Node or node ID to initialize
+ * @param context {String} language context to use for translations
+ * @see trans()
  */
 function vboxInitDisplay(root,context) {
 	
@@ -594,7 +630,12 @@ function vboxInitDisplay(root,context) {
 
 }
 
-/* Color VISIBLE children of parent elm */
+/**
+ * Color VISIBLE children rows of parent elm
+ * @param elm {HTML Node} element who's children to color
+ * @param startOdd {Boolean} start on the 2nd child (optional)
+ * @param headerClass {String} if child node has headerClass class, consider it a header and skip coloring (optional)
+ */
 function vboxColorRows(elm,startOdd,headerClass) {
 	var odd = 0;
 	if(startOdd) odd = 1;
@@ -608,8 +649,9 @@ function vboxColorRows(elm,startOdd,headerClass) {
 	});
 }
 
-/*
- * Div sized to parent with overflow hidden
+/**
+ * Return an HTML div node sized to parent with overflow hidden
+ * @param p {HTML Node} node to add dive to
  */
 function vboxDivOverflowHidden(p) {
 	var w = $(p).innerWidth();
@@ -618,13 +660,14 @@ function vboxDivOverflowHidden(p) {
 	return $('<div />').css({'width':(w-4)+'px','overflow':'hidden','padding':'0px','margin':'0px','border':'0px'});
 }
 
-/*
- * Install Guest Additions
+/**
+ * Install Guest Additions on VM
+ * @param vmid {String} uuid of virtual machine
+ * @param mount_only {Boolean} only mount the guest additions CD-ROM (used internally, do not set!!)
  */
 function vboxInstallGuestAdditions(vmid,mount_only) {
 
 	var l = new vboxLoader();
-	l.mode = 'save';
 	l.add('installGuestAdditions',function(d){
 		
 		// Progress operation returned. Guest Additions are being updated.
@@ -647,8 +690,8 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 
 			// Media and VM data must be refreshed
 			var ml = new vboxLoader();
-			ml.add('Media',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
-			ml.onLoad = function() { $('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]); }
+			ml.add('getMedia',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
+			ml.onLoad = function() { $('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]); };
 			ml.run();
 			
 			if(d.errored)
@@ -677,17 +720,22 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 				url = url.replace('%2',$('#vboxIndex').data('vboxConfig').version.string.replace('_OSE',''));
 				$(this).remove();
 				var newwin = window.open(url);
-			}
+			};
 			vboxConfirm(q,b,trans('No','QIMessageBox'));
 		}
 	},{'vm':vmid,'mount_only':(mount_only ? 1 : 0)});
 	l.run();
 }
 
-/*
+/**
  * 
- * Progress dialog and supporting functions
- * 
+ * Show progress dialog and periodically poll the progress' status
+ * @param pid {String} progress operation id
+ * @param callback {Function} function to run on progress completion
+ * @param args {any} extra args to pass to callback function (optional)
+ * @param icon {String} URL of image to display on progress operation dialog (optional)
+ * @param title {String} title of progress operation dialog (optional)
+ * @param catcherrs {Boolean} tell PHP's getProgress to catch all exceptions (optional)
  */
 function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 	
@@ -729,9 +777,13 @@ function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 	vboxAjaxRequest('getProgress',{'progress':pid,'catcherrs':catcherrs},vboxProgressUpdate,{'pid':pid,'catcherrs':catcherrs});
 	
 }
-// OnUnload warning
+/** OnUnload warning shown when an operation is in progress */
 function vboxOpInProgress() { return trans('Warning: A VirtualBox internal operation is in progress. Closing this window or navigating away from this web page may cause unexpected and undesirable results. Please wait for the operation to complete.','phpVirtualBox');}
-
+/**
+ * Update progress dialog box with % completed
+ * @param d {Object} data returned from getProgress AJAX call
+ * @param e {Object} extra data containing progress id and catcherrs parameter passed to getProgress AJAX call
+ */
 function vboxProgressUpdate(d,e) {
 	
 	// check for completed progress
@@ -757,7 +809,11 @@ function vboxProgressUpdate(d,e) {
 	
 }
 
-/* Position element to mouse event */
+/**
+ * Position element to mouse event
+ * @param elm {HTML Node} element
+ * @param e {Event} event
+ */
 function vboxPositionEvent(elm,e) {
 	
 	var d = {};
@@ -798,7 +854,10 @@ function vboxPositionEvent(elm,e) {
 	$(elm).css({ top: y, left: x });
 }
 
-/* Position element inside visible window */
+/**
+ * Position element inside visible window
+ * @param elm {HTML Node} element
+ */
 function vboxPositionToWindow(elm) {
 
 	var offset = $(elm).offset();
@@ -822,13 +881,24 @@ function vboxPositionToWindow(elm) {
 /*
  * keycode input validation functions 
  */
+/**
+ * Return true if k param is a number
+ * @param k {Integer} keycode
+ */
 function vboxValidateNum(k) {
-	return ((k >= 96 && k <= 105)||(k >= 48 && k <= 57))
+	return ((k >= 96 && k <= 105)||(k >= 48 && k <= 57));
 }
+/**
+ * Return true if k param is a number or '.'
+ * @param k {Integer} keycode
+ */
 function vboxValidateIP(k) {
 	return (vboxValidateNum(k) || k == 190); 
 }
-/* ctrl keyboard chars */
+/**
+ * Return true if k param is a valid control code (shift, backspace, etc..)
+ * @param k {Integer} keycode
+ */
 function vboxValidateCtrl(k) {
 	switch(k) {
 		case 8: // backspace
@@ -848,7 +918,7 @@ function vboxValidateCtrl(k) {
 	return false;
 }
 
-/* Parse Cookies */
+/** Parse Cookies */
 function vboxParseCookies() {
 	if($('#vboxIndex').data('vboxCookiesParsed')) return;
 	var cookies = {};
@@ -861,7 +931,11 @@ function vboxParseCookies() {
 	$('#vboxIndex').data('vboxCookiesParsed',true);
 }
 
-/ * Set a cookie */
+/**
+ * Set a cookie
+ * @param k {String} cookie key
+ * @param v {any} cookie value
+ */
 function vboxSetCookie(k,v) {
 	var exp = new Date(2020,12,24);
 	document.cookie = k+"="+v+"; expires="+exp.toGMTString()+"; path=/";
@@ -869,7 +943,11 @@ function vboxSetCookie(k,v) {
 			$('#vboxIndex').data('vboxCookies')[k] = v;
 }
 
-/* Strip file name from path */
+/**
+ * Strip file name from path
+ * @param p {String} path
+ * @return {String} path minus file name
+ */
 function vboxDirname(p) {
 	var pos = p.lastIndexOf($('#vboxIndex').data('vboxConfig').DSEP);
 	if(pos > -1) {
@@ -877,7 +955,11 @@ function vboxDirname(p) {
 	}
 	return p;
 }
-/* Strip dir name from path */
+/**
+ * Strip dir name from path
+ * @param p {String} path
+ * @return {String} file name portion of path
+ */
 function vboxBasename(p) {
 	var pos = p.lastIndexOf($('#vboxIndex').data('vboxConfig').DSEP);
 	if(pos > -1) {
@@ -889,6 +971,9 @@ function vboxBasename(p) {
 /* Update browser title to notify of change */
 __vboxNotifyBrowserChanges = 0;
 __vboxNotifyBrowserTitle = document.title;
+/**
+ * Update browser title to notify of change (firefox apptab support)
+ */
 function vboxNotifyBrowser(add) {
 
 	var cfg = $('#vboxIndex').data('vboxConfig');
@@ -900,7 +985,11 @@ function vboxNotifyBrowser(add) {
 	document.title = __vboxNotifyBrowserTitle + (__vboxNotifyBrowserChanges ? ' ('+__vboxNotifyBrowserChanges+')' : '');
 
 }
-
+/**
+ * Returns the result of case-insensitive string comparison using 'natural' algorithm comparing str1 to str2
+ * @param str1 {String} 1st string
+ * @param str2 {String} 2nd string
+ */
 function strnatcasecmp(str1, str2) {
     // Returns the result of case-insensitive string comparison using 'natural' algorithm  
     // 

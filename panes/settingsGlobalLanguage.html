@@ -48,7 +48,7 @@ for(var i = 0; i < vboxLanguages.length; i++) {
 	$(li).click(function(){
 		$(this).addClass('vboxListItemSelected').siblings().removeClass('vboxListItemSelected');
 		$('#vboxLanguageName').html($(this).data('language').name + ($(this).data('language').name_tr ? ' / ' + $(this).data('language').name_tr : ''));
-	})
+	});
 	$(lList).append(li);
 }
 

@@ -65,7 +65,6 @@ var sButtons = new Array(
 					}
 					var dialog = this;
 					var chp = new vboxLoader();
-					chp.mode = 'save';
 					chp.add('addUser',function(d){
 						if(d) {
 							if(d.result) {
@@ -80,13 +79,13 @@ var sButtons = new Array(
 						}
 					},{'u':u,'p':p1,'a':a});
 					chp.run();
-				}
+				};
 				buttons[trans('Cancel','QIMessageBox')] = function(){
 					$(this).remove();
-				}
+				};
 				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':500,'height':220,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/new_16px.png" class="vboxDialogTitleIcon" /> '+trans('Add User','UIUsers')});
 
-			}
+			};
 			l.run();
 		}
 	},
@@ -102,7 +101,6 @@ var sButtons = new Array(
 			buttons[trans('OK','QIMessageBox')] = function() {
 				var user = $('#vboxSettingsUserList').children('li.vboxListItemSelected').data();
 				var l = new vboxLoader();
-				l.mode = 'save';
 				l.add('delUser',function(d){
 					if(d && d.result == 1) {
 						$('#vboxSettingsUserList').children('li.vboxListItemSelected').remove();
@@ -111,7 +109,7 @@ var sButtons = new Array(
 				},{'u':user.username});
 				l.run();
 				$(this).remove();
-			}
+			};
 			var user = $('#vboxSettingsUserList').children('li.vboxListItemSelected').data();
 			vboxConfirm(trans('Are you sure you want to remove the user <b>%s</b>? This action cannot be undone.','UIUsers').replace('%s',user.username),buttons);
 		}
@@ -145,7 +143,6 @@ var sButtons = new Array(
 					}
 					var dialog = this;
 					var chp = new vboxLoader();
-					chp.mode = 'save';
 					chp.add('changePassword',function(d){
 						if(d) {
 							if(d.result) {
@@ -160,12 +157,12 @@ var sButtons = new Array(
 						}
 					},{'old':o,'new':n1});
 					chp.run();
-				}
+				};
 				buttons[trans('Cancel','QIMessageBox')] = function(){
 					$(this).remove();
-				}
+				};
 				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Change Password','UIUsers')});
-			}
+			};
 			l.run();			
 			
 		}
@@ -203,7 +200,6 @@ var sButtons = new Array(
 					}
 					var dialog = this;
 					var chp = new vboxLoader();
-					chp.mode = 'save';
 					chp.add('editUser',function(d){
 						if(d && d.result) {
 							$('#vboxSettingsUserList').children('li.vboxListItemSelected').data({'admin':a}).html(user.username + (a ? ' ('+trans('Admin User','UIUsers')+')' : ''));
@@ -214,13 +210,13 @@ var sButtons = new Array(
 						}
 					},{'u':user.username,'p':p1,'a':a});
 					chp.run();
-				}
+				};
 				buttons[trans('Cancel','QIMessageBox')] = function(){
 					$(this).remove();
-				}
+				};
 				$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':500,'height':230,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Edit User','UIUsers')});
 
-			}
+			};
 			l.run();
 			
 		}

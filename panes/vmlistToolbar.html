@@ -123,7 +123,6 @@ $("#vboxToolbarButton-vboxPaneToolbar-settings").contextMenu({
 		if(a == 'RemoteDisplay') {
 			var vm = $('#tabMainContent').data('machine');
 			var l = new vboxLoader();
-			l.mode = 'save';
 			l.add('updateVRDE',function(){
 				$('#vboxIndex').trigger('vmselect',$('#tabMainContent').data('machine'));
 			},{'vm':vm.id,'enabled':(vm.consoleInfo.enabled ? 0 : 1)});
@@ -132,7 +131,7 @@ $("#vboxToolbarButton-vboxPaneToolbar-settings").contextMenu({
 		}
 		
 		if(a == 'settings') {
-			vboxVMActions['settings'].click()
+			vboxVMActions['settings'].click();
 			return;
 		}
 		
@@ -158,14 +157,13 @@ function vboxVMListToolbarMediumMount(medium) {
 	
 	// Ajax request to mount medium
 	var mount = new vboxLoader();
-	mount.mode = 'save';
 	mount.add('mediumMount',function(ret,xtra){
 		var l = new vboxLoader();
-		l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
+		l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
 		l.onLoad = function() {
 			//$('#vboxIndex').trigger('vmselect',$('#vboxIndex').data('vboxMachineData'));
 			$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
-		}
+		};
 		l.run();		
 	},args);
 	mount.run();	
@@ -196,10 +194,10 @@ $('#vboxIndex').bind('hostChanged',function(){
 function vboxVMListToolbarUSBUpdate(menu) {
 	$(menu).append($('<li />').html('<span><img src="images/jqueryFileTree/spinner.gif" /></span>').css({'width':'100px','text-align':'center'}));
 	var l = new vboxLoader();
-	l.add('HostUSBDevices',function(d){
+	l.add('getHostUSBDevices',function(d){
 		$('#vboxPaneToolbar').data('hostUSB',d);
 	},{});
-	l.add('VMUSBDevices',function(d){
+	l.add('getVMUSBDevices',function(d){
 		$('#vboxPaneToolbar').data('guestUSB',d);
 	},{'vm':$('#vboxIndex').data('selectedVM').id});
 	l.noLoadingScreen = true;
@@ -254,7 +252,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 			$(menu).append($('<li />').html('<span>'+$('<div />').text(trans('<no devices available>','VBoxUSBMenu')).html()+'</span>'));
 		}
 		$(menu).trigger('menuLoaded');
-	}
+	};
 	l.run();
 }
 

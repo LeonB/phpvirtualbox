@@ -32,6 +32,10 @@ var sChildren = [];
 for(var i = 0; i < vboxVMActions.stop_actions.length; i++) {
 	sChildren[sChildren.length] = $.extend({},vboxVMActions[vboxVMActions.stop_actions[i]],{'name':vboxVMActions.stop_actions[i],'iconStringDisabled':'_disabled','context':(vboxVMActions[vboxVMActions.stop_actions[i]].context ? vboxVMActions[vboxVMActions.stop_actions[i]].context : 'UIActionPool')});
 }
+
+/*
+ * VM Context menu setup (menu per VM in list)
+ */
 vboxVMList.contextMenuItems = [
 	$.extend({},vboxVMActions['settings'],{'name':'settings'}),
 	$.extend({},vboxVMActions['clone'],{'name':'clone'}),
@@ -41,6 +45,27 @@ vboxVMList.contextMenuItems = [
 	$.extend({},vboxVMActions['discard'],{'name':'discard'}),
 	$.extend({},vboxVMActions['refresh'],{'name':'refresh','separator' : true}),
 	$.extend({},vboxVMActions['logs'],{'name':'logs'})
+];
+
+/*
+ * VM list context menu setup
+ */
+vboxVMList.parentContextMenuItems = [
+	$.extend({},vboxVMActions['new'],{'name':'new'}),
+	$.extend({},vboxVMActions['add'],{'name':'add'}),
+	{
+		'name':'fileImport',
+		'label':'Import Appliance...',
+		'icon':'import',
+		'click':function(){vboxWizardImportApplianceInit();},
+		'separator': true
+	},
+	{
+		'name':'fileExport',
+		'label':'Export Appliance...',
+		'icon':'export',
+		'click':function(){vboxWizardExportApplianceInit();}
+	}                                     
 ];
 
 
@@ -67,7 +92,7 @@ function vboxVMList(anchorid) {
 	var self = this;
 	this.vms = null;
 	this.anchorid = anchorid;
-	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);}
+	this.sortDefault = function(a,b){return strnatcasecmp(a.name,b.name);};
 	this._sortOrder = {};
 	this._updateSortOrder = false;
 	this.lastUpdatedDiv = null;
@@ -75,7 +100,8 @@ function vboxVMList(anchorid) {
 	this.interval = 5;
 	this.changed = false;
 	this.versionChecked = false;
-	this.contextMenuItems = null;
+	this.contextMenuItems = [];
+	this.parentContextMenuItems = [];
 	this.contextMenuObj = null;
 	this.enforceVMOwnership = $('#vboxIndex').data('vboxConfig').enforceVMOwnership;
 	this.minimal = $('#vboxIndex').data('vboxConfig').vmListMinimal;
@@ -117,7 +143,7 @@ function vboxVMList(anchorid) {
 			return;
 		}
 
-		var currTime = new Date()
+		var currTime = new Date();
 		self.time = currTime.getTime();
 
 		/* Check Key
@@ -198,8 +224,8 @@ function vboxVMList(anchorid) {
 		
 		// Update "Last Updated" ?
 		if(self.lastUpdatedDiv) {
-			var hours = currTime.getHours()
-			var minutes = currTime.getMinutes()
+			var hours = currTime.getHours();
+			var minutes = currTime.getMinutes();
 			var secs = currTime.getSeconds();
 			if (minutes < 10) minutes = "0" + minutes;
 			if (secs < 10) secs = "0" + secs;
@@ -215,7 +241,7 @@ function vboxVMList(anchorid) {
 		
 		self.changed = changed;
 		
-	}
+	};
 	
 
 	// Update a VM in our list
@@ -250,14 +276,14 @@ function vboxVMList(anchorid) {
 
 		return changed;
 
-	}
+	};
 
 	self.addVM = function(vm, index) {
 		self.vms[vm.id] = vm;
 		vmn = self.vms[vm.id];
 		self.anchor.append(self.vmHTML(vmn));
 	
-	}
+	};
 
 	self.vmHTML = function (vmn) {
 		
@@ -373,18 +399,18 @@ function vboxVMList(anchorid) {
 		
 		return tbl;
 		
-	}
+	};
 
 	self.removeVM = function(id) {
 		if(self.vms[id].selected) { $('#vboxIndex').trigger('vmselect',null); }
 		$('#vboxVMListItem-'+self.anchorid+'-'+id).remove();
 		delete self.vms[id];
-	}
+	};
 
 	// select VM in list
 	self.selectVM = function(e,vm) {
 		var uuidsel = (vm && vm.id ? vm.id : 'null');
-		var vsel = null
+		var vsel = null;
 		for(var id in self.vms) {
 		    if (typeof self.vms[id] !== 'function') {
 				if(id == uuidsel) {
@@ -398,12 +424,12 @@ function vboxVMList(anchorid) {
 		    }
 		}
 		self.selected = uuidsel;
-	}
+	};
 
 	// return currently selected VM
 	self.getSelectedVM = function () {
 		return (self.selected == null ? null : self.vms[self.selected]);
-	}
+	};
 
 	/*
 	 *
@@ -469,7 +495,7 @@ function vboxVMList(anchorid) {
 					if(parseInt(self._sortOrder[a.id]) == parseInt(self._sortOrder[b.id])) return 0;
 					return(parseInt(self._sortOrder[a.id]) < parseInt(self._sortOrder[b.id]) ? -1 : 1);
 					
-				}
+				};
 
 				// Use returned sort order
 				self._updateSortOrder = true;
@@ -479,7 +505,7 @@ function vboxVMList(anchorid) {
 			// Sort by OS type
 			case 'os':
 			case 'OS':				
-				self.sort = function(a,b) { return strnatcasecmp(a.OSTypeId,b.OSTypeId); }
+				self.sort = function(a,b) { return strnatcasecmp(a.OSTypeId,b.OSTypeId); };
 				break;
 				
 			// Sort by name - default
@@ -492,7 +518,7 @@ function vboxVMList(anchorid) {
 					if(a.state == "Running" && b.state != "Running") return -1;
 					if(b.state == "Running" && a.state != "Running") return 1;
 					return self.sortDefault(a,b);
-				}				
+				};
 				break;
 		
 			// State change
@@ -502,7 +528,7 @@ function vboxVMList(anchorid) {
 					if(a.lastStateChange > b.lastStateChange) return -1;
 					if(b.lastStateChange > a.lastStateChange) return 1;
 					return self.sortDefault(a,b);
-				}
+				};
 				break;
 				
 			// Custom sort function
@@ -532,6 +558,26 @@ function vboxVMList(anchorid) {
 				self.contextMenuObj.update(vm);				
 			});
 		}
+		
+		/*
+		 *
+		 * Parent element context menu
+		 *
+		 */
+		if(self.parentContextMenuItems && self.parentContextMenuItems.length) {
+
+			var vboxVMListPaneMenu = new vboxMenu(self.anchorid+'Pane');
+			vboxVMListPaneMenu.context = 'VBoxSelectorWnd';
+			vboxVMListPaneMenu.addMenu(self.parentContextMenuItems);
+	
+			$('#'+self.anchorid).parent().contextMenu({
+			  		menu: vboxVMListPaneMenu.menuId()
+			  	},
+			  	vboxVMListPaneMenu.menuClickCallback
+			);
+		
+		}
+		
 		
 		/*
 		 *
@@ -568,7 +614,7 @@ function vboxVMList(anchorid) {
 		
 		self.start();
 
-	}
+	};
 	
 	
 	/*
@@ -580,10 +626,10 @@ function vboxVMList(anchorid) {
 		if(self._running) return;
 		
 		var cb = function() {
-			dataMediator.get('VMs',null,function(d) {
+			vboxDataMediator.get('VMs',null,function(d) {
 				self.updateList(d);
 			});			
-		}
+		};
 		
 		// noinit is passed by refresh() since it just
 		// updated the list we don't need to immediately
@@ -593,7 +639,7 @@ function vboxVMList(anchorid) {
 		self._running = window.setInterval(cb,self.interval*1000);
 		
 		
-	}
+	};
 	
 	/*
 	 * Stop VM list updates and clear list
@@ -605,7 +651,7 @@ function vboxVMList(anchorid) {
 		self.anchor.html("<div id='vboxVMListSpinner' style='text-align: center'><img src='images/spinner.gif' /></div>");
 		self.vms = self.selected = null;
 		$('#vboxIndex').data({'selectedVM':null}).trigger('vmselect',null);
-	}
+	};
 	
 	
 	/* Force an imediate background refresh. Called when a VM
@@ -623,12 +669,12 @@ function vboxVMList(anchorid) {
 		// perform will be more authoritative. See updateList()
 		self._running = null;
 		
-		dataMediator.get('VMs',null,function(d) {
+		vboxDataMediator.get('VMs',null,function(d) {
 			self.start(true);
 			self.updateList(d);
 		});
 		
-	}
+	};
 
 }
 

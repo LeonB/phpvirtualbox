@@ -575,7 +575,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			'style':'background: url(images/vbox/refresh_16px.png) 2px 2px no-repeat; padding: 2px 2px 2px 18px; border: 1px solid #000; background-color: #eee;'
 		}).click(function(){
 			var l = new vboxLoader();
-			l.add('VMDetails',function(){
+			l.add('getVMDetails',function(){
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 			},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
 			l.run();
@@ -850,11 +850,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 					$('#vboxIndex').trigger('vmloading');
 					
 					var l = new vboxLoader();
-					l.add('VMDetails',function(d){return;},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
-					l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
+					l.add('getVMDetails',function(d){return;},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
+					l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
 					l.onLoad = function() {
 						$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
-					}
+					};
 					l.run();
 					return;
 				}
@@ -877,8 +877,8 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 	}
 	$(vboxDetailsTable).data('vboxMediaReload', 0);
-
-
+	
+	
 	// Audio
 	////////////////////
 	if(boxes) {
@@ -1008,10 +1008,10 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		// compose extra info
 		var xtra = vboxSP.getPortName(p.IRQ,p.IOBase);
 		
-		var mode = p.hostMode
-		xtra += ', ' + trans(vboxSerialMode(mode),'VBoxGlobal')
+		var mode = p.hostMode;
+		xtra += ', ' + trans(vboxSerialMode(mode),'VBoxGlobal');
 		if(mode != 'Disconnected') {
-			xtra += ' (' + $('<div />').text(p.path).html() + ')'
+			xtra += ' (' + $('<div />').text(p.path).html() + ')';
 		}
 		
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal',null,'details report (serial ports)').replace('%1',(i + 1)), xtra));
@@ -1056,7 +1056,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			
 			// compose extra info
 			var xtra = trans(vboxSP.getPortName(p.IRQ,p.IOBase));
-			xtra += ' (' + $('<div />').text(p.path).html() + ')'
+			xtra += ' (' + $('<div />').text(p.path).html() + ')';
 			
 			$(vboxDetailsTable).append(__vboxDetailRow(trans("Port %1",'VBoxGlobal',null,'details report (parallel ports)').replace('%1',(i + 1)), xtra));
 			vboxDetailsTableSPorts++;
@@ -1068,7 +1068,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		}
 
 	} else {
-		$('#vboxDetailsTableBoxParallelPorts').hide()
+		$('#vboxDetailsTableBoxParallelPorts').hide();
 	}
 	
 	// USB
@@ -1245,7 +1245,7 @@ function __vboxDisplayHostDetailsData(data) {
 		
 		// VMs bound to nic
 		if(data['nics'][data['networkInterfaces'][i].name]) {
-			var vms = new Array()
+			var vms = new Array();
 			for(var vmname in data['nics'][data['networkInterfaces'][i].name]) {
 				data['nics'][data['networkInterfaces'][i].name][vmname].sort();
 				var ads = new Array();
@@ -1333,7 +1333,7 @@ function __vboxDisplayHostDetailsData(data) {
 			$('#vboxHostMemUsedLblPct').html(trans('<nobr>%1 MB</nobr>').replace('%1',mUsed));
 			$('#vboxHostMemFreeLbl').html('('+trans('<nobr>%1%</nobr>').replace('%1',Math.round(parseInt((avail / data['memorySize']) * 100)))+') ' + trans('<nobr>%1 MB</nobr>').replace('%1',avail));
 		}
-	}
+	};
 	
 	// Refresh at configured intervals
 	try {
@@ -1346,7 +1346,7 @@ function __vboxDisplayHostDetailsData(data) {
 		vboxAjaxRequest('getHostMeminfo',{},function(d){
 			vboxHostShowMemInfo(d.memoryAvailable);		
 		});
-	}
+	};
 	vboxHostUpdateMeminfo();
 	
 	// Failsafe
@@ -1410,7 +1410,7 @@ for(var i = 0; i < sections.length; i++) {
 }
 
 $('#vboxIndex').append(ul);
-$('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; })
+$('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; });
 
 
 /*
@@ -1492,7 +1492,7 @@ for(var i = 0; i < ints.length; i++) {
 	}
 }
 $('#vboxIndex').append(ul);
-$(ul).bind('contextmenu', function() { return false; })
+$(ul).bind('contextmenu', function() { return false; });
 
 
 /* Menu functionality */

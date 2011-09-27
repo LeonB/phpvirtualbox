@@ -175,10 +175,10 @@ function RDPWebEventLoaded(flashid) {
 	    window.addEventListener("mouseup", function(event) { return RDPWebClient._MozillaMouse(event, false); }, true);
 	    flash.addEventListener("mouseout", function(event) { return RDPWebClient._MozillaMouseOut(); }, true);
 	} else {
-	    document.oncontextmenu = function() { return RDPWebClient._IEContextMenu(); }
-	    flash.parentNode.onmousedown = function() { return RDPWebClient._IEMouse(true); }
-	    flash.parentNode.onmouseup = function() { return RDPWebClient._IEMouse(false); }
-	    flash.onmouseout=function() {return RDPWebClient._IEMouseOut(); }
+	    document.oncontextmenu = function() { return RDPWebClient._IEContextMenu(); };
+	    flash.parentNode.onmousedown = function() { return RDPWebClient._IEMouse(true); };
+	    flash.parentNode.onmouseup = function() { return RDPWebClient._IEMouse(false); };
+	    flash.onmouseout=function() {return RDPWebClient._IEMouseOut(); };
 	}
 
 	// Connect if "detached"
@@ -244,7 +244,7 @@ function RDPWebEventDisconnected(flashId) {
     	vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleSize',$('#vboxRDPSize').val());
     	vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected','true');
     	return vboxRDPConnect();
-    }
+    };
     $('#vboxConsoleAddr').css('display','');
     $('#vboxConsoleCADButton').hide();
     
@@ -265,7 +265,7 @@ function vboxRDPConnect() {
     document.vboxRDPForm.connectionButton.onclick=function(){
     	vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected','false');
     	return vboxRDPDisconnect();
-    }
+    };
     
     $('#vboxConsoleAddr').css('display','none');
 	$('#FlashRDPContainer').css({'visibility':'visible'});
@@ -302,9 +302,9 @@ function vboxRDPDisconnect() {
 	document.vboxRDPForm.connectionButton.value = trans("Connect",'VBoxConsoleWgt');
 	document.vboxRDPForm.connectionButton.onclick=function() {
 		vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleConnected','true');
-		vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleSize',$('#vboxRDPSize').val())
+		vboxSetCookie('vbox'+$('#vboxIndex').data('selectedVM').id+'ConsoleSize',$('#vboxRDPSize').val());
 		vboxRDPConnect();this.blur();
-	}
+	};
 	$('#vboxConsoleCADButton').hide();
 	$(flash).css({'height':'100px','width':'100px'});
 	$('#vboxConsoleAddr').css('display','');
@@ -348,7 +348,7 @@ function vboxRDPDetach() {
 			}\
 			function vboxConsoleDetachedOnload(){\
 			l = new vboxLoader();\
-			l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});\
+			l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});\
 			l.addFile('panes/tabVMConsole.html',function(d){$('#vboxIndex').children().remove();$('#vboxIndex').append(d);$('#vboxTabVMConsole').css('display','');vboxRDPLoad();});\
 			l.run();};\
 			setTimeout(\"vboxConsoleCheckLoad()\",1000);";

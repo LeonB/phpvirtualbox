@@ -53,20 +53,17 @@
 	
 		$(document).ready(function(){
 
-			/* Check for server setting */
-			if(location.search) {
-				var query = location.search.substr(1).split('&');
-				for(var kv in query) {
-					kv = query[kv].split('=');
-					if(kv[0] == 'server') {
-						vboxSetCookie('vboxServer',unescape(kv[1]));
-						location = location.href.substr(0,location.href.length-location.search.length);
-						break;
-					}
-				}
-			}
-			
-			// Check that PHP is being parsed.
+			/*
+			 *
+			 * Begin sanity checks
+			 *
+			 */
+			 
+			 
+			/**
+			 * Check that PHP is being parsed.
+			 * @see js/phptest.php
+			 */
 			if(__vboxPHP === false) {
 				
 				// Check for file: prefix
@@ -88,11 +85,13 @@
 				return;
 			}
 			
-			// If everything loaded correctly, trans() should be defined in
-			// js/language.php and language data should be present.
-			// If not, there is a PHP error somewhere.
+			/*
+			 * If everything loaded correctly, trans() should be defined in
+			 * js/language.php and language data should be present.
+			 * If not, there is a PHP error somewhere.
+			 */
 			if(typeof trans != "function" || typeof __vboxLangData == "undefined") {
-				trans = function(s){return s;}
+				trans = function(s){return s;};
 				vboxAlert("An unknown PHP error occurred. This is most likely a syntax error in\
 					config.php in phpVirtualBox's folder. The most common errors are an unclosed\
 					 quote or a missing\
@@ -106,9 +105,27 @@
 					 >http://code.google.com/p/phpvirtualbox/issues/list</a></p>",{'width':'50%'});
 				return;
 			}
+			
+			// Sanity checks passed. Begin processing
+			
+			// Check for server setting (?server=xxxx in URL)
+			if(location.search) {
+				var query = location.search.substr(1).split('&');
+				for(var kv in query) {
+					kv = query[kv].split('=');
+					if(kv[0] == 'server') {
+						vboxSetCookie('vboxServer',unescape(kv[1]));
+						location = location.href.substr(0,location.href.length-location.search.length);
+						return;
+					}
+				}
+			}
+			
 
-			// Resizable
-			///////////////////////
+
+			/*
+			 * Resizable panes
+			 */
 			$('#vboxResizeBar').draggable({cursor:(jQuery.browser.opera ? 'e-resize' : 'col-resize'),axis:'x',zIndex:99,helper:function(){
 				
 				$('#vboxResizeBarTmp').remove();
@@ -142,7 +159,11 @@
 				$(this).css('background',"");
 			}).parent().disableSelection();
 
-			// Resize table elements
+			
+			
+			/*
+			 * Resize panes when the window changes sizes
+			 */
 			$(window).resize(function(){
 				
 				$('#vboxResizePane').children().children().css({'display':'none'});
@@ -155,69 +176,46 @@
 				$('#vboxPaneVMList').children().css({'height':(h-4)+'px'});
 
 			});
+			
 
-			// Refresh data when host changes
+			/*
+			 * Refresh data when host changes
+			 */
 			$('#vboxIndex').bind('hostChange',function(){
 				
 				var l = new vboxLoader();
 				
-				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
-				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
-				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-				l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
-				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-				l.add('RecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
-				l.add('RecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
+				l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});
+				l.add('getGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
+				l.add('getHostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+				l.add('getRecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
+				l.add('getRecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
 				
-				l.onLoad = function(){$('#vboxIndex').trigger('hostChanged');}
+				l.onLoad = function(){$('#vboxIndex').trigger('hostChanged');};
 
 				l.run();
 			});
 			
 			
-			// VM list context menu
-			var vboxVMListPaneMenu = new vboxMenu('vboxVMListPaneMenu');
-			vboxVMListPaneMenu.context = 'VBoxSelectorWnd';
-			vboxVMListPaneMenu.addMenu([
-				$.extend({},vboxVMActions['new'],{'name':'new'}),
-			    $.extend({},vboxVMActions['add'],{'name':'add'}),
-                {
-        			'name':'fileImport',
-        			'label':'Import Appliance...',
-        			'icon':'import',
-        			'click':function(){vboxWizardImportApplianceInit();},
-        			'separator': true
-                },
-                {
-        			'name':'fileExport',
-        			'label':'Export Appliance...',
-        			'icon':'export',
-        			'click':function(){vboxWizardExportApplianceInit();}
-                }
-			 ]);
-
-			$("#vboxPaneVMList").contextMenu({
-			  		menu: vboxVMListPaneMenu.menuId()
-			  	},
-			  	vboxVMListPaneMenu.menuClickCallback
-			);
-
-			// Load panes and data after login
-			///////////////////////////////////
+			/*
+			 * Load panes and data after login
+			 */
 			$('#vboxIndex').bind('login', function() {
 			
 				var l = new vboxLoader();
 				
-				l.add('Config',function(d){$('#vboxIndex').data('vboxConfig',d);});
-				l.add('GuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
-				l.add('SystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-				l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
-				l.add('HostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-				l.add('RecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
-				l.add('RecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
+				l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});
+				l.add('getGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
+				l.add('getHostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+				l.add('getRecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
+				l.add('getRecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
 	
 				l.addFile('panes/topmenu.html',function(f){$('#vboxIndex').append(f);},{});
-				l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{})
+				l.addFile('panes/tabs.html',function(f){$('#vboxPaneTabContent').append(f);},{});
 				l.addFile('panes/vmlistToolbar.html',function(f){$('#vboxIndex').append(f);},{});
 				l.addFile('panes/vmlist.html',function(f){$('#vboxPaneVMList').append(f);},{});
 	
@@ -229,18 +227,17 @@
 						$('#vboxVMList').css('width',($('#vboxIndex').data('vboxCookies')['vboxPaneX'])+'px');
 					}
 					
-				}
-				l.onShow = function() { $(window).trigger('resize'); }
+				};
+				l.onShow = function() { $(window).trigger('resize'); };
 	
 				l.hideRoot = true;
 				l.run();
 				
 			});
 						
-			// Data mediator ready for use
-			dataMediator = new vboxDataMediator();
-
-			// Check for valid session. Provide login box.
+			/**
+			 * Check for valid session and display login box if one does not exist
+			 */
 			function vboxCheckSession(tried) {
 				
 				// check session info
@@ -266,8 +263,9 @@
 				
 			}
 
-			var login = new vboxLoader()
-			login.add('Session',function(d){$('#vboxIndex').data('vboxSession',d);});
+			/** Load login form */
+			var login = new vboxLoader();
+			login.add('getSession',function(d){$('#vboxIndex').data('vboxSession',d);});
 			login.addFile('panes/login.html',function(f){$('#vboxIndex').append(f);});
 			login.onLoad = function() {
 
@@ -279,10 +277,9 @@
 					$('#vboxLogin').dialog('close');
 					var trylogin = new vboxLoader();
 					trylogin.add('login',function(d){$('#vboxIndex').data('vboxSession',d);},{'u':u,'p':p});
-					trylogin.onLoad = function() { vboxCheckSession(true);}
-					trylogin.mode = 'save';
+					trylogin.onLoad = function() { vboxCheckSession(true);};
 					trylogin.run();
-				}
+				};
 				
 				// Create but do not open dialog
 				if($.browser.webkit) heightadd = 5;
@@ -299,7 +296,8 @@
 			login.hideRoot = true;
 			login.run();
 			
-		});
+		}); // </ document.ready event >
+		
 	</script>
 
 </head>
@@ -310,16 +308,26 @@
 		<td style='height:20px;border:0px;padding:0px;margin:0px;border-spacing:0px;'>
 			<div id='vboxMenu'>
 				<!--
-					Menu Bar will be placed here 
+				
+					Top menu bar
+				
 				 -->
 			</div>
 		</td>
 	</tr>
 	<tr style='vertical-align: middle;'>
 		<td id='vboxToolbarMain' style='height: 66px; border:0px;padding:0px;margin:0px;border-spacing:0px;' class='vboxToolbarGrad'>
-			<!-- VMList toolbar -->
+			<!--
+				
+				VM list toolbar
+				
+			-->
 			<div id='vboxPaneToolbar'></div>
-			<!-- Tabs / Buttons -->
+			<!--
+				
+				Tabs / buttons
+				
+			-->
 			<div id='vboxTabsList'></div>
 		</td>
 	</tr>
@@ -340,7 +348,7 @@
 					<td id="vboxPaneTabContent" style='width:100%;border:0px;padding:0px;border-spacing:0px;margin:0px'>
 						<!--
 						
-							Tab content will go here
+							Tab content
 						
 						 -->
 					</td>

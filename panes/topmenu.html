@@ -82,7 +82,6 @@ if($('#vboxIndex').data('vboxSession').user) {
 						}
 						var dialog = this;
 						var chp = new vboxLoader();
-						chp.mode = 'save';
 						chp.add('changePassword',function(d){
 							if(d) {
 								if(d.result) {
@@ -97,12 +96,12 @@ if($('#vboxIndex').data('vboxSession').user) {
 							}
 						},{'old':o,'new':n1});
 						chp.run();
-					}
+					};
 					buttons[trans('Cancel','QIMessageBox')] = function(){
 						$(this).remove();
-					}
+					};
 					$('#vboxUserEdit').dialog({'closeOnEscape':false,'width':400,'height':200,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/register_16px.png" class="vboxDialogTitleIcon" /> '+trans('Change Password','UIUsers')});
-				}
+				};
 				l.run();			
 			},
 			'separator':true
@@ -129,8 +128,7 @@ if($('#vboxIndex').data('vboxSession').user) {
 					});
 					l.onLoad = function(){
 						this.hideRoot = false;
-					}
-					l.mode = 'save';
+					};
 					l.hideRoot = true;
 					l.run();				
 				}
@@ -202,7 +200,7 @@ var menu = {
 		        	buttons[trans('Close','VBoxVMLogViewer')] = function() { $(this).empty().remove(); };
 		
 		            $('#vboxAbout').dialog({'closeOnEscape':false,'width':500,'height':'auto','buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':'<img src="images/vbox/help_16px.png" class="vboxDialogTitleIcon" /> phpVirtualBox'});			        	
-	        	}
+	        	};
 	        	l.run();
         	}
         }

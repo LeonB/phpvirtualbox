@@ -114,7 +114,7 @@ for(var i = 0; i < parseInt($('#vboxSettingsDialog').data('vboxMachineData').ser
 	if(a > $('#vboxIndex').data('vboxSystemProperties').serialPortCount) continue;
 
 	// Port Number
-	var pNum = vboxSP.getPortName($('#vboxSettingsDialog').data('vboxMachineData').serialPorts[i].IRQ,$('#vboxSettingsDialog').data('vboxMachineData').serialPorts[i].IOBase)
+	var pNum = vboxSP.getPortName($('#vboxSettingsDialog').data('vboxMachineData').serialPorts[i].IRQ,$('#vboxSettingsDialog').data('vboxMachineData').serialPorts[i].IOBase);
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsPortNumber'+a]).val(pNum);
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsPortNumber'+a].options[document.forms['frmVboxSettings'].elements['vboxSettingsPortNumber'+a].selectedIndex]).attr('selected','selected');
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsPortNumber'+a]).change();	

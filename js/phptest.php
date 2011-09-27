@@ -1,4 +1,9 @@
-// $Id$ - PHP test
+/**
+ * $Id$
+ * 
+ * Test to ensure PHP is being parsed correctly.
+ *
+ */
 <?php if(true): ?>
 var __vboxPHP = true;
 <?php else: ?>

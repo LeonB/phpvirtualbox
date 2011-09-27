@@ -217,7 +217,7 @@
  			delete slots[slot];
  		}
  		return slots;
- 	}
+ 	};
 
  	this.addAttached = function(m) {
  		if(!m || !m.id) return;
@@ -227,9 +227,9 @@
  		if(!medium) {
  			alert('A medium listed as attached to this machine was not found in the media registry. Media will now be refreshed and phpVirtualBox reloaded.');
  			var l = new vboxLoader();
- 			l.add('Media',function(d){return;},{'force_refresh':1});
- 			l.add('VMDetails',function(d){return;},{'force_refresh':1,'vm':$('#vboxSettingsDialog').data('vboxMachineData').id});
- 			l.onLoad = function(){location.reload(true);}
+ 			l.add('getMedia',function(d){return;},{'force_refresh':1});
+ 			l.add('getVMDetails',function(d){return;},{'force_refresh':1,'vm':$('#vboxSettingsDialog').data('vboxMachineData').id});
+ 			l.onLoad = function(){location.reload(true);};
  			l.run();
  		}
  		
@@ -237,7 +237,7 @@
  		if(medium.base) {
  			this.attachedIndirectMedia[medium.base] = medium;
  		}
- 	}
+ 	};
 
  	this.isAttached = function(m,directOnly) {
  		if(!m || !m.id) return false;
@@ -246,10 +246,10 @@
  			return (m.base ? this.attachedIndirectMedia[m.base] : null);
  		}
  		return false;
- 	}
+ 	};
  	
- 	this.isAttachedDirect = function(m) { return this.attachedDirectMedia[m.id]; }
- 	this.isAttachedIndirect = function(m) { return (m.base ? this.attachedIndirectMedia[m.base] : null); }
+ 	this.isAttachedDirect = function(m) { return this.attachedDirectMedia[m.id]; };
+ 	this.isAttachedIndirect = function(m) { return (m.base ? this.attachedIndirectMedia[m.base] : null); };
  };
 
  /*
@@ -454,7 +454,7 @@ if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
 
 
 /* Medium attachment menu */
-var vboxSettingsMAMenu = new vboxMenu('vboxSettingsMAMenuL')
+var vboxSettingsMAMenu = new vboxMenu('vboxSettingsMAMenuL');
 vboxSettingsMAMenu.addMenu([vboxSettingsStorageButtons[1]]);
 
 
@@ -581,7 +581,7 @@ $(document.forms['frmVboxSettings'].vboxSettingsStorageItemName).bind('blur',fun
 	
 }).keyup(function(){
 	$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().find('span.vboxSettingsControllerTitle').text(this.value);
-})
+});
 
 /* Change host cache value onClick of checkbox */
 $(document.forms['frmVboxSettings'].vboxSettingsStorageHostCache).click(function(){
@@ -781,7 +781,7 @@ $('#vboxSettingsStorageTree').click(function(){$(this).focus();}).keydown(functi
 				return;
 			
 			// No med attachment, try previous controller
-			$(cur).prev('li.vboxSettingsController').children('table.vboxListItem').trigger('click')
+			$(cur).prev('li.vboxSettingsController').children('table.vboxListItem').trigger('click');
 			break;
 			
 		// right / expand
@@ -815,7 +815,7 @@ $('#vboxSettingsStorageTree').click(function(){$(this).focus();}).keydown(functi
 				return;
 			
 			// Try next controller
-			$(cur).closest('li.vboxSettingsController').next('li.vboxSettingsController').children('table.vboxListItem').trigger('click')
+			$(cur).closest('li.vboxSettingsController').next('li.vboxSettingsController').children('table.vboxListItem').trigger('click');
 			
 			break;
 	}
@@ -1016,7 +1016,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			vboxSettingsAddAttachment({'controller':controller,'port':port,'device':device,'type':type,'medium':null},bus);
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 			$(this).remove();
-		}
+		};
 		
 		msg = trans('<p>You are about to add a new floppy drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual floppy disk to put in the drive or to leave it empty for now?</p>','UIMessageCenter').replace('%1',controller);
 		
@@ -1040,7 +1040,7 @@ function vboxSettingsStorageAddMedium(bus, type) {
 			vboxSettingsAddAttachment({'controller':controller,'port':port,'device':device,'type':type,'medium':null},bus);
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().click();
 			$(this).remove();
-		}
+		};
 		
 		msg = trans('<p>You are about to add a new CD/DVD drive to controller <b>%1</b>.</p><p>Would you like to choose a virtual CD/DVD disk to put in the drive or to leave it empty for now?</p>','UIMessageCenter').replace('%1',controller);
 		
@@ -1148,8 +1148,8 @@ function vboxSettingsAddController(con,list) {
    		
    		b['enabled'] = function() {
    			return ($('#vboxSettingsController' + con.bus).find('li').length < (vboxStorage[con.bus].maxPortCount * vboxStorage[con.bus].maxDevicesPerPortCount));
-   			
-   		}
+   		};
+   		
    		mItems[mItems.length] = b;
 	}
     

@@ -313,7 +313,6 @@ $('#wizardCopyHDStep5').bind('show',function(e,wiz){
 	/* Check to see if file exists */
 	var fileExists = false;
 	var l = new vboxLoader();
-	l.mode='save';
 	l.add('fileExists',function(d){
 		fileExists = d.exists;
 	},{'file':loc});
@@ -322,7 +321,7 @@ $('#wizardCopyHDStep5').bind('show',function(e,wiz){
 			vboxAlert(trans('<p>The hard disk storage unit at location <b>%1</b> already exists. You cannot create a new virtual hard disk that uses this location because it can be already used by another virtual hard disk.</p><p>Please specify a different location.</p>','UIMessageCenter').replace('%1',loc));
 			wiz.displayStep(4);
 		}
-	}
+	};
 	l.run();
 	
 

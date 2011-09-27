@@ -232,7 +232,6 @@ $('#wizardImportApplianceStep2').bind('show',function(e,wiz){
 	
 	/* Parse appliance file */
 	var l = new vboxLoader();
-	l.mode = 'operation';
 	l.add('applianceReadInterpret',function(d){
 		if(d && d.descriptions && d.descriptions.length) { wizardImportApplianceParsed(d); }
 		else if(!d) { vboxAlert(trans('Unkown Error')); wiz.displayStep(1);}
@@ -382,7 +381,7 @@ function wizardImportApplianceParsed(d) {
 		}
 		$(div).append(ul);
 		var buttons = {};
-		buttons[trans('OK','QIMessageBox')] = function(){$(this).empty().remove();}
+		buttons[trans('OK','QIMessageBox')] = function(){$(this).empty().remove();};
 		$(div).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'draggable':true,'buttons':buttons,'title':trans('Warnings:')});
 		
 	}
@@ -470,8 +469,8 @@ function vboxImportAppliancePropEditDialog(td) {
 		$(td).data('descValue',$('#vboxImportAppliancePropTextarea').val());
 		$(td).children('span.vboxImportAppProp').html($('<div />').text($('#vboxImportAppliancePropTextarea').val()).html());
 		$(this).empty().remove();
-	}
-	buttons[trans('Cancel','QIMessageBox')] = function(){$(this).empty().remove();}
+	};
+	buttons[trans('Cancel','QIMessageBox')] = function(){$(this).empty().remove();};
 	$(d).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'dialogClass':'vboxDialogContent','draggable':true,'buttons':buttons,'title':$(td).prev().html()});
 
 }
@@ -516,10 +515,10 @@ function vboxImportAppliancePropEdit(elm,desc) {
 
 				if(diskRows.length) {
 					var mfd = new vboxLoader();
-					mfd.add('ComposedMachineFilename',function(d){
+					mfd.add('getComposedMachineFilename',function(d){
 						var mfolder = vboxDirname(d.file) + $("#vboxIndex").data('vboxConfig').DSEP;
 						for(var i = 0; i < diskRows.length; i++) {
-							var tdc = $(diskRows[i]).children().eq(1)
+							var tdc = $(diskRows[i]).children().eq(1);
 							var dname = vboxBasename($(tdc).data('descValue'));
 							$(tdc).data({'descValue':mfolder + dname}).find('span.vboxImportAppProp').text(mfolder + dname);
 						}

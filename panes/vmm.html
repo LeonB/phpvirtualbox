@@ -328,14 +328,13 @@ var vmmButtons = new Array(
 				if(server && target) {
 					if(!lun) lun = '0';
 					var l = new vboxLoader();
-					l.mode='save';
 					l.add('mediumAddISCSI',function(ret){
 						if(ret && ret.id) {
 							var nl = new vboxLoader();
-							nl.add('Media',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
+							nl.add('getMedia',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
 							nl.onLoad = function() {
 								vboxVMMFillMedia((ret && ret.id ? ret.id : null));
-							}
+							};
 							nl.run();
 						}
 					},{'server':server,'port':port,'intnet':intnet,'target':target,'lun':lun,'enclun':enclun,'targetUser':user,'targetPass':pass});
@@ -351,7 +350,7 @@ var vmmButtons = new Array(
 			l.addFile("panes/vmmISCSI.html",function(f){$(d).append(f);});
 			l.onLoad = function() {
 		    	$(d).dialog({'width':400,'height':350,'buttons':buttons,'modal':true,'autoOpen':true,'stack':true,'dialogClass':'vboxDialogContent','title':trans('Add iSCSI')});
-			}
+			};
 			l.run();
 					
 			
@@ -425,7 +424,7 @@ var vmmButtons = new Array(
 					
 					if(ret && ret.result == 1) {
 						var l = new vboxLoader();
-						l.add('Media',function(data){$('#vboxIndex').data('vboxMedia',data);});
+						l.add('getMedia',function(data){$('#vboxIndex').data('vboxMedia',data);});
 						l.onLoad = function() {
 							if($('#vboxVirtualMediaManager').data('hideDiff')) {
 								var d = vboxMedia.getMediumById(med.id);
@@ -433,7 +432,7 @@ var vmmButtons = new Array(
 								else $('#vboxVMMMediaTitle-'+d.id).removeClass('vboxMediumReadOnly');
 							}
 							$('#vmmMediumType').val(trans(mtype,'VBoxGlobal'));
-						}
+						};
 						l.run();
 						$('#vboxVMMModifyDialog').empty().remove();
 					}
@@ -465,7 +464,7 @@ var vmmButtons = new Array(
 				$('#vboxVMMModify').find('input[value='+med.type+']').prop('checked',true);
 				
 
-			}
+			};
 			l.run();
 			
 		}
@@ -514,7 +513,7 @@ var vmmButtons = new Array(
 						if(ret && ret.progress) {
 							vboxProgress(ret.progress,function(){
 								var l = new vboxLoader();
-								l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
+								l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
 								l.onLoad = vboxVMMFillMedia;
 								l.run();
 							},{},'progress_media_delete_90px.png');
@@ -526,7 +525,7 @@ var vmmButtons = new Array(
 				buttons[trans('Keep','UIMessageCenter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
 						var l = new vboxLoader();
-						l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
+						l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
 						l.onLoad = vboxVMMFillMedia;
 						l.run();
 					});
@@ -543,7 +542,7 @@ var vmmButtons = new Array(
 					var b = this;
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
 						var l = new vboxLoader();
-						l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
+						l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
 						l.onLoad = vboxVMMFillMedia;
 						$(b).empty().remove();
 						l.run();
@@ -603,8 +602,8 @@ var vmmButtons = new Array(
 						}
 					}
 					var l = new vboxLoader();
-					l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);});
-					l.onLoad = function(){vboxVMMFillMedia(m.id);}
+					l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
+					l.onLoad = function(){vboxVMMFillMedia(m.id);};
 					$(b).empty().remove();
 					l.run();
 				});
@@ -631,7 +630,7 @@ var vmmButtons = new Array(
 
 			// Force a refresh of media
 			var l = new vboxLoader();
-			l.add('Media',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
+			l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
 			l.onLoad = vboxVMMFillMedia;
 			l.run();
 			
@@ -654,7 +653,7 @@ vmmToolbar.context = 'VBoxMediaManagerDlg';
 vmmToolbar.addButtons('vboxMMToolbar');
 
 /* Actions Menu */
-var vmmMenu = new vboxMenuBar('vboxMMMenu')
+var vmmMenu = new vboxMenuBar('vboxMMMenu');
 vmmMenu.context = 'VBoxMediaManagerDlg';
 vmmMenu.iconStringDisabled = '_disabled';
 vmmMenu.addMenu({
@@ -669,9 +668,9 @@ var vmmCMButtons;
 
 // Check for advanced config. We don't want these in our context menu
 if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
-	vmmCMButtons = vmmButtons.slice(3,-1)
+	vmmCMButtons = vmmButtons.slice(3,-1);
 } else {
-	vmmCMButtons = vmmButtons.slice(0,-1)	
+	vmmCMButtons = vmmButtons.slice(0,-1);
 }
 var vmmCMenu = new vboxMenu('vboxVMMMediaContextMenu');
 vmmCMenu.context = 'VBoxMediaManagerDlg';
@@ -679,7 +678,9 @@ vmmCMenu.iconStringDisabled = '_disabled';
 vmmCMenu.addMenu(vmmCMButtons);
 
 
-/* Display selected media info */
+/**
+ * Display selected media info
+ */
 function vboxVMMMediaInfo(e,m) {
 	
 	var m = (m ? vboxMedia.getMediumById($(m).data('medium')) : null);
@@ -737,7 +738,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 				menusetup : function(el) {
 					if(!$(el).hasClass('vboxListItemSelected')) $(el).children().first().trigger('click');
 				}
-		},vmmCMenu.menuClickCallback)
+		},vmmCMenu.menuClickCallback);
 
 
 	if(d.children && d.children.length && !hideDiff) $(tr).addClass('vboxVMMParent');

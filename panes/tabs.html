@@ -94,7 +94,7 @@ function vboxTabs(id) {
 			$('#tablistMain').find('a[href=#'+tab.name+']').parent().addClass('selected');
 		}
 		this.tabs[this.tabs.length] = tab;
-	}
+	};
 	
 	// Show a tab
 	this.showTab = function (tab) {
@@ -108,7 +108,7 @@ function vboxTabs(id) {
 		$('#tablistMain').find('a[href='+tab+']').parent().addClass('selected');
 
 		
-	}
+	};
 	
 	// Update content to use specified vm
 	this.update = function (vm) {
@@ -127,16 +127,16 @@ function vboxTabs(id) {
 		
 		this.selected = vm.id;
 				
-		dataMediator.get('VMDetails', vm.id, this.updateTabs);
+		vboxDataMediator.get('VMDetails', vm.id, this.updateTabs);
 		
-	}
+	};
 	
 	// Refresh info for particular machine
 	this.refresh = function(id) {
 		if(this.selected == id) {
 			this.update({'id':id});
 		}
-	}
+	};
 		
 	// Call update callback function for all tabs
 	this.updateTabs = function(vm) {
@@ -162,14 +162,15 @@ function vboxTabs(id) {
 		// Trigger show
 		$(''+self.tabSelected).trigger('show',[vm]);
 
-	}
+	};
 	
 	this.disableTab = function(tab) {
 		$('#tabsMain-'+tab.name).addClass('vboxDisabled').find('img').attr('src','images/vbox/'+(tab.disabled_icon ? tab.disabled_icon : tab.icon+'_disabled')+'_16px.png');
-	}
+	};
+	
 	this.enableTab = function(tab) {
 		$('#tabsMain-'+tab.name).removeClass('vboxDisabled').find('img').attr('src','images/vbox/'+tab.icon+'_16px.png');
-	}
+	};
 
 }
 

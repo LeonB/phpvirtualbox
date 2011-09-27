@@ -97,7 +97,7 @@
 
 /* Translations */
 $(document.forms['frmVboxSettings'].vboxSettingsNetAttachedTo).find('option').html(function(i,h){return trans(h,'VBoxGlobal');}).removeClass('translate');
-$(document.forms['frmVboxSettings'].vboxSettingsNetAdapterPromiscuousMode).find('option').html(function(i,h){return trans(h,'VBoxGlobal');}).removeClass('translate')
+$(document.forms['frmVboxSettings'].vboxSettingsNetAdapterPromiscuousMode).find('option').html(function(i,h){return trans(h,'VBoxGlobal');}).removeClass('translate');
 $('#vboxSettingsTabNetAdapter').find(".translate").html(function(i,h){return trans($('<div />').html(h).text(),'UIMachineSettingsNetwork');}).removeClass('translate');
 
 /*
@@ -167,7 +167,6 @@ $('#vboxSettingsTabNetAdapter').find('input.vboxSettingsNetMacGen').click(functi
 	$(t).val('...').prop('disabled',true);
 	
 	var l = new vboxLoader();
-	l.mode = 'save'; // don't prefix with 'get'
 	l.add('genMACAddress',function(d){
 		if(d && d.mac) $(t).val(d.mac);
 		else $(t).val(oval);
@@ -436,7 +435,7 @@ $('#vboxSettingsDialog').one('show',function(){
 				aliasMode |= 4;
 			}
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.aliasMode = aliasMode;
-			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsPassDomain = (document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked ? 1 : 0)
+			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsPassDomain = (document.forms['frmVboxSettings'].elements['vboxSettingsNetPassDNSDomain'+a].checked ? 1 : 0);
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsProxy = (document.forms['frmVboxSettings'].elements['vboxSettingsNetDNSProxy'+a].checked ? 1 : 0);
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.dnsUseHostResolver = (document.forms['frmVboxSettings'].elements['vboxSettingsNetUseHostResolver'+a].checked ? 1 : 0);
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.hostIP = $(document.forms['frmVboxSettings'].elements['vboxSettingsNetBindIp'+a]).val();

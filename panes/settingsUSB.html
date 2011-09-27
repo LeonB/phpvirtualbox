@@ -74,7 +74,7 @@
 			menu.append($('<li />').html('<span><img src="images/jqueryFileTree/spinner.gif" /></span>').css({'width':'100px','text-align':'center'}));
 			
 			var l = new vboxLoader();
-			l.add('HostUSBDevices',function(hostUSB){
+			l.add('getHostUSBDevices',function(hostUSB){
 				
 				$(menu).children().remove();
 				for(var i = 0; i < hostUSB.length; i++) {
@@ -248,7 +248,7 @@ $('#vboxSettingsUSBFilterList').bind('select',usbToolbar.update);
 /* Adds a USB filter to list */
 function vboxSettingsAddUSBFilter(f,noColor) {
 	
-	var li = $('<li />').data({'filter':f}).attr({'id':'vboxSettingsUSBFilterNumber' + (Math.floor(Math.random()*1000)),'class':'vboxListItem'})
+	var li = $('<li />').data({'filter':f}).attr({'id':'vboxSettingsUSBFilterNumber' + (Math.floor(Math.random()*1000)),'class':'vboxListItem'});
 	
 	if(!($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running' && !document.forms['frmVboxSettings'].vboxSettingsUSBEnabled.checked)) {
 		

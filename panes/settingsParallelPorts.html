@@ -96,7 +96,7 @@ for(var i = 0; i < parseInt($('#vboxSettingsDialog').data('vboxMachineData').par
 	if(a > $('#vboxIndex').data('vboxSystemProperties').parallelPortCount) continue;
 
 	// Port Number
-	var pNum = vboxSP.getPortName($('#vboxSettingsDialog').data('vboxMachineData').parallelPorts[i].IRQ,$('#vboxSettingsDialog').data('vboxMachineData').parallelPorts[i].IOBase)
+	var pNum = vboxSP.getPortName($('#vboxSettingsDialog').data('vboxMachineData').parallelPorts[i].IRQ,$('#vboxSettingsDialog').data('vboxMachineData').parallelPorts[i].IOBase);
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsPPortNumber'+a]).val(pNum);
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsPPortNumber'+a].options[document.forms['frmVboxSettings'].elements['vboxSettingsPPortNumber'+a].selectedIndex]).attr('selected','selected');
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsPPortNumber'+a]).change();	

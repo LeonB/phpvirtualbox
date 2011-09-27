@@ -78,7 +78,7 @@
 $('#wizExportAppMsg').html(trans('<p>This wizard will guide you through importing an appliance.</p><p>%1</p><p>VirtualBox currently supports importing appliances saved in the Open Virtualization Format (OVF). To continue, select the file to import below:</p>','UIImportApplianceWzdPage1').replace('%1','<span class="vboxWizButtonsMessage" />'));
 
 var l = new vboxLoader();
-l.add('VMsExportable',function(d){$('#wizardExportApplianceStep1').data('vms',d);});
+l.add('getVMsExportable',function(d){$('#wizardExportApplianceStep1').data('vms',d);});
 l.onLoad = function() {
 	var vms = $('#wizardExportApplianceStep1').data('vms');
 	var vmlist = $('#vboxExportAppVMList');
@@ -100,7 +100,7 @@ l.onLoad = function() {
 		$(vmlist).append(li);
 	}
 	vboxColorRows(vmlist);
-}
+};
 l.run();
 
 

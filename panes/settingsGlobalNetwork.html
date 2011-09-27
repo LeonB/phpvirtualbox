@@ -112,13 +112,12 @@ var sButtons = new Array(
 		'click' : function () {
 
 			var l = new vboxLoader();
-			l.mode = 'save';
 			l.add('createHostOnlyInterface',function(d){
 
 				if(d && d.progress) {
 					vboxProgress(d.progress,function(){
 						var l = new vboxLoader();
-						l.add('HostOnlyNetworking',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyNetworking',d);});
+						l.add('getHostOnlyNetworking',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyNetworking',d);});
 						l.onLoad = vboxSettingsGlobalNetworkAddAdpaters;
 						l.run();
 					},{},null,trans('Add host-only network','UIGlobalSettingsNetwork'));
@@ -147,7 +146,6 @@ var sButtons = new Array(
 				var item = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first();
 
 				var l = new vboxLoader();
-				l.mode = 'save';
 				l.add('removeHostOnlyInterface',function(d){
 
 					if(d && d.progress) {
@@ -165,9 +163,9 @@ var sButtons = new Array(
 					
 				},{'id':$(item).data('interface').id});
 
-				l.onLoad = function(){$(dialog).empty().remove();}
+				l.onLoad = function(){$(dialog).empty().remove();};
 				l.run();
-			}
+			};
 			vboxConfirm(trans('<p>Deleting this host-only network will remove the host-only interface this network is based on. Do you want to remove the (host-only network) interface <nobr><b>%1</b>?</nobr></p><p><b>Note:</b> this interface may be in use by one or more virtual network adapters belonging to one of your VMs. After it is removed, these adapters will no longer be usable until you correct their settings by either choosing a different interface name or a different adapter attachment type.</p>','UIMessageCenter').replace('%1',$(item).data('interface').name),buttons);	
 		}
 	},
@@ -183,7 +181,7 @@ var sButtons = new Array(
 );
 
 netToolbar = new vboxToolbarSmall(sButtons);
-netToolbar.context = 'UIGlobalSettingsNetwork'
+netToolbar.context = 'UIGlobalSettingsNetwork';
 netToolbar.addButtons('vboxSettingsGlobalNetToolbar');
 $('#vboxSettingsGlobalNetList').bind('select',netToolbar.update);
 
