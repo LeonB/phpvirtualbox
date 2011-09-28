@@ -14,6 +14,12 @@ attached in the USB Devices section of the Settings toolbar menu.
 Fixed bug that would cause an error when "USB Devices" was clicked
 in the Settings toolbar menu.
 
+Minor UI changes.
+
+Fixed Export Appliance wizard so that it now displays the correct
+Export Appliance instructions rather than the Import Appliance
+wizard instructions.
+
 -------------------------------------
 	4.1-3	2011-9-20
 -------------------------------------

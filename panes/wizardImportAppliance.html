@@ -221,9 +221,11 @@ function wizardImportApplianceBrowseLocation() {
 $('#wizardImportApplianceStep2').bind('show',function(e,wiz){
 
 	if(!$(document.forms['frmwizardImportAppliance'].elements.wizardImportApplianceLocation).val()) {
+		$(document.forms['frmwizardImportAppliance'].elements.wizardImportApplianceLocation).addClass('vboxRequired');
 		wiz.displayStep(1);
 		return;
 	}
+	$(document.forms['frmwizardImportAppliance'].elements.wizardImportApplianceLocation).removeClass('vboxRequired').focus();
 
 	wizardImportAppResize();
 

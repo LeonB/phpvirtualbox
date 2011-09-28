@@ -75,7 +75,7 @@
 
 <script type='text/javascript'>
 
-$('#wizExportAppMsg').html(trans('<p>This wizard will guide you through importing an appliance.</p><p>%1</p><p>VirtualBox currently supports importing appliances saved in the Open Virtualization Format (OVF). To continue, select the file to import below:</p>','UIImportApplianceWzdPage1').replace('%1','<span class="vboxWizButtonsMessage" />'));
+$('#wizExportAppMsg').html(trans('<p>This wizard will guide you through the process of exporting an appliance.</p><p>%1</p><p>Please select the virtual machines that should be added to the appliance. You can select more than one. Please note that these machines have to be turned off before they can be exported.</p>','UIExportApplianceWzdPage1').replace('%1','<span class="vboxWizButtonsMessage" />'));
 
 var l = new vboxLoader();
 l.add('getVMsExportable',function(d){$('#wizardExportApplianceStep1').data('vms',d);});
@@ -198,7 +198,10 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 	
 	/* When going to step3, make sure vms are selected */
 	if(!vmSel.length) {
+		$('#vboxExportAppVMListContainer').addClass('vboxRequired');
 		wiz.displayStep(1);
+	} else {
+		$('#vboxExportAppVMListContainer').removeClass('vboxRequired');		
 	}
 
 	if(vmSel.length > 1) {

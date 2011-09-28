@@ -186,6 +186,6 @@ var vboxLanguages = [
 This is an array of associative arrays of language definitions that must contain the following keys:
 	id - must match the language file name in languages/ (minus the .xml extension)
 	name - the name of the language in English
-	name_tr - the name of the language in its native speach
+	name_tr - the name of the language in its native speech
 
 

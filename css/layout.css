@@ -289,7 +289,8 @@ div.vboxAlert form textarea { height: 100%; }
 	background: -webkit-gradient(linear, left top, left bottom, from(#d9d9d9), to(#e9e9e9)); /* for webkit browsers */
 }
 
-
+/* Required textboxes */
+input.vboxRequired, div.vboxRequired { border-color: #f00; }
 
 /* Snapshots */
 #vboxSnapshotList, #vboxSnapshotList table { height: 100%; }
@@ -360,8 +361,19 @@ div.vboxWizard {border: 1px solid #aaaaaa; border-bottom: 0px solid transparent;
 
 div.vboxWizard table td.vboxApplianceHeader { border-style: solid; border-color: #666; border-width: 1px 0px 1px 0px; background: #f0f0f8; padding: 2px; white-space: nowrap; text-align: left; font-weight: bold; }
 
-/* Import / export appliance wizards */
-#vboxImportPropsContainer, #vboxExportAppVMListContainer, #vboxExportPropsContainer { background: #fff; }
+/* Import / export appliance wizards' lists */
+#vboxImportPropsContainer, #vboxExportAppVMListContainer, #vboxExportPropsContainer {
+	
+	/* Fallback for web browsers that doesn't support RGBa */
+	 background: #fff transparent;
+
+	/* RGBa with 0.6 opacity */
+	background: rgba(255, 255, 255, 0.80);
+
+	/* For IE 8*/
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#bbffffff, endColorstr=#bbffffff)";
+	
+}
 
 /* Main Tabs */
 #tabMainContent  {padding-left: 6px; padding-right: 8px;} /* less left to account for resize bar */

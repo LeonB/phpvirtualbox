@@ -339,11 +339,14 @@ $('#wizardNewVMStep3').bind('show',function(e,wiz){
 	document.forms['frmwizardNewVM'].newVMName.value = jQuery.trim(document.forms['frmwizardNewVM'].newVMName.value);
 
 	if(!document.forms['frmwizardNewVM'].newVMName.value) {
+		$(document.forms['frmwizardNewVM'].newVMName).addClass('vboxRequired');
 		// Go back
 		wiz.displayStep(2);
 		return;
 	}
 
+	$(document.forms['frmwizardNewVM'].newVMName).removeClass('vboxRequired');
+	
 	// Update disabled / enabled items
 	if(document.forms['frmwizardNewVM'].newVMDisk[0].checked) {
 		$(document.forms['frmwizardNewVM'].newVMDisk[0]).trigger('click');
