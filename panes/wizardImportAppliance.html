@@ -300,7 +300,7 @@ function wizardImportApplianceParsed(d) {
 
 			var td = $('<td />').attr({'class':'vboxHideOverflow'}).css({'padding-left':'10px'});			
 			if(desc.checkbox) {
-				$('<input />').attr({'type':'checkbox','class':'vboxCheckbox','checked':'checked'}).css({'margin-right':'5px'}).click(function(){
+				$('<input />').attr({'type':'checkbox','class':'vboxCheckbox'}).prop('checked',true).css({'margin-right':'5px'}).click(function(){
 					$(this).closest('tr').data('propdisabled',!(this.checked));
 					if(this.checked) {
 						$(this).siblings().removeClass('vboxDisabled');

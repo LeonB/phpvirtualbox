@@ -113,36 +113,44 @@ $("#vboxToolbarButton-vboxPaneToolbar-settings").contextMenu({
 			return;
 		}
 		
-		if(a == 'GuestAdditions') {
-			vboxInstallGuestAdditions($('#vboxIndex').data('selectedVM').id);
-			return;
-		}
+		switch(a) {
 		
-		if(a == 'dvdDevices' || a == 'fdDevices') return;
+			case 'GuestAdditions':
+				vboxInstallGuestAdditions($('#vboxIndex').data('selectedVM').id);
+				break;
+				
+			// Don't do anything for dvd, fd, or USB devices main menu item click
+			case 'dvdDevices':
+			case 'fdDevices':
+			case 'USB':
+				break;
+				
+			case 'RemoteDisplay':
+				var vm = $('#tabMainContent').data('machine');
+				var l = new vboxLoader();
+				l.add('updateVRDE',function(){
+					$('#vboxIndex').trigger('vmselect',$('#tabMainContent').data('machine'));
+				},{'vm':vm.id,'enabled':(vm.consoleInfo.enabled ? 0 : 1)});
+				l.run();
+				break;
+
+			case 'settings':
+				vboxVMActions['settings'].click();
+				break;
+			
+			default:
+				
+				// Assume it was a storage action
+				if(vboxToolbarMediaLast) {
+					if(vboxToolbarMediaLast.type == 'DVD') {
+						vboxToolbarMediaMenuDVD.menuCallback(a,el,pos);
+					} else {
+						vboxToolbarMediaMenuFD.menuCallback(a,el,pos);
+					}
+				}
+			
+		} // </ switch / case >
 		
-		if(a == 'RemoteDisplay') {
-			var vm = $('#tabMainContent').data('machine');
-			var l = new vboxLoader();
-			l.add('updateVRDE',function(){
-				$('#vboxIndex').trigger('vmselect',$('#tabMainContent').data('machine'));
-			},{'vm':vm.id,'enabled':(vm.consoleInfo.enabled ? 0 : 1)});
-			l.run();
-			return;
-		}
-		
-		if(a == 'settings') {
-			vboxVMActions['settings'].click();
-			return;
-		}
-		
-		// Assume it was a storage action
-		if(vboxToolbarMediaLast) {
-			if(vboxToolbarMediaLast.type == 'DVD') {
-				vboxToolbarMediaMenuDVD.menuCallback(a,el,pos);
-			} else {
-				vboxToolbarMediaMenuFD.menuCallback(a,el,pos);
-			}
-		}
 	}
 );
 
@@ -216,7 +224,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 			dname += ' [' + hostUSB[i].revision + ']';
 			var capt = (hostUSB[i].state == 'Captured' && guestUSB[hostUSB[i].id]);
 			var avail = (capt || (hostUSB[i].state != 'NotSupported' && hostUSB[i].state != 'Unavailable' && hostUSB[i].state != 'Captured'));
-			var cbox = $('<input />').attr({'type':'checkbox','class':'vboxCheckbox','checked':(capt ? 'checked' : '')}).prop('disabled',(avail ? false : true)).bind('click',function(e){
+			var cbox = $('<input />').attr({'type':'checkbox','class':'vboxCheckbox'}).prop({'checked':(capt ? true : false),'disabled':(avail ? false : true)}).bind('click',function(e){
 				e.stopPropagation();
 				if($(this).prop('disabled')) return;
 				

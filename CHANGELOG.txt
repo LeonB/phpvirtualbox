@@ -5,6 +5,15 @@ $vmMemoryOffset if configured, is now displayed in yellow(-ish) in
 the host memory usage graph.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=414
 
+Fixed bug that would throw a VirtualBox error when cloning the
+"Current State" item of a virtual machine on the Snapshot tab.
+
+Fixed regression bug that would show all USB devices as being
+attached in the USB Devices section of the Settings toolbar menu.
+
+Fixed bug that would cause an error when "USB Devices" was clicked
+in the Settings toolbar menu.
+
 -------------------------------------
 	4.1-3	2011-9-20
 -------------------------------------
@@ -14,7 +23,7 @@ Fixed 4.1-0 regression bug that would not allow runtime attachment
 of USB devices from the Settings menu in the toolbar.
 
 Fixed 4.1-1 regression bug that would not allow one to edit
-existing USB filters for a running VM. 
+existing USB filters for a running VM.
 
 Better handling of CD/DVD medium changes when 'Live CD/DVD' is not
 selected for a medium attachment.
