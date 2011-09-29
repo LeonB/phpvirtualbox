@@ -324,7 +324,7 @@ class vboxconnector {
 		// Not found
 		} else {
 
-			throw new Exception('Undefined method: ' . $fn);
+			throw new Exception('Undefined method: ' . $fn ." - Clear your web browser's cache.");
 
 		}
 
