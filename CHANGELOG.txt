@@ -9,7 +9,8 @@ Fixed bug that would throw a VirtualBox error when cloning the
 "Current State" item of a virtual machine on the Snapshot tab.
 
 Fixed regression bug that would show all USB devices as being
-attached in the USB Devices section of the Settings toolbar menu.
+attached to the selected VM in the USB Devices section of the
+Settings toolbar menu.
 
 Fixed bug that would cause an error when "USB Devices" was clicked
 in the Settings toolbar menu.
@@ -19,6 +20,10 @@ Minor UI changes.
 Fixed Export Appliance wizard so that it now displays the correct
 Export Appliance instructions rather than the Import Appliance
 wizard instructions.
+
+Added $enableHDFlushConfig configuration setting. See "Responding
+to guest IDE/SATA flush requests" at:
+http://www.virtualbox.org/manual/ch12.html#idp12757424
 
 -------------------------------------
 	4.1-3	2011-9-20

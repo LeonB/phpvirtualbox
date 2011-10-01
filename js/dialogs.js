@@ -720,7 +720,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'fn':'getMedia','callback':function(d){$('#vboxIndex').data('vboxMedia',d);}},
 		{'fn':'getHostNetworking','callback':function(d){$('#vboxSettingsDialog').data('vboxHostNetworking',d);}},
 		{'fn':'getHostDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxHostDetails',d);}},
-		{'fn':'getVMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm,'force_refresh':$('#vboxIndex').data('vboxConfig').vmConfigRefresh}},
+		{'fn':'getVMDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm,'force_refresh':($('#vboxIndex').data('vboxConfig').vmConfigRefresh || $('#vboxIndex').data('vboxConfig').enableHDFlushConfig)}},
 		{'fn':'getEnumNetworkAdapterType','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);}},
 		{'fn':'getEnumAudioControllerType','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);}},
 		{'fn':'getRecentMedia','callback':function(d){$('#vboxIndex').data('vboxRecentMedia',d);}},
@@ -730,7 +730,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 
 	vboxSettingsDialog($('#vboxIndex').data('selectedVM').name + ' - ' + trans('Settings','UISettingsDialog'),panes,data,function(){
 		var loader = new vboxLoader();
-		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'enableAdvancedConfig':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig});
+		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'clientConfig':$('#vboxIndex').data('vboxConfig')});
 		loader.add('saveVM',function(){return;},sdata);
 		loader.onLoad = function() {
 			// Refresh media
@@ -765,7 +765,7 @@ function vboxVMsettingsInitNetwork(vm,callback) {
 
 	vboxSettingsDialog(trans('Settings','VBoxSettingsDialog'),panes,data,function(){
 		var loader = new vboxLoader();
-		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'enableAdvancedConfig':$('#vboxIndex').data('vboxConfig').enableAdvancedConfig});
+		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'clientConfig':$('#vboxIndex').data('vboxConfig')});
 		loader.add('saveVMNetwork',function(){if(callback){callback();}},sdata);
 		loader.run();
 	},'Network','nw','UISettingsDialogMachine');
@@ -787,8 +787,9 @@ function vboxVMsettingsInitSharedFolders(vm,callback) {
 	);
 
 	vboxSettingsDialog(trans('Settings','VBoxSettingsDialog'),panes,data,function(){
+		var sdata = $.extend($('#vboxSettingsDialog').data('vboxMachineData'),{'clientConfig':$('#vboxIndex').data('vboxConfig')});
 		var loader = new vboxLoader();
-		loader.add('saveVMSharedFolders',function(){if(callback){callback();}},$('#vboxSettingsDialog').data('vboxMachineData'));
+		loader.add('saveVMSharedFolders',function(){if(callback){callback();}},sdata);
 		loader.run();
 	},'SharedFolders','shared_folder','UISettingsDialogMachine');
 }

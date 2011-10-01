@@ -131,6 +131,7 @@ var vboxVMActions = {
 		'click':function(){vboxWizardCloneVMInit(function(){return;},{'vm':$('#vboxIndex').data('selectedVM')});},
 		'enabled' : function (vm) { return (vm && (jQuery.inArray(vm.state,['PoweredOff','Aborted','Teleported','Saved']) > -1));}
 	},
+
 	
 	/** Refresh a VM's details */
 	'refresh': {
@@ -1848,6 +1849,7 @@ var vboxStorage = {
 		'maxPortCount' : 2,
 		'maxDevicesPerPortCount' : 2,
 		'types':['PIIX3','PIIX4','ICH6' ],
+		'ignoreFlush' : true,
 		'slotName' : function(p,d) {
 			switch(p+'-'+d) {
 				case '0-0' : return (trans('IDE Primary Master','VBoxGlobal'));
@@ -1869,6 +1871,7 @@ var vboxStorage = {
 	SATA : {
 		'maxPortCount' : 30,
 		'maxDevicesPerPortCount' : 1,
+		'ignoreFlush' : true,
 		'types' : ['IntelAhci'],
 		'driveTypes' : ['dvd','disk'],
 		'slotName' : function(p,d) { return trans('SATA Port %1','VBoxGlobal').replace('%1',p); },
@@ -1886,6 +1889,7 @@ var vboxStorage = {
 		'maxDevicesPerPortCount' : 1,
 		'driveTypes' : ['disk'],
 		'types' : ['LsiLogic','BusLogic'],
+		'ignoreFlush' : true,
 		'slotName' : function(p,d) { return trans('SCSI Port %1','VBoxGlobal').replace('%1',p); },
 		'slots' : function() {
 						var s = {};

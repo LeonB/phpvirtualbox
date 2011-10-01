@@ -70,6 +70,13 @@ var $servers = array(
 // Enable custom VM icons
 #var $enableCustomIcons = true;
 
+/* Enable HardDisk IgnoreFlush configuration. This controls the "ExtraData" setting
+ * in "VBoxInternal/Devices/[controller type]/0/LUN#[x]/Config/IgnoreFlush". See
+ * Responding to guest IDE/SATA flush requests at:
+ * http://www.virtualbox.org/manual/ch12.html#idp12757424
+*/
+#var $enableHDFlushConfig = true;
+
 /*
 Allow to prompt deletion hard disk files on removal from Virtual Media Manager.
 If this is not set, files are always kept. If this is set, you will be PROMPTED
@@ -207,11 +214,16 @@ var $authLib = 'Builtin';
 
 /* Enable Parallel Port configuration - EXPERIMENTAL
 LPT support may or may not work for you. 
-
 !!! VirtualBox LPT support only works in Linux. !!!
-
 */
 #var $enableLPTConfig = true;
+
+/* Enable HardDisk IgnoreFlush configuration. This controls the "ExtraData" setting
+ * in "VBoxInternal/Devices/[controller type]/0/LUN#[x]/Config/IgnoreFlush". See
+ * Responding to guest IDE/SATA flush requests at:
+ * http://www.virtualbox.org/manual/ch12.html#idp12757424
+*/
+#var $enableHDFlushConfig = true;
 
 
 /*

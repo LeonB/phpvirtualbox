@@ -679,7 +679,7 @@ class vboxconnector {
 			$machine = $this->vbox->findMachine($args['id']);
 			$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 			$machine->lockMachine($this->session->handle, 'Shared');
-			$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['enableAdvancedConfig']);
+			$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['clientConfig']['enableAdvancedConfig']);
 
 		}
 
@@ -834,7 +834,7 @@ class vboxconnector {
 	}
 
 	/**
-	 * Save running VM settings. Called from saveVM() method if the requested VM is running.
+	 * Save running VM settings. Called from saveVM method if the requested VM is running.
 	 *
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
@@ -843,12 +843,13 @@ class vboxconnector {
 	public function saveVMRunning($args,&$response) {
 
 		// Client and server must agree on advanced config setting
-		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
+		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['clientConfig']['enableAdvancedConfig']);
+		$this->settings['enableHDFlushConfig'] = (@$this->settings['enableHDFlushConfig'] && @$args['clientConfig']['enableHDFlushConfig']);
 
 		// Shorthand
 		/* @var $m IMachine */
 		$m = &$this->session->machine;
-
+		
 		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
 		$m->description = $args['description'];
 
@@ -921,9 +922,29 @@ class vboxconnector {
 					if(is_object($med)) $med->releaseRemote();
 				}
 
+				// Set Live CD/DVD
 				if($ma['type'] == 'DVD') {
 					if((strtolower($ma['medium']['hostDrive']) != 'true' && $ma['medium']['hostDrive'] !== true))
-						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],($ma['temporaryEject'] ? true : false));
+						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],(intval($ma['temporaryEject']) ? true : false));
+						
+				// Set IgnoreFlush
+				} elseif($ma['type'] == 'HardDisk') {
+					
+					// Remove IgnoreFlush key?
+					if($this->settings['enableHDFlushConfig']) {
+						
+						$xtra = $this->__getIgnoreFlushKey($ma['port'], $ma['device'], $sc['controllerType']);
+						
+						if($xtra) {
+							if(intval($ma['ignoreFlush']) == 0) {
+								$m->setExtraData($xtra, '0');
+							} else {
+								$m->setExtraData($xtra, '');
+							}
+						}
+					}
+					
+					
 				}
 			}
 
@@ -1043,7 +1064,8 @@ class vboxconnector {
 		if($vmRunning) return $this->saveVMRunning($args,$response);
 
 		// Client and server must agree on advanced config setting
-		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && $args['enableAdvancedConfig']);
+		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['clientConfig']['enableAdvancedConfig']);
+		$this->settings['enableHDFlushConfig'] = (@$this->settings['enableHDFlushConfig'] && @$args['clientConfig']['enableHDFlushConfig']);
 
 		/* @var $expire array Cache items to expire after saving VM settings */
 		$expire = array();
@@ -1099,11 +1121,11 @@ class vboxconnector {
 			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
 			$m->keyboardHidType = $args['keyboardHidType'];
 			$m->pointingHidType = $args['pointingHidType'];
-			$m->setHWVirtExProperty('Enabled',($args['HWVirtExProperties']['Enabled'] ? 1 : 0));
-			$m->setHWVirtExProperty('NestedPaging', ($args['HWVirtExProperties']['NestedPaging'] ? 1 : 0));
-			$m->setHWVirtExProperty('LargePages', ($args['HWVirtExProperties']['LargePages'] ? 1 : 0));
-			$m->setHWVirtExProperty('Exclusive', ($args['HWVirtExProperties']['Exclusive'] ? 1 : 0));
-			$m->setHWVirtExProperty('VPID', ($args['HWVirtExProperties']['VPID'] ? 1 : 0));
+			$m->setHWVirtExProperty('Enabled',(intval($args['HWVirtExProperties']['Enabled']) ? 1 : 0));
+			$m->setHWVirtExProperty('NestedPaging', (intval($args['HWVirtExProperties']['NestedPaging']) ? 1 : 0));
+			$m->setHWVirtExProperty('LargePages', (intval($args['HWVirtExProperties']['LargePages']) ? 1 : 0));
+			$m->setHWVirtExProperty('Exclusive', (intval($args['HWVirtExProperties']['Exclusive']) ? 1 : 0));
+			$m->setHWVirtExProperty('VPID', (intval($args['HWVirtExProperties']['VPID']) ? 1 : 0));
 
 		}
 
@@ -1159,14 +1181,24 @@ class vboxconnector {
 		foreach($scs as $sc) { /* @var $sc IStorageController */
 
 			$mas = $m->getMediumAttachmentsOfController($sc->name);
+			
+			$cType = $sc->controllerType->__toString();
 
 			foreach($mas as $ma) { /* @var $ma IMediumAttachment */
 
 				$attachedEx[$sc->name.$ma->port.$ma->device] = (($ma->medium->handle && $ma->medium->id) ? $ma->medium->id : null);
 
+				// Remove IgnoreFlush key?
+				if($this->settings['enableHDFlushConfig'] && $ma->type->__toString() == 'HardDisk') {
+					$xtra = $this->__getIgnoreFlushKey($ma->port, $ma->device, $cType);
+					if($xtra)
+						$m->setExtraData($xtra, '');
+				}
+
 				if($ma->controller) {
 					$m->detachDevice($ma->controller,$ma->port,$ma->device);
 				}
+				
 			}
 			$scname = $sc->name;
 			$sc->releaseRemote();
@@ -1184,6 +1216,7 @@ class vboxconnector {
 			$c = $m->addStorageController($name,$bust->__toString());
 			$c->controllerType = $sc['controllerType'];
 			$c->useHostIOCache = ($sc['useHostIOCache'] ? 1 : 0);
+			
 			// Set sata port count
 			if($sc['bus'] == 'SATA') {
 				$max = max(1,intval(@$sc['portCount']));
@@ -1235,13 +1268,35 @@ class vboxconnector {
 					$med = null;
 				}
 				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],(is_object($med) ? $med->handle : null));
+				
+				// CD / DVD medium attachment type 
 				if($ma['type'] == 'DVD') {
+					
 					if((strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true))
-						$m->passthroughDevice($name,$ma['port'],$ma['device'],($ma['passthrough'] ? true : false));
+						$m->passthroughDevice($name,$ma['port'],$ma['device'],(intval($ma['passthrough']) ? true : false));
 					else
-						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],($ma['temporaryEject'] ? true : false));
+						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],(intval($ma['temporaryEject']) ? true : false));
+						
+				// HardDisk medium attachment type
 				} else if($ma['type'] == 'HardDisk') {
-					$m->nonRotationalDevice($name,$ma['port'],$ma['device'],($ma['nonRotational'] ? true : false));
+					
+					$m->nonRotationalDevice($name,$ma['port'],$ma['device'],(intval($ma['nonRotational']) ? true : false));
+					
+					// Remove IgnoreFlush key?
+					if($this->settings['enableHDFlushConfig']) {
+						
+						$xtra = $this->__getIgnoreFlushKey($ma['port'], $ma['device'], $sc['controllerType']);
+						
+						if($xtra) {
+							if(intval($ma['ignoreFlush']) == 0) {
+								$m->setExtraData($xtra, 0);
+							} else {
+								$m->setExtraData($xtra, '');
+							}
+						}
+					}
+					
+					
 				}
 				if(is_object($med)) $med->releaseRemote();
 			}
@@ -3513,16 +3568,16 @@ class vboxconnector {
 
 		$return = array();
 
-		foreach($mas as $ma) { /* @var $ma IMediumAttachment */
+		foreach($mas as $ma) { /** @var $ma IMediumAttachment */
 			$return[] = array(
 				'medium' => ($ma->medium->handle ? array('id'=>$ma->medium->id) : null),
 				'controller' => $ma->controller,
 				'port' => $ma->port,
 				'device' => $ma->device,
 				'type' => $ma->type->__toString(),
-				'passthrough' => $ma->passthrough,
-				'temporaryEject' => $ma->temporaryEject,
-				'nonRotational' => $ma->nonRotational
+				'passthrough' => intval($ma->passthrough),
+				'temporaryEject' => intval($ma->temporaryEject),
+				'nonRotational' => intval($ma->nonRotational)
 			);
 		}
 
@@ -3852,6 +3907,33 @@ class vboxconnector {
 			);
 			$c->releaseRemote();
 		}
+				
+		for($i = 0; $i < count($sc); $i++) {
+			
+			for($a = 0; $a < count($sc[$i]['mediumAttachments']); $a++) {
+				
+				// Value of '' means it is not applicable
+				$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = '';
+				
+				// Only valid for HardDisks
+				if($sc[$i]['mediumAttachments'][$a]['type'] != 'HardDisk') continue;
+				
+				// Get appropriate key
+				$xtra = $this->__getIgnoreFlushKey($sc[$i]['mediumAttachments'][$a]['port'], $sc[$i]['mediumAttachments'][$a]['device'], $sc[$i]['controllerType']);
+
+				// No such setting for this bus type
+				if(!$xtra) continue;
+								
+				$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = $m->getExtraData($xtra);
+				
+				if(trim($sc[$i]['mediumAttachments'][$a]['ignoreFlush']) === '')
+					$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = 1;
+				else
+					$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = intval($sc[$i]['mediumAttachments'][$a]['ignoreFlush']);
+				
+			}
+		}
+		
 		return $sc;
 	}
 
@@ -4605,11 +4687,40 @@ class vboxconnector {
 
 
 	}
+	
+	/**
+	 * Return a string representing the VirtualBox ExtraData key
+	 * for this port + device + bus type IgnoreFlush setting
+	 * @param integer port medium attachment port number
+	 * @param integer device medium attachment device number
+	 * @param string cType controller type
+	 */
+	private function __getIgnoreFlushKey($port,$device,$cType) {
+		
+		$cTypes = array(
+			'piix3' => 'piix3ide',
+			'piix4' => 'piix3ide',
+			'ich6' => 'piix3ide',
+			'intelahci' => 'ahci',
+			'lsilogic' => 'lsilogicscsi',
+			'buslogic' => 'buslogic',
+			'lsilogicsas' => 'lsilogicsas'
+		);
+		
+		if(!@$cTypes[strtolower($cType)]) {
+			$this->errors[] = new Exception('Invalid controller type: ' . $cType);
+		}
+		
+		$lun = ((intval($device)*2) + intval($port));
+		
+		return str_replace('[b]',$lun,str_replace('[a]',$cTypes[strtolower($cType)],"VBoxInternal/Devices/[a]/0/LUN#[b]/Config/IgnoreFlush"));
+		
+	}
 
 	/**
 	 * Get a newly generated MAC address from VirtualBox
 	 *
-	 * @param array $args array of arguments. See function body for details.
+	 * @param array $args array of arguments. See function body for details
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
 	 */
