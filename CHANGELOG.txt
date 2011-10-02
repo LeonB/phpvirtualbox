@@ -21,8 +21,8 @@ Fixed Export Appliance wizard so that it now displays the correct
 Export Appliance instructions rather than the Import Appliance
 wizard instructions.
 
-Added $enableHDFlushConfig configuration setting. See "Responding
-to guest IDE/SATA flush requests" at:
+Added $enableHDFlushConfig configuration setting. For more info
+see "Responding to guest IDE/SATA flush requests" at:
 http://www.virtualbox.org/manual/ch12.html#idp12757424
 
 -------------------------------------
