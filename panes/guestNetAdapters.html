@@ -41,7 +41,7 @@ $('#vboxGuestNetAdapterTemplate').find(".translate").html(function(i,h){return t
 /*
  * Get data and pass to init function
  */
-function vboxVMNetAdaptersInit(vm,index) {
+function vboxVMNetAdaptersInit(vm) {
 	
 	// Add spinner and remove tab list if it exists
 	$('#vboxGuestNetAdapterList').remove();
@@ -49,7 +49,7 @@ function vboxVMNetAdaptersInit(vm,index) {
 	
 	var pattern = '/VirtualBox/GuestInfo/Net/*';
 	vboxAjaxRequest('enumerateGuestProperties',{'vm':vm,'pattern':pattern},function(d){
-		vboxVMNetAdaptersDisplay(d,index);
+		vboxVMNetAdaptersDisplay(d);
 	});
 }
 

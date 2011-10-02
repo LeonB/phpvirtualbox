@@ -33,11 +33,11 @@ $(document).ready(function(){
 /**
  * Traverse a tree and return matching nodes. Used to find
  * media in the $('#vboxIndex').data('vboxMedia') object.
- * @param tree {Object} tree to traverse
- * @param prop {String} node property to match
- * @param val {Mixed} value that node property must match
- * @param all {Boolean} return all results rather than stopping at first matching node (optional)
- * @param children {Boolean} search node children (optional)
+ * @param {Object} tree - tree to traverse
+ * @param {String} prop - node property to match
+ * @param {Mixed} val - value that node property must match
+ * @param {Boolean} all - return all results rather than stopping at first matching node (optional)
+ * @param {Boolean} children - search node children (optional)
  * @return all matched nodes | first matched node | null
  */
 function vboxTraverse(tree,prop,val,all,children) {
@@ -62,11 +62,11 @@ function vboxTraverse(tree,prop,val,all,children) {
  * Performs AJAX request, alert()'s returned errors,
  * and stores any data that should persist for this
  * browser session.
- * @param fn {String} AJAX function to call
- * @param params {Object} params to pass to AJAX call
- * @param callback {Function} callback function to perform when AJAX data is returned
- * @param xtra {Object} extra data to be passed to callback function (optional)
- * @param run {Boolean} number of requests previously attempted for this function. Do not pass this value!! Only used internally
+ * @param {String} fn - AJAX function to call
+ * @param {Object} params - params to pass to AJAX call
+ * @param {Function} callback - function to perform when AJAX data is returned
+ * @param {Object} xtra - extra data to be passed to callback function (optional)
+ * @param {Integer} run - number of requests previously attempted for this function. Do not pass this value!! Only used internally
  */
 function vboxAjaxRequest(fn,params,callback,xtra,run) {
 
@@ -79,7 +79,7 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 	
 	params['fn'] = fn;
 		
-	var rval = jQuery.post('lib/ajax.php', params,
+	jQuery.post('lib/ajax.php', params,
 			
 		function(d) {
 
@@ -175,25 +175,27 @@ function vboxAjaxRequest(fn,params,callback,xtra,run) {
 }
 /**
  * Load a script file
- * @param file {String} URL to script file
- * @param callback {Function} function to call when script is loaded
- * @param cparams {any} extra parameter passed to callback function (optional)
+ * @param {String} file - URL to script file
+ * @param {Function} callback - function to call when script is loaded
+ * @param {any} cparams - extra parameter passed to callback function (optional)
+ * @return jQuery.getScript return value
  */
 function vboxGetScript(file,callback,cparams) {
 	return jQuery.getScript(file,function(f){callback(f,cparams);});
 }
 /**
  * Load an HTML file
- * @param file {String} URL to file
- * @param callback {Function} function to call when file is loaded
- * @param cparams {any} extra parameter passed to callback function (optional)
+ * @param {String} file - URL to file
+ * @param {Function} callback - function to call when file is loaded
+ * @param {any} cparams - extra parameter passed to callback function (optional)
+ * @return jQuery.get return value
  */
 function vboxGetFile(file,callback,cparams) {
 	return jQuery.get(file,function(f){callback(f,cparams);});
 }
 /**
  * Return VRDE address (host) of VM
- * @param vm {Object} virtual machine object
+ * @param {Object} vm - virtual machine object
  * @return {String} VRDE host for VM
  */
 function vboxGetVRDEAddress(vm) {
@@ -209,9 +211,9 @@ function vboxGetVRDEAddress(vm) {
 }
 
 /**
- * Return the correct icon string relative to images/vbox/ for the guest OS type.
- * @param osTypeId {String} guest OS type id
- * @return {String} icon
+ * Return the correct icon string relative to images/vbox/ for the guest OS type
+ * @param {String} osTypeId - guest OS type id
+ * @return {String} icon file name
  */
 function vboxGuestOSTypeIcon(osTypeId) {
 	
@@ -295,8 +297,8 @@ function vboxGuestOSTypeIcon(osTypeId) {
 
 /**
  * Return the correct icon relative to images/vbox/ for the VM state.
- * @param state {String} virtual machine state
- * @return {String} icon
+ * @param {String} state - virtual machine state
+ * @return {String} icon file name
  */
 function vboxMachineStateIcon(state)
 {
@@ -335,12 +337,12 @@ function vboxMachineStateIcon(state)
 
 /**
  * File or Folder browser dialog
- * @param root {String} path to initial folder or file
- * @param fn {Function} callback function to run when OK is clicked on dialog
- * @param foldersonly {Boolean} only display / allow selection of folders (optional)
- * @param title {String} title of dialog (optional)
- * @param icon {String} URL to icon (optional) 
- * @param strictFiles {Boolean} only allow the OK button to be clicked when a file is selected (optional)
+ * @param {String} root - path to initial folder or file
+ * @param {Function} fn - callback function to run when OK is clicked on dialog
+ * @param {Boolean} foldersonly - only display / allow selection of folders (optional)
+ * @param {String} title - title of dialog (optional)
+ * @param {String} icon - URL to icon (optional) 
+ * @param {Boolean} strictFiles - only allow the OK button to be clicked when a file is selected (optional)
  */
 function vboxFileBrowser(root,fn,foldersonly,title,icon,strictFiles) {
 
@@ -373,13 +375,13 @@ function vboxFileBrowser(root,fn,foldersonly,title,icon,strictFiles) {
 }
 /**
  * Convert megabytes to human readable string
- * @param mb {Integer} megabytes
+ * @param {Integer} mb - megabytes
  * @return {String} human readable size representation (e.g. 2 GB, 500 MB, etc..)
  */
 function vboxMbytesConvert(mb) {return vboxBytesConvert(parseFloat(mb) * 1024 * 1024);}
 /**
  * Convert bytes to human readable string
- * @param bytes {Integer} bytes
+ * @param {Integer} bytes - bytes
  * @return {String} human readable size representation (e.g. 2 GB, 500 MB, etc..)
  */
 function vboxBytesConvert(bytes) {
@@ -391,7 +393,7 @@ function vboxBytesConvert(bytes) {
 }
 /**
  * Parse str param into megabytes
- * @param str {String} size string (2 TB, 500 MB, etc..) to parse
+ * @param {String} str - size string (2 TB, 500 MB, etc..) to parse
  * @return {Integer} megabytes
  */
 function vboxConvertMbytes(str) {
@@ -423,8 +425,8 @@ function vboxConvertMbytes(str) {
 
 /**
  * Display alert Dialog
- * @param e {String|Object} message to display
- * @param xtraOpts {Object} extra options to apply to alert jquery dialog (optional)
+ * @param {String|Object} e - message to display
+ * @param {Object} xtraOpts - extra options to apply to alert jquery dialog (optional)
  * @see jQuery.dialog()
  */
 function vboxAlert(e,xtraOpts) {
@@ -481,9 +483,10 @@ function vboxAlert(e,xtraOpts) {
 }
 /**
  * Confirmation dialog
- * @param q {String} question to confirm
- * @param buttons {Object} buttons to display on confirmation dialog
- * @param cancelText {String} string displayed on Cancel button. Defaults to 'Cancel'
+ * @param {String} q - question to ask
+ * @param {Object} buttons -buttons to display on confirmation dialog
+ * @param {String} cancelText - string displayed on Cancel button. Defaults to 'Cancel'
+ * @return {HTMLNode}
  * @see jQuery.dialog()
  */
 function vboxConfirm(q,buttons,cancelText) {
@@ -501,8 +504,8 @@ function vboxConfirm(q,buttons,cancelText) {
 
 /**
  * Initialize common UI items
- * @param root {String|Node} root HTML Node or node ID to initialize
- * @param context {String} language context to use for translations
+ * @param {String|HTMLNode} root - root HTML Node or node ID to initialize
+ * @param {String} context - language context to use for translations
  * @see trans()
  */
 function vboxInitDisplay(root,context) {
@@ -635,9 +638,9 @@ function vboxInitDisplay(root,context) {
 
 /**
  * Color VISIBLE children rows of parent elm
- * @param elm {HTML Node} element who's children to color
- * @param startOdd {Boolean} start on the 2nd child (optional)
- * @param headerClass {String} if child node has headerClass class, consider it a header and skip coloring (optional)
+ * @param {HTMLNode} elm - element who's children to color
+ * @param {Boolean} startOdd - start on the 2nd child (optional)
+ * @param {String} headerClass - if child node has headerClass class, consider it a header and skip coloring (optional)
  */
 function vboxColorRows(elm,startOdd,headerClass) {
 	var odd = 0;
@@ -654,8 +657,8 @@ function vboxColorRows(elm,startOdd,headerClass) {
 
 /**
  * Return an HTML div node sized to parent with overflow hidden
- * @param p {HTML Node} node to add dive to
- * @return {HTML Node}
+ * @param {HTMLNode} p - node to add div to
+ * @return {HTMLNode}
  */
 function vboxDivOverflowHidden(p) {
 	var w = $(p).innerWidth();
@@ -666,8 +669,8 @@ function vboxDivOverflowHidden(p) {
 
 /**
  * Install Guest Additions on VM
- * @param vmid {String} uuid of virtual machine
- * @param mount_only {Boolean} only mount the guest additions CD-ROM (used internally, do not set!!)
+ * @param {String} vmid - uuid of virtual machine
+ * @param {Boolean} mount_only - only mount the guest additions CD-ROM (used internally, do not set!!)
  */
 function vboxInstallGuestAdditions(vmid,mount_only) {
 
@@ -723,7 +726,7 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 				url = url.replace('%1',$('#vboxIndex').data('vboxConfig').version.string.replace('_OSE',''));
 				url = url.replace('%2',$('#vboxIndex').data('vboxConfig').version.string.replace('_OSE',''));
 				$(this).remove();
-				var newwin = window.open(url);
+				window.open(url);
 			};
 			vboxConfirm(q,b,trans('No','QIMessageBox'));
 		}
@@ -734,12 +737,13 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 /**
  * 
  * Show progress dialog and periodically poll the progress' status
- * @param pid {String} progress operation id
- * @param callback {Function} function to run on progress completion
- * @param args {any} extra args to pass to callback function (optional)
- * @param icon {String} URL of image to display on progress operation dialog (optional)
- * @param title {String} title of progress operation dialog (optional)
- * @param catcherrs {Boolean} tell PHP's getProgress to catch all exceptions (optional)
+ * @param {String} pid - progress operation id
+ * @param {Function} callback - function to run on progress completion
+ * @param {any} args - extra args to pass to callback function (optional)
+ * @param {String} icon - URL of image to display on progress operation dialog (optional)
+ * @param {String} title - title of progress operation dialog (optional)
+ * @param {Boolean} catcherrs - tell PHP's getProgress to catch all exceptions (optional)
+ * @see vboxconnector::getProgress()
  */
 function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 	
@@ -781,12 +785,16 @@ function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 	vboxAjaxRequest('getProgress',{'progress':pid,'catcherrs':catcherrs},vboxProgressUpdate,{'pid':pid,'catcherrs':catcherrs});
 	
 }
-/** OnUnload warning shown when an operation is in progress */
+/** 
+ * OnUnload warning shown when an operation is in progress
+ * @return {String} warning message indicating operation is in progress
+ */
 function vboxOpInProgress() { return trans('Warning: A VirtualBox internal operation is in progress. Closing this window or navigating away from this web page may cause unexpected and undesirable results. Please wait for the operation to complete.','phpVirtualBox');}
 /**
  * Update progress dialog box with % completed
- * @param d {Object} data returned from getProgress AJAX call
- * @param e {Object} extra data containing progress id and catcherrs parameter passed to getProgress AJAX call
+ * @param {Object} d - data returned from getProgress AJAX call
+ * @param {Object} e - extra data containing progress id and catcherrs parameter passed to getProgress AJAX call
+ * @see vboxconnector::getProgress()
  */
 function vboxProgressUpdate(d,e) {
 	
@@ -815,8 +823,8 @@ function vboxProgressUpdate(d,e) {
 
 /**
  * Position element to mouse event
- * @param elm {HTML Node} element
- * @param e {Event} event
+ * @param {HTMLNode} elm - HTML node to position
+ * @param {Event} e - Event to position to
  */
 function vboxPositionEvent(elm,e) {
 	
@@ -860,7 +868,7 @@ function vboxPositionEvent(elm,e) {
 
 /**
  * Position element inside visible window
- * @param elm {HTML Node} element
+ * @param {HTMLNode} elm - element
  */
 function vboxPositionToWindow(elm) {
 
@@ -887,7 +895,7 @@ function vboxPositionToWindow(elm) {
  */
 /**
  * Return true if k param is a number
- * @param k {Integer} keycode
+ * @param {Integer} k - keycode
  * @return {Boolean}
  */
 function vboxValidateNum(k) {
@@ -895,7 +903,7 @@ function vboxValidateNum(k) {
 }
 /**
  * Return true if k param is a number or '.'
- * @param k {Integer} keycode
+ * @param {Integer} k - keycode
  * @return {Boolean}
  */
 function vboxValidateIP(k) {
@@ -903,7 +911,7 @@ function vboxValidateIP(k) {
 }
 /**
  * Return true if k param is a valid control code (shift, backspace, etc..)
- * @param k {Integer} keycode
+ * @param {Integer} k - keycode
  * @return {Boolean}
  */
 function vboxValidateCtrl(k) {
@@ -925,7 +933,7 @@ function vboxValidateCtrl(k) {
 	return false;
 }
 
-/** Parse Cookies */
+/** Parse Cookies and populate $('#vboxIndex').data('vboxCoolies') */
 function vboxParseCookies() {
 	if($('#vboxIndex').data('vboxCookiesParsed')) return;
 	var cookies = {};
@@ -939,9 +947,9 @@ function vboxParseCookies() {
 }
 
 /**
- * Set a cookie
- * @param k {String} cookie key
- * @param v {any} cookie value
+ * Set a cookie and update $('#vboxIndex').data('vboxCookies') 
+ * @param {String} k - cookie key
+ * @param {any} v - cookie value
  */
 function vboxSetCookie(k,v) {
 	var exp = new Date(2020,12,24);
@@ -952,7 +960,7 @@ function vboxSetCookie(k,v) {
 
 /**
  * Strip file name from path
- * @param p {String} path
+ * @param {String} p - path
  * @return {String} path minus file name
  */
 function vboxDirname(p) {
@@ -964,7 +972,7 @@ function vboxDirname(p) {
 }
 /**
  * Strip dir name from path
- * @param p {String} path
+ * @param {String} p - path
  * @return {String} file name portion of path
  */
 function vboxBasename(p) {
@@ -978,9 +986,10 @@ function vboxBasename(p) {
 /* Update browser title to notify of change */
 __vboxNotifyBrowserChanges = 0;
 __vboxNotifyBrowserTitle = document.title;
+
 /**
  * Update browser title to notify of change (firefox apptab support)
- * @param add {Boolean} set to true to add a notification, else notification is removed
+ * @param {Boolean} add - set to true to add a notification, else notification is removed
  */
 function vboxNotifyBrowser(add) {
 
@@ -995,8 +1004,9 @@ function vboxNotifyBrowser(add) {
 }
 /**
  * Returns the result of case-insensitive string comparison using 'natural' algorithm comparing str1 to str2
- * @param str1 {String} 1st string
- * @param str2 {String} 2nd string
+ * @param {String} str1 - 1st string
+ * @param {String} str2 - 2nd string
+ * @return {Integer} integer for use in list sorting comparison
  */
 function strnatcasecmp(str1, str2) {
     // Returns the result of case-insensitive string comparison using 'natural' algorithm  

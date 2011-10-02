@@ -849,7 +849,7 @@ class vboxconnector {
 		// Shorthand
 		/* @var $m IMachine */
 		$m = &$this->session->machine;
-		
+
 		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
 		$m->description = $args['description'];
 
@@ -926,15 +926,15 @@ class vboxconnector {
 				if($ma['type'] == 'DVD') {
 					if((strtolower($ma['medium']['hostDrive']) != 'true' && $ma['medium']['hostDrive'] !== true))
 						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],(intval($ma['temporaryEject']) ? true : false));
-						
+
 				// Set IgnoreFlush
 				} elseif($ma['type'] == 'HardDisk') {
-					
+
 					// Remove IgnoreFlush key?
 					if($this->settings['enableHDFlushConfig']) {
-						
+
 						$xtra = $this->__getIgnoreFlushKey($ma['port'], $ma['device'], $sc['controllerType']);
-						
+
 						if($xtra) {
 							if(intval($ma['ignoreFlush']) == 0) {
 								$m->setExtraData($xtra, '0');
@@ -943,8 +943,8 @@ class vboxconnector {
 							}
 						}
 					}
-					
-					
+
+
 				}
 			}
 
@@ -1062,6 +1062,8 @@ class vboxconnector {
 
 		// Switch to saveVMRunning()?
 		if($vmRunning) return $this->saveVMRunning($args,$response);
+
+
 
 		// Client and server must agree on advanced config setting
 		$this->settings['enableAdvancedConfig'] = (@$this->settings['enableAdvancedConfig'] && @$args['clientConfig']['enableAdvancedConfig']);
@@ -1181,7 +1183,7 @@ class vboxconnector {
 		foreach($scs as $sc) { /* @var $sc IStorageController */
 
 			$mas = $m->getMediumAttachmentsOfController($sc->name);
-			
+
 			$cType = $sc->controllerType->__toString();
 
 			foreach($mas as $ma) { /* @var $ma IMediumAttachment */
@@ -1198,7 +1200,7 @@ class vboxconnector {
 				if($ma->controller) {
 					$m->detachDevice($ma->controller,$ma->port,$ma->device);
 				}
-				
+
 			}
 			$scname = $sc->name;
 			$sc->releaseRemote();
@@ -1216,7 +1218,7 @@ class vboxconnector {
 			$c = $m->addStorageController($name,$bust->__toString());
 			$c->controllerType = $sc['controllerType'];
 			$c->useHostIOCache = ($sc['useHostIOCache'] ? 1 : 0);
-			
+
 			// Set sata port count
 			if($sc['bus'] == 'SATA') {
 				$max = max(1,intval(@$sc['portCount']));
@@ -1268,25 +1270,25 @@ class vboxconnector {
 					$med = null;
 				}
 				$m->attachDevice($name,$ma['port'],$ma['device'],$ma['type'],(is_object($med) ? $med->handle : null));
-				
-				// CD / DVD medium attachment type 
+
+				// CD / DVD medium attachment type
 				if($ma['type'] == 'DVD') {
-					
+
 					if((strtolower($ma['medium']['hostDrive']) == 'true' || $ma['medium']['hostDrive'] === true))
 						$m->passthroughDevice($name,$ma['port'],$ma['device'],(intval($ma['passthrough']) ? true : false));
 					else
 						$m->temporaryEjectDevice($name,$ma['port'],$ma['device'],(intval($ma['temporaryEject']) ? true : false));
-						
+
 				// HardDisk medium attachment type
 				} else if($ma['type'] == 'HardDisk') {
-					
+
 					$m->nonRotationalDevice($name,$ma['port'],$ma['device'],(intval($ma['nonRotational']) ? true : false));
-					
+
 					// Remove IgnoreFlush key?
 					if($this->settings['enableHDFlushConfig']) {
-						
+
 						$xtra = $this->__getIgnoreFlushKey($ma['port'], $ma['device'], $sc['controllerType']);
-						
+
 						if($xtra) {
 							if(intval($ma['ignoreFlush']) == 0) {
 								$m->setExtraData($xtra, 0);
@@ -1295,8 +1297,8 @@ class vboxconnector {
 							}
 						}
 					}
-					
-					
+
+
 				}
 				if(is_object($med)) $med->releaseRemote();
 			}
@@ -3907,33 +3909,33 @@ class vboxconnector {
 			);
 			$c->releaseRemote();
 		}
-				
+
 		for($i = 0; $i < count($sc); $i++) {
-			
+
 			for($a = 0; $a < count($sc[$i]['mediumAttachments']); $a++) {
-				
+
 				// Value of '' means it is not applicable
 				$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = '';
-				
+
 				// Only valid for HardDisks
 				if($sc[$i]['mediumAttachments'][$a]['type'] != 'HardDisk') continue;
-				
+
 				// Get appropriate key
 				$xtra = $this->__getIgnoreFlushKey($sc[$i]['mediumAttachments'][$a]['port'], $sc[$i]['mediumAttachments'][$a]['device'], $sc[$i]['controllerType']);
 
 				// No such setting for this bus type
 				if(!$xtra) continue;
-								
+
 				$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = $m->getExtraData($xtra);
-				
+
 				if(trim($sc[$i]['mediumAttachments'][$a]['ignoreFlush']) === '')
 					$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = 1;
 				else
 					$sc[$i]['mediumAttachments'][$a]['ignoreFlush'] = intval($sc[$i]['mediumAttachments'][$a]['ignoreFlush']);
-				
+
 			}
 		}
-		
+
 		return $sc;
 	}
 
@@ -4171,7 +4173,6 @@ class vboxconnector {
 				/* @var $mach IMachine */
 				$mach = $this->vbox->findMachine($uuid);
 			} catch (Exception $e) {
-				// TODO: error message indicating machine no longer exists?
 				continue;
 			}
 			$attach = $mach->mediumAttachments;
@@ -4687,7 +4688,7 @@ class vboxconnector {
 
 
 	}
-	
+
 	/**
 	 * Return a string representing the VirtualBox ExtraData key
 	 * for this port + device + bus type IgnoreFlush setting
@@ -4696,7 +4697,7 @@ class vboxconnector {
 	 * @param string cType controller type
 	 */
 	private function __getIgnoreFlushKey($port,$device,$cType) {
-		
+
 		$cTypes = array(
 			'piix3' => 'piix3ide',
 			'piix4' => 'piix3ide',
@@ -4706,15 +4707,15 @@ class vboxconnector {
 			'buslogic' => 'buslogic',
 			'lsilogicsas' => 'lsilogicsas'
 		);
-		
+
 		if(!@$cTypes[strtolower($cType)]) {
 			$this->errors[] = new Exception('Invalid controller type: ' . $cType);
 		}
-		
+
 		$lun = ((intval($device)*2) + intval($port));
-		
+
 		return str_replace('[b]',$lun,str_replace('[a]',$cTypes[strtolower($cType)],"VBoxInternal/Devices/[a]/0/LUN#[b]/Config/IgnoreFlush"));
-		
+
 	}
 
 	/**

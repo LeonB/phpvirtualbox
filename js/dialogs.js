@@ -4,7 +4,7 @@
  */
 
 /**
- * Import appliance wizard
+ * Run the import appliance wizard
  */
 function vboxWizardImportApplianceInit() {
 
@@ -122,7 +122,7 @@ function vboxWizardImportApplianceInit() {
 }
 
 /**
- * Export appliance wizard
+ * Run the export appliance wizard
  */
 function vboxWizardExportApplianceInit() {
 
@@ -198,8 +198,9 @@ function vboxWizardExportApplianceInit() {
 }
 
 /**
- * Port forwarding configuration dialog
- * 
+ * Show the port forwarding configuration dialog
+ * @param {Array} rules - list of port forwarding rules to process
+ * @param {Function} callback - function to run when "OK" is clicked
  */
 function vboxPortForwardConfigInit(rules,callback) {
 	var l = new vboxLoader();
@@ -230,8 +231,8 @@ function vboxPortForwardConfigInit(rules,callback) {
 }
 
 /**
- * New Virtual Machine Wizard
- * 
+ * Run the New Virtual Machine Wizard
+ * @param {Function} callback - function to run after VM creation
  */
 function vboxWizardNewVMInit(callback) {
 
@@ -275,7 +276,10 @@ function vboxWizardNewVMInit(callback) {
 }
 
 /**
- * Clone Virtual Machine Wizard
+ * Run the Clone Virtual Machine Wizard
+ * @param {Function} callback - callback to run after VM is cloned
+ * @param {Object} args - wizard data - args.vm and args.snapshot should be populated
+ * @see vboxWizard()
  */
 function vboxWizardCloneVMInit(callback,args) {
 	
@@ -296,7 +300,6 @@ function vboxWizardCloneVMInit(callback,args) {
 	
 			// Get parameters
 			var name = document.forms['frmwizardCloneVM'].elements.cloneVMName.value;
-			var vmState = $(document.forms['frmwizardCloneVM'].elements.vmState).val();
 			var src = vbw.args.vm.id;
 			var snapshot = vbw.args.snapshot;
 			var allNetcards = document.forms['frmwizardCloneVM'].elements.vboxCloneReinitNetwork.checked;
@@ -378,7 +381,8 @@ function vboxWizardCloneVMInit(callback,args) {
 }
 
 /**
- * VM Log Viewer dialog
+ * Run the VM Log Viewer dialog
+ * @param {String} vm - uuid or name of virtual machine to obtain logs for
  */
 function vboxShowLogsDialogInit(vm) {
 
@@ -413,9 +417,13 @@ function vboxShowLogsDialogInit(vm) {
 }
 
 /**
- * Virtual Media Manager Dialog
+ * Show the Virtual Media Manager Dialog
+ * @param {Function} callback - optional function to run if media is selected and "OK" is clicked
+ * @param {String} type - optionally restrict media to media of this type
+ * @param {Boolean} hideDiff - optionally hide differencing HardDisk media
+ * @param {String} mPath - optional path to use when adding or creating media through the VMM dialog
  */
-function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
+function vboxVMMDialogInit(callback,type,hideDiff,mPath) {
 
 	$('#vboxIndex').append($('<div />').attr({'id':'vboxVMMDialog','class':'vboxVMMDialog'}));
 			
@@ -484,7 +492,9 @@ function vboxVMMDialogInit(callback,type,hideDiff,attached,vmPath) {
 }
 
 /**
- * New Virtual Disk wizard dialog
+ * Run the New Virtual Disk wizard
+ * @param {Function} callback - callback function to run when new disk is created
+ * @param {Object} suggested - sugggested defaults such as hard disk name and path
  */
 function vboxWizardNewHDInit(callback,suggested) {
 
@@ -550,7 +560,9 @@ function vboxWizardNewHDInit(callback,suggested) {
 }
 
 /**
- * Copy Virtual Disk wizard dialog
+ * Run the Copy Virtual Disk wizard
+ * @param {Function} callback - callback function to run when new disk is created
+ * @param {Object} suggested - sugggested defaults such as hard disk name and path
  */
 function vboxWizardCopyHDInit(callback,suggested) {
 
@@ -612,8 +624,9 @@ function vboxWizardCopyHDInit(callback,suggested) {
 
 /**
  * Display guest network adapters dialog
+ * @param {String} vm - virtual machine uuid or name
  */
-function vboxGuestNetworkAdaptersDialogInit(vm,nic) {
+function vboxGuestNetworkAdaptersDialogInit(vm) {
 
 	/*
 	 * 	Dialog
@@ -695,9 +708,10 @@ function vboxPrefsInit() {
 
 
 /**
- * 
  * Display a virtual machine settings dialog
- * 
+ * @param {String} vm - uuid or name of virtual machine
+ * @param {Function} callback - callback function to perform after settings have been saved
+ * @param {String} pane - optionally automatically select pane when dialog is displayed
  */
 function vboxVMsettingsInit(vm,callback,pane) {
 	
@@ -746,7 +760,9 @@ function vboxVMsettingsInit(vm,callback,pane) {
 }
 
 /**
- * Display Network settings dialog for VM when VM is running 
+ * Display Network settings dialog for VM when VM is running
+ * @param {String} vm - uuid or name of virtual machine
+ * @param {Function} callback - callback function to perform after settings have been saved
  */
 function vboxVMsettingsInitNetwork(vm,callback) {
 	
@@ -773,6 +789,8 @@ function vboxVMsettingsInitNetwork(vm,callback) {
 
 /**
  * Display SharedFolders settings dialog for VM when VM is running 
+ * @param {String} vm - uuid or name of virtual machine
+ * @param {Function} callback - callback function to perform after settings have been saved
  */
 function vboxVMsettingsInitSharedFolders(vm,callback) {
 	
@@ -797,8 +815,15 @@ function vboxVMsettingsInitSharedFolders(vm,callback) {
 
 
 /**
- * Display a settings dialog (generic)
- * 		called by dialog initializers
+ * Display a settings dialog (generic) called by dialog initializers
+ * @param {String} title - title of dialog
+ * @param {Array} panes - list of panes {Object} to load
+ * @param {Object} data - list of data to load
+ * @param {Function} onsave - callback function to run when "OK" is clicked
+ * @param {String} pane - optionally automatically select pane when dialog is shown
+ * @param {String} icon - optional URL to icon for dialog
+ * @param {String} langContext - language context to use for translations
+ * @see trans()
  */
 function vboxSettingsDialog(title,panes,data,onsave,pane,icon,langContext) {
 	

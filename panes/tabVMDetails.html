@@ -59,7 +59,7 @@
 						</tr>
 						<tr style='vertical-align: middle'>
 							<td style='text-align: center' colspan='2'>
-								<table class='vboxInvisible' align='center' style='margin-left:auto;margin-right:auto;'>
+								<table class='vboxInvisible' style='margin-left:auto;margin-right:auto;'>
 									<tr style='vertical-align:bottom; padding:0px; margin:0px;'>
 										<td class='vboxInvisible' style='text-align:right'><img src='images/monitor_tl.png' style='width:15px;height:17px;'/></td>
 										<td class='vboxInvisible'><img src='images/monitor_top.png' class='vboxPreviewMonitor' style='height:17px;'/></td>
@@ -972,7 +972,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		
 	// Link nic to guest networking info?
 	} else if(links && data['state'] == 'Running') {
-		var n  = '<a href="javascript:vboxGuestNetworkAdaptersDialogInit(\''+data['id']+'\','+i+')">('+trans('Guest Network Adapters','VBoxGlobal')+')</a>';
+		var n  = '<a href="javascript:vboxGuestNetworkAdaptersDialogInit(\''+data['id']+'\')">('+trans('Guest Network Adapters','VBoxGlobal')+')</a>';
 		$(vboxDetailsTable).append(__vboxDetailRow('',n,true));
 	}
 
