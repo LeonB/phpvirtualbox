@@ -889,15 +889,15 @@ function vboxToolbar(buttons) {
 function vboxToolbarSmall(buttons) {
 
 	var self = this;
-	this.parentClass = vboxToolbar;
-	this.parentClass();
-	this.selected = null;
-	this.buttons = buttons;
-	this.lastItem = null;
-	this.buttonStyle = '';
-	this.enabled = true;
-	this.size = 16;
-	this.disabledString = 'disabled';
+	self.parentClass = vboxToolbar;
+	self.parentClass();
+	self.selected = null;
+	self.buttons = buttons;
+	self.lastItem = null;
+	self.buttonStyle = '';
+	self.enabled = true;
+	self.size = 16;
+	self.disabledString = 'disabled';
 
 	/**
 	 * Enable a single button
@@ -1167,57 +1167,58 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
  */
 function vboxMediaMenu(type,callback,mediumPath) {
 
-	this.type = type;
-	this.callback = callback;
-	this.mediumPath = mediumPath;
-	this.removeEnabled = true;
+	var self = this;
+	self.type = type;
+	self.callback = callback;
+	self.mediumPath = mediumPath;
+	self.removeEnabled = true;
 	
 	/**
 	 * Generate menu element ID
 	 * @return {String} string to use for menu node id
 	 */
-	this.menu_id = function(){
-		return 'vboxMediaListMenu'+this.type;
+	self.menu_id = function(){
+		return 'vboxMediaListMenu'+self.type;
 	};
 		
 	/**
 	 * Generate menu element
 	 * @return {HTMLNode} menu element
 	 */
-	this.menuElement = function() {
+	self.menuElement = function() {
 		
 		// Pointer already held
-		if(this._menuElm) return this._menuElm;
+		if(self._menuElm) return self._menuElm;
 		
-		var id = this.menu_id();
+		var id = self.menu_id();
 		
 		// Hold pointer
-		this._menu = new vboxMenu(id,id);
-		this._menu.context = 'UIMachineSettingsStorage';
+		self._menu = new vboxMenu(id,id);
+		self._menu.context = 'UIMachineSettingsStorage';
 		
 		// Add menu
-		this._menu.addMenu(this.menuGetDefaults());
+		self._menu.addMenu(self.menuGetDefaults());
 		
 		// Update recent list
-		this.menuUpdateRecent();
+		self.menuUpdateRecent();
 		
-		this._menu.update();
+		self._menu.update();
 		
-		this._menuElm = $('#'+this.menu_id());
+		self._menuElm = $('#'+self.menu_id());
 		
-		return this._menuElm;
+		return self._menuElm;
 	};
 	
 	/**
 	 * Generate and return host drives
 	 * @return {Array} array of objects that can be added to menu
 	 */
-	this.menuGetDrives = function() {
+	self.menuGetDrives = function() {
 		
 		var menu = [];
 		
 		// Add host drives
-		var meds = vboxMedia.mediaForAttachmentType(this.type);
+		var meds = vboxMedia.mediaForAttachmentType(self.type);
 		for(var i =0; i < meds.length; i++) {
 			if(!meds[i].hostDrive) continue;
 			menu[menu.length] = {'name':meds[i].id,'label':vboxMedia.getName(meds[i]),'pretranslated':true};
@@ -1229,14 +1230,14 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	
 	
 	/**
-	 * List of default menu items to use for media of type this.type
-	 * @return {Array} List of default menu items to use for media of type this.type
+	 * List of default menu items to use for media of type self.type
+	 * @return {Array} List of default menu items to use for media of type self.type
 	 */
-	this.menuGetDefaults = function () {
+	self.menuGetDefaults = function () {
 		
 		menus = [];
 		
-		switch(this.type) {
+		switch(self.type) {
 			
 			// HardDisk defaults
 			case 'HardDisk':
@@ -1269,12 +1270,12 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				}
 				
 				// Add host drives
-				menus = menus.concat(this.menuGetDrives());
+				menus = menus.concat(self.menuGetDrives());
 								
 				// Add remove drive
 				menus[menus.length] = {'name':'removeD','icon':'cd_unmount','cssClass':'vboxMediumRecentBefore',
 						'label':'Remove disk from virtual drive','separator':true,
-						'enabled':function(){return this.removeEnabled;}};
+						'enabled':function(){return self.removeEnabled;}};
 
 				break;
 			
@@ -1290,12 +1291,12 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				}
 				
 				// Add host drives
-				menus = menus.concat(this.menuGetDrives());
+				menus = menus.concat(self.menuGetDrives());
 
 				// Add remove drive
 				menus[menus.length] = {'name':'removeD','icon':'fd_unmount','cssClass':'vboxMediumRecentBefore',
 						'label':'Remove disk from virtual drive','separator':true,
-						'enabled':function(){return this.removeEnabled;}};
+						'enabled':function(){return self.removeEnabled;}};
 
 				break;
 								
@@ -1308,10 +1309,10 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	/**
 	 * Update "recent" media list menu items
 	 */
-	this.menuUpdateRecent = function() {
+	self.menuUpdateRecent = function() {
 		
-		var elm = $('#'+this.menu_id());
-		var list = $('#vboxIndex').data('vboxRecentMedia')[this.type];
+		var elm = $('#'+self.menu_id());
+		var list = $('#vboxIndex').data('vboxRecentMedia')[self.type];
 		elm.children('li.vboxMediumRecent').remove();
 		var ins = elm.children('li.vboxMediumRecentBefore').last();
 		for(var i = 0; i < list.length; i++) {
@@ -1325,10 +1326,10 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	 * Update "remove image from disk" menu item
 	 * @param {Boolean} enabled - whether the item should be enabled or not
 	 */
-	this.menuUpdateRemoveMedia = function(enabled) {
-		this.removeEnabled = enabled;
-		if(!this._menu) this.menuElement();
-		else this._menu.update();
+	self.menuUpdateRemoveMedia = function(enabled) {
+		self.removeEnabled = (enabled ? true : false);
+		if(!self._menu) self.menuElement();
+		else self._menu.update();
 	};
 	
 	/**
@@ -1336,11 +1337,11 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	 * @param {Object} m - medium object
 	 * @param {Boolean} skipPathAdd - don't add medium's path to vbox's list of recent media paths
 	 */
-	this.updateRecent = function(m, skipPathAdd) {
+	self.updateRecent = function(m, skipPathAdd) {
 		
 		if(vboxMedia.updateRecent(m, skipPathAdd)) { // returns true if recent media list has changed
 			// Update menu
-			this.menuUpdateRecent();
+			self.menuUpdateRecent();
 		}
 	};
 	
@@ -1348,7 +1349,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	 * Function called when menu item is selected
 	 * @param {String} action - menu item's href value (text in a href="#...")
 	 */
-	this.menuCallback = function(action) {
+	self.menuCallback = function(action) {
 		
 		switch(action) {
 		
@@ -1357,9 +1358,9 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				vboxWizardNewHDInit(function(id){
 					if(!id) return;
 					var med = vboxMedia.getMediumById(id);
-					this.callback(med);
-					this.menuUpdateRecent(med);
-				},{'path':(this.mediumPath ? this.mediumPath : $('#vboxIndex').data('vboxRecentMediaPaths')[this.type])+$('#vboxIndex').data('vboxConfig').DSEP}); 				
+					self.callback(med);
+					self.menuUpdateRecent(med);
+				},{'path':(self.mediumPath ? self.mediumPath : $('#vboxIndex').data('vboxRecentMediaPaths')[self.type])+$('#vboxIndex').data('vboxConfig').DSEP}); 				
 				break;
 			
 			// VMM
@@ -1367,18 +1368,18 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				// vboxVMMDialogInit(callback,type,hideDiff,mPath)
 				vboxVMMDialogInit(function(m){
 					if(m) {
-						this.callback(vboxMedia.getMediumById(m));
-						this.menuUpdateRecent();
+						self.callback(vboxMedia.getMediumById(m));
+						self.menuUpdateRecent();
 					}
-				},this.type,true,(this.mediumPath ? this.mediumPath : $('#vboxIndex').data('vboxRecentMediaPaths')[this.type]));
+				},self.type,true,(self.mediumPath ? self.mediumPath : $('#vboxIndex').data('vboxRecentMediaPaths')[self.type]));
 				break;
 				
 			// Choose medium file
 			case 'chooseD':
 				
-				vboxMedia.actions.choose(this.mediumPath,this.type,function(med){
-					this.callback(med);
-					this.menuUpdateRecent();
+				vboxMedia.actions.choose(self.mediumPath,self.type,function(med){
+					self.callback(med);
+					self.menuUpdateRecent();
 				});
 				
 				break;
@@ -1388,15 +1389,15 @@ function vboxMediaMenu(type,callback,mediumPath) {
 				if(action.indexOf('path:') == 0) {
 					var path = action.substring(5);
 					var med = vboxMedia.getMediumByLocation(path);
-					if(med && med.deviceType == this.type) {
-						this.callback(med);
-						this.updateRecent(med,true);
+					if(med && med.deviceType == self.type) {
+						self.callback(med);
+						self.updateRecent(med,true);
 					}
 					return;
 				}
 				var med = vboxMedia.getMediumById(action);
-				this.callback(med);
-				this.updateRecent(med,true);
+				self.callback(med);
+				self.updateRecent(med,true);
 		}
 	};
 		
