@@ -463,7 +463,7 @@ function vboxVMMDialogInit(callback,type,hideDiff,mPath) {
 	    	$(this).parent().find('span:contains("'+trans('Close','VBoxMediaManagerDlg')+'")').trigger('click');
 	    });
 		
-		vboxVMMInit(hideDiff,attached,vmPath);
+		vboxVMMInit(hideDiff,mPath);
 		
 		if(type) {
 			switch(type) {

@@ -727,7 +727,7 @@ $('#vboxVirtualMediaManager').bind('mediumselect',function(e,m){
 /*
  * Add medium to a table
  */
-function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
+function vboxVMMAddMedium(d,depth,hideDiff,topLevelParent) {
 	
 	var tr = $('<tr />').data({'medium':d.id,'mediumname':d.name,'mediumsize':d.size,'mediumlogicalSize':d.logicalSize})
 		.attr({'id':'vboxVMMMedium'+(d.id),'class':'vboxListItem collapsed','title':d.id})
@@ -775,7 +775,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 	// Add read-only or inaccessible class?
 	if(d.state == 'Inaccessible') {
 		$(span).addClass('vboxMediumInaccessible');
-	} else if(hideDiff !== undefined && d.readOnly && (!attached || (attached && !attached[d.id]))) {
+	} else if(hideDiff !== undefined && d.readOnly) {
 		$(span).addClass('vboxMediumReadOnly');
 	}
 	
@@ -835,7 +835,7 @@ function vboxVMMAddMedium(d,depth,hideDiff,attached,topLevelParent) {
 		if(depth) depth++;
 		else depth = 1;
 		for(var i = 0; i < d.children.length; i++) {
-			vboxVMMAddMedium(d.children[i],depth,hideDiff,attached,(topLevelParent ? topLevelParent : d.id));
+			vboxVMMAddMedium(d.children[i],depth,hideDiff,(topLevelParent ? topLevelParent : d.id));
 		}
 	}
 }
@@ -858,10 +858,9 @@ function vboxVMMFillMedia(sel) {
 	});
 
 	var hideDiff = $('#vboxVirtualMediaManager').data('hideDiff');
-	var attached = $('#vboxVirtualMediaManager').data('attached');
 
 	for(var i in media) {
-		vboxVMMAddMedium(media[i],0,hideDiff,attached,media[i].parent);
+		vboxVMMAddMedium(media[i],0,hideDiff,media[i].parent);
 		if(media[i].state == 'Inaccessible') {
 			switch(media[i].deviceType) {
 				case 'HardDisk':
@@ -1006,7 +1005,7 @@ function vboxVMMTableHeaderSetup(elm) {
 
 
 /* Init virtual media manager */
-function vboxVMMInit(hideDiff,attached,vmPath) {
+function vboxVMMInit(hideDiff,vmPath) {
 
 	// SEVERE hack-fooery ensues..
 	/////////////////////////////////
@@ -1039,7 +1038,6 @@ function vboxVMMInit(hideDiff,attached,vmPath) {
 	
 	// Save options for later
 	$('#vboxVirtualMediaManager').data('hideDiff', hideDiff);
-	$('#vboxVirtualMediaManager').data('attached', attached);
 	$('#vboxVirtualMediaManager').data('vmPath', vmPath);
 	
 	// Column sorting
