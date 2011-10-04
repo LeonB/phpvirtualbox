@@ -425,7 +425,7 @@ function vboxConvertMbytes(str) {
 
 /**
  * Display alert Dialog
- * @param {String|Object} e - message to display
+ * @param {String|Object} e - message to display or object containing error message and details
  * @param {Object} xtraOpts - extra options to apply to alert jquery dialog (optional)
  * @see jQuery.dialog()
  */
@@ -735,7 +735,6 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 }
 
 /**
- * 
  * Show progress dialog and periodically poll the progress' status
  * @param {String} pid - progress operation id
  * @param {Function} callback - function to run on progress completion

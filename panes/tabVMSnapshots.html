@@ -105,10 +105,8 @@ var vboxSnapshotButtons = [
   				
 	  			var vboxVer = $('#vboxIndex').data('vboxConfig').version.string.replace('_OSE','').split('.');
 	  			
-	  			if(vboxVer[1]=='1' && parseInt(vboxVer[2]) <= 2) {
-	  				vboxAlert("VirtualBox has a bug that will cause it to crash when taking a snapshot of a running virtual machine. Please pause the VM and try again. See <a href='http://www.virtualbox.org/ticket/9255' target=_blank>http://www.virtualbox.org/ticket/9255</a> for more information.");
-		  			return;
-	  			}
+  				vboxAlert("VirtualBox has a bug that will cause it to crash when taking a snapshot of a running virtual machine. Please pause the VM and try again. See <a href='http://www.virtualbox.org/ticket/9255' target=_blank>http://www.virtualbox.org/ticket/9255</a> for more information.");
+	  			return;
   			}
   			
   			$('#vboxSnapshotNewImg').attr('src',"images/vbox/" + vboxGuestOSTypeIcon($('#vboxTabVMSnapshots').data('machine').OSTypeId));

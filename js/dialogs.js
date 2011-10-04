@@ -34,7 +34,7 @@ function vboxWizardImportApplianceInit() {
 			var descriptions = $('#vboxImportProps').data('descriptions');
 			var reinitNetwork = document.forms['frmwizardImportAppliance'].elements.vboxImportReinitNetwork.checked;
 			
-			// Import function
+			/** Call Appliance import AJAX function */
 			var vboxImportApp = function() {
 				
 				$(dialog).trigger('close').empty().remove();

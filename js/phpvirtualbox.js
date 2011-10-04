@@ -3,13 +3,13 @@
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
- * 
  */
 
 
 /**
  * Common VM Actions - These assume that they will be run on the
  * selected VM as stored in $('#vboxIndex').data('selectedVM')
+ * @namespace vboxVMActions
  */
 var vboxVMActions = {
 		
@@ -328,19 +328,28 @@ var vboxVMActions = {
 	}
 };
 
+
 /**
- * Actions performed on media
+ * Common Media functions object
+ * @namespace vboxMedia
  */
 var vboxMedia = {
 
-	/** Return a printable string for medium m */
+	/**
+	 * Return a printable string for medium m
+	 * @static
+	 * @function
+	 */
 	mediumPrint : function(m,nosize,usehtml) {
 		var name = vboxMedia.getName(m);
 		if(nosize || !m || m.hostDrive) return name;
 		return name + ' (' + (m.deviceType == 'HardDisk' ? (usehtml ? '<i>' : '') + trans(m.type,'VBoxGlobal') + (usehtml ? '</i>' : '') + ', ' : '') + vboxMbytesConvert(m.logicalSize) + ')';
 	},
 
-	/** Return printable medium name */
+	/**
+	 * Return printable medium name
+	 * @static
+	 */
 	getName : function(m) {
 		if(!m) return trans('Empty','VBoxGlobal');
 		if(m.hostDrive) {
@@ -355,14 +364,20 @@ var vboxMedia = {
 		return m.name;
 	},
 
-	/** Return printable medium type */
+	/**
+	 * Return printable medium type
+	 * @static
+	 */
 	getType : function(m) {
 		if(!m || !m.type) return trans('Normal','VBoxGlobal');
 		if(m.type == 'Normal' && m.base && m.base != m.id) return trans('Differencing','VBoxGlobal');
 		return trans(m.type,'VBoxGlobal');
 	},
 	
-	/** Return printable medium format */
+	/**
+	 * Return printable medium format
+	 * @static
+	 */
 	getFormat : function (m) {
 		if(!m) return '';
 		switch(m.format.toLowerCase()) {
@@ -376,7 +391,10 @@ var vboxMedia = {
 		return m.format;
 	},
 	
-	/** Return printable virtual hard disk variant */
+	/**
+	 * Return printable virtual hard disk variant
+	 * @static
+	 */
 	getHardDiskVariant : function(m) {
 		if(!m) return '';
 		if(m.split) {
@@ -385,7 +403,10 @@ var vboxMedia = {
 		return trans(m.fixed ? 'Fixed size storage': 'Dynamically allocated storage','VBoxGlobal');
 	},
 
-	/** Return media and drives available for attachment type */
+	/**
+	 * Return media and drives available for attachment type
+	 * @static
+	 */
 	mediaForAttachmentType : function(t,children) {
 	
 		var media = new Array();
@@ -401,17 +422,26 @@ var vboxMedia = {
 		return media.concat(vboxTraverse($('#vboxIndex').data('vboxMedia'),'deviceType',t,true,children));
 	},
 
-	/** Return a medium by its location */
+	/**
+	 * Return a medium by its location
+	 * @static
+	 */
 	getMediumByLocation : function(p) {		
 		return vboxTraverse($('#vboxIndex').data('vboxMedia'),'location',p,false,true);
 	},
 
-	/** Return a medium by its ID */
+	/**
+	 * Return a medium by its ID
+	 * @static
+	 */
 	getMediumById : function(id) {
 		return vboxTraverse($('#vboxIndex').data('vboxMedia').concat($('#vboxIndex').data('vboxHostDetails').DVDDrives.concat($('#vboxIndex').data('vboxHostDetails').floppyDrives)),'id',id,false,true);
 	},
 
-	/** Return a printable list of machines and snapshots this a medium is attached to */
+	/**
+	 * Return a printable list of machines and snapshots this a medium is attached to
+	 * @static
+	 */
 	attachedTo: function(m,nullOnNone) {
 		var s = new Array();
 		if(!m.attachedTo || !m.attachedTo.length) return (nullOnNone ? null : '<i>'+trans('Not Attached')+'</i>');
@@ -421,7 +451,10 @@ var vboxMedia = {
 		return s.join(', ');
 	},
 
-	/** Update recent media menu and global recent media list */
+	/**
+	 * Update recent media menu and global recent media list
+	 * @static
+	 */
 	updateRecent : function(m, skipPathAdd) {
 		
 		// Only valid media that is not a host drive or iSCSI
@@ -464,10 +497,15 @@ var vboxMedia = {
 	
 	/**
 	 * List of actions performed on Media in phpVirtualBox
+	 * @static
+	 * @namespace
 	 */
 	actions : {
 		
-		/** Choose existing medium file */
+		/**
+		 * Choose existing medium file
+		 * @static
+		 */
 		choose : function(path,type,callback) {
 		
 			if(!path) path = $('#vboxIndex').data('vboxRecentMediaPaths')[type];
@@ -528,11 +566,13 @@ var vboxMedia = {
 
 /**
  * Base Wizard class (new HardDisk, VM, etc..)
+ * @class vboxWizard
+ * @constructor
  * @param {String} name - name of wizard
  * @param {String} title - title of wizard dialog window
  * @param {String} img - unused
  * @param {String} bg - optional URL to background image to use
- * @param {String} icon - optional URL to icon to use on dialo
+ * @param {String} icon - optional URL to icon to use on dialog
  */
 function vboxWizard(name, title, img, bg, icon) {
 	
@@ -552,12 +592,15 @@ function vboxWizard(name, title, img, bg, icon) {
 	this.context = '';
 	this.perPageContext = '';
 	
-	/** Initialize / display wizard */
+	/**
+	 * Initialize / display wizard
+	 * @memberOf vboxWizard
+	 */
 	self.run = function() {
 
-		var d = $('<div />').attr({'id':this.name+'Dialog','style':'display: none','class':'vboxWizard'});
+		var d = $('<div />').attr({'id':self.name+'Dialog','style':'display: none','class':'vboxWizard'});
 		
-		var f = $('<form />').attr({'name':('frm'+this.name),'onSubmit':'return false;','style':'height:100%;margin:0px;padding:0px;border:0px;'});
+		var f = $('<form />').attr({'name':('frm'+self.name),'onSubmit':'return false;','style':'height:100%;margin:0px;padding:0px;border:0px;'});
 
 		// main table
 		var tbl = $('<table />').attr({'class':'vboxWizard','style':'height: 100%; margin:0px; padding:0px;border:0px;'});
@@ -567,7 +610,7 @@ function vboxWizard(name, title, img, bg, icon) {
 		var td = $('<td />').attr({'id':self.name+'Content','class':'vboxWizardContent'});
 		
 		if(self.bg) {
-			$(d).css({'background':'url('+this.bg+') ' + (this.width - 360) +'px -60px no-repeat','background-color':'#fff'});				
+			$(d).css({'background':'url('+self.bg+') ' + (self.width - 360) +'px -60px no-repeat','background-color':'#fff'});				
 		}
 		
 		// Title and content table
@@ -633,12 +676,17 @@ function vboxWizard(name, title, img, bg, icon) {
 				
 	};
 	
-	/** Close wizard */
+	/**
+	 * Close wizard
+	 * @memberOf vboxWizard
+	 */
 	self.close = function() {
 		$('#'+self.name+'Dialog').trigger('close').empty().remove();
 	};
 	
-	/** Display a step
+	/**
+	 * Display a step
+	 * @memberOf vboxWizard
 	 * @param {Integer} step - step to display
 	 */
 	self.displayStep = function(step) {
@@ -678,7 +726,10 @@ function vboxWizard(name, title, img, bg, icon) {
 
 	};
 	
-	/** Set current wizard step to be the last step in list */
+	/**
+	 * Set current wizard step to be the last step in list
+	 * @memberOf vboxWizard
+	 */
 	self.setLast = function() {
 		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextText+' >")').html($('<div />').text(self.finishText).html());
 		self._origSteps = self.steps;
@@ -687,19 +738,26 @@ function vboxWizard(name, title, img, bg, icon) {
 
 	/**
 	 * Unset the current wizard step so that it is not forced to be the last one in the list
+	 * @memberOf vboxWizard
 	 */
 	self.unsetLast = function() {
 		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' >').html());
 		if(self._origSteps) self.steps = self._origSteps;
 	};
 	
-	/** Display previous step */
+	/**
+	 * Display previous step
+	 * @memberOf vboxWizard
+	 */
 	self.displayPrev = function() {
 		if(self._curStep <= 1) return;
 		self.displayStep(self._curStep - 1);
 	};
 	
-	/** Display next step */
+	/**
+	 * Display next step
+	 * @memberOf vboxWizard
+	 */
 	self.displayNext = function() {
 		if(self._curStep >= self.steps) {
 			self.onFinish(self,$('#'+self.name+'Dialog'));
@@ -711,6 +769,8 @@ function vboxWizard(name, title, img, bg, icon) {
 }
 /**
  * Common toolbar class
+ * @constructor
+ * @class vboxToolbar
  * @param {Array} buttons - buttons to add to toolbar
  */
 function vboxToolbar(buttons) {
@@ -726,6 +786,7 @@ function vboxToolbar(buttons) {
 
 	/**
 	 * Update buttons to be enabled / disabled
+	 * @memberOf vboxToolbar
 	 * @param {Object|Null} target - item to check
 	 * @param {Object|Null} item - item to check
 	 */
@@ -743,13 +804,19 @@ function vboxToolbar(buttons) {
 		}		
 	};
 
-	/** Enable entire toolbar. Calls self.update() */ 
+	/**
+	 * Enable entire toolbar. Calls self.update()
+	 * @memberOf vboxToolbar
+	 */ 
 	self.enable = function() {
 		self.enabled = true;
 		self.update(self.lastItem);
 	};
 
-	/** Disable entire toolbar */
+	/**
+	 * Disable entire toolbar
+	 * @memberOf vboxToolbar
+	 */
 	self.disable = function() {
 		self.enabled = false;
 		for(var i = 0; i < self.buttons.length; i++) {
@@ -759,6 +826,7 @@ function vboxToolbar(buttons) {
 	
 	/**
 	 * Enable a single button
+	 * @memberOf vboxToolbar
 	 * @param {Object} b - button to enable
 	 */
 	self.enableButton = function(b) {
@@ -767,6 +835,7 @@ function vboxToolbar(buttons) {
 
 	/**
 	 * Disable a single button
+	 * @memberOf vboxToolbar
 	 * @param {Object} b - button to disable 
 	 */
 	self.disableButton = function(b) {
@@ -775,6 +844,7 @@ function vboxToolbar(buttons) {
 
 	/**
 	 * Set button label
+	 * @memberOf vboxToolbar
 	 * @param {String} bname - name of button to set label for
 	 * @param {String} l - new label for button
 	 */
@@ -784,6 +854,7 @@ function vboxToolbar(buttons) {
 	
 	/**
 	 * Generate HTML element for button
+	 * @memberOf vboxToolbar
 	 * @param {Object} b - button object containing various button parameters
 	 * @return {HTMLNode} button element
 	 */
@@ -826,6 +897,7 @@ function vboxToolbar(buttons) {
 
 	/**
 	 * Add buttons to HTML node where id = id param
+	 * @memberOf vboxToolbar
 	 * @param {String} id - HTMLNode id to add buttons to
 	 */
 	self.addButtons = function(id) {
@@ -859,6 +931,7 @@ function vboxToolbar(buttons) {
 
 	/**
 	 * Return button by name
+	 * @memberOf vboxToolbar
 	 * @param {String} n - button name
 	 * @return {Object} button
 	 */ 
@@ -872,6 +945,7 @@ function vboxToolbar(buttons) {
 	
 	/**
 	 * Trigger click event on button who's name = btn param
+	 * @memberOf vboxToolbar
 	 * @param {String} btn - name of button
 	 * @return return value of .click() function performed on button
 	 */
@@ -884,6 +958,9 @@ function vboxToolbar(buttons) {
 
 /**
  * Toolbar class for a small toolbar
+ * @constructor
+ * @class vboxToolbarSmall
+ * @super vboxToolbar
  * @param {Array} buttons - list of buttons for toolbar
  */
 function vboxToolbarSmall(buttons) {
@@ -901,7 +978,9 @@ function vboxToolbarSmall(buttons) {
 
 	/**
 	 * Enable a single button
+	 * @memberOf vboxToolbarSmall
 	 * @param {Object} b - button to enable
+	 * @return null
 	 */
 	self.enableButton = function(b) {
 		if(b.noDisabledIcon)
@@ -911,7 +990,9 @@ function vboxToolbarSmall(buttons) {
 	};
 	/**
 	 * Disable a single button
+	 * @memberOf vboxToolbarSmall
 	 * @param {Object} b - button to disable
+	 * @return null
 	 */
 	self.disableButton = function(b) {
 		if(b.noDisabledIcon)
@@ -922,6 +1003,7 @@ function vboxToolbarSmall(buttons) {
 
 	/**
 	 * Generate HTML element for button
+	 * @memberOf vboxToolbarSmall
 	 * @param {Object} b - button object containing various button parameters
 	 * @return {HTMLNode} button element
 	 */
@@ -953,7 +1035,9 @@ function vboxToolbarSmall(buttons) {
 
 	/**
 	 * Add buttons to HTML node where id = id param
+	 * @memberOf vboxToolbarSmall
 	 * @param {String} id - HTMLNode id to add buttons to
+	 * @return null
 	 */
 	self.addButtons = function(id) {
 		
@@ -982,6 +1066,8 @@ function vboxToolbarSmall(buttons) {
 
 /**
  * Media menu button class
+ * @constructor
+ * @class vboxButtonMediaMenu
  * @param {String} type - type of media to display
  * @param {Function} callback - callback to run when media is selected
  * @param {String} mediumPath - path to use when selecting media
@@ -1035,8 +1121,10 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 
 	/** 
 	 * Update button to be enabled / disabled
+	 * @memberOf vboxButtonMediaMenu
 	 * @param {Object|Null} target - item to test in button's enabled() fuction
 	 * @param {Object|Null} item - item to test in button's enabled() fuction
+	 * @return null
 	 */
 	self.update = function(target,item) {
 		
@@ -1050,25 +1138,41 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 			self.enableButton();
 		}
 	};
-	/** Enable this button */
+	/**
+	 * Enable this button
+	 * @memberOf vboxButtonMediaMenu
+	 * @return null
+	 */
 	self.enableButton = function() {
 		var b = self.button;
 		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.size+'px.png)').removeClass('vboxDisabled').html('<img src="images/downArrow.png" style="margin:0px;padding:0px;float:right;width:6px;height:6px;" />');
 	};
-	/** Disable this button */
+	/**
+	 * Disable this button
+	 * @memberOf vboxButtonMediaMenu
+	 * @return null
+	 */
 	self.disableButton = function() {
 		var b = self.button;
 		$('#vboxButtonMenuButton-' + self.id + '-' + b.name).css('background-image','url(images/vbox/' + b.icon + '_'+self.disabledString+'_'+self.size+'px.png)').removeClass('vboxToolbarSmallButtonHover').addClass('vboxDisabled').html('');
 	};
 
-	/** Enable button and menu */
+	/**
+	 * Enable button and menu
+	 * @memberOf vboxButtonMediaMenu
+	 * @return null
+	 */
 	self.enable = function() {
 		self.enabled = true;
 		self.update(self.lastItem);
 		self.getButtonElm().enableContextMenu();
 	};
 
-	/** Disable button and menu */
+	/**
+	 * Disable button and menu
+	 * @memberOf vboxButtonMediaMenu
+	 * @return null
+	 */
 	self.disable = function() {
 		self.enabled = false;
 		self.disableButton();
@@ -1078,6 +1182,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Generate HTML element for button
+	 * @memberOf vboxButtonMediaMenu
 	 * @return {HTMLNode}
 	 */
 	self.buttonElement = function() {
@@ -1113,6 +1218,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Return a jquery object containing button element.
+	 * @memberOf vboxButtonMediaMenu
 	 * @return {Object} jQuery object containing button element
 	 */
 	self.getButtonElm = function () {
@@ -1121,6 +1227,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 
 	/**
 	 * Add button to element with id
+	 * @memberOf vboxButtonMediaMenu
 	 * @param {String} id - HTMLNode id to add button to
 	 */
 	self.addButton = function(id) {
@@ -1151,6 +1258,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Update media menu's "Remove Medium" item
+	 * @memberOf vboxButtonMediaMenu
 	 * @param {Boolean} enabled - whether the item should be enabled or not
 	 */
 	self.menuUpdateRemoveMedia = function(enabled) {
@@ -1161,6 +1269,7 @@ function vboxButtonMediaMenu(type,callback,mediumPath) {
 /**
  *  Media menu class
  *  @constructor
+ *  @class vboxMediaMenu
  *  @param {String} type - type of media to display
  *  @param {Function} callback - callback function to run when medium is selected
  *  @param {String} mediumPath - path to use when selecting media
@@ -1175,6 +1284,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Generate menu element ID
+	 * @memberOf vboxMediaMenu
 	 * @return {String} string to use for menu node id
 	 */
 	self.menu_id = function(){
@@ -1183,6 +1293,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		
 	/**
 	 * Generate menu element
+	 * @memberOf vboxMediaMenu
 	 * @return {HTMLNode} menu element
 	 */
 	self.menuElement = function() {
@@ -1211,6 +1322,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Generate and return host drives
+	 * @memberOf vboxMediaMenu
 	 * @return {Array} array of objects that can be added to menu
 	 */
 	self.menuGetDrives = function() {
@@ -1231,6 +1343,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * List of default menu items to use for media of type self.type
+	 * @memberOf vboxMediaMenu
 	 * @return {Array} List of default menu items to use for media of type self.type
 	 */
 	self.menuGetDefaults = function () {
@@ -1308,6 +1421,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 
 	/**
 	 * Update "recent" media list menu items
+	 * @memberOf vboxMediaMenu
 	 */
 	self.menuUpdateRecent = function() {
 		
@@ -1324,7 +1438,9 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		
 	/**
 	 * Update "remove image from disk" menu item
+	 * @memberOf vboxMediaMenu
 	 * @param {Boolean} enabled - whether the item should be enabled or not
+	 * @return null
 	 */
 	self.menuUpdateRemoveMedia = function(enabled) {
 		self.removeEnabled = (enabled ? true : false);
@@ -1334,6 +1450,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Update recent media menu and global recent media list
+	 * @memberOf vboxMediaMenu
 	 * @param {Object} m - medium object
 	 * @param {Boolean} skipPathAdd - don't add medium's path to vbox's list of recent media paths
 	 */
@@ -1347,6 +1464,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
 	
 	/**
 	 * Function called when menu item is selected
+	 * @memberOf vboxMediaMenu
 	 * @param {String} action - menu item's href value (text in a href="#...")
 	 */
 	self.menuCallback = function(action) {
@@ -1411,7 +1529,7 @@ function vboxMediaMenu(type,callback,mediumPath) {
  * 
  * Queues data requests and responses so that multiple requests for the same data do not generate
  * multiple server requests while an existing request is still in progress.
- * 
+ * @namespace vboxVMDataMediator
  */
 var vboxVMDataMediator = {
 	
@@ -1476,6 +1594,7 @@ var vboxVMDataMediator = {
 /**
  * Menu class for use with context or button menus
  * @constructor
+ * @class vboxMenu
  * @param {String} name - name of menu
  * @param {String} id - optional HTMLNode id of menu to use
  */
@@ -1490,6 +1609,7 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * return menu id
+	 * @memberOf vboxMenu
 	 * @return {String} the HTMLNode id of this menu
 	 */
 	self.menuId = function() {
@@ -1499,6 +1619,7 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * Add menu to menu object
+	 * @memberOf vboxMenu
 	 * @param {Object} m - menu configuration object
 	 */
 	self.addMenu = function(m) {
@@ -1507,6 +1628,7 @@ function vboxMenu(name, id) {
 
 	/**
 	 *  Traverse menu configuration object and generate a <UL> containing menu items
+	 *  @memberOf vboxMenu
 	 *  @param {Object} m - menu configuration object
 	 *  @param {String} mid - the optional id to use for the generated HTMLNode
 	 *  @return {HTMLNode} menu <UL> node containing menu items and submenus
@@ -1554,6 +1676,7 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * Menu click callback
+	 * @memberOf vboxMenu
 	 * @param {Integer} i - menu item index number
 	 * @return return value of menu item's click() function
 	 */
@@ -1563,6 +1686,7 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * generate menu item HTML
+	 * @memberOf vboxMenu
 	 * @param {Object} i - menu item's configuration object
 	 * @return {HTMLNode} <li> containing menu item
 	 */
@@ -1579,6 +1703,7 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * Return a URL to use for menu item's icon
+	 * @memberOf vboxMenu
 	 * @param {Object} i - menu item configuration object
 	 * @param {Boolean} disabled - whether or not the icon should be disabled
 	 * @return {String} url to icon to use
@@ -1609,7 +1734,9 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * Update all menu items
+	 * @memberOf vboxMenu
 	 * @param {Object} test - arg to pass to menu item configuration's enabled() function
+	 * @return null
 	 */
 	self.update = function(test) {
 		
@@ -1647,6 +1774,7 @@ function vboxMenu(name, id) {
 
 	/**
 	 * Disable a single menu item
+	 * @memberOf vboxMenu
 	 * @param {String} i - menu item's name
 	 * @param {Object} mi - optional menu item HTMLNode or jQuery object
 	 */
@@ -1660,6 +1788,7 @@ function vboxMenu(name, id) {
 	
 	/**
 	 * Enable a single menu item
+	 * @memberOf vboxMenu
 	 * @param {String} i - menu item's name
 	 * @param {Object} mi - optional menu item HTMLNode or jQuery object
 	 */	
@@ -1676,6 +1805,7 @@ function vboxMenu(name, id) {
 /**
  * Menu bar class
  * @constructor
+ * @class vboxMenuBar
  * @param {String} name - name of this menu bar
  */
 function vboxMenuBar(name) {
@@ -1689,6 +1819,7 @@ function vboxMenuBar(name) {
 	
 	/**
 	 * Add a menu to this object
+	 * @memberOf vboxMenuBar
 	 * @param {Object} m - menu configuration object
 	 * @return void
 	 */
@@ -1708,8 +1839,9 @@ function vboxMenuBar(name) {
 				
 	};
 
-	/*
+	/**
 	 * Add menu bar to element identified by ID
+	 * @memberOf vboxMenuBar
 	 * @param {String} id - HTMLNode id of node to add menu bar to
 	 */
 	self.addMenuBar = function(id) {
@@ -1742,6 +1874,7 @@ function vboxMenuBar(name) {
 	
 	/**
 	 * Update Menu items
+	 * @memberOf vboxMenuBar
 	 * @param {Event} e - event passed as a result of event being triggered
 	 * @param {Object} item - item to use in menu configuration items' update() test
 	 * @return void
@@ -1760,6 +1893,7 @@ function vboxMenuBar(name) {
  * Loads data, scripts, and HTML files and optionally displays 
  * "Loading ..." screen until all items have completed loading
  * @constructor
+ * @class vboxLoader
  */
 function vboxLoader() {
 
@@ -1772,6 +1906,7 @@ function vboxLoader() {
 
 	/**
 	 * Add data item to list of items to load
+	 * @memberOf vboxLoader
 	 * @param {String} dataFunction - function to pass to vboxAjaxRequest()
 	 * @param {Function} callback - callback to run when data is returned
 	 * @param {Object} params - params to pass to vboxAjaxRequest()
@@ -1789,6 +1924,7 @@ function vboxLoader() {
 
 	/**
 	 * Add file to list of items to load
+	 * @memberOf vboxLoader
 	 * @param {String} file - URL of file to load
 	 * @param {Function} callback - callback to run when file is loaded
 	 * @see vboxAjaxRequest()
@@ -1805,6 +1941,7 @@ function vboxLoader() {
 
 	/**
 	 * Add file to list of items to load. Append resulting file to element.
+	 * @memberOf vboxLoader
 	 * @param {String} file - URL of file to load
 	 * @param {jQueryObject} elm - element to append file to
 	 */
@@ -1814,9 +1951,9 @@ function vboxLoader() {
 		self.addFile(file,callback,{});
 	};
 	
-	/* Add a script to the list of items to load */
 	/**
 	 * Add file to list of items to load
+	 * @memberOf vboxLoader
 	 * @param {String} file - URL of script file to load
 	 * @param {Function} callback - callback to run when file is loaded
 	 * @see vboxAjaxRequest()
@@ -1832,7 +1969,11 @@ function vboxLoader() {
 	};
 	
 	
-	/** Load data and optionally present "Loading..." screen */
+	/**
+	 * Load data and optionally present "Loading..." screen
+	 * @memberOf vboxLoader
+	 * @return null
+	 */
 	self.run = function() {
 
 		this._loadStarted = {'data':false,'files':false,'scripts':false};
@@ -1868,7 +2009,10 @@ function vboxLoader() {
 		this._loadOrdered();
 	};
 	
-	/** Load items in order of data, scripts, then files */
+	/**
+	 * Load items in order of data, scripts, then files
+	 * @memberOf vboxLoader
+	 */
 	self._loadOrdered = function() {
 		
 		var dataLeft = 0;
@@ -1914,7 +2058,10 @@ function vboxLoader() {
 	};
 	
 
-	/** Load all data */
+	/**
+	 * Load all data in queue
+	 * @memberOf vboxLoader
+	 */
 	self._loadData = function() {
 		for ( var i = 0; i < self._load.length; i++) {
 			if(self._load[i] && self._load[i].type == 'data') {
@@ -1923,7 +2070,10 @@ function vboxLoader() {
 		}
 	};
 
-	/** Load all scripts */
+	/**
+	 * Load all scripts in queue
+	 * @memberOf vboxLoader
+	 */
 	self._loadScripts = function() {
 		for ( var i = 0; i < self._load.length; i++) {
 			if(self._load[i] && self._load[i].type == 'script') {
@@ -1932,7 +2082,10 @@ function vboxLoader() {
 		}
 	};
 
-	/** Load all files */
+	/**
+	 * Load all files in queue
+	 * @memberOf vboxLoader
+	 */
 	self._loadFiles = function() {
 		for ( var i = 0; i < self._load.length; i++) {
 			if(self._load[i] && self._load[i].type == 'file') {
@@ -1943,6 +2096,7 @@ function vboxLoader() {
 	
 	/**
 	 * AJAX call returned. Call appropriate callback and check for completion
+	 * @memberOf vboxLoader
 	 * @param {Object} d - data returned from ajax call
 	 * @param {Object} i - extra data - contains request id
 	 */
@@ -1954,7 +2108,10 @@ function vboxLoader() {
 	};
 
 	
-	/** Remove loading screen and show body */
+	/**
+	 * Remove loading screen and show body
+	 * @memberOf vboxLoader
+	 */
 	self._stop = function() {
 
 		if(self.onLoad) self.onLoad();
@@ -1971,6 +2128,7 @@ function vboxLoader() {
 /**
  * Serial port object
  * @constructor
+ * @class vboxSerialPorts
  */
 function vboxSerialPorts() {
 	
@@ -2000,6 +2158,7 @@ function vboxSerialPorts() {
 /**
  * LPT port object
  * @constructor
+ * @class vboxParallelPorts
  */
 function vboxParallelPorts() {
 	
@@ -2011,6 +2170,7 @@ function vboxParallelPorts() {
 
 	/**
 	 * Return port name based on irq and port
+	 * 
 	 * @param {Integer} irq - irq number
 	 * @param {String} port - IO port
 	 * @return {String} port name
@@ -2027,12 +2187,15 @@ function vboxParallelPorts() {
 
 
 /**
- * 	Common VM storage / controller object
+ * Common VM storage / controller object
+ * @namespace vboxStorage
  */
 var vboxStorage = {
 
 	/**
 	 * Return list of bus types
+	 * @memberOf vboxStorage
+	 * @static
 	 * @return {Array} list of all storage bus types
 	 */
 	getBusTypes : function() {

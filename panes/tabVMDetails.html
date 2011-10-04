@@ -821,17 +821,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		var con = data['storageControllers'][a];
 		
 		$(vboxDetailsTable).append(__vboxDetailRow($('<div />').text(con.name).html() + ((con.bus == 'SATA' && advancedView) ? ' (' + con.portCount + ')' : ''), ''));
-		
-		data['storageControllers'][a]['mediumAttachments'].sort(function(a,b){
-			if(a.port == b.port) {
-				if(a.device < b.device) return -1;
-				if(a.device > b.device) return 1;
-				return 0;
-			}
-			if(a.port < b.port) return -1;
-			return 1;
-		});
-		
+				
 		for(var b = 0; b < data['storageControllers'][a]['mediumAttachments'].length; b++) {
 			
 			var portName = vboxStorage[data['storageControllers'][a].bus].slotName(data['storageControllers'][a]['mediumAttachments'][b].port, data['storageControllers'][a]['mediumAttachments'][b].device);

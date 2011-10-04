@@ -3583,6 +3583,19 @@ class vboxconnector {
 			);
 		}
 
+		// Sort by port then device
+		function masort($a,$b) {
+			if($a['port'] == $b['port']) {
+				if($a['device'] < $b['device']) return -1;
+				if($a['device'] > $b['device']) return 1;
+				return 0;
+			}
+			if($a['port'] < $b['port']) return -1;
+			return 1;
+		}
+
+		usort($return,'masort');
+		
 		return $return;
 	}
 

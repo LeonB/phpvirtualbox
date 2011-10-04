@@ -25,6 +25,12 @@ Added $enableHDFlushConfig configuration setting. For more info
 see "Responding to guest IDE/SATA flush requests" at:
 http://www.virtualbox.org/manual/ch12.html#idp12757424
 
+Added workaround for http://www.virtualbox.org/ticket/9255. Taking
+a snapshot of a running VM now prompts to pause the VM. This check
+was added in 4.1-3, now however it no longer verifies the
+VirtualBox version. 4.1-3 assumed this would be fixed in
+VirtualBox versions > 4.1.2.
+
 -------------------------------------
 	4.1-3	2011-9-20
 -------------------------------------
