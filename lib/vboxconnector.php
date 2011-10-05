@@ -712,12 +712,13 @@ class vboxconnector {
 			// Network properties
 			$eprops = $n->getProperties();
 			$eprops = array_combine($eprops[1],$eprops[0]);
-			$iprops = array_map(create_function('$a','$b=preg_split(\'/=/\',$a); return array($b[0]=>$b[1]);'),preg_split('/[\r|\n]+/',$args['networkAdapters'][$i]['properties']));
+			$iprops = array_map(create_function('$a','$b=explode("=",$a); return array($b[0]=>$b[1]);'),preg_split('/[\r|\n]+/',$args['networkAdapters'][$i]['properties']));
 			$inprops = array();
 			foreach($iprops as $a) {
 				foreach($a as $k=>$v)
 				$inprops[$k] = $v;
 			}
+			
 			// Remove any props that are in the existing properties array
 			// but not in the incoming properties array
 			foreach(array_diff(array_keys($eprops),array_keys($inprops)) as $dk)
@@ -1365,7 +1366,7 @@ class vboxconnector {
 			// Network properties
 			$eprops = $n->getProperties();
 			$eprops = array_combine($eprops[1],$eprops[0]);
-			$iprops = array_map(create_function('$a','$b=preg_split(\'/=/\',$a); return array($b[0]=>$b[1]);'),preg_split('/[\r|\n]+/',$args['networkAdapters'][$i]['properties']));
+			$iprops = array_map(create_function('$a','$b=explode("=",$a); return array($b[0]=>$b[1]);'),preg_split('/[\r|\n]+/',$args['networkAdapters'][$i]['properties']));
 			$inprops = array();
 			foreach($iprops as $a) {
 				foreach($a as $k=>$v)
