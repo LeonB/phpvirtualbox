@@ -387,6 +387,9 @@ var vboxMedia = {
 				return trans('VMDK (Virtual Machine Disk)','UINewHDWizard');
 			case 'vhd':
 				return trans('VHD (Virtual Hard Disk)','UINewHDWizard');
+			case 'parallels':
+			case 'hdd':
+				return trans('HDD (Parallels Hard Disk)','UINewHDWizard');
 		}
 		return m.format;
 	},

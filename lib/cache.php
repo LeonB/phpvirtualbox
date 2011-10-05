@@ -226,7 +226,7 @@ class cache {
 	 */
 	function expire($key) {
 		if(is_array($key)) {
-			foreach($key as $k) $this->expire($k);
+			foreach(array_unique($key) as $k) $this->expire($k);
 			return;	
 		}
 		if($this->locked[$key]) $this->unlock($key);

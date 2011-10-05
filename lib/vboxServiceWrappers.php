@@ -224,6 +224,30 @@ abstract class VBox_EnumCollection extends VBox_Collection {
 */
 class VirtualBox_COM_result_codes {
 
+   const VBOX_E_OBJECT_NOT_FOUND = 0x80BB0001;
+
+   const VBOX_E_INVALID_VM_STATE = 0x80BB0002;
+
+   const VBOX_E_VM_ERROR = 0x80BB0003;
+
+   const VBOX_E_FILE_ERROR = 0x80BB0004;
+
+   const VBOX_E_IPRT_ERROR = 0x80BB0005;
+
+   const VBOX_E_PDM_ERROR = 0x80BB0006;
+
+   const VBOX_E_INVALID_OBJECT_STATE = 0x80BB0007;
+
+   const VBOX_E_HOST_ERROR = 0x80BB0008;
+
+   const VBOX_E_NOT_SUPPORTED = 0x80BB0009;
+
+   const VBOX_E_XML_ERROR = 0x80BB000A;
+
+   const VBOX_E_INVALID_SESSION_STATE = 0x80BB000B;
+
+   const VBOX_E_OBJECT_IN_USE = 0x80BB000C;
+
 }
 
 /**
@@ -10290,8 +10314,8 @@ class MediumTypeCollection extends VBox_EnumCollection {
 * Generated VBoxWebService ENUM
 */
 class MediumVariant extends VBox_Enum {
-   public $NameMap = array(0 => 'Standard', 0x01 => 'VmdkSplit2G', 0x04 => 'VmdkStreamOptimized', 0x08 => 'VmdkESX', 0x10000 => 'Fixed', 0x20000 => 'Diff');
-   public $ValueMap = array('Standard' => 0, 'VmdkSplit2G' => 0x01, 'VmdkStreamOptimized' => 0x04, 'VmdkESX' => 0x08, 'Fixed' => 0x10000, 'Diff' => 0x20000);
+   public $NameMap = array(0 => 'Standard', 0x01 => 'VmdkSplit2G', 0x04 => 'VmdkStreamOptimized', 0x08 => 'VmdkESX', 0x10000 => 'Fixed', 0x20000 => 'Diff', 0x40000000 => 'NoCreateDir');
+   public $ValueMap = array('Standard' => 0, 'VmdkSplit2G' => 0x01, 'VmdkStreamOptimized' => 0x04, 'VmdkESX' => 0x08, 'Fixed' => 0x10000, 'Diff' => 0x20000, 'NoCreateDir' => 0x40000000);
 }
 
 /**

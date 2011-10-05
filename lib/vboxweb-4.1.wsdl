@@ -772,6 +772,7 @@
             VmdkESX: 0x08 -
             Fixed: 0x10000 -
             Diff: 0x20000 -
+            NoCreateDir: 0x40000000 -
             -->
       <xsd:simpleType name="MediumVariant">
         <xsd:restriction base="xsd:string">
@@ -781,6 +782,7 @@
           <xsd:enumeration value="VmdkESX"/>
           <xsd:enumeration value="Fixed"/>
           <xsd:enumeration value="Diff"/>
+          <xsd:enumeration value="NoCreateDir"/>
         </xsd:restriction>
       </xsd:simpleType>
       <!-- enum: DataType -

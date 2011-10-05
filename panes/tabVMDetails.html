@@ -945,6 +945,13 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 					adp = trans('Internal network, \'%1\'','VBoxGlobal').replace('%1', $('<div />').text(nic.internalNetwork).html());
 					break;
 				case 'Generic':
+					// Check for properties
+					if(nic.properties) {
+						adp = trans('Generic driver, \'%1\' { %2 }','UIDetailsPagePrivate').replace('%1', $('<div />').text(nic.genericDriver).html());
+						var np = nic.properties.split("\n");
+						adp = adp.replace('%2', np.join(" ,"));
+						break;
+					}
 					adp = trans('Generic driver, \'%1\'','UIDetailsPagePrivate').replace('%1', $('<div />').text(nic.genericDriver).html());
 					break;					
 				case 'VDE':

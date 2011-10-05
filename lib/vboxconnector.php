@@ -709,6 +709,24 @@ class vboxconnector {
 				}
 			}
 
+			// Network properties
+			$eprops = $n->getProperties();
+			$eprops = array_combine($eprops[1],$eprops[0]);
+			$iprops = array_map(create_function('$a','$b=preg_split(\'/=/\',$a); return array($b[0]=>$b[1]);'),preg_split('/[\r|\n]+/',$args['networkAdapters'][$i]['properties']));
+			$inprops = array();
+			foreach($iprops as $a) {
+				foreach($a as $k=>$v)
+				$inprops[$k] = $v;
+			}
+			// Remove any props that are in the existing properties array
+			// but not in the incoming properties array
+			foreach(array_diff(array_keys($eprops),array_keys($inprops)) as $dk)
+				$n->setProperty($dk, '');
+				
+			// Set remaining properties
+			foreach($inprops as $k => $v)
+				$n->setProperty($k, $v);
+				
 			if(intval($n->cableConnected) != intval($args['networkAdapters'][$i]['cableConnected']))
 				$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
 
@@ -1136,6 +1154,7 @@ class vboxconnector {
 			$m->setExtraData('phpvb/icon', $args['customIcon']);
 
 		$m->VRAMSize = $args['VRAMSize'];
+		
 		/* Unsupported at this time
 		$m->monitorCount = max(1,intval($args['monitorCount']));
 		$m->accelerate3DEnabled = $args['accelerate3DEnabled'];
@@ -1315,13 +1334,10 @@ class vboxconnector {
 
 		/*
 		 *
-		 * When changing the following items, try our best to preserve existing
-		 * cache at the expense of some PHP processing
+		 * Network Adapters
 		 *
 		 */
 
-
-		// Network Adapters
 		$netprops = array('enabled','attachmentType','adapterType','MACAddress','bridgedInterface','hostOnlyInterface','internalNetwork','NATNetwork','cableConnected','promiscModePolicy','genericDriver');
 		if(@$this->settings['enableVDE']) $netprops[] = 'VDENetwork';
 		$adapters = $this->__getCachedMachineData('__getNetworkAdapters',$args['id'],$this->session->machine);
@@ -1345,7 +1361,25 @@ class vboxconnector {
 			// Special case for boolean values
 			$n->enabled = intval($args['networkAdapters'][$i]['enabled']);
 			$n->cableConnected = intval($args['networkAdapters'][$i]['cableConnected']);
-
+			
+			// Network properties
+			$eprops = $n->getProperties();
+			$eprops = array_combine($eprops[1],$eprops[0]);
+			$iprops = array_map(create_function('$a','$b=preg_split(\'/=/\',$a); return array($b[0]=>$b[1]);'),preg_split('/[\r|\n]+/',$args['networkAdapters'][$i]['properties']));
+			$inprops = array();
+			foreach($iprops as $a) {
+				foreach($a as $k=>$v)
+					$inprops[$k] = $v;
+			}
+			// Remove any props that are in the existing properties array
+			// but not in the incoming properties array
+			foreach(array_diff(array_keys($eprops),array_keys($inprops)) as $dk)
+				$n->setProperty($dk, '');
+			
+			// Set remaining properties
+			foreach($inprops as $k => $v)
+				$n->setProperty($k, $v);
+			
 			if($args['networkAdapters'][$i]['attachmentType'] == 'NAT') {
 
 				// Remove existing redirects
@@ -3136,6 +3170,9 @@ class vboxconnector {
 			if($at == 'NAT') $nd = $n->natDriver; /* @var $nd INATEngine */
 			else $nd = null;
 
+			$props = $n->getProperties();
+			$props = implode("\n",array_map(create_function('$a,$b','return "$a=$b";'),$props[1],$props[0]));
+			 
 			$adapters[] = array(
 				'adapterType' => $n->adapterType->__toString(),
 				'slot' => $n->slot,
@@ -3145,6 +3182,7 @@ class vboxconnector {
 				'genericDriver' => $n->genericDriver,
 				'hostOnlyInterface' => $n->hostOnlyInterface,
 				'bridgedInterface' => $n->bridgedInterface,
+				'properties' => $props,
 				'internalNetwork' => $n->internalNetwork,
 				'NATNetwork' => $n->NATNetwork,
 				'promiscModePolicy' => $n->promiscModePolicy->__toString(),
@@ -3583,7 +3621,7 @@ class vboxconnector {
 			);
 		}
 
-		usort($return,array($this,'__mediumAttachmentSort'));
+		usort($return,create_function('$a,$b', 'if($a["port"] == $b["port"]) { if($a["device"] < $b["device"]) { return -1; } if($a["device"] > $b["device"]) { return 1; } return 0; } if($a["port"] < $b["port"]) { return -1; } return 1;'));
 		
 		return $return;
 	}
@@ -4759,21 +4797,6 @@ class vboxconnector {
 		}
 
 		return $time;
-	}
-
-	/**
-	 * Sort medium attachments by port, then device - used in usort()
-	 * @param array $a medium attachment data
-	 * @param array $b medium attachment data
-	 */
-	private function __mediumAttachmentSort($a,$b) {
-		if($a['port'] == $b['port']) {
-			if($a['device'] < $b['device']) return -1;
-			if($a['device'] > $b['device']) return 1;
-			return 0;
-		}
-		if($a['port'] < $b['port']) return -1;
-		return 1;
 	}
 	
 

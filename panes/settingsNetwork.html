@@ -82,6 +82,12 @@
 			<input class="vboxSettingsNetMacGen vboxImgButton" style='background: url(images/vbox/refresh_16px.png) 1px 1px no-repeat; width: 18px; height: 18px; vertical-align:bottom' type="button"  value="" />
 		</td>
 	</tr>
+	<tr class='vboxSettingsNetToggleAdvanced vboxSettingsNetGenPropsRow' style='display: none'>
+		<th><span class='translate vboxRunningEnabled'>Generic Properties:</span></th>
+		<td style='white-space: nowrap'>
+			<textarea class='vboxRunningEnabled' rows='3' cols='20' name='vboxSettingsNetGenericProps'></textarea>
+		</td>
+	</tr>	
 	<tr class='vboxSettingsNetToggleAdvanced' style='display: none'>
 		<th></th>
 		<td><label><input type='checkbox' class='vboxCheckbox' class='vboxEnablerListen' name='vboxSettingsNetConnected' /> <span class='translate vboxEnablerListen'>Cable connected</span></label></td>
@@ -150,10 +156,12 @@ var vboxSettingsNetContainer = $(vboxSettingsNetTemplate).parent();
 /* Network advanced show / hide */
 $('#vboxSettingsTabNetAdapter').find('input.netImgAdvanced').toggle(
 		function() {
-			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced').css('display','');
+			$(this).data('vboxAdvancedEnabled',true);
+			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced:not(.vboxForceHide)').css('display','');
 			$(this).css('background-image','url(images/downArrow.png)');
 		},
 		function() {
+			$(this).data('vboxAdvancedEnabled',false);
 			$(this).closest('table').find('.vboxSettingsNetToggleAdvanced').css('display','none');
 			$(this).css('background-image','url(images/rightArrow.png)');
 		}
@@ -248,6 +256,8 @@ for(var i = 0; i < parseInt($('#vboxIndex').data('vboxConfig').nicMax); i++) {
 	document.forms['frmVboxSettings'].elements['vboxSettingsNetConnected'+a].checked = ($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].cableConnected ? true : false);
 	$(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapterPromiscuousMode'+a]).val($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].promiscModePolicy);
 
+	document.forms['frmVboxSettings'].elements['vboxSettingsNetGenericProps'+a].innerHTML = $('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].properties;
+		
 	// Enabled adapter
 	if($('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].enabled) {
 		document.forms['frmVboxSettings'].elements['vboxSettingsNetEnabled'+a].checked = true;
@@ -302,6 +312,15 @@ function vboxSettingsUpdateNetworkOptions(sel) {
 		$(ptable).find('.vboxSettingsNetPromiscuousMode').removeClass('disabled').prop('disabled',false);
 	}
 
+	// Generic properties
+	if(sel.value == 'Generic') {
+		$(ptable).find('tr.vboxSettingsNetGenPropsRow').removeClass('vboxForceHide');
+		if(ptable.find('input.netImgAdvanced').first().data('vboxAdvancedEnabled')) {
+			$(ptable).find('tr.vboxSettingsNetGenPropsRow').show();
+		}
+	} else {
+		$(ptable).find('tr.vboxSettingsNetGenPropsRow').hide().addClass('vboxForceHide');
+	}
 	
 	// Port forward button
 	$(ptable).find('input.vboxSettingsNetPFButton').prop('disabled',(sel.value == 'NAT' ? false : true));
@@ -441,6 +460,7 @@ $('#vboxSettingsDialog').one('show',function(){
 			$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].natDriver.hostIP = $(document.forms['frmVboxSettings'].elements['vboxSettingsNetBindIp'+a]).val();
 		}
 		
+		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].properties = $(document.forms['frmVboxSettings'].elements['vboxSettingsNetGenericProps'+a]).val();
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].promiscModePolicy = $(document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapterPromiscuousMode'+a]).val();
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].adapterType = document.forms['frmVboxSettings'].elements['vboxSettingsNetAdapter'+a].value;
 		$('#vboxSettingsDialog').data('vboxMachineData').networkAdapters[i].MACAddress = document.forms['frmVboxSettings'].elements['vboxSettingsNetMAC'+a].value;
