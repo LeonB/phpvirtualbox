@@ -577,6 +577,7 @@ var vboxMedia = {
 function vboxWizard(name, title, img, bg, icon) {
 	
 	var self = this;
+
 	this.steps = 0;
 	this.name = name;
 	this.title = title;
@@ -595,6 +596,7 @@ function vboxWizard(name, title, img, bg, icon) {
 	/**
 	 * Initialize / display wizard
 	 * @memberOf vboxWizard
+	 * @name vboxWizard.run
 	 */
 	self.run = function() {
 

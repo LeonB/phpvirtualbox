@@ -10,7 +10,8 @@ function vboxWizardImportApplianceInit() {
 
 	var l = new vboxLoader();
 	l.add('getEnumNetworkAdapterType',function(d){$('#vboxIndex').data('vboxNetworkAdapterTypes',d);});
-	l.add('getEnumAudioControllerType',function(d){$('#vboxIndex').data('vboxAudioControllerTypes',d);});	
+	l.add('getEnumAudioControllerType',function(d){$('#vboxIndex').data('vboxAudioControllerTypes',d);});
+	
 	l.onLoad = function() {
 
 		var vbw = new vboxWizard('wizardImportAppliance',trans('Appliance Import Wizard','UIImportApplianceWzd'),'images/vbox/vmw_ovf_import.png', 'images/vbox/vmw_ovf_import_bg.png','import');

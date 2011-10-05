@@ -3583,18 +3583,7 @@ class vboxconnector {
 			);
 		}
 
-		// Sort by port then device
-		function masort($a,$b) {
-			if($a['port'] == $b['port']) {
-				if($a['device'] < $b['device']) return -1;
-				if($a['device'] > $b['device']) return 1;
-				return 0;
-			}
-			if($a['port'] < $b['port']) return -1;
-			return 1;
-		}
-
-		usort($return,'masort');
+		usort($return,array($this,'__mediumAttachmentSort'));
 		
 		return $return;
 	}
@@ -4772,6 +4761,21 @@ class vboxconnector {
 		return $time;
 	}
 
+	/**
+	 * Sort medium attachments by port, then device - used in usort()
+	 * @param array $a medium attachment data
+	 * @param array $b medium attachment data
+	 */
+	private function __mediumAttachmentSort($a,$b) {
+		if($a['port'] == $b['port']) {
+			if($a['device'] < $b['device']) return -1;
+			if($a['device'] > $b['device']) return 1;
+			return 0;
+		}
+		if($a['port'] < $b['port']) return -1;
+		return 1;
+	}
+	
 
 }
 
