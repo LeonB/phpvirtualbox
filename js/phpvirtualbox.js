@@ -889,6 +889,10 @@ function vboxToolbar(buttons) {
 				if($.browser.msie && e.button == 1) e.button = 0;
 				if(e.button != 0 || $(this).hasClass('vboxDisabled')) return true;
 				$(this).addClass('vboxToolbarButtonDown');
+
+				var e = jQuery.Event("mouseup", {button:0});
+				$(this).siblings().trigger(e);
+				
 				var btn = $(this);
 				$(document).one('mouseup',function(){
 					$(btn).removeClass('vboxToolbarButtonDown');
@@ -1857,14 +1861,30 @@ function vboxMenuBar(name) {
 			$('#'+self.name+'MenuBar').append(
 					$('<span />').attr({'id':+self.name+self.menus[i].name}).html(trans(self.menus[i].label,(self.menus[i].context ? self.menus[i].context : self.context)))
 					.contextMenu({
-				 		menu: self.menus[i].menuObj.menuId(),
-				 		button: 0,
-				 		mode: 'menu'
+					 		menu: self.menus[i].menuObj.menuId(),
+					 		button: 0,
+					 		mode: 'menu',
+					 		menusetup : function(el) {
+								$(el).parent().data('vboxMenubarActive', true);
+								$(document).one('mousedown',function(){
+									$(el).parent().data('vboxMenubarActive', false);
+								});
+							}					 		
 						},
 						self.menus[i].menuObj.menuClickCallback
 					).hover(
 						function(){
 							$(this).addClass('vboxBordered');
+							if($(this).parent().data('vboxMenubarActive')) {
+								
+								// Hide any showing menu
+								var e = jQuery.Event("mouseup", {button:0});
+								$(this).trigger(e);
+								var e = jQuery.Event("mousedown", {button:0});
+								$(this).trigger(e);
+								var e = jQuery.Event("mouseup", {button:0});
+								$(this).trigger(e);
+							}
 						},
 						function(){
 							$(this).removeClass('vboxBordered');

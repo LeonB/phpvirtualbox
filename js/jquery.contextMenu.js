@@ -104,7 +104,7 @@ if(jQuery)( function() {
 						$(menu).find('LI.hover').removeClass('hover');
 					}).children('A').click( function() {
 						$(document).unbind('click');
-						$(".contextMenu").hide();
+						$("ul.contextMenu").hide();
 						// Callback
 						if( callback ) callback( $(this).attr('href').substr(1), $(srcElement), null, this); //{x: x - offset.left, y: y - offset.top, docX: x, docY: y} , this);
 						return false;
@@ -214,30 +214,26 @@ if(jQuery)( function() {
 					evt.stopPropagation();
 					$(this).mouseup( function(e) {
 						e.stopPropagation();
+						
 						var srcElement = $(this);
 						$(this).unbind('mouseup');
+						
 						if( evt.button == o.button || (o.button == 0 && evt.button == 1 && $.browser.msie)) {
-							
+						
 							// Menu setup function
 							if(o.menusetup) {
 								o.menusetup(el);
 							}
 							// Hide context menus that may be showing
-							$(".contextMenu").hide();
-
-							// Show the menu
-							$(document).unbind('click');
+							$("ul.contextMenu").hide();
 							
 							showMenu(srcElement, menu, o.mode, e);
 																					
-							// Hide bindings
-							setTimeout( function() { // Delay for Mozilla
-								$(document).one('click', function() {
-									$(menu).fadeOut(o.outSpeed);
-									$(".contextMenu").hide();
-									return false;
-								});
-							}, 0);
+							$(document).one('mouseup', function() {
+								$(menu).fadeOut(o.outSpeed);
+								$("ul.contextMenu").hide();
+								return false;
+							});
 						}
 					});
 				});

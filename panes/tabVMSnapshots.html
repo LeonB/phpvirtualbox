@@ -576,9 +576,7 @@ function __vboxTabSnapshot(s) {
 	      // Context menu
 		  .contextMenu({
 				menu: vboxSnapshotContextMenu.menuId(),
-				menusetup : function(el) {
-					if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
-				}
+				clickthrough: true
 			},vboxSnapshotContextMenu.menuClickCallback)
 			
 			// show details on dblclick
@@ -606,9 +604,7 @@ function __vboxTabSnapshotCurrent() {
 	var li = $('<li />').data('vboxSnapshot',{'state':'current','name':trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'),'VBoxSnapshotsWgt')}).html(' ').addClass('last').addClass('vboxSnapshotCurrent');
 	$('<div />').attr({'class':'vboxListItem'}).html('<img src="images/vbox/'+vboxMachineStateIcon($('#vboxTabVMSnapshots').data('machine').state)+'" /> ' + $('<div />').text(trans(($('#vboxTabVMSnapshots').data('machine').currentStateModified ? 'Current State (changed)' : 'Current State'),'VBoxSnapshotsWgt')).html()).contextMenu({
 		menu: vboxSnapshotContextMenuCurrent.menuId(),
-		menusetup : function(el) {
-			if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
-		}
+		clickthrough : true
 	},vboxSnapshotContextMenuCurrent.menuClickCallback).appendTo(li);	
 	return li;
 }

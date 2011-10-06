@@ -4721,7 +4721,7 @@ class vboxconnector {
 			$response['data'][$u->id] = array('id'=>$u->id,'remote'=>$u->remote);
 			$u->releaseRemote();
 		}
-
+		
 		$this->session->unlockMachine();
 		$this->session->releaseRemote();
 		unset($this->session);
