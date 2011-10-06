@@ -251,7 +251,7 @@ $('#vboxIndex').bind('vmloading',function(){
 	}
 	
 	if($('#vboxVMDetails').data('vboxHostMemInfoTimer')) {
-		window.clearTimeout($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
+		window.clearInterval($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
 		$('#vboxVMDetails').data('vboxHostMemInfoTimer', null);		
 	}
 
@@ -278,7 +278,7 @@ $('#vboxIndex').bind('vmloading',function(){
 	$('#vboxTabVMDetails').children().hide();
 	
 	if($('#vboxVMDetails').data('vboxHostMemInfoTimer')) {
-		window.clearTimeout($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
+		window.clearInterval($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
 		$('#vboxVMDetails').data('vboxHostMemInfoTimer', null);		
 	}
 	
@@ -1193,7 +1193,7 @@ function __vboxDisplayHostDetailsData(data) {
 	$('#vboxHostDetails').html('');
 	
 	if($('#vboxVMDetails').data('vboxHostMemInfoTimer')) {
-		window.clearTimeout($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
+		window.clearInterval($('#vboxVMDetails').data('vboxHostMemInfoTimer'));
 		$('#vboxVMDetails').data('vboxHostMemInfoTimer',null);
 	}
 	
@@ -1313,6 +1313,12 @@ function __vboxDisplayHostDetailsData(data) {
 		} else {
 			var memResPct = 0;
 		}
+		
+		// Add tooltip with info
+		var tip = trans('<nobr>%1 MB</nobr>').replace('%1',mUsed);
+		if(memResPct) tip += ' | ' + trans('<nobr>%1 MB</nobr>').replace('%1',memRes);
+		tip += ' | ' + trans('<nobr>%1 MB</nobr>').replace('%1',avail);
+		$('#vboxHostMemUsed').tipped({'source':tip,'position':'mouse'});
 		
 		// Width(s)
 		$('#vboxHostMemUsedPct').css({'width':((mUsedPct+memResPct)*2)+'px'});
