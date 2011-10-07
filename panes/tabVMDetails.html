@@ -1320,6 +1320,10 @@ function __vboxDisplayHostDetailsData(data) {
 		tip += ' | ' + trans('<nobr>%1 MB</nobr>').replace('%1',avail);
 		$('#vboxHostMemUsed').tipped({'source':tip,'position':'mouse'});
 		
+		// Update tooltip content in case tooltip is already showing
+		var cid = $($('#tipped').data('original')).attr('id');
+		if(cid && cid == 'vboxHostMemUsed') $('#tipped-content').html(tip);
+		
 		// Width(s)
 		$('#vboxHostMemUsedPct').css({'width':((mUsedPct+memResPct)*2)+'px'});
 		if(memRes > 0) {
