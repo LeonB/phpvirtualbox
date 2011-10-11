@@ -1213,6 +1213,9 @@ class vboxconnector {
 				// Remove IgnoreFlush key?
 				if($this->settings['enableHDFlushConfig'] && $ma->type->__toString() == 'HardDisk') {
 					$xtra = $this->__getIgnoreFlushKey($ma->port, $ma->device, $cType);
+					if($xtra) {
+						$m->setExtraData($xtra,'');	
+					}
 				}
 
 				if($ma->controller) {
@@ -4734,6 +4737,7 @@ class vboxconnector {
 	 * @param integer port medium attachment port number
 	 * @param integer device medium attachment device number
 	 * @param string cType controller type
+	 * @return string extra data setting string
 	 */
 	private function __getIgnoreFlushKey($port,$device,$cType) {
 
@@ -4747,8 +4751,9 @@ class vboxconnector {
 			'lsilogicsas' => 'lsilogicsas'
 		);
 
-		if(!@$cTypes[strtolower($cType)]) {
+		if(!isset($cTypes[strtolower($cType)])) {
 			$this->errors[] = new Exception('Invalid controller type: ' . $cType);
+			return '';
 		}
 
 		$lun = ((intval($device)*2) + intval($port));
