@@ -1213,8 +1213,6 @@ class vboxconnector {
 				// Remove IgnoreFlush key?
 				if($this->settings['enableHDFlushConfig'] && $ma->type->__toString() == 'HardDisk') {
 					$xtra = $this->__getIgnoreFlushKey($ma->port, $ma->device, $cType);
-					if($xtra)
-						$m->setExtraData($xtra, '');
 				}
 
 				if($ma->controller) {
