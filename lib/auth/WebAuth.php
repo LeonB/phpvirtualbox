@@ -30,12 +30,9 @@ class phpvbAuthWebAuth {
 		if ( isset($_SERVER[$this->config['serverUserKey']]) )
 		{
 			$_SESSION['valid'] = true;
-			$_SESSION['webauth'] = true;
 			$_SESSION['user'] = $_SERVER[$this->config['serverUserKey']];
 			$_SESSION['admin'] = ($_SESSION['user'] === $this->config['adminUser']);
-			$_SESSION['authCheckHeartbeat'] = time();
-			$_SESSION['uHash'] = hash('sha512', $_SERVER[$this->config['serverUserKey']]);
-			
+			$_SESSION['authCheckHeartbeat'] = time();			
 		}
 	}
 	

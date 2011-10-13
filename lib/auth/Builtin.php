@@ -13,7 +13,7 @@
  * @see ajax.php
  * 
  */
-class phpvbAuthBuiltin {
+class phpvbAuthBuiltin implements phpvbAuth {
 	
 	/**
 	 * 
@@ -97,7 +97,7 @@ class phpvbAuthBuiltin {
 		
 		// Check to see if we only have 1 server or are already connected
 		// to the authentication master server
-		if(@$vbox->settings['authMaster'] || count($vbox->settings['servers']) == 1) {
+		if(@$vbox->settings->authMaster || count($vbox->settings->servers) == 1) {
 			$vbcheck = &$vbox;
 		} else {
 			$vbcheck = new vboxconnector(true);
@@ -120,7 +120,7 @@ class phpvbAuthBuiltin {
 	/**
 	 * 
 	 * Log out user present in $_SESSION
-	 * @param string $response response passed byref by ajax.php and populated within function
+	 * @param array $response response passed byref by ajax.php and populated within function
 	 */
 	function logout(&$response)
 	{

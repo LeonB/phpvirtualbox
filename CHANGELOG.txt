@@ -34,6 +34,8 @@ VirtualBox versions > 4.1.2.
 Added support for network adapter "Generic Properties" when the
 Generic Driver adapter type is selected.
 
+Added Doxygen style documentation to PHP and JavaScript files.
+
 -------------------------------------
 	4.1-3	2011-9-20
 -------------------------------------

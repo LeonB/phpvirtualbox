@@ -100,7 +100,7 @@ function vboxTabs(id) {
 	this.showTab = function (tab) {
 		if(self.tabSelected == tab) return;
 		for(var i = 0; i < self.tabs.length; i++) {
-			$('#'+self.tabs[i].name).css('display','none');
+			$('#'+self.tabs[i].name).css({'display':'none'}).trigger('hide');
 		}
 		$(''+tab).css('display','').trigger('show',$('#'+self.id).data('machine'));
 		self.tabSelected = tab;

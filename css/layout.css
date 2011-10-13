@@ -114,7 +114,7 @@ input.vboxImgButton {
 
 /* bordered sections with labels */
 div.vboxDialogContent span.vboxTableLabel, #vboxIndex span.vboxTableLabel {
-	color: #555555; font-size: 0.875em; position: relative; top: 7px; font-weight: bold; background: #fff; left: 8px; padding-left: 2px; padding-right: 2px;
+	color: #555555; font-size: 87.5%; position: relative; top: 7px; font-weight: bold; background: #fff; left: 8px; padding-left: 2px; padding-right: 2px;
 }
 #vboxIndex span.vboxTableLabel+div.vboxBordered, div.vboxDialogContent span.vboxTableLabel+div.vboxBordered {
 	border: 1px solid #aaaaaa;
@@ -407,7 +407,10 @@ ul.vboxMenuBar li {
 }
 
 #vboxIndex div.vboxMenuBar, div.vboxDialogContent div.vboxMenuBar { border-bottom: 1px solid #aaa; padding-top: 2px; padding-bottom: 2px; margin-top: 0px; height: 100%; }
-#vboxIndex div.vboxMenuBar span, div.vboxDialogContent div.vboxMenuBar span { padding: 1px 8px 1px 4px; border: 1px solid transparent; cursor: default; }
+#vboxIndex div.vboxMenuBar span, div.vboxDialogContent div.vboxMenuBar span {
+	padding: 1px 8px 1px 4px; border: 1px solid transparent; cursor: default;
+	-moz-border-radius-topleft: 4px/*{cornerRadius}*/; -webkit-border-top-left-radius: 4px/*{cornerRadius}*/; border-top-left-radius: 4px/*{cornerRadius}*/; -moz-border-radius-topright: 4px/*{cornerRadius}*/; -webkit-border-top-right-radius: 4px/*{cornerRadius}*/; border-top-right-radius: 4px/*{cornerRadius}*/;
+}
 #vboxIndex div.vboxMenuBar span.vboxBordered, div.vboxDialogContent div.vboxMenuBar span.vboxBordered { border: 1px solid #aaa; }
 #vboxIndex ul.vboxMenuBar, div.vboxDialogContent ul.vboxMenuBar { background: #e9e9e9; border: 2px solid #aaa; margin: 0px; padding: 0px; }
 #vboxIndex ul.vboxMenuBar a,div.vboxDialogContent ul.vboxMenuBar a { padding: 2px 18px 2px 28px; }
@@ -465,7 +468,9 @@ table.vboxToolbar td.vboxEnabled { cursor: pointer; }
 table.vboxToolbar td.vboxDisabled { color: #999; }
 
 /* Details Tab and Table */
-#vboxTabVMDetails { font-size: 0.9em; }
+#vboxTabVMDetails { font-size: 90%; }
+/* menus have normal font size */
+#vboxTabVMDetails ul.contextMenu { font-size: 110%; }
 #vboxTabVMDetails .vboxDetailsNone { font-style: italic; }
 #vboxDetailsWelcome { background: #fff; }
 table.vboxDetailsTable { width: auto; }

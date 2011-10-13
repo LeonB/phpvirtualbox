@@ -97,6 +97,28 @@ class phpVBoxConfigClass {
 	var $warnDefault = false;
 	
 	/**
+	 * Key used to uniquely identify the current server in this
+	 * instantiation of phpVBoxConfigClass.
+	 * Set in __construct()
+	 * @var string
+	 */
+	var $key = null;
+	
+	/**
+	 * Auth library object instance. See lib/auth for classes.
+	 * Set in __construct() based on authLib config setting value.
+	 * @var phpvbAuth
+	 */
+	var $auth = null;
+	
+	/**
+	 * Authentication capabilities provided by authentication module.
+	 * Set in __construct
+	 * @var phpvbAuthBuiltin::authCapabilities
+	 */
+	var $authCapabilities = null;
+	
+	/**
 	 * Read user configuration, apply defaults, and do some sanity checking
 	 * @see ajax
 	 * @see vboxconnector
@@ -153,7 +175,7 @@ class phpVBoxConfigClass {
 		
 		// Key used to uniquely identify this server in this
 		// phpvirtualbox installation
-		$this->key = md5($this->location.$this->username);
+		$this->setKey();
 		
 		// legacy rdpHost setting
 		if(@$this->rdpHost && !@$this->consoleHost)
@@ -161,7 +183,8 @@ class phpVBoxConfigClass {
 			
 		// Ensure authlib is set
 		if(!@$this->authLib) $this->authLib = 'Builtin';
-		
+		// include interface
+		include_once(dirname(__FILE__).'/authinterface.php');
 		include_once(dirname(__FILE__).'/auth/'.str_replace(array('.','/','\\'),'',$this->authLib).'.php');
 		
 		// Check for session functionality
@@ -180,9 +203,17 @@ class phpVBoxConfigClass {
 		foreach($this->servers as $s) {
 			if($s['name'] == $server) {				
 				foreach($s as $k=>$v) $this->$k = $v;
+				$this->setKey();
 				break;
 			}
 		}
+	}
+	
+	/**
+	 * Generate a key for current server settings and populate $this->key
+	 */
+	function setKey() {
+		$this->key = md5($this->location.$this->username);
 	}
 	
 	/**

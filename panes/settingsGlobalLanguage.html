@@ -38,9 +38,11 @@ var vboxLanguages = [
 var lList = $('#vboxLanguageList'); 
 $(lList).children().remove();
 var defLang = __vboxLangName;
+if (!defLang) defLang = 'en';
 for(var i = 0; i < vboxLanguages.length; i++) {
 	var li = $('<li />').data({'language':vboxLanguages[i]}).html((vboxLanguages[i].name_tr ? vboxLanguages[i].name_tr : vboxLanguages[i].name)).attr('class','vboxListItem').hover(function(){
 		$(this).addClass('vboxHover');},function(){$(this).removeClass('vboxHover');});
+	
 	if(defLang == vboxLanguages[i].id) {
 		$(li).addClass('vboxListItemSelected');
 		$('#vboxLanguageName').html(vboxLanguages[i].name + (vboxLanguages[i].name_tr ? ' / ' + vboxLanguages[i].name_tr : ''));

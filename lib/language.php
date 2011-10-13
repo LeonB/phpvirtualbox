@@ -1,7 +1,13 @@
 <?php
 /**
  * __vbox_language class and trans() function
- * 
+ *
+ * @author Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @version $Id$
+ * @see languages/languages.txt
+ * @package phpVirtualBox
+ *
  */
 
 global $_vbox_language;
@@ -11,8 +17,7 @@ require_once(dirname(__FILE__).'/config.php');
 require_once(dirname(__FILE__).'/utils.php');
 
 /**
- * Language class. Parses language file and stores translations in
- * an array.
+ * Language class. Parses language file and stores translations in an array.
  * 
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
@@ -24,13 +29,22 @@ require_once(dirname(__FILE__).'/utils.php');
 */
 class __vbox_language {
 	
-	var $langdata = array();
+	/**
+	 * Static language data used for translations
+	 * @var array
+	 */
+	static $langdata = null;
 	
 	/**
 	 * 
 	 * Constructor parses language file and stores translations.
 	 */
-	function __vbox_language() {
+	function __construct() {
+		
+		# Already initialized?
+		if(is_array(self::$langdata)) return;
+	
+		self::$langdata = array();
 		
 		$settings = new phpVBoxConfigClass();
 		$lang = strtolower($settings->language);
@@ -47,12 +61,12 @@ class __vbox_language {
 		} else {
 			$lang = 'en_us';
 			@define('VBOXLANG', $lang);
-			$this->langdata['contexts'] = array();
+			self::$langdata['contexts'] = array();
 			return;			
 		}
 		
 		
-		$this->langdata = unserialize(file_get_contents(dirname(dirname(__FILE__)).'/languages/source/'.$lang.'.dat'));
+		self::$langdata = unserialize(file_get_contents(dirname(dirname(__FILE__)).'/languages/source/'.$lang.'.dat'));
 
 		$xmlObj = simplexml_load_string(file_get_contents(dirname(dirname(__FILE__)).'/languages/'.$lang.'.xml'));
 		$arrXml = $this->objectsIntoArray($xmlObj);
@@ -76,7 +90,7 @@ class __vbox_language {
 		       $lang['contexts'][$c['name']]['messages'][$s] = $m;
 	    	}
 		}
-		$this->langdata = array_merge_recursive($this->langdata, $lang);
+		self::$langdata = array_merge_recursive(self::$langdata, $lang);
 	}
 	
 	/**
@@ -85,7 +99,7 @@ class __vbox_language {
 	 * @param string $context context in which the translation should be performed
 	 */
 	function trans($item,$context='phpVirtualBox') {
-		$t = @$this->langdata['contexts'][$context]['messages'][$item]['translation'];
+		$t = @self::$langdata['contexts'][$context]['messages'][$item]['translation'];
 		return ($t ? $t : $item);
 	}
 	

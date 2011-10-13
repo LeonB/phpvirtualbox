@@ -385,7 +385,9 @@ function vboxVMList(anchorid) {
 		if(self.contextMenuObj) {
 			$(tbl).contextMenu({
 				menu: self.contextMenuObj.menuId(),
-				clickthrough: true
+				menusetup : function(el) {
+					if(!$(el).hasClass('vboxListItemSelected')) $(el).trigger('click');
+				}
 			},self.contextMenuObj.menuClickCallback);
 		}
 		

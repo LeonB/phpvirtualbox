@@ -74,7 +74,8 @@ var $servers = array(
  * in "VBoxInternal/Devices/[controller type]/0/LUN#[x]/Config/IgnoreFlush". See
  * Responding to guest IDE/SATA flush requests at:
  * http://www.virtualbox.org/manual/ch12.html#idp12757424
-*/
+ *
+ */
 #var $enableHDFlushConfig = true;
 
 /*

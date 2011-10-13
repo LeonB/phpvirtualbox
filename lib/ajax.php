@@ -169,7 +169,7 @@ try {
 		case 'changePassword':
 
 			// Session
-			session_init();
+			session_init(true);
 			
 			$settings = new phpVBoxConfigClass();
 			$settings->auth->changePassword($vboxRequest['old'], $vboxRequest['new'], $response);
@@ -257,7 +257,7 @@ try {
 			 * been deleted since login, and update admin credentials.
 			 */
 			if($_SESSION['user'] && ((intval($_SESSION['authCheckHeartbeat'])+60) < time())) {
-				$vbox->settings['auth']->heartbeat($vbox);
+				$vbox->settings->auth->heartbeat($vbox);
 			}
 			
 			// We're done writing to session
@@ -289,7 +289,7 @@ try {
 // Add other error info
 if($vbox && $vbox->errors) {
 	
-	foreach($vbox->errors as $e) {
+	foreach($vbox->errors as $e) { /* @var $e Exception */ 
 		
 		ob_start();
 		print_r($e);

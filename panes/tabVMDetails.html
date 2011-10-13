@@ -267,6 +267,10 @@ $('#vboxIndex').bind('vmloading',function(){
 	
 	$('#vboxDetailsLoading').show().css('display','table-cell');
 
+	// Hide context menus if they're showing
+	$('#vboxDetailsShowMenu').hide();
+	$('#vboxDetailsPreviewMenu').hide();
+
 
 }).bind('vmloaded',function(e,vm){
 
@@ -323,6 +327,11 @@ $('#vboxIndex').bind('vmloading',function(){
 
 });
 
+// Hide context menus when hiding tab
+$('#vboxTabVMDetails').bind('hide',function(){
+	$('#vboxDetailsShowMenu').hide();
+	$('#vboxDetailsPreviewMenu').hide();
+});
 
 // Collapsable sections and link translations
 ///////////////////////////////////////////////
@@ -1416,7 +1425,7 @@ for(var i = 0; i < sections.length; i++) {
 
 }
 
-$('#vboxIndex').append(ul);
+$('#vboxTabVMDetails').append(ul);
 $('#vboxDetailsShowMenu').bind('contextmenu', function() { return false; });
 
 
@@ -1498,7 +1507,7 @@ for(var i = 0; i < ints.length; i++) {
 		}).append($('<span />').html(trans('Open in new window','UIVMPreviewWindow'))).appendTo(ul);
 	}
 }
-$('#vboxIndex').append(ul);
+$('#vboxTabVMDetails').append(ul);
 $(ul).bind('contextmenu', function() { return false; });
 
 
