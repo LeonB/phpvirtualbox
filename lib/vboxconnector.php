@@ -25,7 +25,7 @@ class vboxconnector {
 	const PHPVB_ERRNO_CONNECT = 64;
 
 	/**
-	 * Static VirtualBox result codes
+	 * Static VirtualBox result codes.
 	 * @var array
 	 */
 	static $resultcodes = array(
@@ -193,8 +193,10 @@ class vboxconnector {
 			$this->websessionManager = new IWebsessionManager($this->client);
 			$this->vbox = $this->websessionManager->logon($this->settings->username,$this->settings->password);
 		} catch (Exception $e) {
+			
 			if(!($msg = $e->getMessage()))
-			$msg = 'Error logging in to vboxwebsrv.';
+				$msg = 'Error logging in to vboxwebsrv.';
+			
 			throw new Exception($msg,vboxconnector::PHPVB_ERRNO_CONNECT);
 		}
 

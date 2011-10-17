@@ -104,11 +104,6 @@ input.vboxImgButton {
 	background-color:transparent;
 } 
 
-/* Divs as tables */
-#vboxIndex div.vboxDivTable { display: table; }
-#vboxIndex div.vboxDivTableRow { display: table-row; }
-#vboxIndex div.vboxDivTableCell { display: table-cell; }
-                                
 /* bordered items */
 .vboxBordered { border: 2px solid #999; }
 

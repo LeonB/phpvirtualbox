@@ -364,23 +364,24 @@ var vboxSnapshotButtons = [
 
 
 /* Append Top Toolbar */
-snapshotToolbar = new vboxToolbarSmall(vboxSnapshotButtons);
-snapshotToolbar.size = 22;
-snapshotToolbar.context = 'VBoxSnapshotsWgt';
-snapshotToolbar.disabledString = 'dis';
-snapshotToolbar.addButtons('vboxSnapshotToolbar');
-
+vboxSnapshotToolbar = new vboxToolbarSmall(vboxSnapshotButtons);
+vboxSnapshotToolbar.size = 22;
+vboxSnapshotToolbar.context = 'VBoxSnapshotsWgt';
+vboxSnapshotToolbar.disabledString = 'dis';
 // special case for 'clone' button because it is 16px rather than 22px
-$('#vboxToolbarButton-vboxSnapshotToolbar-clone').css({'background-position':'6px 4px'});
+vboxSnapshotToolbar.addButtonCSS('clone', {'background-position':'6px 4px'});
+vboxSnapshotToolbar.addButtons('vboxSnapshotToolbar');
+
+vboxInitDisplay('vboxSnapshotToolbar','VBoxSnapshotsWgt');
 
 // Context menu for snapshots
 var vboxSnapshotContextMenu = new vboxMenu('vboxSnapshotContextMenu');
-vboxSnapshotContextMenu.context = snapshotToolbar.context;
+vboxSnapshotContextMenu.context = vboxSnapshotToolbar.context;
 vboxSnapshotContextMenu.addMenu(vboxSnapshotButtons.slice(-(vboxSnapshotButtons.length-1)));
 
 //Context menu for current state
 var vboxSnapshotContextMenuCurrent = new vboxMenu('vboxSnapshotContextMenuCurrent');
-vboxSnapshotContextMenuCurrent.context =  snapshotToolbar.context;
+vboxSnapshotContextMenuCurrent.context =  vboxSnapshotToolbar.context;
 vboxSnapshotContextMenuCurrent.addMenu([vboxSnapshotButtons[0],vboxSnapshotButtons[(vboxSnapshotButtons.length-2)]]);
 
 
@@ -388,7 +389,7 @@ vboxSnapshotContextMenuCurrent.addMenu([vboxSnapshotButtons[0],vboxSnapshotButto
 $('#vboxSnapshotList').bind('select',function(target,item) {
 	
 	// Update toolbar
-	snapshotToolbar.update(target,item);
+	vboxSnapshotToolbar.update(target,item);
 	
 	// Update menus
 	var lastItem = (item||target);
@@ -399,17 +400,17 @@ $('#vboxSnapshotList').bind('select',function(target,item) {
 });
 
 // Hold timer and date vars
-snapshotToolbar._timer = null;
-snapshotToolbar._timeSpans = new Array();
-snapshotToolbar._timeSpans['days'] = 86400;
-snapshotToolbar._timeSpans['hours'] = 3600,
-snapshotToolbar._timeSpans['minutes'] = 60,
-snapshotToolbar._timeSpans['seconds'] = 1;
-snapshotToolbar._timeSpans.sort(function(a,b){return (a > b ? -1 : 1);});
+vboxSnapshotToolbar._timer = null;
+vboxSnapshotToolbar._timeSpans = new Array();
+vboxSnapshotToolbar._timeSpans['days'] = 86400;
+vboxSnapshotToolbar._timeSpans['hours'] = 3600,
+vboxSnapshotToolbar._timeSpans['minutes'] = 60,
+vboxSnapshotToolbar._timeSpans['seconds'] = 1;
+vboxSnapshotToolbar._timeSpans.sort(function(a,b){return (a > b ? -1 : 1);});
 
 
 
-$('#vboxSnapshotList').bind('select',snapshotToolbar.update);
+$('#vboxSnapshotList').bind('select',vboxSnapshotToolbar.update);
 
 
 
@@ -424,11 +425,11 @@ $('#vboxTabVMSnapshots').bind('refresh',function(){
 /* Loading VM */
 $('#vboxIndex').bind('vmloading',function(){
 
-	snapshotToolbar.disable();
+	vboxSnapshotToolbar.disable();
 	
-	if(snapshotToolbar._timer) {
-		window.clearTimeout(snapshotToolbar._timer);
-		snapshotToolbar._timer = null;
+	if(vboxSnapshotToolbar._timer) {
+		window.clearTimeout(vboxSnapshotToolbar._timer);
+		vboxSnapshotToolbar._timer = null;
 	}
 		
 	$('#vboxTabVMSnapshots').data('lastVM',0);
@@ -447,8 +448,8 @@ $('#vboxIndex').bind('vmloading',function(){
 	
 	$('#vboxTabVMSnapshotsTitle').html(trans('Snapshots','UIVMDesktop') + (vm && vm.snapshotCount ? trans(' (%1)','VBoxSnapshotsWgt').replace('%1',vm.snapshotCount):''));
 	
-	if(snapshotToolbar._timer)
-		window.clearTimeout(snapshotToolbar._timer);
+	if(vboxSnapshotToolbar._timer)
+		window.clearTimeout(vboxSnapshotToolbar._timer);
 
 });
 
@@ -456,9 +457,9 @@ $('#vboxIndex').bind('vmloading',function(){
 // Load snapshots on show
 $('#vboxTabVMSnapshots').bind('show',function(e,vm){
 
-	if(snapshotToolbar._timer) {
-		window.clearTimeout(snapshotToolbar._timer);
-		snapshotToolbar._timer = null;
+	if(vboxSnapshotToolbar._timer) {
+		window.clearTimeout(vboxSnapshotToolbar._timer);
+		vboxSnapshotToolbar._timer = null;
 	}
 
 	if(vm && vm.id) {
@@ -471,7 +472,7 @@ $('#vboxTabVMSnapshots').bind('show',function(e,vm){
 	$('#vboxSnapshotList').children().remove();
 	
 	if(!vm || vm.id == 'host') {
-		snapshotToolbar.disable();
+		vboxSnapshotToolbar.disable();
 		return;
 	}
 
@@ -492,9 +493,9 @@ function __vboxTabSnapshotsFill(s) {
 	var list = $('#vboxSnapshotList');
 	$(list).children().remove();
 
-	if(snapshotToolbar._timer) {
-		window.clearTimeout(snapshotToolbar._timer);
-		snapshotToolbar._timer = null;
+	if(vboxSnapshotToolbar._timer) {
+		window.clearTimeout(vboxSnapshotToolbar._timer);
+		vboxSnapshotToolbar._timer = null;
 	}
 	
 	if(!s) return;
@@ -524,7 +525,7 @@ function __vboxTabSnapshotsFill(s) {
 	// Init vbox tree list
 	$('#vboxSnapshotList').vbtree();
 	
-	snapshotToolbar.enable();
+	vboxSnapshotToolbar.enable();
 
 	$('#vboxSnapshotList').trigger('select');
 
@@ -614,7 +615,7 @@ function __vboxTabSnapshotCurrent() {
 function __vboxTabSnapshotTimestamps() {
 	
 	// Shorthand
-	var timeSpans = snapshotToolbar._timeSpans;
+	var timeSpans = vboxSnapshotToolbar._timeSpans;
 	
 	// Keep minimum timestamp
 	var minTs = 60;
@@ -665,7 +666,7 @@ function __vboxTabSnapshotTimestamps() {
 	});
 	
 	var timerSet = (minTs >= 60 ? 60 : 10);
-	snapshotToolbar._timer = window.setTimeout(__vboxTabSnapshotTimestamps,(timerSet * 1000));
+	vboxSnapshotToolbar._timer = window.setTimeout(__vboxTabSnapshotTimestamps,(timerSet * 1000));
 }
 
 

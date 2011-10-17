@@ -984,6 +984,7 @@ function vboxToolbarSmall(buttons) {
 	self.enabled = true;
 	self.size = 16;
 	self.disabledString = 'disabled';
+	self.buttonCSS = {};
 
 	/**
 	 * Enable a single button
@@ -1011,6 +1012,15 @@ function vboxToolbarSmall(buttons) {
 	};
 
 	/**
+	 * Add CSS to be applied to button
+	 * @param {String} b button name
+	 * @param {Object} css css to be applied to button
+	 */
+	self.addButtonCSS = function(b, css) {
+		self.buttonCSS[b] = css;
+	};
+	
+	/**
 	 * Generate HTML element for button
 	 * @memberOf vboxToolbarSmall
 	 * @param {Object} b - button object containing various button parameters
@@ -1037,6 +1047,9 @@ function vboxToolbarSmall(buttons) {
 			);
 		
 		}
+		
+		// Check for button specific CSS
+		if(self.buttonCSS[b.name]) btn.css(self.buttonCSS[b.name]);
 		
 		return btn;
 		
@@ -1067,7 +1080,7 @@ function vboxToolbarSmall(buttons) {
 				
 		}
 
-		$(targetElm).attr({'name':self.name}).addClass('vboxToolbarSmall vboxEnablerTrigger').bind('disable',self.disable).bind('enable',self.enable);
+		$(targetElm).attr({'name':self.name}).addClass('vboxToolbarSmall vboxEnablerTrigger vboxToolbarSmall'+self.size).bind('disable',self.disable).bind('enable',self.enable);
 		
 	};
 	

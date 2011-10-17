@@ -6,14 +6,12 @@
 # Turn off PHP errors
 error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
 
-global $_vbox_language;
-
 require_once(dirname(dirname(__FILE__)).'/lib/language.php');
 
 if(!is_object($_vbox_language)) $_vbox_language = new __vbox_language();
 
 if($_GET['debug']) {
-	print_r($_vbox_language->langdata);
+	print_r(__vbox_language::$langdata);
 	return;
 }
 
@@ -30,7 +28,7 @@ header("Pragma: no-cache");
 /*
  * Dump in JavaScript
  */
-echo('var __vboxLangData = ' . json_encode($_vbox_language->langdata) .";\n\nvar __vboxLangName = '".@constant('VBOXLANG')."';\n\n");
+echo('var __vboxLangData = ' . json_encode(__vbox_language::$langdata) .";\n\nvar __vboxLangName = '".@constant('VBOXLANG')."';\n\n");
 
 
 ?>

@@ -296,6 +296,10 @@ if($vbox && $vbox->errors) {
 		$d = ob_get_contents();
 		ob_end_clean();
 		
+		# Add connection details to connection errors
+		if($e->getCode() == vboxconnector::PHPVB_ERRNO_CONNECT && isset($vbox->settings))
+			$d .= "\n\nLocation:" . $vbox->settings->location;
+		
 		$response['errors'][] = array(
 			'error'=>$e->getMessage(),
 			'details'=>$d,
