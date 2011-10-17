@@ -1,5 +1,5 @@
 -------------------------------------
-	4.1-4	
+	4.1-4	2011-10-17
 -------------------------------------
 $vmMemoryOffset if configured, is now displayed in yellow(-ish) in
 the host memory usage graph.
