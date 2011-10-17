@@ -19,6 +19,7 @@ $arrXml = xml2array(file_get_contents($argv[1]));
 $lang = array();
 $lang['contexts'] = array();
 
+
 foreach($arrXml['TS']['context'] as $c) {
 
    $lang['contexts'][$c['name']] = array();
@@ -31,9 +32,9 @@ foreach($arrXml['TS']['context'] as $c) {
 
        if(!is_array($m)) continue;
 
-       if(@$m['translation_attr']['type'] == 'obsolete') continue;
+       #if(@$m['translation_attr']['type'] == 'obsolete') continue;
 
-       $s = clean($m['source']);
+       $s = clean($m['source'],true);
        unset($m['source']);
 
        // Check for valid translation data
@@ -92,7 +93,7 @@ foreach($arrXml['TS']['context'] as $c) {
 
 
 function clean($s) {
-   return preg_replace('/<\/?qt>/','',str_replace('&','',html_entity_decode(str_replace('&nbsp;',' ',$s), ENT_NOQUOTES, 'UTF-8')));
+   return preg_replace('/<\/?qt>/','',str_replace('&','',html_entity_decode(str_replace('&nbsp;',' ',preg_replace('/\(&[A-Za-z]\)(\s*(?:\.\.\.\s*)|:)?$/','\1',$s)), ENT_NOQUOTES, 'UTF-8')));
 }
 
 
