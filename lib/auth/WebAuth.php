@@ -3,7 +3,7 @@
  * $Id$
  */
 
-class phpvbAuthWebAuth {
+class phpvbAuthWebAuth implements phpvbAuth {
 	
 	var $capabilities = array(
 			'canChangePassword' => false,
