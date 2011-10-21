@@ -79,10 +79,11 @@
 				$(menu).children().remove();
 				for(var i = 0; i < hostUSB.length; i++) {
 
+					var dname = '';
 					if(!hostUSB[i].product)
-						var dname = trans('Unknown device %1:%2','VBoxGlobal').replace('%1',hostUSB[i].vendorId).replace('%2',hostUSB[i].productId);
+						dname = trans('Unknown device %1:%2','VBoxGlobal').replace('%1',hostUSB[i].vendorId).replace('%2',hostUSB[i].productId);
 					else
-						var dname = hostUSB[i].manufacturer + ' ' + hostUSB[i].product;
+						dname = hostUSB[i].manufacturer + ' ' + hostUSB[i].product;
 					dname += ' [' + hostUSB[i].revision + ']';
 					
 					$(menu).append($('<li />').append($('<a />').attr({'href':'#usbDev'+i}).html(dname).data({'device':hostUSB[i]})));

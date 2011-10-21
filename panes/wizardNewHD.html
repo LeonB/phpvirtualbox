@@ -163,7 +163,6 @@ function wizardHDBrowseLocation() {
 
 	// Get current location
 	var loc = $('<div />').html(document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value).text();
-	var os = null;
 	if(!loc) {
 		// no path set
 		loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder;
@@ -283,7 +282,7 @@ function vboxWizardNewHDElectName() {
 		for(var i = 0; i < $('#vboxIndex').data('vboxMedia').length; i++) {
 			if($('#vboxIndex').data('vboxMedia')[i].name.toLowerCase().substring(0,$('#vboxIndex').data('vboxMedia')[i].name.lastIndexOf('.')) == 'newharddisk'+a) {
 				i = $('#vboxIndex').data('vboxMedia').length;
-				var found = 1;
+				found = 1;
 			}
 		}
 		if(!found) {

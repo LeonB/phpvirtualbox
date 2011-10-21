@@ -410,13 +410,11 @@ function vboxVMList(anchorid) {
 	// select VM in list
 	self.selectVM = function(e,vm) {
 		var uuidsel = (vm && vm.id ? vm.id : 'null');
-		var vsel = null;
 		for(var id in self.vms) {
 		    if (typeof self.vms[id] !== 'function') {
 				if(id == uuidsel) {
 					self.vms[id].selected = true;
 					$('#vboxVMListItem-'+self.anchorid+'-'+id).removeClass('vboxListItem').addClass('vboxListItemSelected');
-					vsel = self.vms[id];
 				} else {
 					self.vms[id].selected = false;
 					$('#vboxVMListItem-'+self.anchorid+'-'+id).addClass('vboxListItem').removeClass('vboxListItemSelected');

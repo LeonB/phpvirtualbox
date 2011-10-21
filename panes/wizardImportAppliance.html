@@ -188,7 +188,7 @@ for(var i in vboxOSTypes) {
 }
 
 var ul = $('<ul />').attr({'id':'vboxOSTypesMenu','class':'contextMenu contextMenuNoBG vboxOSTypesMenuList'});
-for(var i = i in vboxSettingsOSTypes) {
+for(var i in vboxSettingsOSTypes) {
 	var li = $('<li />').html('<a href="#null-'+i+'">'+vboxSettingsOSTypes[i].description+'</a>');
 	var ul2 = $('<ul />').addClass('vboxOSTypesMenuList');
 	for(var a in vboxSettingsOSTypes[i]['osTypes']) {
@@ -490,7 +490,6 @@ function vboxImportAppliancePropEdit(elm,desc) {
 		
 		var val = (desc.postEdit ? desc.postEdit($(tbox).val(),$(tbox).parent().data('descValue')) : $(tbox).val());
 		if(val != $(tbox).parent().data('descValue')) {
-			var oldval = $(tbox).parent().data('descValue');
 			$(tbox).parent().data('descValue',val);
 			if(desc.display) {
 				$(tbox).siblings('span.vboxImportAppProp').html(desc.display(val));

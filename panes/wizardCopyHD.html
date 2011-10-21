@@ -200,15 +200,12 @@ function wizardCopyHDBrowseLocation() {
 
 	// Get current location
 	var loc = document.forms['frmwizardCopyHD'].elements.wizardCopyHDLocation.value;
-	var os = null;
 	if(loc.indexOf(':') > 0) {
 		// windows
 		loc = loc.replace(/.*\\/,'');
-		os = 'win';
 	} else if(loc.indexOf('/') != -1) {
 		// *nix
 		loc = loc.replace(/.*\//,'');
-		os = 'unix';
 	} else {
 		// no path set, use src location
 		loc = vboxDirname(vboxMedia.getMediumById($(document.forms['frmwizardCopyHD'].copyHDDiskSelect).val()).location);

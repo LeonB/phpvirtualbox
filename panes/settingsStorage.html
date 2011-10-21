@@ -404,7 +404,6 @@ for(var i=0;i<imgsToLoad.length;i++){
  			}
  			
  			
- 			var mi = $('#'+vboxSettingsCMenu.menuId());
  			for(var i in used) {
 
  				if(used[i]) {
@@ -934,7 +933,7 @@ function vboxSettingsMediumTip(m) {
 	
 	var mbase = m;
 	if(m.base != m.id) {
-		var mbase = vboxMedia.getMediumById(m.base);
+		mbase = vboxMedia.getMediumById(m.base);
 	}
 	var tip = '<b>'+mbase.location+'</b><p>'+trans('Type (Format):','UIMachineSettingsStorage')+' '+vboxMedia.getType(mbase)+' ('+mbase.format+')</p><p>'+trans('Attached To:','UIMachineSettingsStorage')+' '+vboxMedia.attachedTo(mbase)+'</p>';
 		
@@ -1291,7 +1290,6 @@ function vboxSettingsSelectAttachment(tbl) {
 
     /* change labels */
     var label = null;
-    var cbox = null;
     
     if($('#vboxSettingsDialog').data('vboxMachineData').state == 'Running') {
     	$('#vboxSettingsControllerDeviceOptionLabel').addClass('disabled');

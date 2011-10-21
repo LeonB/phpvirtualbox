@@ -287,10 +287,11 @@ var vmmButtons = new Array(
 		'label' : 'Add',
 		'icon' : 'hd_add',
 		'click' : function () {
+			var type = '';
 			switch($("#vboxVMMTabs").tabs('option','selected')) {
-				case 1: var type = 'DVD'; break;
-				case 2: var type = 'Floppy'; break;
-				default: var type = 'HardDisk'; break;
+				case 1: type = 'DVD'; break;
+				case 2: type = 'Floppy'; break;
+				default: type = 'HardDisk'; break;
 			}
 			
 			vboxMedia.actions.choose(null,type,function(ret){
@@ -372,15 +373,16 @@ var vmmButtons = new Array(
 
 		},
 		'click' : function () {
+			var elm = null;
 			switch($("#vboxVMMTabs").tabs('option','selected')) {
 				case 1:
-					var elm = $('#vboxVMMCDList');
+					elm = $('#vboxVMMCDList');
 					break;
 				case 2:
-					var elm = $('#vboxVMMFDList');
+					elm = $('#vboxVMMFDList');
 					break;
 				default:
-					var elm = $('#vboxVMMHDList');
+					elm = $('#vboxVMMHDList');
 					break;
 			}
 			vboxWizardCopyHDInit(function(id){
@@ -484,30 +486,32 @@ var vmmButtons = new Array(
 		},
 		'click' : function () {
 			var mtype = null;
+			var elm = null;
 			switch($("#vboxVMMTabs").tabs('option','selected')) {
 				case 1:
-					var elm = $('#vboxVMMCDList');
+					elm = $('#vboxVMMCDList');
 					mtype = 'CD/DVD image';
 					break;
 				case 2:
-					var elm = $('#vboxVMMFDList');
+					elm = $('#vboxVMMFDList');
 					mtype = 'floppy image';
 					break;
 				default:
-					var elm = $('#vboxVMMHDList');
+					elm = $('#vboxVMMHDList');
 					mtype = 'hard disk';
 					break;
 			}
 			var m = vboxMedia.getMediumById($(elm).find('tr.vboxListItemSelected').first().data('medium'));
 
+			var buttons = {};
+			var q = '';
+			
 			// If we are removing a hard disk and configured to allow deletions
 			if(m.deviceType == 'HardDisk' && $('#vboxIndex').data('vboxConfig').deleteOnRemove && m.format != 'iSCSI') {
 
 				
-				var q = trans('<p>Do you want to delete the storage unit of the hard disk <nobr><b>%1</b></nobr>?</p><p>If you select <b>Delete</b> then the specified storage unit will be permanently deleted. This operation <b>cannot be undone</b>.</p><p>If you select <b>Keep</b> then the hard disk will be only removed from the list of known hard disks, but the storage unit will be left untouched which makes it possible to add this hard disk to the list later again.</p>','UIMessageCenter').replace('%1',m.location);
+				q = trans('<p>Do you want to delete the storage unit of the hard disk <nobr><b>%1</b></nobr>?</p><p>If you select <b>Delete</b> then the specified storage unit will be permanently deleted. This operation <b>cannot be undone</b>.</p><p>If you select <b>Keep</b> then the hard disk will be only removed from the list of known hard disks, but the storage unit will be left untouched which makes it possible to add this hard disk to the list later again.</p>','UIMessageCenter').replace('%1',m.location);
 				
-
-				var buttons = {};
 				buttons[trans('Delete','UIMessageCenter')] = function(){
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType,'delete':1},function(ret){
 						if(ret && ret.progress) {
@@ -534,10 +538,9 @@ var vmmButtons = new Array(
 				
 			} else {
 				
-				var q = trans('<p>Are you sure you want to remove the %1 <nobr><b>%2</b></nobr> from the list of known media?</p>','UIMessageCenter').replace('%1',trans(mtype,'UIMessageCenter')).replace('%2',m.location);
+				q = trans('<p>Are you sure you want to remove the %1 <nobr><b>%2</b></nobr> from the list of known media?</p>','UIMessageCenter').replace('%1',trans(mtype,'UIMessageCenter')).replace('%2',m.location);
 				q+= trans('<p>Note that the storage unit of this medium will not be deleted and that it will be possible to use it later again.</p>','UIMessageCenter');
 				
-				var buttons = {};
 				buttons[trans('Remove','UIMessageCenter')] = function(){
 					var b = this;
 					vboxAjaxRequest('mediumRemove',{'id':m.id,'type':m.deviceType},function(ret){
@@ -567,18 +570,19 @@ var vmmButtons = new Array(
 			return (m && m.attachedTo.length > 0 && m.children.length == 0 && m.hasSnapshots == 0);			
 		},
 		'click' : function () {
+			var elm = null;
 			var mtype = null;
 			switch($("#vboxVMMTabs").tabs('option','selected')) {
 				case 1:
-					var elm = $('#vboxVMMCDList');
+					elm = $('#vboxVMMCDList');
 					mtype = 'CD/DVD image';
 					break;
 				case 2:
-					var elm = $('#vboxVMMFDList');
+					elm = $('#vboxVMMFDList');
 					mtype = 'floppy image';
 					break;
 				default:
-					var elm = $('#vboxVMMHDList');
+					elm = $('#vboxVMMHDList');
 					mtype = 'hard disk';
 					break;
 			}
@@ -783,17 +787,18 @@ function vboxVMMAddMedium(d,depth,hideDiff,topLevelParent) {
 
 	// Set target list
 	//////////////////////
+	var target = '';
 	switch(d.deviceType) {
 		case 'HardDisk': 
 			// Logical size column
 			$('<td />').addClass('vboxHoverMid').append($('<span />').html(vboxMbytesConvert(d.logicalSize))).appendTo(tr);
-			var target = '#vboxVMMHDList';
+			target = '#vboxVMMHDList';
 			break;
 		case 'DVD':
-			var target = '#vboxVMMCDList';
+			target = '#vboxVMMCDList';
 			break;
 		case 'Floppy':
-			var target = '#vboxVMMFDList';
+			target = '#vboxVMMFDList';
 			break;
 	}
 	
@@ -862,15 +867,16 @@ function vboxVMMFillMedia(sel) {
 	for(var i in media) {
 		vboxVMMAddMedium(media[i],0,hideDiff,media[i].parent);
 		if(media[i].state == 'Inaccessible') {
+			var elm = null;
 			switch(media[i].deviceType) {
 				case 'HardDisk':
-					var elm = $('#vmmDisksIcon');
+					elm = $('#vmmDisksIcon');
 					break;
 				case 'DVD':
-					var elm = $('#vmmCDsIcon');
+					elm = $('#vmmCDsIcon');
 					break;
 				default:
-					var elm = $('#vmmFloppysIcon');
+					elm = $('#vmmFloppysIcon');
 			}
 			elm.attr('src','images/vbox/state_aborted_16px.png');
 		}
@@ -1056,7 +1062,6 @@ function vboxVMMInit(hideDiff,vmPath) {
 		}).addClass('vboxVMMSortImgFaded').append(' ').append($('<img />').attr({'src':'images/upArrow.png','style':'visibility:hidden;cursor:pointer'}).click(function(e,sortDefault){
 			
 			var p = $(this).parent();
-			var cthIndex = p.index();
 			
 			// Get current sort order and set accordingly
 			//////////////////////////////////////////////

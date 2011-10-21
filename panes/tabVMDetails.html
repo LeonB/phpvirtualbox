@@ -1162,7 +1162,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 
 	var dtr = $('<tr />').attr({'class':'vboxDetailRow'});
-	var dtd = $('<td />').attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None",null,null,'details report (description)')+'</span>').appendTo(dtr);
+	$('<td />').attr({'class':'vboxDetailDescriptionCell','colspan':'2'}).html(data.description.length ? $('<div />').html(data.description).text() : '<span class="vboxDetailsNone">'+trans("None",null,null,'details report (description)')+'</span>').appendTo(dtr);
 	$(vboxDetailsTable).append(dtr);
 	
 	// Append Table or show div
@@ -1521,11 +1521,12 @@ $("#vboxVMDetails").mouseup( function(e) {
 		var w = $('#vboxDetailsPreviewWrap').outerWidth(false);
 		var h = $('#vboxDetailsPreviewWrap').outerHeight(false);
 
+		var menu = null;
 		if(pos && e.pageX > 0 && e.pageX >= pos.left && e.pageX <= (pos.left + w) && e.pageY >= pos.top && e.pageY <= (pos.top+h)) {
-			var menu = $('#vboxDetailsPreviewMenu');
+			menu = $('#vboxDetailsPreviewMenu');
 			$('#vboxDetailsShowMenu').hide();
 		} else {
-			var menu = $('#vboxDetailsShowMenu');
+			menu = $('#vboxDetailsShowMenu');
 			$('#vboxDetailsPreviewMenu').hide();
 		}
 		vboxPositionEvent(menu, e);

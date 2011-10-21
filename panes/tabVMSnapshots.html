@@ -103,8 +103,6 @@ var vboxSnapshotButtons = [
   			// Circumvent VirtualBox bug
   			if($('#vboxIndex').data('selectedVM').state == 'Running') {
   				
-	  			var vboxVer = $('#vboxIndex').data('vboxConfig').version.string.replace('_OSE','').split('.');
-	  			
   				vboxAlert("VirtualBox has a bug that will cause it to crash when taking a snapshot of a running virtual machine. Please pause the VM and try again. See <a href='http://www.virtualbox.org/ticket/9255' target=_blank>http://www.virtualbox.org/ticket/9255</a> for more information.");
 	  			return;
   			}
@@ -171,11 +169,12 @@ var vboxSnapshotButtons = [
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data('vboxSnapshot');
   	  		
 			var buttons = {};
+			var q = '';
 			
 			// Check if the current state is modified
 			if($('#vboxTabVMSnapshots').data('machine').currentStateModified) {
 
-				var q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>','UIMessageCenter');
+				q = trans('<p>You are about to restore snapshot <b>%1</b>.</p><p>You can create a snapshot of the current state of the virtual machine first by checking the box below; if you do not do this the current state will be permanently lost. Do you wish to proceed?</p>','UIMessageCenter');
 				q += '<p><label><input type="checkbox" id="vboxRestoreSnapshotCreate" checked /> ' + trans('Create a snapshot of the current machine state','UIMessageCenter') + '</label></p>';
 				
 				buttons[trans('Restore','UIMessageCenter')] = function() {
@@ -218,7 +217,7 @@ var vboxSnapshotButtons = [
 
 			} else {
 				
-				var q = trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>','UIMessageCenter');
+				q = trans('<p>Are you sure you want to restore snapshot <b>%1</b>?</p>','UIMessageCenter');
 				
 				buttons[trans('Restore','UIMessageCenter')] = function() {
 		  	  		var l = new vboxLoader();
@@ -259,7 +258,6 @@ var vboxSnapshotButtons = [
   		'label' : 'Delete Snapshot',
   		'icon' : 'delete_snapshot',
   		'enabled' : function(item) {
-			var vm = $('#vboxTabVMSnapshots').data('machine');
   			return (item && $(item).data('vboxSnapshot') && $(item).data('vboxSnapshot').name && $(item).data('vboxSnapshot').state != 'current' && $(item).data('vboxSnapshot').children.length <= 1);
   		},
   		'click' : function () {
@@ -627,7 +625,6 @@ function __vboxTabSnapshotTimestamps() {
 		
 		var sts = parseInt($(this).attr('title'));
 		var t = Math.max(currentTime - sts, 1);
-		var ts = $(this).html();
 		
 		minTs = Math.min(minTs,t);
 		

@@ -193,7 +193,6 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 	// Keep track of where we were
 	$('#wizardExportApplianceStep2').data('fromStep',3);
 	
-	var vms = $('#vboxExportAppVMList').children('li');
 	var vmSel = $('#vboxExportAppVMList').children('li.vboxListItemSelected');
 	
 	/* When going to step3, make sure vms are selected */
@@ -204,11 +203,12 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 		$('#vboxExportAppVMListContainer').removeClass('vboxRequired');		
 	}
 
+	var name = '';
 	if(vmSel.length > 1) {
-		var name = 'Appliance';
+		name = 'Appliance';
 		$(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy).prop({'checked':false,'disabled':true}).siblings().addClass('vboxDisabled');
 	} else {
-		var name = jQuery.trim($(vmSel[0]).text());
+		name = jQuery.trim($(vmSel[0]).text());
 		$(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLegacy).prop({'disabled':false}).siblings().removeClass('vboxDisabled');
 	}
 	if($(document.forms['frmwizardExportAppliance'].elements.wizardExportApplianceLocation).val()) return;
@@ -219,7 +219,6 @@ $('#wizardExportApplianceStep3').bind('show',function(e,wiz){
 $('#wizardExportApplianceStep4').bind('show',function(e,wiz){
 
 	var vms = $('#vboxExportAppVMList').children('li');
-	var vmSel = $('#vboxExportAppVMList').children('li.vboxListItemSelected');
 	
 	var tbl = $('#vboxExportProps');
 			
@@ -294,10 +293,10 @@ function vboxExportAppliancePropEditDialog(elm, defaults) {
 		$(d).html($('<div />').text($('#vboxExportAppliancePropTextarea').val()).html());
 		$(elm).html('').append(d);
 		$(this).empty().remove();
-	}
+	};
 	buttons[trans('Cancel','QIMessageBox')] = function(){
 		$(this).empty().remove();
-	}
+	};
 	$(d).dialog({'height':300,'width':300,'closeOnEscape':false,'modal':true,'resizable':true,'dialogClass':'vboxDialogContent','draggable':true,'buttons':buttons,'title':$(elm).parent().siblings().first().html()});
 
 }
