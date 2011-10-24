@@ -92,15 +92,8 @@ try {
 			$vbox = new vboxconnector();
 			$response['data']['version'] = $vbox->getVersion();
 			$response['data']['hostOS'] = $vbox->vbox->host->operatingSystem;
-			$vbox = null;
+			$response['data']['DSEP'] = $vbox->getDsep();
 			
-			// Host OS and directory seperator
-			if(stripos($response['data']['hostOS'],'windows') === false) {
-	        		 $response['data']['DSEP'] = '/';
-			} else {
-	        		 $response['data']['DSEP'] = '\\';
-			}
-
 			break;
 	
 		/*

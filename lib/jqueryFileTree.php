@@ -92,10 +92,8 @@ $localbrowser = @$settings->browserLocal;
 
 if($localbrowser) {
 	define('DSEP', DIRECTORY_SEPARATOR);
-} else if(stripos($vbox->vbox->host->operatingSystem,'windows') === false) {
-	define('DSEP','/');
 } else {
-	define('DSEP','\\');
+	define('DSEP',$vbox->getDsep());
 }
 
 /* In some cases, "dir" passed is just a file name */

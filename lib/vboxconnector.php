@@ -366,7 +366,7 @@ class vboxconnector {
 
 		$this->connect();
 
-		$dsep = $this->settings->DSEP;
+		$dsep = $this->getDsep();
 
 		$path = str_replace($dsep.$dsep,$dsep,$args['file']);
 		$dir = dirname($path);
@@ -2053,7 +2053,7 @@ class vboxconnector {
 		// Overwrite existing file?
 		if($args['overwrite']) {
 
-			$dsep = $this->settings->DSEP;
+			$dsep = $this->getDsep();
 
 			$path = str_replace($dsep.$dsep,$dsep,$args['file']);
 			$dir = dirname($path);
@@ -3603,6 +3603,22 @@ class vboxconnector {
 		$machine->releaseRemote();
 
 		return true;
+	}
+	
+	/**
+	 * Get OS specific directory separator
+	 * 
+	 * @return string directory separator string
+	 */
+	public function getDsep() {
+
+		$this->connect();
+		
+		if(stripos($this->vbox->host->operatingSystem,'windows') === false)
+			return '/';
+		
+		return '\\';
+		
 	}
 
 	/**
