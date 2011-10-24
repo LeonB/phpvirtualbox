@@ -45,6 +45,12 @@ class phpVBoxConfigClass {
 	var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 	/**
+	 * Force file / folder browser to use local PHP functions rather than VirtualBox's IVFSExplorer
+	 * @var boolean
+	 */
+	var $browserLocal = false;
+	
+	/**
 	 * List of console resolutions available on console tab
 	 * @var array
 	 */
@@ -67,27 +73,34 @@ class phpVBoxConfigClass {
 	 * @var string
 	 */
 	var $vmListSort = 'name';
+	
+	/**
+	 * Enable custom icon per VM
+	 * @var boolean
+	 */
+	var $enableCustomIcons = false;
 
 	/**
-	 * Cache tweaking settings
+	 * Cache settings
 	 * @var array
 	 * @see vboxconnector
 	 * @see cache
 	 */
 	var $cacheSettings = array(
-		'getHostDetails' => 86400, // "never" changes. 1 day
-		'getGuestOSTypes' => 86400,
-		'getSystemProperties' => 86400,
-		'getHostNetworking' => 86400,
-		'getMedia' => 600, // 10 minutes
-		'getVMs' => 2,
-		'__getMachine' => 7200, // 2 hours
-		'__getNetworkAdapters' => 7200,
-		'__getStorageControllers' => 7200,
-		'__getSerialPorts' => 7200,
-		'__getSharedFolders' => 7200,
-		'__getUSBController' => 7200,
-		'getVMSortOrder' => 300 // 5 minutes
+		'hostGetDetails' => 86400, // "never" changes. 1 day
+		'vboxGetGuestOSTypes' => 86400,
+		'vboxSystemPropertiesGet' => 86400,
+		'hostGetNetworking' => 86400,
+		'vboxGetMedia' => 600, // 10 minutes
+		'vboxGetMachines' => 2,
+		'_machineGetDetails' => 7200, // 2 hours
+		'_machineGetNetworkAdapters' => 7200,
+		'_machineGetStorageControllers' => 7200,
+		'_machineGetSerialPorts' => 7200,
+		'_machineGetParallelPorts' => 7200,
+		'_machineGetSharedFolders' => 7200,
+		'_machineGetUSBController' => 7200,
+		'vboxMachineSortOrderGet' => 300 // 5 minutes
 	);
 
 	/**
@@ -135,6 +148,10 @@ class phpVBoxConfigClass {
 				if($k == 'browserRestrictFiles' && !is_array($v)) continue;
 				if($k == 'consoleResolutions' && !is_array($v)) continue;
 				if($k == 'browserRestrictFolders' && !is_array($v)) continue;
+				if($k == 'cacheSettings' && is_array($v)) {
+					$this->cacheSettings = array_merge($this->cacheSettings,$v);
+					continue;
+				}
 				$this->$k = $v;
 			}
 				
@@ -217,8 +234,8 @@ class phpVBoxConfigClass {
 	}
 	
 	/**
-	 * Return the server configuration array marked as the authentication master
-	 * @return array server configuration of server marked as authMaster
+	 * Return the name of the server marked as the authentication master
+	 * @return string name of server marked as authMaster
 	 */
 	function getServerAuthMaster() {
 		foreach($this->servers as $s) {

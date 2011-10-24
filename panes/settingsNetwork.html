@@ -175,7 +175,7 @@ $('#vboxSettingsTabNetAdapter').find('input.vboxSettingsNetMacGen').click(functi
 	$(t).val('...').prop('disabled',true);
 	
 	var l = new vboxLoader();
-	l.add('genMACAddress',function(d){
+	l.add('vboxGenerateMacAddress',function(d){
 		if(d && d.mac) $(t).val(d.mac);
 		else $(t).val(oval);
 		$(t).prop('disabled',false);

@@ -48,7 +48,7 @@ function vboxVMNetAdaptersInit(vm) {
 	$('#vboxGuestNetAdapters').prepend("<div class='vboxTabLoading'><img src='images/spinner.gif'></div>");
 	
 	var pattern = '/VirtualBox/GuestInfo/Net/*';
-	vboxAjaxRequest('enumerateGuestProperties',{'vm':vm,'pattern':pattern},function(d){
+	vboxAjaxRequest('machineEnumerateGuestProperties',{'vm':vm,'pattern':pattern},function(d){
 		vboxVMNetAdaptersDisplay(d);
 	});
 }

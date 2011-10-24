@@ -42,7 +42,7 @@ function vboxShowLogsInit(vm) {
 
 			$(this).html('<img src="images/spinner.gif" />');
 			
-			vboxAjaxRequest('getVMLogFile',{'vm':vm,'log':$(this).data('logIndex')},function(d,x){
+			vboxAjaxRequest('machineGetLogFile',{'vm':vm,'log':$(this).data('logIndex')},function(d,x){
 				
 				// -8 for padding set above + parent's padding
 				var pHeight = $('#vboxVMLogTabs').innerHeight() - 10;

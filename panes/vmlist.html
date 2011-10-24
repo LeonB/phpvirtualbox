@@ -199,7 +199,7 @@ function vboxVMList(anchorid) {
 			
 			// Does not exist, add to list
 			if(!self.vms[currVMList[i].id]) {
-				self.addVM(currVMList[i]);
+				self.machineAdd(currVMList[i]);
 				changed = true;
 			// Update
 			} else {
@@ -217,7 +217,7 @@ function vboxVMList(anchorid) {
 		// Check for any vms that should be removed
 		for(var id in self.vms) {
 			if(self.vms[id].lastUpdated != self.time) {
-				self.removeVM(id);
+				self.machineRemove(id);
 				changed = true;
 			}
 		}
@@ -278,7 +278,7 @@ function vboxVMList(anchorid) {
 
 	};
 
-	self.addVM = function(vm, index) {
+	self.machineAdd = function(vm, index) {
 		self.vms[vm.id] = vm;
 		vmn = self.vms[vm.id];
 		self.anchor.append(self.vmHTML(vmn));
@@ -401,7 +401,7 @@ function vboxVMList(anchorid) {
 		
 	};
 
-	self.removeVM = function(id) {
+	self.machineRemove = function(id) {
 		if(self.vms[id].selected) { $('#vboxIndex').trigger('vmselect',null); }
 		$('#vboxVMListItem-'+self.anchorid+'-'+id).remove();
 		delete self.vms[id];
@@ -449,7 +449,7 @@ function vboxVMList(anchorid) {
 			self.stop();
 
 			// ask for new one
-			vboxAjaxRequest('getVMs',{},function(d){
+			vboxAjaxRequest('vboxGetMachines',{},function(d){
 				self.start();
 				self.updateList(d);
 				if(svm) $('#vboxVMListItem-'+self.anchorid+'-'+svm).trigger('click');
@@ -599,7 +599,7 @@ function vboxVMList(anchorid) {
 				self._sortOrder = sortOrder;
 				self._updateSortOrder = false;
 				window.clearTimeout(self._sortOrderTimer);
-				vboxAjaxRequest('setVMSortOrder',{'sortOrder':sortOrder},function(){
+				vboxAjaxRequest('vboxMachineSortOrderSave',{'sortOrder':sortOrder},function(){
 					// Resume using sort order returned from server after one refresh interval
 					self._sortOrderTimer = window.setTimeout(function(){self._updateSortOrder = true;},self.interval*1000);
 				});
@@ -624,7 +624,7 @@ function vboxVMList(anchorid) {
 		if(self._running) return;
 		
 		var cb = function() {
-			vboxAjaxRequest('getVMs',{},function(d) {
+			vboxAjaxRequest('vboxGetMachines',{},function(d) {
 				self.updateList(d);
 			});			
 		};
@@ -667,7 +667,7 @@ function vboxVMList(anchorid) {
 		// perform will be more authoritative. See updateList()
 		self._running = null;
 		
-		vboxAjaxRequest('getVMs',{},function(d) {
+		vboxAjaxRequest('vboxGetMachines',{},function(d) {
 			self.start(true);
 			self.updateList(d);
 		});			

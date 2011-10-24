@@ -30,10 +30,10 @@ var vboxVMActions = {
 			vboxFileBrowser($('#vboxIndex').data('vboxSystemProperties').defaultMachineFolder,function(f){
 				if(!f) return;
 				var l = new vboxLoader();
-				l.add('addVM',function(){},{'file':f});
+				l.add('machineAdd',function(){},{'file':f});
 				l.onLoad = function(){
 					var lm = new vboxLoader();
-					lm.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
+					lm.add('vboxGetMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
 					lm.onLoad = function() {$('#vboxIndex').trigger('vmlistreload');};
 					lm.run();
 				};
@@ -57,7 +57,7 @@ var vboxVMActions = {
 			
 			var startVM = function () {
 				
-				vboxAjaxRequest('setStateVMpowerUp',{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+				vboxAjaxRequest('machineSetState',{'vm':$('#vboxIndex').data('selectedVM').id,'state':'powerUp'},function(d){
 					// check for progress operation
 					if(d && d.progress) {
 						var icon = null;
@@ -78,8 +78,8 @@ var vboxVMActions = {
 				var baseMem = 0;
 				
 				var l = new vboxLoader();
-				l.add('getHostMeminfo',function(d){freeMem = d.memoryAvailable;});
-				l.add('getVMDetails',function(d){baseMem = d.memorySize + d.VRAMSize;},{'vm':$('#vboxIndex').data('selectedVM').id});
+				l.add('hostGetMeminfo',function(d){freeMem = d.memoryAvailable;});
+				l.add('machineGetDetails',function(d){baseMem = d.memorySize + d.VRAMSize;},{'vm':$('#vboxIndex').data('selectedVM').id});
 				l.onLoad = function() {
 					if($('#vboxIndex').data('vboxConfig').vmMemoryOffset) freeMem -= $('#vboxIndex').data('vboxConfig').vmMemoryOffset;
 					// A little bit of overhead
@@ -140,7 +140,7 @@ var vboxVMActions = {
 		'icon_disabled':'refresh_disabled',
 		'click':function(){
 			var l = new vboxLoader();
-			l.add('getVMDetails',function(d){
+			l.add('machineGetDetails',function(d){
 				// Special case for host refresh
 				if(d.id == 'host') {
 					$('#vboxIndex').data('vboxHostDetails',d);
@@ -150,9 +150,9 @@ var vboxVMActions = {
 			
 			// Host refresh also refreshes system properties, VM sort order
 			if($('#vboxIndex').data('selectedVM').id == 'host') {
-				l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);},{'force_refresh':1});
-				l.add('getVMSortOrder',function(d){return;},{'force_refresh':1});
-				l.add('getHostOnlyNetworking',function(d){return;},{'force_refresh':1});
+				l.add('vboxSystemPropertiesGet',function(d){$('#vboxIndex').data('vboxSystemProperties',d);},{'force_refresh':1});
+				l.add('vboxMachineSortOrderGet',function(d){return;},{'force_refresh':1});
+				l.add('hostOnlyInterfacesGet',function(d){return;},{'force_refresh':1});
 			}
 			l.run();
     	},
@@ -169,7 +169,7 @@ var vboxVMActions = {
 			buttons[trans('Delete all files','UIMessageCenter')] = function(){
 				$(this).empty().remove();
 				var l = new vboxLoader();
-				l.add('removeVM',function(d){
+				l.add('machineRemove',function(d){
 					// check for progress operation
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
@@ -182,7 +182,7 @@ var vboxVMActions = {
 			buttons[trans('Remove only','UIMessageCenter')] = function(){
 				$(this).empty().remove();
 				var l = new vboxLoader();
-				l.add('removeVM',function(d){
+				l.add('machineRemove',function(d){
 					// check for progress operation
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){$('#vboxIndex').trigger('vmlistreload');},{},'progress_delete_90px.png');
@@ -212,7 +212,7 @@ var vboxVMActions = {
 			buttons[trans('Discard','UIMessageCenter')] = function(){
 				$(this).empty().remove();
 				var l = new vboxLoader();
-				l.add('setStateVMdiscardSavedState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id});
+				l.add('machineSetState',function(){},{'vm':$('#vboxIndex').data('selectedVM').id,'state':'discardSavedState'});
 				l.onLoad = function(){$('#vboxIndex').trigger('vmlistrefresh');};
 				l.run();
 			};
@@ -306,15 +306,15 @@ var vboxVMActions = {
 	'powerAction' : function(pa){
 		icon =null;
 		switch(pa) {
-			case 'powerdown': fn = 'setStateVMpowerDown'; icon='progress_poweroff_90px.png'; break;
-			case 'powerbutton': fn = 'setStateVMpowerButton'; break;
-			case 'sleep': fn = 'setStateVMsleepButton'; break;
-			case 'savestate': fn = 'setStateVMsaveState'; icon='progress_state_save_90px.png'; break;
-			case 'pause': fn = 'setStateVMpause'; break;
-			case 'reset': fn = 'setStateVMreset'; break;
+			case 'powerdown': fn = 'powerDown'; icon='progress_poweroff_90px.png'; break;
+			case 'powerbutton': fn = 'powerButton'; break;
+			case 'sleep': fn = 'sleepButton'; break;
+			case 'savestate': fn = 'saveState'; icon='progress_state_save_90px.png'; break;
+			case 'pause': fn = 'pause'; break;
+			case 'reset': fn = 'reset'; break;
 			default: return;
 		}
-		vboxAjaxRequest(fn,{'vm':$('#vboxIndex').data('selectedVM').id},function(d){
+		vboxAjaxRequest('machineSetState',{'vm':$('#vboxIndex').data('selectedVM').id,'state':fn},function(d){
 			// check for progress operation
 			if(d && d.progress) {
 				vboxProgress(d.progress,function(){
@@ -465,7 +465,7 @@ var vboxMedia = {
 		
 	    // Update recent path
 		if(!skipPathAdd) {
-			vboxAjaxRequest('updateRecentMediumPath',{'type':m.deviceType,'folder':vboxDirname(m.location)},function(){});
+			vboxAjaxRequest('vboxRecentMediaPathSave',{'type':m.deviceType,'folder':vboxDirname(m.location)},function(){});
 			$('#vboxIndex').data('vboxRecentMediaPaths')[m.deviceType] = vboxDirname(m.location);
 		}
 		
@@ -492,7 +492,7 @@ var vboxMedia = {
 		}
 
 		// Update Recent Media in background
-		vboxAjaxRequest('mediumRecentUpdate',{'type':m.deviceType,'list':$('#vboxIndex').data('vboxRecentMedia')[m.deviceType]},function(){});
+		vboxAjaxRequest('vboxRecentMediaSave',{'type':m.deviceType,'list':$('#vboxIndex').data('vboxRecentMedia')[m.deviceType]},function(){});
 		
 		return true;
 
@@ -546,7 +546,7 @@ var vboxMedia = {
 						var med = vboxMedia.getMediumById(ret.id);
 						// Not registered yet. Refresh media.
 						if(!med)
-							l.add('getMedia',function(dret){$('#vboxIndex').data('vboxMedia',dret);});
+							l.add('vboxGetMedia',function(dret){$('#vboxIndex').data('vboxMedia',dret);});
 					}
 					l.onLoad = function() {
 						if(ret && ret.id) {
@@ -1582,7 +1582,7 @@ var vboxVMDataMediator = {
 		} else {
 			
 			vboxVMDataMediator._inProgress[id] = [callback];
-			vboxAjaxRequest('getVMDetails', {'vm':id}, vboxVMDataMediator._ajaxhandler,{'id':id});
+			vboxAjaxRequest('machineGetDetails', {'vm':id}, vboxVMDataMediator._ajaxhandler,{'id':id});
 			
 		}
 	},

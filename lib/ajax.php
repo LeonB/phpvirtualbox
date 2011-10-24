@@ -257,11 +257,7 @@ try {
 			if(function_exists('session_write_close')) @session_write_close();
 			
 			# fix for allow_call_time_pass_reference = Off setting
-			if(method_exists($vbox,$vboxRequest['fn'])) {
-				$vbox->$vboxRequest['fn']($vboxRequest,$response);
-			} else {
-				$vbox->$vboxRequest['fn']($vboxRequest,array(&$response));
-			}
+			$vbox->$vboxRequest['fn']($vboxRequest,array(&$response));
 			
 	} // </switch()>
 

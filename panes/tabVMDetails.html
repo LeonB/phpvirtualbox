@@ -584,7 +584,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 			'style':'background: url(images/vbox/refresh_16px.png) 2px 2px no-repeat; padding: 2px 2px 2px 18px; border: 1px solid #000; background-color: #eee;'
 		}).click(function(){
 			var l = new vboxLoader();
-			l.add('getVMDetails',function(){
+			l.add('machineGetDetails',function(){
 				$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 			},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
 			l.run();
@@ -849,8 +849,8 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 					$('#vboxIndex').trigger('vmloading');
 					
 					var l = new vboxLoader();
-					l.add('getVMDetails',function(d){return;},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
-					l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
+					l.add('machineGetDetails',function(d){return;},{'vm':$('#vboxIndex').data('selectedVM').id,'force_refresh':1});
+					l.add('vboxGetMedia',function(d){$('#vboxIndex').data('vboxMedia',d);},{'force_refresh':1});
 					l.onLoad = function() {
 						$('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]);
 					};
@@ -1359,7 +1359,7 @@ function __vboxDisplayHostDetailsData(data) {
 	}
 	
 	var vboxHostUpdateMeminfo = function() {
-		vboxAjaxRequest('getHostMeminfo',{},function(d){
+		vboxAjaxRequest('hostGetMeminfo',{},function(d){
 			vboxHostShowMemInfo(d.memoryAvailable);		
 		});
 	};

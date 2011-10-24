@@ -186,12 +186,12 @@
 				var l = new vboxLoader();
 				
 				l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});
-				l.add('getGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
-				l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-				l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
-				l.add('getHostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-				l.add('getRecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
-				l.add('getRecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
+				l.add('vboxGetGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('vboxSystemPropertiesGet',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('vboxGetMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
+				l.add('hostGetDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+				l.add('vboxRecentMediaGet',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
+				l.add('vboxRecentMediaPathsGet',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
 				
 				l.onLoad = function(){$('#vboxIndex').trigger('hostChanged');};
 
@@ -208,12 +208,12 @@
 				
 				// Get data and store it using data()
 				l.add('getConfig',function(d){$('#vboxIndex').data('vboxConfig',d);});
-				l.add('getGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
-				l.add('getSystemProperties',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
-				l.add('getMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
-				l.add('getHostDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
-				l.add('getRecentMedia',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
-				l.add('getRecentMediaPaths',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
+				l.add('vboxGetGuestOSTypes',function(d){$('#vboxIndex').data('vboxOSTypes',d);});
+				l.add('vboxSystemPropertiesGet',function(d){$('#vboxIndex').data('vboxSystemProperties',d);});
+				l.add('vboxGetMedia',function(d){$('#vboxIndex').data('vboxMedia',d);});
+				l.add('hostGetDetails',function(d){$('#vboxIndex').data('vboxHostDetails',d);});
+				l.add('vboxRecentMediaGet',function(d){$('#vboxIndex').data('vboxRecentMedia',d);});
+				l.add('vboxRecentMediaPathsGet',function(d){$('#vboxIndex').data('vboxRecentMediaPaths',d);});
 	
 				// Load HTML panes and append them to their respective locations
 				l.addFileToDOM('panes/topmenu.html');

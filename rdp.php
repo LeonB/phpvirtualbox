@@ -37,7 +37,7 @@ if(preg_match('/[^\d]/',@$_GET['port'])) {
 
 	$args = array('vm'=>@$_GET['vm']);
 	$response = array();
-	$vbox->getVMDetails($args,$response);
+	$vbox->machineGetDetails($args,$response);
 
 	$_GET['port'] = @$response['data']['consoleInfo']['consolePort'];
 	

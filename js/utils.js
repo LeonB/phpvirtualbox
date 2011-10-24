@@ -675,7 +675,7 @@ function vboxDivOverflowHidden(p) {
 function vboxInstallGuestAdditions(vmid,mount_only) {
 
 	var l = new vboxLoader();
-	l.add('installGuestAdditions',function(d){
+	l.add('machineGuestAdditionsInstall',function(d){
 		
 		// Progress operation returned. Guest Additions are being updated.
 		if(d && d.progress) {
@@ -697,7 +697,7 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
 
 			// Media and VM data must be refreshed
 			var ml = new vboxLoader();
-			ml.add('getMedia',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
+			ml.add('vboxGetMedia',function(dat){$('#vboxIndex').data('vboxMedia',dat);});
 			ml.onLoad = function() { $('#vboxIndex').trigger('vmselect',[$('#vboxIndex').data('selectedVM')]); };
 			ml.run();
 			
@@ -741,8 +741,8 @@ function vboxInstallGuestAdditions(vmid,mount_only) {
  * @param {any} args - extra args to pass to callback function (optional)
  * @param {String} icon - URL of image to display on progress operation dialog (optional)
  * @param {String} title - title of progress operation dialog (optional)
- * @param {Boolean} catcherrs - tell PHP's getProgress to catch all exceptions (optional)
- * @see vboxconnector::getProgress()
+ * @param {Boolean} catcherrs - tell PHP's progressGet to catch all exceptions (optional)
+ * @see vboxconnector::progressGet()
  */
 function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 	
@@ -769,7 +769,7 @@ function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 
 		$('<input />').attr('type','button').val(trans('Cancel','QIMessageBox')).data({'pid':pid}).click(function(){
 			this.disabled = 'disabled';
-			vboxAjaxRequest('cancelProgress',{'progress':$(this).data('pid')},function(d){return;});
+			vboxAjaxRequest('progressCancel',{'progress':$(this).data('pid')},function(d){return;});
 		})
 	).appendTo(td);
 	
@@ -781,7 +781,7 @@ function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 	// Don't unload while progress operation is .. in progress
 	window.onbeforeunload = vboxOpInProgress;
 	
-	vboxAjaxRequest('getProgress',{'progress':pid,'catcherrs':catcherrs},vboxProgressUpdate,{'pid':pid,'catcherrs':catcherrs});
+	vboxAjaxRequest('progressGet',{'progress':pid,'catcherrs':catcherrs},vboxProgressUpdate,{'pid':pid,'catcherrs':catcherrs});
 	
 }
 /** 
@@ -791,9 +791,9 @@ function vboxProgress(pid,callback,args,icon,title,catcherrs) {
 function vboxOpInProgress() { return trans('Warning: A VirtualBox internal operation is in progress. Closing this window or navigating away from this web page may cause unexpected and undesirable results. Please wait for the operation to complete.','phpVirtualBox');}
 /**
  * Update progress dialog box with % completed
- * @param {Object} d - data returned from getProgress AJAX call
- * @param {Object} e - extra data containing progress id and catcherrs parameter passed to getProgress AJAX call
- * @see vboxconnector::getProgress()
+ * @param {Object} d - data returned from progressGet AJAX call
+ * @param {Object} e - extra data containing progress id and catcherrs parameter passed to progressGet AJAX call
+ * @see vboxconnector::progressGet()
  */
 function vboxProgressUpdate(d,e) {
 	
@@ -816,7 +816,7 @@ function vboxProgressUpdate(d,e) {
 		$('#vboxProgressCancel').show();
 	}
 	
-	window.setTimeout("vboxAjaxRequest('getProgress',{'progress':'"+e.pid+"'},vboxProgressUpdate,{'pid':'"+e.pid+"','catcherrs':'"+e.catcherrs+"'})", 3000);
+	window.setTimeout("vboxAjaxRequest('progressGet',{'progress':'"+e.pid+"'},vboxProgressUpdate,{'pid':'"+e.pid+"','catcherrs':'"+e.catcherrs+"'})", 3000);
 	
 }
 

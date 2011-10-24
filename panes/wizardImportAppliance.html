@@ -516,7 +516,7 @@ function vboxImportAppliancePropEdit(elm,desc) {
 
 				if(diskRows.length) {
 					var mfd = new vboxLoader();
-					mfd.add('getComposedMachineFilename',function(d){
+					mfd.add('vboxGetComposedMachineFilename',function(d){
 						var mfolder = vboxDirname(d.file) + $("#vboxIndex").data('vboxConfig').DSEP;
 						for(var i = 0; i < diskRows.length; i++) {
 							var tdc = $(diskRows[i]).children().eq(1);

@@ -74,7 +74,7 @@
 			menu.append($('<li />').html('<span><img src="images/jqueryFileTree/spinner.gif" /></span>').css({'width':'100px','text-align':'center'}));
 			
 			var l = new vboxLoader();
-			l.add('getHostUSBDevices',function(hostUSB){
+			l.add('hostGetUSBDevices',function(hostUSB){
 				
 				$(menu).children().remove();
 				for(var i = 0; i < hostUSB.length; i++) {

@@ -311,7 +311,7 @@ var vboxSnapshotButtons = [
   	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data('vboxSnapshot');
   			
 			var l = new vboxLoader();
-			l.add('getSnapshotDetails',function(d){
+			l.add('snapshotGetDetails',function(d){
 
 				var sdate = new Date(d.timeStamp * 1000);
 				sdate = sdate.toLocaleString();
@@ -340,7 +340,7 @@ var vboxSnapshotButtons = [
 		  	  		var snapshot = $('#vboxSnapshotList').find('div.vboxListItemSelected').first().parent().data('vboxSnapshot');
 							
 		  	  		var l = new vboxLoader();
-		  	  		l.add('saveSnapshot',function(d){
+		  	  		l.add('snapshotSave',function(d){
 						$('#vboxTabVMSnapshots').trigger('refresh');
 		 	  		},{'vm':$('#vboxTabVMSnapshots').data('machine').id,'snapshot':snapshot.id,'name':$('#vboxSnapshotDetailsName').val(),'description':$('#vboxSnapshotDetailsDesc').val()});
 		 	  		$(this).dialog('close');
@@ -478,7 +478,7 @@ $('#vboxTabVMSnapshots').bind('show',function(e,vm){
 	$('#vboxSnapshotList').append($('<li />').attr({'class':'last'}).html("<div><img src='images/spinner.gif'></div>"));
 	
 	// Get snapshots
-	vboxAjaxRequest('getSnapshots',{'vm':vm.id},__vboxTabSnapshotsFill);
+	vboxAjaxRequest('machineGetSnapshots',{'vm':vm.id},__vboxTabSnapshotsFill);
 
 	
 });

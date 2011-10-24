@@ -232,8 +232,8 @@
  		if(!medium) {
  			alert('A medium listed as attached to this machine was not found in the media registry. Media will now be refreshed and phpVirtualBox reloaded.');
  			var l = new vboxLoader();
- 			l.add('getMedia',function(d){return;},{'force_refresh':1});
- 			l.add('getVMDetails',function(d){return;},{'force_refresh':1,'vm':$('#vboxSettingsDialog').data('vboxMachineData').id});
+ 			l.add('vboxGetMedia',function(d){return;},{'force_refresh':1});
+ 			l.add('machineGetDetails',function(d){return;},{'force_refresh':1,'vm':$('#vboxSettingsDialog').data('vboxMachineData').id});
  			l.onLoad = function(){location.reload(true);};
  			l.run();
  		}

@@ -15,7 +15,7 @@
 	
 	<span class='translate'>&lt;p&gt;Please choose a name for the new virtual machine:&lt;/p&gt;</span>
 	
-	<input type='text' class='vboxText' name='cloneVMName' style='width: 95%' />
+	<input type='text' class='vboxText' name='machineCloneName' style='width: 95%' />
 	
 	<p><label><input type='checkbox' class='vboxCheckbox' name='vboxCloneReinitNetwork' />
 		<span class='translate'>Reinitialize the MAC address of all network cards</span></label>
@@ -87,7 +87,7 @@ $('#wizardCloneVMStep1').bind('show',function(e,wiz){
 	if(wiz.args && wiz.args.snapshot)
 		$('#vboxCloneVMNewSnap').hide();
 	
-	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
+	document.forms['frmwizardCloneVM'].elements.machineCloneName.value = trans('%1 Clone','UICloneVMWizardPage1').replace('%1',wiz.args.vm.name);
 	
 	if((wiz.args.snapshot && wiz.args.snapshot.children && wiz.args.snapshot.children.length)) {
 		$('#wizardCloneVMCurrentAll').show();
@@ -99,9 +99,9 @@ $('#wizardCloneVMStep1').bind('show',function(e,wiz){
 /* When going to step2, make sure a name is entered */
 $('#wizardCloneVMStep2').bind('show',function(e,wiz){
 
-	document.forms['frmwizardCloneVM'].elements.cloneVMName.value = jQuery.trim(document.forms['frmwizardCloneVM'].elements.cloneVMName.value);
+	document.forms['frmwizardCloneVM'].elements.machineCloneName.value = jQuery.trim(document.forms['frmwizardCloneVM'].elements.machineCloneName.value);
 
-	if(!document.forms['frmwizardCloneVM'].elements.cloneVMName.value) {
+	if(!document.forms['frmwizardCloneVM'].elements.machineCloneName.value) {
 		// Go back
 		wiz.displayStep(1);
 	}

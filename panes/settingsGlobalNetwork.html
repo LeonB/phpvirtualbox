@@ -112,12 +112,12 @@ var sButtons = new Array(
 		'click' : function () {
 
 			var l = new vboxLoader();
-			l.add('createHostOnlyInterface',function(d){
+			l.add('hostOnlyInterfaceCreate',function(d){
 
 				if(d && d.progress) {
 					vboxProgress(d.progress,function(){
 						var l = new vboxLoader();
-						l.add('getHostOnlyNetworking',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyNetworking',d);});
+						l.add('hostOnlyInterfacesGet',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyNetworking',d);});
 						l.onLoad = vboxSettingsGlobalNetworkAddAdpaters;
 						l.run();
 					},{},null,trans('Add host-only network','UIGlobalSettingsNetwork'));
@@ -146,7 +146,7 @@ var sButtons = new Array(
 				var item = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first();
 
 				var l = new vboxLoader();
-				l.add('removeHostOnlyInterface',function(d){
+				l.add('hostOnlyInterfaceRemove',function(d){
 
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
