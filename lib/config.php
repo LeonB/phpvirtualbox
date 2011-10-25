@@ -81,7 +81,8 @@ class phpVBoxConfigClass {
 	var $enableCustomIcons = false;
 
 	/**
-	 * Cache settings
+	 * Cache settings that dictate the length of time an item can be cached before it is considered stale.
+	 * 
 	 * @var array
 	 * @see vboxconnector
 	 * @see cache

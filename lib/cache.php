@@ -116,7 +116,7 @@ class cache {
 	/**
 	 * Get cached data or return false if no cached data is found.
 	 * @param string $key key used to identify cached item
-	 * @param integer $expire maximum age (in seconds) of cached item before it is considered invalid
+	 * @param integer $expire maximum age (in seconds) of cached item before it is considered stale
 	 * @return array|boolean
 	 */
 	function get($key,$expire=60) {
@@ -212,7 +212,7 @@ class cache {
 	/**
 	 * Determine if cached item identified by $key is cached and has not expired
 	 * @param string $key key used to identify cached item
-	 * @param int $expire maximum age (in seconds) of cached item before it is considered invalid
+	 * @param int $expire maximum age (in seconds) of cached item before it is considered stale
 	 * @return boolean
 	 */
 	function cached($key,$expire=60) {

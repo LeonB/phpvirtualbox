@@ -2299,7 +2299,7 @@ class vboxconnector {
 				$dhcp = $this->vbox->createDHCPServer($nic->networkName);
 			}
 			if($dhcp->handle) {
-				$dhcp->enabled = (bool)@$nics[$i]['dhcpServer']['enabled'];
+				$dhcp->enabled = intval(@$nics[$i]['dhcpServer']['enabled']);
 				$dhcp->setConfiguration($nics[$i]['dhcpServer']['IPAddress'],$nics[$i]['dhcpServer']['networkMask'],$nics[$i]['dhcpServer']['lowerIP'],$nics[$i]['dhcpServer']['upperIP']);
 				$dhcp->releaseRemote();
 			}
@@ -2471,10 +2471,10 @@ class vboxconnector {
 		}
 
 		// Special case for power up
-		if($state == 'powerUp' && $mstate == 'Paused') {
-			return $this->_machineSetState($vm,'resume',$response);
+		if($state == 'powerUp' && $mstate == 'Paused')
+			$state = 'resume';
 			
-		} else if($state == 'powerUp') {
+		if($state == 'powerUp') {
 			
 			# Try opening session for VM
 			try {
@@ -3672,7 +3672,7 @@ class vboxconnector {
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
 	 */
-	public function remote_snapshotGetDetailsDetails($args,&$response) {
+	public function remote_snapshotGetDetails($args,&$response) {
 
 		// Connect to vboxwebsrv
 		$this->connect();
@@ -3684,7 +3684,7 @@ class vboxconnector {
 		$snapshot = $vm->findSnapshot($args['snapshot']);
 
 		$machine = array();
-		$this->machineGetDetails(array(),$machine,$snapshot->machine);
+		$this->remote_machineGetDetails(array(),$machine,$snapshot->machine);
 
 		$response['data'] = $this->_snapshotGetDetails($snapshot,false);
 		$response['data']['machine'] = $machine['data'];
@@ -4179,7 +4179,6 @@ class vboxconnector {
 
 		/* @var $hd IMedium */
 		$hd = $this->vbox->createHardDisk($format,$args['file']);
-		$hid = $hd->id;
 
 		/* @var $progress IProgress */
 		$progress = $hd->createBaseStorage(intval($args['size'])*1024*1024,$type);
@@ -4195,7 +4194,7 @@ class vboxconnector {
 
 		$this->_util_progressStore($progress,'vboxGetMedia');
 
-		$response['data'] = array('progress' => $progress->handle,'id' => $hid);
+		$response['data'] = array('progress' => $progress->handle,'id' => $hd->id);
 		$hd->releaseRemote();
 
 		return true;
