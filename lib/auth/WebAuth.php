@@ -36,7 +36,7 @@ class phpvbAuthWebAuth implements phpvbAuth {
 		}
 	}
 	
-	function heartbeat()
+	function heartbeat($vbox)
 	{
 		global $_SESSION;
 		if ( isset($_SERVER[$this->config['serverUserKey']]) )
@@ -46,7 +46,7 @@ class phpvbAuthWebAuth implements phpvbAuth {
 		}
 	}
 	
-	function changePassword($old, $new)
+	function changePassword($old, $new, &$response)
 	{
 	}
 	

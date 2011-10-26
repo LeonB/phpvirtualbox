@@ -150,7 +150,7 @@ class vboxconnector {
 	 * Connect to vboxwebsrv
 	 * @see SoapClient
 	 * @see phpVBoxConfigClass
-	 * @return boolean true on success
+	 * @return boolean true on success or if already connected
 	 */
 	public function connect() {
 
@@ -3579,19 +3579,30 @@ class vboxconnector {
 	}
 	
 	/**
-	 * Get OS specific directory separator
+	 * Get VirtualBox Host OS specific directory separator
 	 * 
 	 * @return string directory separator string
 	 */
 	public function getDsep() {
 
 		if(!$this->dsep) {
-			$this->connect();
 			
-			if(stripos($this->vbox->host->operatingSystem,'windows') === false)
-				$this->dsep = '/';
-			else
-				$this->dsep = '\\';
+			/* No need to go through vbox if local browser is true */
+			if($this->settings->browserLocal) {
+
+				$this->dsep = DIRECTORY_SEPARATOR;
+			
+			} else {
+			
+				$this->connect();
+				
+			    if(stripos($this->vbox->host->operatingSystem,'windows') !== false) {
+					$this->dsep = '\\';
+			    } else {
+					$this->dsep = '/';
+			    }
+			}
+			
 		
 		}
 		
@@ -3621,6 +3632,7 @@ class vboxconnector {
 			);
 		}
 
+		// sort by port then device
 		usort($return,create_function('$a,$b', 'if($a["port"] == $b["port"]) { if($a["device"] < $b["device"]) { return -1; } if($a["device"] > $b["device"]) { return 1; } return 0; } if($a["port"] < $b["port"]) { return -1; } return 1;'));
 		
 		return $return;

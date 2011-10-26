@@ -18,7 +18,7 @@ class phpVBoxConfigClass {
 	 * Default language
 	 * @var string
 	 */
-	var $language = 'en_us';
+	var $language = 'en';
 
 	/**
 	 * Preview screen width
@@ -45,7 +45,8 @@ class phpVBoxConfigClass {
 	var $browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
 	/**
-	 * Force file / folder browser to use local PHP functions rather than VirtualBox's IVFSExplorer
+	 * Force file / folder browser to use local PHP functions rather than VirtualBox's IVFSExplorer.
+	 * If this is set to true, the assumption is made that the web server is on the same host as VirtualBox.
 	 * @var boolean
 	 */
 	var $browserLocal = false;

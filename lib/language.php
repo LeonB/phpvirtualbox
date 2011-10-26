@@ -59,7 +59,7 @@ class __vbox_language {
 		
 		// No lang file found
 		} else {
-			$lang = 'en_us';
+			$lang = 'en';
 			@define('VBOXLANG', $lang);
 			self::$langdata['contexts'] = array();
 			return;			
