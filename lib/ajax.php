@@ -256,7 +256,6 @@ try {
 			// We're done writing to session
 			if(function_exists('session_write_close')) @session_write_close();
 			
-			# fix for allow_call_time_pass_reference = Off setting
 			$vbox->$vboxRequest['fn']($vboxRequest,array(&$response));
 			
 	} // </switch()>

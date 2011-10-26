@@ -364,7 +364,7 @@ for(var i=0;i<imgsToLoad.length;i++){
 		'name' : 'removeattach',
 		'label' : 'Remove Attachment',
 		'icon' : 'attachment_remove',
-		'enabled' : function (item) { return ($(item).data('attachment')); },
+		'enabled' : function (item) { return (item && $(item).data('attachment')); },
 		'click' : function () {
 
 			// Set previous item to last?
@@ -430,7 +430,7 @@ for(var i=0;i<imgsToLoad.length;i++){
 		'name' : 'removecontroller',
 		'label' : 'Remove Controller',
 		'icon' : 'controller_remove',
-		'enabled' : function (item) { return ($(item).data('controller')); },
+		'enabled' : function (item) { if(item && $(item).data('controller')) return true; },
 		'click' : function () {
 			var prev = $('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().prev().find('table.vboxListItem').first();
 			$('#vboxSettingsStorageTree').find('table.vboxListItemSelected').first().parent().remove();
@@ -1165,7 +1165,7 @@ function vboxSettingsAddController(con,list) {
 	}
     
     
-    mItems[mItems.length] = vboxSettingsStorageButtons[3]; // "Remove"
+    mItems[mItems.length] = jQuery.extend(true, {}, vboxSettingsStorageButtons[3]); // "Remove"
     mItems[(mItems.length-1)].separator = true;
     mItems[(mItems.length-1)].enabled = null; // always enabled
 

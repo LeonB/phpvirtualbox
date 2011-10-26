@@ -25,27 +25,6 @@ class vboxconnector {
 	const PHPVB_ERRNO_CONNECT = 64;
 
 	/**
-	 * Static VirtualBox result codes.
-	 * @var array
-	 */
-	static $resultcodes = array(
-		'0x80BB0001' => 'VBOX_E_OBJECT_NOT_FOUND',
-		'0x80BB0002' => 'VBOX_E_INVALID_VM_STATE',
-		'0x80BB0003' => 'VBOX_E_VM_ERROR',
-		'0x80BB0004' => 'VBOX_E_FILE_ERROR',
-		'0x80BB0005' => 'VBOX_E_IPRT_ERROR',
-		'0x80BB0006' => 'VBOX_E_PDM_ERROR',
-		'0x80BB0007' => 'VBOX_E_INVALID_OBJECT_STATE',
-		'0x80BB0008' => 'VBOX_E_HOST_ERROR',
-		'0x80BB0009' => 'VBOX_E_NOT_SUPPORTED',
-		'0x80BB000A' => 'VBOX_E_XML_ERROR',
-		'0x80BB000B' => 'VBOX_E_INVALID_SESSION_STATE',
-		'0x80BB000C' => 'VBOX_E_OBJECT_IN_USE',
-	    '0x80004004' => 'NS_ERROR_ABORT'
-	);
-
-
-	/**
 	 * Holds any errors that occur during processing. Errors are placed in here
 	 * when we want calling functions to be aware of the error, but do not want to
 	 * halt processing
@@ -101,7 +80,7 @@ class vboxconnector {
 	 * during processing so that it can be properly shutdown
 	 * in __destruct
 	 * @var ISession
-	 * @see __destruct()
+	 * @see vboxconnector::__destruct()
 	 */
 	var $session = null;
 
@@ -117,6 +96,13 @@ class vboxconnector {
 	 * @var boolean
 	 */
 	var $skipSessionCheck = false;
+	
+	/**
+	 * Holds VirtualBox host OS specific directory separator set by getDSep()
+	 * @var string
+	 * @see vboxconnector::getDsep()
+	 */
+	var $dsep = null;
 
 	/**
 	 * Obtain configuration settings and set object vars
@@ -181,10 +167,10 @@ class vboxconnector {
 		$this->client = new SoapClient(dirname(__FILE__)."/vboxwebService-4.1.wsdl",
 		    array(
 		    	'features' => (SOAP_USE_XSI_ARRAY_TYPE + SOAP_SINGLE_ELEMENT_ARRAYS),
-		        'cache_wsdl'=>WSDL_CACHE_MEMORY,
-		        'trace'=>(@$this->settings->debugSoap),
+		        'cache_wsdl' => WSDL_CACHE_BOTH,
+		        'trace' => (@$this->settings->debugSoap),
 				'connection_timeout' => (@$this->settings->connectionTimeout ? $this->settings->connectionTimeout : 20),
-		        'location'=>@$this->settings->location
+		        'location' => @$this->settings->location
 		    ));
 
 
@@ -240,7 +226,7 @@ class vboxconnector {
 	/**
 	 *
 	 * Log out of vboxwebsrv unless a progress operation was created
-	 * @see $progressCreated
+	 * @see progressCreated
 	 */
 	public function __destruct() {
 
@@ -262,7 +248,8 @@ class vboxconnector {
 
 	/**
 	 * Call overloader. Handles caching of vboxwebsrv data for some incoming requests.
-	 * Returns cached data or result of method call.
+	 * Returns cached data or result of method call. Here is where python's decorators
+	 * would come in handy.
 	 *
 	 * @param string $fn method to call
 	 * @param array $args arguments for method
@@ -292,11 +279,8 @@ class vboxconnector {
 			// cached data exists ? return it : get data, cache data, return data
 			} else if(@$req['force_refresh'] || (($response['data'] = $this->cache->get($fn,@$this->settings->cacheSettings[$fn])) === false)) {
 
-				$lock = $this->cache->lock($fn);
-
 				// file was modified while attempting to lock.
-				// file data is returned
-				if($lock === null) {
+				if($this->cache->lock($fn) === null) {
 					$response['data'] = $this->cache->get($fn,@$this->settings->cacheSettings[$fn]);
 
 				// lock obtained (hopefully)
@@ -350,7 +334,7 @@ class vboxconnector {
 
 		/* No need to go through vfs explorer if local browser is true */
 		if($this->settings->browserLocal) {
-			$response['data']['exists'] = file_exists($args['file']);
+			$response['data']['exists'] = intval(file_exists($args['file']));
 			return true;
 		}
 		
@@ -1598,40 +1582,40 @@ class vboxconnector {
 	 * Return cached VM configuration data. These are split into multiple cache files.
 	 * E.g. network adapters, storage controllers, etc..
 	 *
-	 * @param string $fn function to call
-	 * @param string $key key for cache item
+	 * @param string $fn function to call when no cached data exists - also used to formulate cached data key
+	 * @param string $machine_id virtual machine's uid
 	 * @param object $item reference to item from which data is obtained if cached data is not found
 	 * @param boolean $force_refresh force the refresh of cached data
 	 * @return array data returned from call
+	 * @see cache
 	 */
-	private function _util_getCachedMachineData($fn,$key,&$item,$force_refresh=false) {
+	private function _util_getCachedMachineData($fn,$machine_id,&$item,$force_refresh=false) {
 
-		// do not cache
-		if(!@$this->settings->cacheSettings[$fn] || !$key) {
+		// do not cache if no cache settings exist
+		if(!@$this->settings->cacheSettings[$fn]) {
 
 			return $this->$fn($item);
 
 		// Cached data exists?
-		} else if(!$force_refresh && ($result = $this->cache->get($fn.$key,@$this->settings->cacheSettings[$fn])) !== false) {
+		} else if(!$force_refresh && ($result = $this->cache->get($fn.$machine_id,@$this->settings->cacheSettings[$fn])) !== false) {
 
 			return $result;
 
 		} else {
 
-			$lock = $this->cache->lock($fn.$key);
-
-			// file was modified while attempting to lock.
+			// if file was modified while attempting to lock.
 			// file data is returned
-			if($lock === null) {
+			if($this->cache->lock($fn.$machine_id) === null) {
 
-				return $this->cache->get($fn.$key,@$this->settings->cacheSettings[$fn]);
+				return $this->cache->get($fn.$machine_id,@$this->settings->cacheSettings[$fn]);
 
 			// lock obtained
 			} else {
 
+				// Make call to function and store results in cache
 				$result = $this->$fn($item);
 
-				if($this->cache->store($fn.$key,$result) === false && $result !== false) {
+				if($this->cache->store($fn.$machine_id,$result) === false && $result !== false) {
 					throw new Exception("Error storing cache.");
 					return false;
 				}
@@ -1706,7 +1690,7 @@ class vboxconnector {
 
 				try {
 					if(!$response['data']['info']['canceled'] && $progress->errorInfo->handle) {
-						$error = array('message'=>$progress->errorInfo->text,'err'=>$this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))]);
+						$error = array('message'=>$progress->errorInfo->text,'err'=>$this->_util_resultCodeText($progress->resultCode));
 					}
 				} catch (Exception $null) {}
 
@@ -1727,7 +1711,7 @@ class vboxconnector {
 			// Does an exception exist?
 			try {
 				if($progress->errorInfo->handle) {
-					$error = array('message'=>$progress->errorInfo->text,'err'=>$this->resultcodes['0x'.strtoupper(dechex($progress->resultCode))]);
+					$error = array('message'=>$progress->errorInfo->text,'err'=>$this->_util_resultCodeText($progress->resultCode));
 				}
 			} catch (Exception $null) {}
 
@@ -1792,9 +1776,6 @@ class vboxconnector {
 	 */
 	private function _util_progressDestroy($pop) {
 
-		// Expire cache item(s)?
-		$this->cache->expire($pop['expire']);
-
 		// Connect to vboxwebsrv
 		$this->connect();
 
@@ -1817,7 +1798,7 @@ class vboxconnector {
 			} catch (Exception $null) { }
 
 
-			// Logoff
+			// Logoff session associated with progress operation
 			$this->websessionManager->logoff($vbox->handle);
 
 		} catch (Exception $e) {
@@ -1831,6 +1812,9 @@ class vboxconnector {
 		unset($inprogress[$pop['progress']]);
 		$this->cache->store('ProgressOperations',$inprogress);
 
+		// Expire cache item(s)
+		$this->cache->expire($pop['expire']);
+		
 		return true;
 	}
 
@@ -2337,7 +2321,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->_util_progressStore($progress,array('hostGetDetails'));
+		$this->_util_progressStore($progress,array('hostOnlyInterfacesGet','hostGetDetails'));
 
 		$response['data']['progress'] = $progress->handle;
 
@@ -2373,7 +2357,7 @@ class vboxconnector {
 		} catch (Exception $null) {}
 
 		// Save progress
-		$this->_util_progressStore($progress,array('hostGetDetails'));
+		$this->_util_progressStore($progress,array('hostOnlyInterfacesGet','hostGetDetails'));
 
 		$response['data']['result'] = 1;
 		$response['data']['progress'] = $progress->handle;
@@ -2772,7 +2756,7 @@ class vboxconnector {
 			$machine = $this->vbox->findMachine($args['vm']);
 
 
-			// For correct caching, always use id
+			// For correct caching, always use id even if a name was passed
 			$args['vm'] = $machine->id;
 
 			// Check for accessibility
@@ -2786,7 +2770,7 @@ class vboxconnector {
 					'sessionState' => 'Inaccessible',
 					'accessible' => 0,
 					'accessError' => array(
-						'resultCode' => $this->resultcodes['0x'.strtoupper(dechex($machine->accessError->resultCode))],
+						'resultCode' => $this->_util_resultCodeText($machine->accessError->resultCode),
 						'component' => $machine->accessError->component,
 						'text' => $machine->accessError->text)
 				);
@@ -3601,13 +3585,17 @@ class vboxconnector {
 	 */
 	public function getDsep() {
 
-		$this->connect();
+		if(!$this->dsep) {
+			$this->connect();
+			
+			if(stripos($this->vbox->host->operatingSystem,'windows') === false)
+				$this->dsep = '/';
+			else
+				$this->dsep = '\\';
 		
-		if(stripos($this->vbox->host->operatingSystem,'windows') === false)
-			return '/';
+		}
 		
-		return '\\';
-		
+		return $this->dsep;
 	}
 
 	/**
@@ -4347,7 +4335,7 @@ class vboxconnector {
 			$list = $this->vbox->getExtraData($r['key']);
 			$response['data'][$r['type']] = array_filter(explode(';', trim($list,';')));
 		}
-		return $response;
+		return true;
 	}
 
 	/**
@@ -4791,7 +4779,6 @@ class vboxconnector {
 
 	/**
 	 * Format a time span in seconds into days / hours / minutes / seconds
-	 *
 	 * @param integer $t number of seconds
 	 * @return array containing number of days / hours / minutes / seconds
 	 */
@@ -4815,5 +4802,18 @@ class vboxconnector {
 	}
 	
 
+	/**
+	 * Return VBOX result code text for result code
+	 * 
+	 * @param integer result code number
+	 * @return string result code text
+	 */
+	private function _util_resultCodeText($c) {
+		
+		$rcodes = new ReflectionClass('VirtualBox_COM_result_codes');
+    	$rcodes = array_flip($rcodes->getConstants());
+		
+		return @$rcodes['0x'.strtoupper(dechex($c))] . ' (0x'.strtoupper(dechex($c)).')';
+	}
 }
 

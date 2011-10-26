@@ -111,15 +111,19 @@ var sButtons = new Array(
 		'enabled' : function () { return true; },
 		'click' : function () {
 
+			var refreshInterfaces = function(){
+				var l = new vboxLoader();
+				l.add('hostOnlyInterfacesGet',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyInterfaces',d);});
+				l.onLoad = vboxSettingsGlobalNetworkAddAdpaters;
+				l.run();				
+			};
+			
 			var l = new vboxLoader();
 			l.add('hostOnlyInterfaceCreate',function(d){
 
 				if(d && d.progress) {
 					vboxProgress(d.progress,function(){
-						var l = new vboxLoader();
-						l.add('hostOnlyInterfacesGet',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyNetworking',d);});
-						l.onLoad = vboxSettingsGlobalNetworkAddAdpaters;
-						l.run();
+						setTimeout(refreshInterfaces,1000);
 					},{},null,trans('Add host-only network','UIGlobalSettingsNetwork'));
 				}
 				
@@ -150,14 +154,10 @@ var sButtons = new Array(
 
 					if(d && d.progress) {
 						vboxProgress(d.progress,function(){
-							var item = $('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first();
-							var target = $(item).next();
-							if(!$(target).hasClass('vboxListItemSelected')) target = $(item).prev();
-							if(!$(target).hasClass('vboxListItemSelected')) target = $('#vboxSettingsGlobalNetList').children('.vboxListItem').first();
-							$('#vboxSettingsGlobalNetList').children('li.vboxListItemSelected').first().remove();
-							if(!$(target).children().first().trigger('click').hasClass('vboxListItemSelected')) {
-								$('#vboxSettingsGlobalNetList').trigger('select',null);
-							}
+							var l2 = new vboxLoader();
+							l2.add('hostOnlyInterfacesGet',function(d){$('#vboxSettingsDialog').data('vboxHostOnlyInterfaces',d);});
+							l2.onLoad = vboxSettingsGlobalNetworkAddAdpaters;
+							l2.run();
 						},{},null,trans('Remove host-only network','UIGlobalSettingsNetwork'));
 					}
 					
@@ -228,14 +228,14 @@ function vboxSettingsGlobalNetworkAddAdpater(n) {
  *
  */
 function vboxSettingsGlobalNetworkAddAdpaters() {
-	var nics = $('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces;
+	$('#vboxSettingsGlobalNetList').children().remove();
+	var nics = $('#vboxSettingsDialog').data('vboxHostOnlyInterfaces').networkInterfaces;
 	for(var i = 0; i < nics.length; i++) {
 		vboxSettingsGlobalNetworkAddAdpater(nics[i]);
 	}
+	$('#vboxSettingsGlobalNetList').trigger('select',null);
 }
-$('#vboxSettingsGlobalNetList').children().remove();
 vboxSettingsGlobalNetworkAddAdpaters();
-$('#vboxSettingsGlobalNetList').trigger('select',null);
 
 
 
@@ -323,10 +323,10 @@ function vboxSettingsGlobalNetEditDialog() {
  */
 $('#vboxSettingsDialog').bind('save',function(){
 
-	$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces = new Array();
+	$('#vboxSettingsDialog').data('vboxHostOnlyInterfaces').networkInterfaces = new Array();
 
 	$('#vboxSettingsGlobalNetList').children('li').each(function(){
-		$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces[$('#vboxSettingsDialog').data('vboxHostOnlyNetworking').networkInterfaces.length] = $(this).data('interface');		
+		$('#vboxSettingsDialog').data('vboxHostOnlyInterfaces').networkInterfaces[$('#vboxSettingsDialog').data('vboxHostOnlyInterfaces').networkInterfaces.length] = $(this).data('interface');		
 	});
 });
 

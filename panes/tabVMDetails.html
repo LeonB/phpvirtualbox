@@ -411,19 +411,11 @@ function __vboxDetailRowReal(name,value,cssClass,html) {
 	value = ''+value;
 	
 	var tr = $('<tr />').attr({'class':'vboxDetailRow'});
-	//if(html)
-		var th = $('<th />').html(name + (value && value.length && name.length ? ':' : ''));
-	//else
-	//	var th = $('<th />').append(document.createTextNode(name + (value && value.length && name.length ? ':' : '')));
-	$(th).attr({'class':'vboxDetailContent ' + cssClass}).appendTo(tr);
+	$('<th />').html(name + (value && value.length && name.length ? ':' : ''))
+		.attr({'class':'vboxDetailContent ' + cssClass})
+		.appendTo(tr);
 	
-	var td = $('<td />').attr({'class':'vboxDetailsValue'});
-	//if(html) {
-		$(td).html(value);
-	//} else { 
-	//	$(td).append(document.createTextNode(value));
-	//}
-	$(tr).append(td);
+	$('<td />').attr({'class':'vboxDetailsValue'}).html(value).appendTo(tr);
 
 	return tr;
 }
@@ -461,6 +453,8 @@ function __vboxDrawPreview(fromSelf,state) {
 	__vboxDrawPreviewImg = new Image();
 	__vboxDrawPreviewImg.onload = function(){
 
+	var height = 0;
+	var width = 0;
 		
 		// Error or machine not running
 		if(this.height <= 1) {
@@ -468,8 +462,8 @@ function __vboxDrawPreview(fromSelf,state) {
 			$('#vboxDetailsPreviewImg').css({'display':'none'}).attr('src','images/vbox/blank.gif');
 			$('#vboxDetailsPreviewVMName').css('display','');
 			
-			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
-			var height = width / $('#vboxIndex').data('vboxConfig')['previewAspectRatio'];
+			width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+			height = width / $('#vboxIndex').data('vboxConfig')['previewAspectRatio'];
 			
 			// Clear timer if it is set
 			if($('#vboxVMDetails').data('vboxPreviewTimer')) {
@@ -481,10 +475,10 @@ function __vboxDrawPreview(fromSelf,state) {
 		} else {
 
 			// Calculate height based on width
-			var width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
-			var factor = width / this.width;
+			width = $('#vboxIndex').data('vboxConfig')['previewWidth'];
+			factor = width / this.width;
 			if(!factor) factor = 1;
-			var height = this.height * factor;
+			height = this.height * factor;
 			
 			$('#vboxDetailsPreviewVMName').css('display','none');
 			$('#vboxDetailsPreviewImg').css({'display':'','height':height+'px','width':width+'px'});
@@ -555,6 +549,8 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	if(links === undefined)
 		links = true;
 
+	if(typeof data == 'undefined') return;
+	
 	var settings = (links == true && (data.sessionState == 'Unlocked' || data.state == 'Running') && data.state != 'Saved');
 
 	if(settings) {

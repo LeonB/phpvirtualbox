@@ -64,7 +64,7 @@
 			 * Check that PHP is being parsed.
 			 * @see js/phptest.php
 			 */
-			if(__vboxPHP === false) {
+			if(typeof __vboxPHP == 'undefined' || __vboxPHP === false) {
 				
 				// Check for file: prefix
 				try {
