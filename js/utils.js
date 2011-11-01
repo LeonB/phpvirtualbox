@@ -675,7 +675,7 @@ function vboxDivOverflowHidden(p) {
 function vboxInstallGuestAdditions(vmid,mount_only) {
 
 	var l = new vboxLoader();
-	l.add('machineGuestAdditionsInstall',function(d){
+	l.add('consoleGuestAdditionsInstall',function(d){
 		
 		// Progress operation returned. Guest Additions are being updated.
 		if(d && d.progress) {

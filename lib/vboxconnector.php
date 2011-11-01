@@ -317,7 +317,7 @@ class vboxconnector {
 		/* @var $m IMachine */
 		$m = $this->vbox->findMachine($args['vm']);
 
-		$response['data'] = $m->machineEnumerateGuestProperties($args['pattern']);
+		$response['data'] = $m->enumerateGuestProperties($args['pattern']);
 		$m->releaseRemote();
 
 		return true;
@@ -473,7 +473,7 @@ class vboxconnector {
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
-	public function remote_machineGuestAdditionsInstall($args,&$response) {
+	public function remote_consoleGuestAdditionsInstall($args,&$response) {
 
 		$this->connect();
 
@@ -595,7 +595,7 @@ class vboxconnector {
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
-	public function remote_machineUSBDeviceAttach($args,&$response) {
+	public function remote_consoleUSBDeviceAttach($args,&$response) {
 
 		$this->connect();
 
@@ -620,7 +620,7 @@ class vboxconnector {
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
-	public function remote_machineUSBDeviceDetach($args,&$response) {
+	public function remote_consoleUSBDeviceDetach($args,&$response) {
 
 		$this->connect();
 
@@ -811,7 +811,7 @@ class vboxconnector {
 	 * @param array $args array of arguments. See function body for details.
 	 * @param array $response response data passed byref populated by the function
 	 */
-	public function remote_machineVRDEServerSave($args, &$response) {
+	public function remote_consoleVRDEServerSave($args, &$response) {
 
 		$this->connect();
 
@@ -1103,6 +1103,9 @@ class vboxconnector {
 		$m->description = $args['description'];
 
 
+		$m->setHWVirtExProperty('Enabled',(intval($args['HWVirtExProperties']['Enabled']) ? 1 : 0));
+		$m->setHWVirtExProperty('NestedPaging', (intval($args['HWVirtExProperties']['NestedPaging']) ? 1 : 0));
+		
 		/* Only if advanced configuration is enabled */
 		if(@$this->settings->enableAdvancedConfig) {
 
@@ -1123,8 +1126,6 @@ class vboxconnector {
 			$m->setExtraData("VBoxInternal/Devices/VMMDev/0/Config/GetHostTimeDisabled", $args['disableHostTimeSync']);
 			$m->keyboardHidType = $args['keyboardHidType'];
 			$m->pointingHidType = $args['pointingHidType'];
-			$m->setHWVirtExProperty('Enabled',(intval($args['HWVirtExProperties']['Enabled']) ? 1 : 0));
-			$m->setHWVirtExProperty('NestedPaging', (intval($args['HWVirtExProperties']['NestedPaging']) ? 1 : 0));
 			$m->setHWVirtExProperty('LargePages', (intval($args['HWVirtExProperties']['LargePages']) ? 1 : 0));
 			$m->setHWVirtExProperty('Exclusive', (intval($args['HWVirtExProperties']['Exclusive']) ? 1 : 0));
 			$m->setHWVirtExProperty('VPID', (intval($args['HWVirtExProperties']['VPID']) ? 1 : 0));
@@ -3057,8 +3058,8 @@ class vboxconnector {
 				$this->session->machine->keyboardHidType = 'USBKeyboard';
 			}
 
-			/* Only if acceleration configuration is enabled */
-			if(@$this->settings->enableAdvancedConfig) {
+			/* Only if acceleration configuration is available */
+			if($this->vbox->host->getProcessorFeature('HWVirtEx')) {
 				$this->session->machine->setHWVirtExProperty('Enabled',$defaults->recommendedVirtEx);
 			}
 
@@ -3537,7 +3538,7 @@ class vboxconnector {
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
 	 */
-	public function remote_machineGetTransientSharedFolders($args,&$response) {
+	public function remote_consoleGetSharedFolders($args,&$response) {
 
 		$this->connect();
 
@@ -4716,7 +4717,7 @@ class vboxconnector {
 	 * @param array $response response data passed byref populated by the function
 	 * @return boolean true on success
 	 */
-	public function remote_machineGetUSBDevices($args,&$response) {
+	public function remote_consoleGetUSBDevices($args,&$response) {
 
 		// Connect to vboxwebsrv
 		$this->connect();
@@ -4824,6 +4825,7 @@ class vboxconnector {
 		
 		$rcodes = new ReflectionClass('VirtualBox_COM_result_codes');
     	$rcodes = array_flip($rcodes->getConstants());
+    	$rcodes['0x80004005'] = 'NS_ERROR_FAILURE';
 		
 		return @$rcodes['0x'.strtoupper(dechex($c))] . ' (0x'.strtoupper(dechex($c)).')';
 	}

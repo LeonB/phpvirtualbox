@@ -739,7 +739,7 @@ function vboxVMsettingsInit(vm,callback,pane) {
 		{'fn':'vboxGetEnumerationMap','callback':function(d){$('#vboxSettingsDialog').data('vboxNetworkAdapterTypes',d);},'args':{'class':'NetworkAdapterType'}},
 		{'fn':'vboxGetEnumerationMap','callback':function(d){$('#vboxSettingsDialog').data('vboxAudioControllerTypes',d);},'args':{'class':'AudioControllerType'}},
 		{'fn':'vboxRecentMediaGet','callback':function(d){$('#vboxIndex').data('vboxRecentMedia',d);}},
-		{'fn':'machineGetTransientSharedFolders','callback':function(d){$('#vboxSettingsDialog').data('vboxTransientSharedFolders',d);},'args':{'vm':vm}}
+		{'fn':'consoleGetSharedFolders','callback':function(d){$('#vboxSettingsDialog').data('vboxTransientSharedFolders',d);},'args':{'vm':vm}}
 
 	);
 
@@ -802,7 +802,7 @@ function vboxVMsettingsInitSharedFolders(vm,callback) {
 	var data = new Array(
 			{'fn':'hostGetDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxHostDetails',d);}},
 			{'fn':'machineGetDetails','callback':function(d){$('#vboxSettingsDialog').data('vboxMachineData',d);},'args':{'vm':vm}},
-			{'fn':'machineGetTransientSharedFolders','callback':function(d){$('#vboxSettingsDialog').data('vboxTransientSharedFolders',d);},'args':{'vm':vm}}
+			{'fn':'consoleGetSharedFolders','callback':function(d){$('#vboxSettingsDialog').data('vboxTransientSharedFolders',d);},'args':{'vm':vm}}
 	);
 
 	vboxSettingsDialog(trans('Settings','VBoxSettingsDialog'),panes,data,function(){

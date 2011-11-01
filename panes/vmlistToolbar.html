@@ -128,7 +128,7 @@ $("#vboxToolbarButton-vboxPaneToolbar-settings").contextMenu({
 			case 'RemoteDisplay':
 				var vm = $('#tabMainContent').data('machine');
 				var l = new vboxLoader();
-				l.add('machineVRDEServerSave',function(){
+				l.add('consoleVRDEServerSave',function(){
 					$('#vboxIndex').trigger('vmselect',$('#tabMainContent').data('machine'));
 				},{'vm':vm.id,'enabled':(vm.consoleInfo.enabled ? 0 : 1)});
 				l.run();
@@ -204,7 +204,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 	l.add('hostGetUSBDevices',function(d){
 		$('#vboxPaneToolbar').data('hostUSB',d);
 	},{});
-	l.add('machineGetUSBDevices',function(d){
+	l.add('consoleGetUSBDevices',function(d){
 		$('#vboxPaneToolbar').data('guestUSB',d);
 	},{'vm':$('#vboxIndex').data('selectedVM').id});
 	l.noLoadingScreen = true;
@@ -231,7 +231,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 				var cbox = $(this);
 				// Detach
 				if($(this).data('capt')) {
-					vboxAjaxRequest('machineUSBDeviceDetach',{'vm':$('#vboxIndex').data('selectedVM').id,'id':$(this).data('usbDevice')},function(d){
+					vboxAjaxRequest('consoleUSBDeviceDetach',{'vm':$('#vboxIndex').data('selectedVM').id,'id':$(this).data('usbDevice')},function(d){
 						if(d.result) {
 							cbox.prop('checked',false);
 							cbox.data('capt',false);
@@ -241,7 +241,7 @@ function vboxVMListToolbarUSBUpdate(menu) {
 					});
 				// Attach
 				} else {
-					vboxAjaxRequest('machineUSBDeviceAttach',{'vm':$('#vboxIndex').data('selectedVM').id,'id':$(this).data('usbDevice')},function(d){
+					vboxAjaxRequest('consoleUSBDeviceAttach',{'vm':$('#vboxIndex').data('selectedVM').id,'id':$(this).data('usbDevice')},function(d){
 						if(d.result) {
 							cbox.prop('checked',true);
 							cbox.data('capt',true);

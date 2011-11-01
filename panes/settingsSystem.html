@@ -360,7 +360,7 @@ $('#vboxSettingsDialog').one('show',function(){
 	}
 	
 	// Are virtualExtensions supported by the cpu?
-	if(!$('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures.HWVirtEx) {
+	if(!$('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures.HWVirtEx && !$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled && !$('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 		$('#vboxSettingsTabSystemMotherboard').parent().tabs({disabled: [2]});
 	}
 
@@ -383,16 +383,19 @@ $('#vboxSettingsDialog').bind('save',function(){
 	if($('#vboxSettingsDialog').data('vboxMachineData').chipsetType)
 		$('#vboxSettingsDialog').data('vboxMachineData').chipsetType = $(document.forms['frmVboxSettings'].vboxSettingsSystemChipset).val();
 		
+	if($('#vboxSettingsDialog').data('vboxHostDetails').cpuFeatures.HWVirtEx || $('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled || $('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled && document.forms['frmVboxSettings'].settingsSystemPaging.checked ? 1 : 0);
+	}
+	
 	/* Only if advanced config is enabled */
 	if($('#vboxIndex').data('vboxConfig').enableAdvancedConfig) {
 		$('#vboxSettingsDialog').data('vboxMachineData').pageFusionEnabled = (document.forms['frmVboxSettings'].vboxSettingsSystemPageFusion.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').hpetEnabled = (document.forms['frmVboxSettings'].vboxSettingsSystemHPET.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').disableHostTimeSync = (document.forms['frmVboxSettings'].vboxSettingsSystemDisableHostTimeSync.checked ? 1 : 0);
-		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled = (document.forms['frmVboxSettings'].settingsSystemVT.checked ? 1 : 0);
-		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.NestedPaging = (document.forms['frmVboxSettings'].settingsSystemPaging.checked ? 1 : 0);
 		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.LargePages = (document.forms['frmVboxSettings'].settingsSystemLargePages.checked ? 1 : 0);
-		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Exclusive = (document.forms['frmVboxSettings'].settingsSystemExclusive.checked ? 1 : 0);
-		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.VPID = (document.forms['frmVboxSettings'].settingsSystemVPID.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Exclusive = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled && document.forms['frmVboxSettings'].settingsSystemExclusive.checked ? 1 : 0);
+		$('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.VPID = ($('#vboxSettingsDialog').data('vboxMachineData').HWVirtExProperties.Enabled && document.forms['frmVboxSettings'].settingsSystemVPID.checked ? 1 : 0);
 	}
 	
 	// Boot order
