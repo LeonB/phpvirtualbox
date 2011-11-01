@@ -1102,9 +1102,11 @@ class vboxconnector {
 		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
 		$m->description = $args['description'];
 
+		// Determine if host is capable of hw accel
+		$hwAccelAvail = intval($this->vbox->host->getProcessorFeature('HWVirtEx'));
 
-		$m->setHWVirtExProperty('Enabled',(intval($args['HWVirtExProperties']['Enabled']) ? 1 : 0));
-		$m->setHWVirtExProperty('NestedPaging', (intval($args['HWVirtExProperties']['NestedPaging']) ? 1 : 0));
+		$m->setHWVirtExProperty('Enabled',(intval($args['HWVirtExProperties']['Enabled']) && $hwAccelAvail ? 1 : 0));
+		$m->setHWVirtExProperty('NestedPaging', (intval($args['HWVirtExProperties']['Enabled']) && $hwAccelAvail && intval($args['HWVirtExProperties']['NestedPaging']) ? 1 : 0));
 		
 		/* Only if advanced configuration is enabled */
 		if(@$this->settings->enableAdvancedConfig) {
