@@ -595,6 +595,8 @@ function vboxWizard(name, title, img, bg, icon) {
 	this.finisText = 'Finish';
 	this.context = '';
 	this.perPageContext = '';
+	this.backArrow = $('<div />').html('&laquo;').text();
+	this.nextArrow = $('<div />').html('&raquo;').text();
 	
 	/**
 	 * Initialize / display wizard
@@ -657,8 +659,8 @@ function vboxWizard(name, title, img, bg, icon) {
 					buttons[self.stepButtons[i].name] = self.stepButtons[i].click;
 				}
 			}
-			buttons['< '+self.backText] = self.displayPrev;
-			buttons[(self.steps > 1 ? self.nextText +' >' : self.finishText)] = self.displayNext;
+			buttons[self.backArrow + ' '+self.backText] = self.displayPrev;
+			buttons[(self.steps > 1 ? self.nextText +' '+self.nextArrow : self.finishText)] = self.displayNext;
 			buttons[self.cancelText] = self.close;
 			
 			// Translations
@@ -706,16 +708,16 @@ function vboxWizard(name, title, img, bg, icon) {
 			}
 		}
 		if(step == 1) {
-			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("< '+self.backText+'")').parent().addClass('disabled').blur();
-			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text((self.steps > 1 ? self.nextText+' >' : self.finishText)).html());
+			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.backText+'")').parent().addClass('disabled').blur();
+			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text((self.steps > 1 ? self.nextText+' '+self.nextArrow : self.finishText)).html());
 		} else {
 			
-			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("< '+self.backText+'")').parent().removeClass('disabled');
+			$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.backText+'")').parent().removeClass('disabled');
 			
 			if(step == self.steps) {
-				$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextText+' >")').html($('<div />').text(self.finishText).html());
+				$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextArrow+'")').html($('<div />').text(self.finishText).html());
 			} else {
-				$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' >').html());
+				$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' '+self.nextArrow).html());
 			}
 		}
 		$('#'+self.name+'Title').html(trans($('#'+self.name+'Step'+step).attr('title'),(self.perPageContext ? self.perPageContext.replace('%1',step) : self.context)));
@@ -736,7 +738,7 @@ function vboxWizard(name, title, img, bg, icon) {
 	 * @memberOf vboxWizard
 	 */
 	self.setLast = function() {
-		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextText+' >")').html($('<div />').text(self.finishText).html());
+		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.nextText+'")').html($('<div />').text(self.finishText).html());
 		self._origSteps = self.steps;
 		self.steps = self._curStep;
 	};
