@@ -91,9 +91,9 @@ class cache {
 	 * Sets $path by checking various environment variables.
 	 */
 	function __construct() {
-		if(@$_ENV['TEMP'] && @is_writable($_ENV['TEMP'])) {
+		if(!empty($_ENV['TEMP']) && is_writable($_ENV['TEMP'])) {
 			$this->path = $_ENV['TEMP'];
-		} else if(@$_ENV['TMP'] && @is_writable($_ENV['TMP'])) {
+		} else if(!empty($_ENV['TMP']) && is_writable($_ENV['TMP'])) {
 			$this->path = $_ENV['TMP'];
 		// PHP >= 5.2.1
 		} else if(function_exists('sys_get_temp_dir')) {

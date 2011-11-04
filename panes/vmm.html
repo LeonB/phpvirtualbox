@@ -368,6 +368,7 @@ var vmmButtons = new Array(
 		'enabled' : function (item) {
 			if(!item) return false;
 			if($("#vboxVMMTabs").tabs('option','selected')) return false;
+			if(!$(item).data('medium')) return false;
 			var m = vboxMedia.getMediumById($(item).data('medium'));
 			return (!m || !m.parent);
 

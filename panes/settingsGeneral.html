@@ -38,6 +38,15 @@
 		<td><input name='vboxSettingsGeneralIcon' type='text' class='vboxText' /></td>
 		<td><img src='images/vbox/blank.gif' id='vboxSettingsGeneralIconImg' height='32' width='32' /></td>
 	</tr>
+	<tr class='vboxStartStopConfig vboxRunningEnabled'>
+		<th><span class='translate'>Startup Mode:</span></th>
+		<td colspan='2'>
+			<select name='vboxStartStopConfigStartup'>
+				<option value='auto'>Automatic</option>
+				<option value='manual'>Manual</option>
+			</select>
+		</td>
+	</tr>		
 </table>
 </div>
 
@@ -96,6 +105,19 @@ function vboxSnapshotBrowseFolder(btn) {
 	vboxFileBrowser($(btn).siblings('input').first().val(),function(f){
 		if(f) $(btn).siblings('input').first().val(f);
 	},true,trans('Snapshot Folder:','UIMachineSettingsGeneral').replace(':',''));
+}
+
+/*
+ * Hide start / stop config if not enabled
+ */
+if(!$('#vboxIndex').data('vboxConfig').startStopConfig) {
+	
+	$('#vboxSettingsTabGeneralBasic').find('tr.vboxStartStopConfig').hide();
+	
+} else {
+	
+	document.forms['frmVboxSettings'].vboxStartStopConfigStartup.selectedIndex = ($('#vboxSettingsDialog').data('vboxMachineData').startupMode == 'auto' ? 0 : 1);
+
 }
 
 /*
@@ -219,6 +241,11 @@ $('#vboxSettingsDialog').one('show',function(){
 
 /* Change general settings onSave() */
 $('#vboxSettingsDialog').bind('save',function(){
+
+	// Start / stop config
+	if($('#vboxIndex').data('vboxConfig').startStopConfig) {
+		$('#vboxSettingsDialog').data('vboxMachineData').startupMode = document.forms['frmVboxSettings'].vboxStartStopConfigStartup.value;
+	}
 
 	if(jQuery.trim(document.forms['frmVboxSettings'].vboxSettingsGeneralName.value))
 		$('#vboxSettingsDialog').data('vboxMachineData').name = jQuery.trim(document.forms['frmVboxSettings'].vboxSettingsGeneralName.value);

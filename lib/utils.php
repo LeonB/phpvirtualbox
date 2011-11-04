@@ -31,6 +31,12 @@ function session_init($keepopen = false) {
 		return;
 	}
 	
+	// Sessions provided by auth module?
+	if(@$settings->auth->capabilities['sessionStart']) {
+		call_user_func(array($settings->auth, $settings->auth->capabilities['sessionStart']), $keepopen);
+		return;
+	}
+	
 	// Session is auto-started by PHP?
 	if(!ini_get('session.auto_start')) {
 	
@@ -62,8 +68,8 @@ function __vbx_stripslash(&$a) { $a = stripslashes($a); }
  * an array containing a merged array of both.
  * @return array
  */
-function clean_request() {
-	$r = array_merge($_GET,$_POST);
+function clean_request($r = null) {
+	if(!$r) $r = array_merge($_GET,$_POST);
 	if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {array_walk_recursive($r,'__vbx_stripslash');}
 	return $r;
 }

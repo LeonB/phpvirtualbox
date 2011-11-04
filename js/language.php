@@ -28,7 +28,7 @@ header("Pragma: no-cache");
 /*
  * Dump in JavaScript
  */
-echo('var __vboxLangData = ' . json_encode(__vbox_language::$langdata) .";\n\nvar __vboxLangName = '".@constant('VBOXLANG')."';\n\n");
+echo('var __vboxLangData = ' . json_encode(__vbox_language::$langdata) .";\n\nvar __vboxLangName = '".constant('VBOXLANG')."';\n\n");
 
 
 ?>

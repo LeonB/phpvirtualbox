@@ -182,6 +182,8 @@ class vboxconnector {
 			
 			if(!($msg = $e->getMessage()))
 				$msg = 'Error logging in to vboxwebsrv.';
+			else
+				$msg .= " ({$this->settings->location})";
 			
 			throw new Exception($msg,vboxconnector::PHPVB_ERRNO_CONNECT);
 		}
@@ -850,6 +852,11 @@ class vboxconnector {
 
 		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
 		$m->description = $args['description'];
+		
+		// Start / stop config
+		if(@$this->settings->startStopConfig) {
+			$m->setExtraData('pvbx/startupMode', $args['startupMode']);
+		}
 
 		$m->setExtraData('GUI/SaveMountedAtRuntime', ($args['GUI']['SaveMountedAtRuntime'] == 'no' ? 'no' : 'yes'));
 
@@ -1101,6 +1108,12 @@ class vboxconnector {
 		$m->BIOSSettings->IOAPICEnabled = ($args['BIOSSettings']['IOAPICEnabled'] ? 1 : 0);
 		$m->CPUExecutionCap = intval($args['CPUExecutionCap']);
 		$m->description = $args['description'];
+		
+		// Start / stop config
+		if(@$this->settings->startStopConfig) {
+			$m->setExtraData('pvbx/startupMode', $args['startupMode']);
+		}
+		
 
 		// Determine if host is capable of hw accel
 		$hwAccelAvail = intval($this->vbox->host->getProcessorFeature('HWVirtEx'));
@@ -2441,7 +2454,7 @@ class vboxconnector {
 		$machine = $this->vbox->findMachine($vm);
 		$mstate = $machine->state->__toString();
 
-		if ( ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
+		if ( !$this->skipSessionCheck && ($owner = $machine->getExtraData("phpvb/sso/owner")) && $owner !== $_SESSION['user'] && !$_SESSION['admin'] )
 		{
 			// skip this VM as it is not owned by the user we're logged in as
 			throw new Exception("Not authorized to change state of this VM");
@@ -2818,6 +2831,11 @@ class vboxconnector {
 			$data['snapshotCount'] = $machine->snapshotCount;
 			$data['sessionState'] = $machine->sessionState->__toString();
 			$data['currentStateModified'] = $machine->currentStateModified;
+
+			// Start / stop config
+			if(@$this->settings->startStopConfig) {
+				$data['startupMode'] = $machine->getExtraData('pvbx/startupMode');
+			}
 
 			$mdlm = floor($machine->lastStateChange/1000);
 
@@ -3262,9 +3280,11 @@ class vboxconnector {
 					'sessionState' => $machine->sessionState->__toString(),
 					'currentSnapshot' => ($machine->currentSnapshot->handle ? $machine->currentSnapshot->name : ''),
 					'customIcon' => (@$this->settings->enableCustomIcons ? $machine->getExtraData('phpvb/icon') : ''),
+					'startupMode' => (@$args['startStopConfig'] && @$this->settings->startStopConfig ? $machine->getExtraData('pvbx/startupMode') : '')
 				);
 				if($machine->currentSnapshot->handle) $machine->currentSnapshot->releaseRemote();
-
+				
+				
 			} catch (Exception $e) {
 
 				if($machine) {

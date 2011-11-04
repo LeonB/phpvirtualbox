@@ -134,6 +134,12 @@ class phpVBoxConfigClass {
 	var $authCapabilities = null;
 	
 	/**
+	 * Configuration passed to authentication module
+	 * @var array
+	 */
+	var $authConfig = array();
+	
+	/**
 	 * Read user configuration, apply defaults, and do some sanity checking
 	 * @see ajax
 	 * @see vboxconnector
@@ -141,6 +147,8 @@ class phpVBoxConfigClass {
 	function __construct() {
 		
 		@include_once(dirname(dirname(__FILE__)).'/config.php');
+		
+		$ep = error_reporting(0);
 	
 		/* Apply object vars of configuration class to this class */
 		if(class_exists('phpVBoxConfig')) {
@@ -164,13 +172,13 @@ class phpVBoxConfigClass {
 			
 		// Ignore any server settings if we have servers
 		// in the servers array
-		if(@is_array($this->servers) && @is_array($this->servers[0])) {
+		if(isset($this->servers) && is_array($this->servers) && count($this->servers) && is_array($this->servers[0])) {
 			unset($this->location);
 			unset($this->user);
 			unset($this->pass);
 		}
 		// Set to selected server based on browser cookie
-		if(@$_COOKIE['vboxServer'] && @is_array($this->servers) && count($this->servers)) {
+		if(isset($_COOKIE['vboxServer']) && isset($this->servers) && is_array($this->servers) && count($this->servers)) {
 			foreach($this->servers as $s) {
 				if($s['name'] == $_COOKIE['vboxServer']) {				
 					foreach($s as $k=>$v) $this->$k = $v;
@@ -178,12 +186,12 @@ class phpVBoxConfigClass {
 				}
 			}
 		// If servers is not an array, set to empty array
-		} elseif(!@is_array($this->servers)) {
+		} elseif(!isset($this->servers) || !is_array($this->servers)) {
 			$this->servers = array();
 		}
 		// We still have no server set, use the first one from
 		// the servers array
-		if(!@$this->location && @is_array($this->servers[0])) {
+		if(empty($this->location) && count($this->servers)) {
 			foreach($this->servers[0] as $k=>$v) $this->$k = $v;
 		}
 		// Make sure name is set
@@ -197,11 +205,11 @@ class phpVBoxConfigClass {
 		$this->setKey();
 		
 		// legacy rdpHost setting
-		if(@$this->rdpHost && !@$this->consoleHost)
+		if(!empty($this->rdpHost) && empty($this->consoleHost))
 			$this->consoleHost = $this->rdpHost;
 			
 		// Ensure authlib is set
-		if(!@$this->authLib) $this->authLib = 'Builtin';
+		if(empty($this->authLib)) $this->authLib = 'Builtin';
 		// include interface
 		include_once(dirname(__FILE__).'/authinterface.php');
 		include_once(dirname(__FILE__).'/auth/'.str_replace(array('.','/','\\'),'',$this->authLib).'.php');
@@ -212,6 +220,8 @@ class phpVBoxConfigClass {
 		$alib = "phpvbAuth{$this->authLib}";
 		$this->auth = new $alib(@$this->authConfig);
 		$this->authCapabilities = $this->auth->capabilities;
+		
+		error_reporting($ep);
 	}
 	
 	/**
