@@ -9,6 +9,9 @@ Added OpenMediaVault authentication module.
 Added option to set VM startup mode and associated config option
 in config.php. Use vboxinit script in phpVirtualBox's root folder.
 
+Fixed a bug in IE 8 that would cause the "Loading ..." screen to
+stay in place after login.
+
 -------------------------------------
 	4.1-4	2011-10-17
 -------------------------------------

@@ -69,7 +69,7 @@ var sButtons = new Array(
 		'enabled' : function(item) {return ((item && $(item).data('vboxRule')) ? true : false);}
 	}
 );
-pfToolbar = new vboxToolbarSmall(sButtons);
+var pfToolbar = new vboxToolbarSmall(sButtons);
 pfToolbar.context = 'UIMachineSettingsPortForwardingDlg';
 pfToolbar.addButtons('vboxSettingsPortForwardingToolbar');
 

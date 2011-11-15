@@ -180,7 +180,7 @@ var sButtons = new Array(
 	}
 );
 
-netToolbar = new vboxToolbarSmall(sButtons);
+var netToolbar = new vboxToolbarSmall(sButtons);
 netToolbar.context = 'UIGlobalSettingsNetwork';
 netToolbar.addButtons('vboxSettingsGlobalNetToolbar');
 $('#vboxSettingsGlobalNetList').bind('select',netToolbar.update);
