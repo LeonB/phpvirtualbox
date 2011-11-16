@@ -2844,21 +2844,39 @@ class vboxconnector {
 
 				$console = $this->cache->get('__consoleInfo'.$args['vm'],120000);
 
-				if($console === false || intval($console['lastStateChange']) < $mdlm || @$args['force_refresh']) {
+				// Get guest additions version
+				if(@$this->settings->enableGuestAdditionsVersionDisplay) {
+					
 					$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
 					$machine->lockMachine($this->session->handle, 'Shared');
+					$data['guestAdditionsVersion'] = $this->session->console->guest->additionsVersion;
+				}
+				
+				// Get console port
+				if($console === false || intval($console['lastStateChange']) < $mdlm || @$args['force_refresh']) {
+						
+					if(!$this->session) {
+						$this->session = $this->websessionManager->getSessionObject($this->vbox->handle);
+						$machine->lockMachine($this->session->handle, 'Shared');
+					}
+					
 					$data['consoleInfo'] = array();
 					$data['consoleInfo']['enabled'] = intval($this->session->console->machine->VRDEServer->enabled);
 					$data['consoleInfo']['consolePort'] = $this->session->console->VRDEServerInfo->port;
-					$this->session->unlockMachine();
-					$this->session->releaseRemote();
-					unset($this->session);
 					$console = $data['consoleInfo'];
 					$console['lastStateChange'] = $mdlm;
 					$this->cache->store('__consoleInfo'.$data['id'],$console);
 				} else {
 					$data['consoleInfo'] = $console;
 				}
+				
+				// Close session if it was opened
+				if($this->session) {
+					$this->session->unlockMachine();
+					$this->session->releaseRemote();
+					unset($this->session);
+				}
+				
 			}
 
 			// Get removable media
@@ -4014,6 +4032,41 @@ class vboxconnector {
 		return $sc;
 	}
 
+	/**
+	 * Resize a medium. Currently unimplemented in GUI.
+	 * 
+	 * @param array $args array of arguments. See function body for details.
+	 * @param array $response response data passed byref populated by the function
+	 * @return boolean true on success
+	 */
+	public function remote_mediumResize($args,&$response) {
+
+		// Connect to vboxwebsrv
+		$this->connect();
+		
+		$m = $this->vbox->findMedium($args['mid'],'HardDisk');
+
+		/* @var $progress IProgress */
+		$progress = $m->resize($args['bytes']);
+		
+		// Does an exception exist?
+		try {
+			if($progress->errorInfo->handle) {
+				$this->errors[] = new Exception($progress->errorInfo->text);
+				$progress->releaseRemote();
+				return false;
+			}
+		} catch (Exception $null) {
+		}
+		
+		$this->_util_progressStore($progress,'vboxGetMedia');
+		
+		$response['data'] = array('progress' => $progress->handle);
+		
+		return true;
+		
+	}
+	
 	/**
 	 * Clone a medium
 	 *

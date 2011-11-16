@@ -138,8 +138,13 @@ var $hostMemInfoRefreshInterval = 5;
  * idea to always have VM memory requirements + 100MB free. 100 is the default.
  */
 #var $vmMemoryStartLimitWarn = true;
-var $vmMemoryOffset = 100;
+#var $vmMemoryOffset = 100;
 
+
+/*
+ * Display guest additions version of a running VM on its Details tab
+ */
+#var $enableGuestAdditionsVersionDisplay = true;
 
 /*
  * Display a "minimal" VM list. This will shrink the size of VMs in the VM list

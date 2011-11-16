@@ -612,6 +612,11 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 	}
 
 	$(vboxDetailsTable).append(__vboxDetailRow(trans("Name"), data['name'])).append(__vboxDetailRow(trans("OS Type"), data['OSTypeDesc']));
+
+	// Guest additions?
+	if(data.guestAdditionsVersion) {
+		$(vboxDetailsTable).append(__vboxDetailRow(trans("Guest Additions Version"), data.guestAdditionsVersion));
+	}
 	
 	// System
 	//////////////////
@@ -660,6 +665,7 @@ function __vboxDisplayDetailsData(data,targetdiv,links,boxes) {
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("VCPU"), (data['HWVirtExProperties'].Enabled ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Nested Paging"), (data['HWVirtExProperties'].NestedPaging ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("Large Pages"), (data['HWVirtExProperties'].LargePages? trans('Enabled') : trans('Disabled'))));
 		$(vboxDetailsTable).append(__vboxDetailRow(trans("Exclusive use of the hardware virtualization extensions"), (data['HWVirtExProperties'].Exclusive ? trans('Enabled') : trans('Disabled')))).append(__vboxDetailRow(trans("VT-x VPID (Intel only)"), (data['HWVirtExProperties'].VPID ? trans('Enabled') : trans('Disabled'))));
 	}
+	
 
 	// Preview box
 	/////////////////////
