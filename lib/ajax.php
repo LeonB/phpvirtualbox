@@ -15,7 +15,7 @@
 */
 
 # Turn off PHP errors
-error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING & ~E_DEPRECATED);
+error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_WARNING);
 
 
 //Set no caching

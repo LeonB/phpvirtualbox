@@ -1,4 +1,9 @@
 -------------------------------------
+	4.1-6	
+-------------------------------------
+Added $startStopConfig to config.php-example
+
+-------------------------------------
 	4.1-5	2011-11-15
 -------------------------------------
 Fixed bug that would not set Acceleration options for a VM if the

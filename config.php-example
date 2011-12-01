@@ -175,6 +175,12 @@ var $nicMax = 4;
  */
 #var $enableAdvancedConfig = true;
 
+/* Enable startup / shutdown configuration.
+ * This only works in linux and you must add the vboxinit file to
+ * your startup scripts list.
+ */
+#var $startStopConfig = true;
+
 /* 
 	Sorting VM List options
 
