@@ -3,6 +3,8 @@
 -------------------------------------
 Added $startStopConfig to config.php-example
 
+Added Traditional Chinese (zh_tw) translation.
+
 -------------------------------------
 	4.1-5	2011-11-15
 -------------------------------------
