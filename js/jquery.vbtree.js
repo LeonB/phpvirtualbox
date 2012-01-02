@@ -3,7 +3,7 @@
  * phpVirtualBox tree view for snapshots
  * 
  * $Id$
- * Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * Copyright (C) 2010-2012 Ian Moore (imoore76 at yahoo dot com)
  * 
  */
 

@@ -3,7 +3,7 @@
  * __vbox_language class and trans() function
  *
  * @author Ian Moore (imoore76 at yahoo dot com)
- * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2010-2012 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @see languages/languages.txt
  * @package phpVirtualBox
@@ -20,7 +20,7 @@ require_once(dirname(__FILE__).'/utils.php');
  * Language class. Parses language file and stores translations in an array.
  * 
  * @author Ian Moore (imoore76 at yahoo dot com)
- * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2010-2012 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @package phpVirtualBox
  * 

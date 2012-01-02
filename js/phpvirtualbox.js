@@ -2,7 +2,7 @@
  * @fileOverview Common classes and objects used
  * @author Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
- * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2010-2012 Ian Moore (imoore76 at yahoo dot com)
  */
 
 
@@ -1456,7 +1456,13 @@ function vboxMediaMenu(type,callback,mediumPath) {
 		for(var i = 0; i < list.length; i++) {
 			if(!list[i]) continue;
 			if(!vboxMedia.getMediumByLocation(list[i])) continue;
-			$('<li />').attr({'class':'vboxMediumRecent'}).html("<a href='#path:"+list[i]+"' title='" + list[i] + "'>"+vboxBasename(list[i])+"</a>").insertBefore(ins);
+			
+			$('<li />').attr({'class':'vboxMediumRecent'}).append(
+					$('<a />').attr({
+						'href' : '#path:'+list[i],
+						'title' : list[i]
+					}).text(vboxBasename(list[i]))
+			).insertBefore(ins);
 		}
 	};
 		

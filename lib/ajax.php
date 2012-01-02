@@ -4,7 +4,7 @@
  * Accepts JSON or simple GET requests, and returns JSON data.
  * 
  * @author Ian Moore (imoore76 at yahoo dot com)
- * @copyright Copyright (C) 2011 Ian Moore (imoore76 at yahoo dot com)
+ * @copyright Copyright (C) 2010-2012 Ian Moore (imoore76 at yahoo dot com)
  * @version $Id$
  * @package phpVirtualBox
  * @see vboxconnector

@@ -1,9 +1,13 @@
 -------------------------------------
-	4.1-6	
+	4.1-6	2012-01-02
 -------------------------------------
 Added $startStopConfig to config.php-example
 
 Added Traditional Chinese (zh_tw) translation.
+
+Fixed bug that would not allow the mounting of media when its
+path or file name contains a quote.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=474
 
 -------------------------------------
 	4.1-5	2011-11-15

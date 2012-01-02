@@ -288,10 +288,10 @@ function printdirlocal($dir, $recurse=array()) {
 function vbox_basename($b) { return substr($b,strrpos($b,DSEP)+1); }
 function folder_file($f) {
 	$ext = strtolower(preg_replace('/^.*\./', '', $f));
-	echo "<li class=\"file file_{$ext} vboxListItem\"><a href=\"#\" name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(vbox_basename($f))."</a></li>";
+	echo "<li class=\"file file_{$ext} vboxListItem\"><a href=\"#\" name='".htmlentities($f, ENT_QUOTES)."' rel=\"".htmlentities($f, ENT_QUOTES)."\">".htmlentities(vbox_basename($f), ENT_QUOTES)."</a></li>";
 }
 function folder_folder($f,$full=false,$expanded=false,$selected=false) {
-	echo "<li class=\"directory ".($expanded ? 'expanded' : 'collapsed')." vboxListItem\"><a href=\"#\" class='".($selected ? 'vboxListItemSelected' : '')."' name='".htmlentities($f)."' rel=\"".htmlentities($f)."\">".htmlentities(($full ? $f : vbox_basename($f)))."</a>".($expanded ? '' : '</li>');
+	echo "<li class=\"directory ".($expanded ? 'expanded' : 'collapsed')." vboxListItem\"><a href=\"#\" class='".($selected ? 'vboxListItemSelected' : '')."' name='".htmlentities($f,ENT_QUOTES)."' rel=\"".htmlentities($f,ENT_QUOTES)."\">".htmlentities(($full ? $f : vbox_basename($f)),ENT_QUOTES)."</a>".($expanded ? '' : '</li>');
 }
 
 function folder_start() { echo "<ul class=\"jqueryFileTree\" style=\"display: none;\">"; }
