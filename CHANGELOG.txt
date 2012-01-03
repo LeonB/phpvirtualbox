@@ -1,4 +1,10 @@
 -------------------------------------
+	4.1-6.1	2012-01-03
+-------------------------------------
+Fixed bug for IE 8 that would prevent the Global Preferences
+dialog from opening.
+
+-------------------------------------
 	4.1-6	2012-01-02
 -------------------------------------
 Added $startStopConfig to config.php-example
