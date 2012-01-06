@@ -240,6 +240,8 @@ function vboxGuestOSTypeIcon(osTypeId) {
         case "Windows2008_64":  strIcon = "os_win2k8_64.png"; break;
         case "Windows7":        strIcon = "os_win7.png"; break;
         case "Windows7_64":     strIcon = "os_win7_64.png"; break;
+        case "Windows8":        strIcon = "os_win8.png"; break;
+        case "Windows8_64":     strIcon = "os_win8_64.png"; break;
         case "WindowsNT":       strIcon = "os_win_other.png"; break;
         case "OS2Warp3":        strIcon = "os_os2warp3.png"; break;
         case "OS2Warp4":        strIcon = "os_os2warp4.png"; break;
