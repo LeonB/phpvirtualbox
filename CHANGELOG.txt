@@ -1,4 +1,10 @@
 -------------------------------------
+	4.1-7	2012-01-17
+-------------------------------------
+Fixed bug that would not properly set the Use host I/O cache
+and Enable Page Fusion settings.
+
+-------------------------------------
 	4.1-6.1	2012-01-03
 -------------------------------------
 Fixed bug for IE 8 that would prevent the Global Preferences

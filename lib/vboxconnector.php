@@ -1071,7 +1071,6 @@ class vboxconnector {
 		}
 
 
-
 		// Client and server must agree on advanced config setting
 		$this->settings->enableAdvancedConfig = (@$this->settings->enableAdvancedConfig && @$args['clientConfig']['enableAdvancedConfig']);
 		$this->settings->enableHDFlushConfig = (@$this->settings->enableHDFlushConfig && @$args['clientConfig']['enableHDFlushConfig']);
@@ -1129,7 +1128,8 @@ class vboxconnector {
 			* @remarks This must match GMMR0Init; currently we only support page fusion on
 			 *          all 64-bit hosts except Mac OS X */
 			$hostData = array();
-			$this->hostGetDetails(array(),$hostData);
+			$this->hostGetDetails(array(),array(&$hostData));
+			
 			if($hostData['data']['cpuFeatures']['Long Mode (64-bit)'] && stripos($hostData['data']['operatingSystem'],"darwin")===false) {
 				try {
 					$m->pageFusionEnabled = intval($args['pageFusionEnabled']);
@@ -1235,8 +1235,8 @@ class vboxconnector {
 			$bust = new StorageBus(null,$sc['bus']);
 			$c = $m->addStorageController($name,$bust->__toString());
 			$c->controllerType = $sc['controllerType'];
-			$c->useHostIOCache = ($sc['useHostIOCache'] ? 1 : 0);
-
+			$c->useHostIOCache = (intval($sc['useHostIOCache']) ? 1 : 0);
+			
 			// Set sata port count
 			if($sc['bus'] == 'SATA') {
 				$max = max(1,intval(@$sc['portCount']));
@@ -2689,6 +2689,7 @@ class vboxconnector {
 			$d->releaseRemote();
 		}
 		$host->releaseRemote();
+		
 		return true;
 	}
 
@@ -3991,7 +3992,7 @@ class vboxconnector {
 			$sc[] = array(
 				'name' => $c->name,
 				'maxDevicesPerPortCount' => $c->maxDevicesPerPortCount,
-				'useHostIOCache' => $c->useHostIOCache,
+				'useHostIOCache' => intval($c->useHostIOCache),
 				'minPortCount' => $c->minPortCount,
 				'maxPortCount' => $c->maxPortCount,
 				'instance' => $c->instance,
