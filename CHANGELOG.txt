@@ -4,6 +4,12 @@
 Fixed bug that would not properly set the Use host I/O cache
 and Enable Page Fusion settings.
 
+Added Windows 8 OS icons.
+
+Cleaned up Wizard code.
+
+Removed unused images from source tree.
+
 -------------------------------------
 	4.1-6.1	2012-01-03
 -------------------------------------

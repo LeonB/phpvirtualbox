@@ -573,18 +573,16 @@ var vboxMedia = {
  * @constructor
  * @param {String} name - name of wizard
  * @param {String} title - title of wizard dialog window
- * @param {String} img - unused
  * @param {String} bg - optional URL to background image to use
  * @param {String} icon - optional URL to icon to use on dialog
  */
-function vboxWizard(name, title, img, bg, icon) {
+function vboxWizard(name, title, bg, icon) {
 	
 	var self = this;
 
 	this.steps = 0;
 	this.name = name;
 	this.title = title;
-	this.img = img;
 	this.finish = null;
 	this.width = 700;
 	this.height = 400;

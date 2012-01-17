@@ -14,7 +14,7 @@ function vboxWizardImportApplianceInit() {
 	
 	l.onLoad = function() {
 
-		var vbw = new vboxWizard('wizardImportAppliance',trans('Appliance Import Wizard','UIImportApplianceWzd'),'images/vbox/vmw_ovf_import.png', 'images/vbox/vmw_ovf_import_bg.png','import');
+		var vbw = new vboxWizard('wizardImportAppliance',trans('Appliance Import Wizard','UIImportApplianceWzd'),'images/vbox/vmw_ovf_import_bg.png','import');
 		vbw.steps = 2;
 		vbw.height = 500;
 		vbw.finishText = trans('Import','UIImportApplianceWzd');
@@ -127,7 +127,7 @@ function vboxWizardImportApplianceInit() {
  */
 function vboxWizardExportApplianceInit() {
 
-	var vbw = new vboxWizard('wizardExportAppliance',trans('Appliance Export Wizard','UIExportApplianceWzd'),'images/vbox/vmw_ovf_export.png','images/vbox/vmw_ovf_export_bg.png','export');
+	var vbw = new vboxWizard('wizardExportAppliance',trans('Appliance Export Wizard','UIExportApplianceWzd'),'images/vbox/vmw_ovf_export_bg.png','export');
 	vbw.steps = 4;
 	vbw.height = 500;
 	vbw.context = 'UIExportApplianceWzd';
@@ -242,7 +242,7 @@ function vboxWizardNewVMInit(callback) {
 	
 	l.onLoad = function() {
 
-		var vbw = new vboxWizard('wizardNewVM',trans('Create New Virtual Machine','UINewVMWzd'),'images/vbox/vmw_new_welcome.png','images/vbox/vmw_new_welcome_bg.png','new');
+		var vbw = new vboxWizard('wizardNewVM',trans('Create New Virtual Machine','UINewVMWzd'),'images/vbox/vmw_new_welcome_bg.png','new');
 		vbw.steps = 5;
 		vbw.context = 'UINewHDWizard';
 		vbw.perPageContext = 'UINewVMWzdPage%1';
@@ -290,7 +290,7 @@ function vboxWizardCloneVMInit(callback,args) {
 	},{'vm':args.vm.id});
 	l.onLoad = function() {
 		
-		var vbw = new vboxWizard('wizardCloneVM',trans('Clone a virtual machine','UICloneVMWizard'),'images/vbox/vmw_clone.png','images/vbox/vmw_clone_bg.png','vm_clone');		
+		var vbw = new vboxWizard('wizardCloneVM',trans('Clone a virtual machine','UICloneVMWizard'),'images/vbox/vmw_clone_bg.png','vm_clone');		
 		vbw.steps = (args.vm.snapshotCount > 0 ? 3 : 2);
 		vbw.args = args;
 		vbw.finishText = trans('Clone','UICloneVMWizard');
@@ -509,7 +509,7 @@ function vboxWizardNewHDInit(callback,suggested) {
 	}
 	l.onLoad = function() {
 		
-		var vbw = new vboxWizard('wizardNewHD',trans('Create New Virtual Disk','UINewHDWizard'),'images/vbox/vmw_new_harddisk.png','images/vbox/vmw_new_harddisk_bg.png','hd');
+		var vbw = new vboxWizard('wizardNewHD',trans('Create New Virtual Disk','UINewHDWizard'),'images/vbox/vmw_new_harddisk_bg.png','hd');
 		vbw.steps = 4;
 		vbw.suggested = suggested;
 		vbw.context = 'UINewHDWizard';
@@ -573,7 +573,7 @@ function vboxWizardCopyHDInit(callback,suggested) {
 	
 	l.onLoad = function() {
 		
-		var vbw = new vboxWizard('wizardCopyHD',trans('Copy Virtual Disk','UINewHDWizard'),'images/vbox/vmw_new_harddisk.png','images/vbox/vmw_new_harddisk_bg.png','hd');
+		var vbw = new vboxWizard('wizardCopyHD',trans('Copy Virtual Disk','UINewHDWizard'),'images/vbox/vmw_new_harddisk_bg.png','hd');
 		vbw.steps = 5;
 		vbw.suggested = suggested;
 		vbw.context = 'UINewHDWizard';
