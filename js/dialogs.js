@@ -254,7 +254,7 @@ function vboxWizardNewVMInit(callback) {
 			var name = jQuery.trim(document.forms['frmwizardNewVM'].newVMName.value);
 			var ostype = document.forms['frmwizardNewVM'].newVMOSType.options[document.forms['frmwizardNewVM'].newVMOSType.selectedIndex].value;
 			var mem = parseInt(document.forms['frmwizardNewVM'].wizardNewVMSizeValue.value);
-			if(!document.forms['frmwizardNewVM'].newVMBootDisk.checked) disk = null;
+			if(!document.forms['frmwizardNewVM'].newVMBootDisk.checked || !disk) disk = '';
 
 			vboxAjaxRequest('machineCreate',{'disk':disk,'ostype':ostype,'memory':mem,'name':name},function(res){
 				if(res && res.result) {
@@ -265,7 +265,7 @@ function vboxWizardNewVMInit(callback) {
 						$('#vboxIndex').trigger('vmlistreload');
 						if(callback) callback();
 					};
-					lm.run();
+					lm.run();a
 				}
 			});			
 

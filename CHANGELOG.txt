@@ -1,4 +1,11 @@
 -------------------------------------
+	4.1-8	
+-------------------------------------
+Fixed bug that would error out when creating a VM without a boot
+disk.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=482
+
+-------------------------------------
 	4.1-7	2012-01-17
 -------------------------------------
 Fixed bug that would not properly set the Use host I/O cache
