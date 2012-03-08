@@ -802,7 +802,7 @@ function vboxProgressUpdate(d,e) {
 	// check for completed progress
 	if(!d || !d['progress'] || d['info']['completed'] || d['info']['canceled']) {
 		var args = $("#vboxProgressDialog").data('args');
-		if(d['info']['canceled']) vboxAlert(trans('Operation Canceled','phpVirtualBox'),{'width':'100px','height':'auto'});
+		if(d && d['info'] && d['info']['canceled']) vboxAlert(trans('Operation Canceled','phpVirtualBox'),{'width':'100px','height':'auto'});
 		$("#vboxProgressDialog").data('callback')(d,args);
 		$("#vboxProgressDialog").empty().remove();
 		window.onbeforeunload = null;

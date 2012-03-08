@@ -5,6 +5,10 @@ Fixed bug that would error out when creating a VM without a boot
 disk.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=482
 
+Fixed bug that would cause the progress bar to hang when
+performing progress operations in some cases.
+http://code.google.com/p/phpvirtualbox/issues/detail?id=495
+
 -------------------------------------
 	4.1-7	2012-01-17
 -------------------------------------
