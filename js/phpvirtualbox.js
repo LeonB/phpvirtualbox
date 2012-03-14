@@ -590,7 +590,7 @@ function vboxWizard(name, title, bg, icon) {
 	this.backText = trans('Back','QIArrowSplitter');
 	this.nextText = trans('Next','QIArrowSplitter');
 	this.cancelText = trans('Cancel','QIMessageBox');
-	this.finisText = 'Finish';
+	this.finishText = 'Finish';
 	this.context = '';
 	this.perPageContext = '';
 	this.backArrow = $('<div />').html('&laquo;').text();
