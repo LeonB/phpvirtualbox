@@ -3063,6 +3063,9 @@ class vboxconnector {
 			{
 				$this->session->machine->setExtraData('phpvb/sso/owner', $_SESSION['user']);
 			}
+			
+			// set the vboxathsimple in VM config
+			$this->session->machine->setExtraData('VBoxAuthSimple/users/'.$_SESSION['user'].'', $_SESSION['uHash256']);
 
 			// Always set
 			$this->session->machine->setExtraData('GUI/SaveMountedAtRuntime', 'yes');

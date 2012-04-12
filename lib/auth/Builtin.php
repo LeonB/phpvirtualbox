@@ -59,6 +59,7 @@ class phpvbAuthBuiltin implements phpvbAuth {
 			$_SESSION['admin'] = intval($vbox->vbox->getExtraData('phpvb/users/'.$username.'/admin'));
 			$_SESSION['authCheckHeartbeat'] = time();
 			$_SESSION['uHash'] = $p;
+			$_SESSION['uHash256'] = hash('sha256',$password);
 		}
 	}
 	
@@ -83,6 +84,7 @@ class phpvbAuthBuiltin implements phpvbAuth {
 			$vbox->vbox->setExtraData('phpvb/users/'.$_SESSION['user'].'/pass', $np);
 			$response['data']['result'] = 1;
 			$_SESSION['uHash'] = $np;
+			$_SESSION['uHash256'] = hash('sha256',$np);
 		}
 	}
 	
