@@ -35,11 +35,11 @@ if(preg_match('/[^\d]/',@$_GET['port'])) {
 	$vbox = new vboxconnector();
 	$vbox->connect();
 
-	$args = array('vm'=>@$_GET['vm']);
+	$args = array('vm'=>@$_GET['id']);
 	$response = array();
 	$vbox->machineGetDetails($args,array(&$response));
 	$_GET['port'] = @$response['data']['consoleInfo']['consolePort'];
-	
+
 }
 
 header("Content-type: application/x-rdp",true);

@@ -746,7 +746,7 @@ function vboxWizard(name, title, bg, icon) {
 	 * @memberOf vboxWizard
 	 */
 	self.unsetLast = function() {
-		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' >').html());
+		$('#'+self.name+'Dialog').parent().find('.ui-dialog-buttonpane').find('span:contains("'+self.finishText+'")').html($('<div />').text(self.nextText+' '+self.nextArrow).html());
 		if(self._origSteps) self.steps = self._origSteps;
 	};
 	
