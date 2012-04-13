@@ -21,6 +21,9 @@ var $location = 'http://127.0.0.1:18083/';
  */
 var $language = 'en';
 
+/* Set the standard VRDE Port Number / Range, e.g. 1010-1020 or 1027 */
+var $vrdeports = '9000-9010';
+
 /*
  *
  * Not-so-common options / tweaking

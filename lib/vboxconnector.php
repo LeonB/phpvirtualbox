@@ -3064,7 +3064,7 @@ class vboxconnector {
 				$this->session->machine->setExtraData('phpvb/sso/owner', $_SESSION['user']);
 			}
 			
-			// set the vboxathsimple in VM config
+			// set the vboxauthsimple in VM config
 			$this->session->machine->setExtraData('VBoxAuthSimple/users/'.$_SESSION['user'].'', $_SESSION['uHash256']);
 
 			// Always set
@@ -3080,7 +3080,7 @@ class vboxconnector {
 				if($this->session->machine->VRDEServer && $this->vbox->systemProperties->defaultVRDEExtPack) {
 					$this->session->machine->VRDEServer->enabled = 1;
 					$this->session->machine->VRDEServer->authTimeout = 5000;
-					$this->session->machine->VRDEServer->setVRDEProperty('TCP/Ports','3389-4000');
+					$this->session->machine->VRDEServer->setVRDEProperty('TCP/Ports',$this->settings->vrdeports);
 				}
 			} catch (Exception $e) {
 				//Ignore
