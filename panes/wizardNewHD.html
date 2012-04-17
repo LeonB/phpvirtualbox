@@ -173,8 +173,19 @@ function wizardHDBrowseLocation() {
 	vboxFileBrowser(loc,function(f){
 		if(!f) return;
 		// get file name
-		file = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
-		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = f+$('#vboxIndex').data('vboxConfig').DSEP+file;
+		prefile = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
+		var lastindex = -1;
+		if(prefile.lastIndexOf("\\") >= 0){ lastindex = prefile.lastIndexOf("\\"); }
+		if(prefile.lastIndexOf("/") >= 0) { lastindex = prefile.lastIndexOf("/"); }
+		filename = prefile.substring(lastindex+1,prefile.length);
+		var laststring = f.charAt(f.length-1);
+		if(laststring=="\\" || laststring=="/"){
+		// has slash at end so get rid off it...
+		f=f.substring(0,f.length-1);
+		}
+		var path = f+$('#vboxIndex').data('vboxConfig').DSEP+filename;
+		//document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = f+$('#vboxIndex').data('vboxConfig').DSEP+prefile;
+		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = path;
 	},true,trans('Location','UINewHDWizard'));
 
 }
@@ -232,6 +243,7 @@ $('#wizardNewHDStep4').bind('show',function(e,wiz){
 
 
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
+	
 	if(loc.search(/[\/|\\]/) < 0) {
 		if($('#wizardNewHDStep4').data('suggestedpath'))
 			loc = $('#wizardNewHDStep4').data('suggestedpath') + loc;

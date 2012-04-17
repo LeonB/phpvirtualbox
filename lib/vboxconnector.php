@@ -33,7 +33,6 @@ class vboxconnector {
 	 */
 	var $errors = array();
 
-
 	/**
 	 * true if a progress operation was creating during processing
 	 *
@@ -262,6 +261,7 @@ class vboxconnector {
 
 		// Valid session?
 		global $_SESSION;
+		
 		if(!@$this->skipSessionCheck && !$_SESSION['valid']) {
 			throw new Exception(trans('Not logged in.','UIUsers'),vboxconnector::PHPVB_ERRNO_FATAL);
 		}
@@ -4239,16 +4239,48 @@ class vboxconnector {
 
 		if (@$this->settings->enforceVMOwnership )
 		{
-			$dirparts = explode('/', $args['file']);
-			foreach ( $dirparts as $i => &$bit )
-			{
-				if ( $i == count($dirparts) - 2 || $i == count($dirparts) - 1 )
-				{
-					// file or directory name
-					$bit = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $bit);
+			// set position first
+			$pos = -1; $last = null; $secondLast = null;
+			
+			// are you using windows?
+			if(@$this->settings->oswindows ){
+				// true so do windows explode
+				$dirparts = explode('\\', $args['file']);
+				while (($pos = strpos($args['file'],"\\", $pos+1)) !== false) {
+   			 		$secondLast = $last;
+   					$last = $pos;
+				}
+			}else{
+				// false so do linux explode
+				$dirparts = explode('/', $args['file']);
+				while (($pos = strpos($args['file'],"/", $pos+1)) !== false) {
+   					$secondLast = $last;
+   					$last = $pos;
 				}
 			}
+			
+			$home = substr($args['file'],0,$secondLast);
+			
+			foreach ( $dirparts as $i => &$bit ) {
+				// is folder the defaultMachineFolder
+				if($home == $this->vbox->systemProperties->defaultMachineFolder) {
+					// yes so create user based folder
+					if ( $i == count($dirparts) - 1 || $i == count($dirparts) - 2 ) {
+						$bit = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $bit);	
+					}
+				}else{
+					// no so just create user based file
+					if ( $i == count($dirparts) - 1) {
+						$bit = "{$_SESSION['user']}_" . preg_replace('/^' . preg_quote($_SESSION['user']) . '_/', '', $bit);	
+					}
+				}
+			}
+			
+			if(@$this->settings->oswindows ){
+			$args['file'] = implode('\\', $dirparts);;
+			}else{
 			$args['file'] = implode('/', $dirparts);
+			}
 		}
 
 		$format = strtoupper($args['format']);
