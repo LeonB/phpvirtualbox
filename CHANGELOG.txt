@@ -1,20 +1,13 @@
 -------------------------------------
-	4.1-8	
+	4.1-7.1		2012-04-18
 -------------------------------------
-Fixed bug that would error out when creating a VM without a boot
-disk.
-http://code.google.com/p/phpvirtualbox/issues/detail?id=482
+Fixed Windows Bug when selected folder from Hard Drive List
 
-Fixed bug that would cause the progress bar to hang when
-performing progress operations in some cases.
-http://code.google.com/p/phpvirtualbox/issues/detail?id=495
+Fixed bug when creating HDD on drive letters under Windows
 
-Fixed "Next" arrow appearance wizard code that would appear when
-the number of wizard steps changes at run-time.
+Fixed creating HDD bug when using VMOwnership
 
-Fixed bug that would fail to generate a correct RDP connection
-file when enforceVMOwnership is set.
-http://code.google.com/p/phpvirtualbox/issues/detail?id=523
+Changed About to introduce Simon Smith as a developer
 
 -------------------------------------
 	4.1-7	2012-01-17

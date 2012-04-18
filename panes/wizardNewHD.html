@@ -241,14 +241,28 @@ $('#wizardNewHDStep4').bind('show',function(e,wiz){
 	var split = document.forms['frmwizardNewHD'].newHardDiskSplit.checked;
 	$('#wizardNewHDTypeLabel').html(vboxMedia.getHardDiskVariant({'fixed':document.forms['frmwizardNewHD'].elements.newHardDiskType[1].checked,'split':split}));
 
-
 	var loc = document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value;
 	
 	if(loc.search(/[\/|\\]/) < 0) {
-		if($('#wizardNewHDStep4').data('suggestedpath'))
-			loc = $('#wizardNewHDStep4').data('suggestedpath') + loc;
-		else
-			loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + loc;
+		// just a name
+		if($('#wizardNewHDStep4').data('suggestedpath')) {
+			if($('#vboxIndex').data('vboxConfig').enforceVMOwnership==true){
+				loc = $('#wizardNewHDStep4').data('suggestedpath') + $('#vboxIndex').data('vboxSession').user + "_" + loc;	
+			}else{ loc = $('#wizardNewHDStep4').data('suggestedpath') + loc; }
+		} else{
+			if($('#vboxIndex').data('vboxConfig').enforceVMOwnership==true){
+				loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + $('#vboxIndex').data('vboxSession').user + "_" + loc;
+			}else{ loc = $('#vboxIndex').data('vboxSystemProperties').homeFolder + $('#vboxIndex').data('vboxConfig').DSEP + loc; }
+		}
+	}else{
+		// using a certain folder
+			if($('#vboxIndex').data('vboxConfig').enforceVMOwnership==true){
+				// has user ownership so use folderbased 
+				var nameIndex = loc.lastIndexOf($('#vboxIndex').data('vboxConfig').DSEP);
+				var path = loc.substr(0,nameIndex);
+				var name = loc.substr(nameIndex+1,loc.length);
+				loc = path +$('#vboxIndex').data('vboxConfig').DSEP + $('#vboxIndex').data('vboxSession').user + "_" + name;
+			}
 	}
 	
 	// append ext?
@@ -326,7 +340,7 @@ $('#wizardNewHDStep1').bind('show',function(e,wiz){
 
 	// Already initialized?
 	if($('#wizardNewHDStep1').data('init') || !wiz || !wiz.suggested) return;
-
+	
 	if(wiz.suggested.name) {
 		document.forms['frmwizardNewHD'].elements.wizardNewHDLocation.value = wiz.suggested.name;
 	}
@@ -335,8 +349,14 @@ $('#wizardNewHDStep1').bind('show',function(e,wiz){
 		$('#wizardNewHDSize').slider('value',wiz.suggested.size);
 	}
 	
-	if(wiz.suggested.path)
+	if(wiz.suggested.path){
+		if($('#vboxIndex').data('vboxConfig').enforceVMOwnership==true){
+			var nameIndex = wiz.suggested.path.lastIndexOf(wiz.suggested.name+$('#vboxIndex').data('vboxConfig').DSEP);
+			var path = wiz.suggested.path.substr(0,nameIndex);
+			wiz.suggested.path = path + $('#vboxIndex').data('vboxSession').user + "_" + wiz.suggested.name+$('#vboxIndex').data('vboxConfig').DSEP;
+		}	
 		$('#wizardNewHDStep4').data('suggestedpath',wiz.suggested.path);
+	}
 
 	$('#wizardNewHDStep1').data('init',true);
 	
