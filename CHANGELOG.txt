@@ -9,8 +9,8 @@ Fixed bug that would cause the progress bar to hang when
 performing progress operations in some cases.
 http://code.google.com/p/phpvirtualbox/issues/detail?id=495
 
-Fixed "Next" arrow appearance wizard code that would appear when
-the number of wizard steps changes at run-time.
+Fixed "Next" arrow wizard code bug visible when the number of
+wizard steps changes at run-time.
 
 Fixed bug that would fail to generate a correct RDP connection
 file when enforceVMOwnership is set.
